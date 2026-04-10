@@ -1,9 +1,5 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using AutoMapper;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
+using AutoMapper;
 using Zad.Application.DTOs;
 using Zad.Application.Interfaces;
 using Zad.Domain.Entities;
@@ -14,13 +10,13 @@ public class AuthService : IAuthService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
-    private readonly IConfiguration _configuration;
+    private readonly IJwtTokenProvider _jwtTokenProvider;
 
-    public AuthService(IUnitOfWork unitOfWork, IMapper mapper, IConfiguration configuration)
+    public AuthService(IUnitOfWork unitOfWork, IMapper mapper, IJwtTokenProvider jwtTokenProvider)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
-        _configuration = configuration;
+        _jwtTokenProvider = jwtTokenProvider;
     }
 
     public async Task<UserDto> Register(string email, string password, bool isChild)
@@ -54,25 +50,7 @@ public class AuthService : IAuthService
             throw new UnauthorizedAccessException("Invalid email or password.");
         }
 
-        var claims = new List<Claim>
-        {
-            new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new(JwtRegisteredClaimNames.Email, user.Email),
-            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new("is_child", user.IsChild.ToString())
-        };
-
-        var key = GetJwtKey();
-        var credentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)), SecurityAlgorithms.HmacSha256);
-
-        var token = new JwtSecurityToken(
-            issuer: _configuration["Jwt:Issuer"] ?? "Zad.API",
-            audience: _configuration["Jwt:Audience"] ?? "Zad.Client",
-            claims: claims,
-            expires: DateTime.UtcNow.AddHours(2),
-            signingCredentials: credentials);
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        return _jwtTokenProvider.GenerateToken(user);
     }
 
     public async Task<UserDto?> GetByEmail(string email)
@@ -82,39 +60,21 @@ public class AuthService : IAuthService
         return user is null ? null : _mapper.Map<UserDto>(user);
     }
 
-    public bool ValidateToken(string token)
+    public Task<bool> ValidateToken(string token)
     {
         if (string.IsNullOrWhiteSpace(token))
         {
-            return false;
+            return Task.FromResult(false);
         }
-
-        var tokenHandler = new JwtSecurityTokenHandler();
 
         try
         {
-            tokenHandler.ValidateToken(token, new TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(GetJwtKey())),
-                ValidateIssuer = true,
-                ValidIssuer = _configuration["Jwt:Issuer"] ?? "Zad.API",
-                ValidateAudience = true,
-                ValidAudience = _configuration["Jwt:Audience"] ?? "Zad.Client",
-                ValidateLifetime = true,
-                ClockSkew = TimeSpan.Zero
-            }, out _);
-
-            return true;
+            var principal = _jwtTokenProvider.ValidateToken(token);
+            return Task.FromResult(principal.Identity?.IsAuthenticated == true);
         }
         catch
         {
-            return false;
+            return Task.FromResult(false);
         }
-    }
-
-    private string GetJwtKey()
-    {
-        return _configuration["Jwt:Key"] ?? "zad-default-jwt-key-change-in-production-123456789";
     }
 }
