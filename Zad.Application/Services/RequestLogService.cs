@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Zad.Application.Interfaces;
 using Zad.Domain.Entities;
 using Zad.Domain.Enums;
@@ -7,22 +8,33 @@ namespace Zad.Application.Services;
 public class RequestLogService : IRequestLogService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILogger<RequestLogService> _logger;
 
-    public RequestLogService(IUnitOfWork unitOfWork)
+    public RequestLogService(IUnitOfWork unitOfWork, ILogger<RequestLogService> logger)
     {
         _unitOfWork = unitOfWork;
+        _logger = logger;
     }
 
-    public async Task LogRequest(int userId, ChatMode mode, RequestStatus status)
+    public async Task LogRequest(int userId, ChatMode mode, ExpertSubMode? subMode, RequestStatus status)
     {
         var requestLog = new RequestLog
         {
             UserId = userId,
             Mode = mode,
+            ExpertSubMode = subMode,
             Status = status
         };
 
         await _unitOfWork.RequestLogs.AddAsync(requestLog);
         await _unitOfWork.SaveChangesAsync();
+
+        _logger.LogInformation(
+            "Request log created for UserId {UserId}. Mode: {Mode}, SubMode: {SubMode}, Status: {Status}, RequestLogId: {RequestLogId}",
+            userId,
+            mode,
+            subMode,
+            status,
+            requestLog.Id);
     }
 }

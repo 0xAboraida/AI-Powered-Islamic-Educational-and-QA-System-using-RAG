@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.Extensions.Logging;
 using Zad.Application.DTOs;
 using Zad.Application.Interfaces;
 using Zad.Domain.Entities;
@@ -9,11 +10,13 @@ public class ChatService : IChatService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly ILogger<ChatService> _logger;
 
-    public ChatService(IUnitOfWork unitOfWork, IMapper mapper)
+    public ChatService(IUnitOfWork unitOfWork, IMapper mapper, ILogger<ChatService> logger)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _logger = logger;
     }
 
     public async Task<ChatSessionDto> CreateSession(int userId, string? sessionName)
@@ -29,6 +32,8 @@ public class ChatService : IChatService
         await _unitOfWork.ChatSessions.AddAsync(chatSession);
         await _unitOfWork.SaveChangesAsync();
 
+        _logger.LogInformation("Chat session created. UserId: {UserId}, ChatSessionId: {ChatSessionId}", userId, chatSession.Id);
+
         var dto = _mapper.Map<ChatSessionDto>(chatSession);
         dto.Name = sessionName;
         return dto;
@@ -41,6 +46,7 @@ public class ChatService : IChatService
 
         if (chatSession.UserId != userId)
         {
+            _logger.LogWarning("Unauthorized send message attempt. UserId: {UserId}, ChatSessionId: {ChatSessionId}", userId, chatSessionId);
             throw new UnauthorizedAccessException("Chat session does not belong to this user.");
         }
 
@@ -70,6 +76,7 @@ public class ChatService : IChatService
         }
 
         var storedMessage = await _unitOfWork.Messages.GetWithCitations(message.Id) ?? message;
+        _logger.LogInformation("Message stored. UserId: {UserId}, ChatSessionId: {ChatSessionId}, MessageId: {MessageId}", userId, chatSessionId, message.Id);
         return _mapper.Map<MessageDto>(storedMessage);
     }
 

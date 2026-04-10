@@ -1,6 +1,6 @@
 using AutoMapper;
-using AutoMapper;
 using FluentValidation;
+using Microsoft.Extensions.Logging;
 using Zad.Application.DTOs;
 using Zad.Application.Exceptions;
 using Zad.Application.Interfaces;
@@ -16,19 +16,22 @@ public class AuthService : IAuthService
     private readonly IJwtTokenProvider _jwtTokenProvider;
     private readonly IValidator<RegisterRequest> _registerRequestValidator;
     private readonly IValidator<LoginRequest> _loginRequestValidator;
+    private readonly ILogger<AuthService> _logger;
 
     public AuthService(
         IUnitOfWork unitOfWork,
         IMapper mapper,
         IJwtTokenProvider jwtTokenProvider,
         IValidator<RegisterRequest> registerRequestValidator,
-        IValidator<LoginRequest> loginRequestValidator)
+        IValidator<LoginRequest> loginRequestValidator,
+        ILogger<AuthService> logger)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _jwtTokenProvider = jwtTokenProvider;
         _registerRequestValidator = registerRequestValidator;
         _loginRequestValidator = loginRequestValidator;
+        _logger = logger;
     }
 
     public async Task<UserDto> Register(string email, string password, bool isChild)
@@ -46,6 +49,7 @@ public class AuthService : IAuthService
         var existingUser = await _unitOfWork.Users.GetByEmailAsync(normalizedEmail);
         if (existingUser is not null)
         {
+            _logger.LogWarning("Register failed because user already exists. Email: {Email}", normalizedEmail);
             throw new AppValidationException([
                 new FluentValidation.Results.ValidationFailure(nameof(RegisterRequest.Email), "User already exists.")
             ]);
@@ -60,6 +64,8 @@ public class AuthService : IAuthService
 
         await _unitOfWork.Users.AddAsync(user);
         await _unitOfWork.SaveChangesAsync();
+
+        _logger.LogInformation("User registered successfully. UserId: {UserId}", user.Id);
 
         return _mapper.Map<UserDto>(user);
     }
@@ -78,8 +84,11 @@ public class AuthService : IAuthService
         var user = await _unitOfWork.Users.GetByEmailAsync(normalizedEmail);
         if (user is null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
         {
+            _logger.LogWarning("Login failed for Email: {Email}", normalizedEmail);
             throw new UnauthorizedException("Invalid email or password.");
         }
+
+        _logger.LogInformation("Login successful for UserId: {UserId}", user.Id);
 
         return _jwtTokenProvider.GenerateToken(user);
     }

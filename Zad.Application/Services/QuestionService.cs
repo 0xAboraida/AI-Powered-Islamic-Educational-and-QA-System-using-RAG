@@ -1,6 +1,6 @@
 using AutoMapper;
-using AutoMapper;
 using FluentValidation;
+using Microsoft.Extensions.Logging;
 using Zad.Application.DTOs;
 using Zad.Application.Exceptions;
 using Zad.Application.Interfaces;
@@ -17,19 +17,22 @@ public class QuestionService : IQuestionService
     private readonly IRequestLogService _requestLogService;
     private readonly IMapper _mapper;
     private readonly IValidator<AskQuestionRequest> _askQuestionRequestValidator;
+    private readonly ILogger<QuestionService> _logger;
 
     public QuestionService(
         IUnitOfWork unitOfWork,
         IAiClient aiClient,
         IRequestLogService requestLogService,
         IMapper mapper,
-        IValidator<AskQuestionRequest> askQuestionRequestValidator)
+        IValidator<AskQuestionRequest> askQuestionRequestValidator,
+        ILogger<QuestionService> logger)
     {
         _unitOfWork = unitOfWork;
         _aiClient = aiClient;
         _requestLogService = requestLogService;
         _mapper = mapper;
         _askQuestionRequestValidator = askQuestionRequestValidator;
+        _logger = logger;
     }
 
     public async Task<MessageDto> AskQuestion(int userId, int chatSessionId, string question, ChatMode mode, ExpertSubMode? subMode)
@@ -41,27 +44,36 @@ public class QuestionService : IQuestionService
             ExpertSubMode = subMode
         };
 
-        var validationResult = await _askQuestionRequestValidator.ValidateAsync(request);
-        if (!validationResult.IsValid)
-        {
-            throw new AppValidationException(validationResult.Errors);
-        }
+        _logger.LogInformation(
+            "AskQuestion started for UserId {UserId}, ChatSessionId {ChatSessionId}, Mode {Mode}, SubMode {SubMode}",
+            userId,
+            chatSessionId,
+            mode,
+            subMode);
 
-        var user = await _unitOfWork.Users.GetByIdAsync(userId)
-            ?? throw new NotFoundException("User not found.");
-
-        var chatSession = await _unitOfWork.ChatSessions.GetByIdAsync(chatSessionId)
-            ?? throw new NotFoundException("Chat session not found.");
-
-        if (chatSession.UserId != user.Id)
-        {
-            throw new UnauthorizedException("Chat session does not belong to this user.");
-        }
-
-        await _unitOfWork.BeginTransactionAsync();
-
+        var transactionStarted = false;
         try
         {
+            var validationResult = await _askQuestionRequestValidator.ValidateAsync(request);
+            if (!validationResult.IsValid)
+            {
+                throw new AppValidationException(validationResult.Errors);
+            }
+
+            var user = await _unitOfWork.Users.GetByIdAsync(userId)
+                ?? throw new NotFoundException("User not found.");
+
+            var chatSession = await _unitOfWork.ChatSessions.GetByIdAsync(chatSessionId)
+                ?? throw new NotFoundException("Chat session not found.");
+
+            if (chatSession.UserId != user.Id)
+            {
+                throw new UnauthorizedException("Chat session does not belong to this user.");
+            }
+
+            await _unitOfWork.BeginTransactionAsync();
+            transactionStarted = true;
+
             var prompt = BuildPrompt(question, mode, null);
             var aiRequest = new AiRequestDto
             {
@@ -94,16 +106,35 @@ public class QuestionService : IQuestionService
             }
 
             await _unitOfWork.SaveChangesAsync();
-            await _requestLogService.LogRequest(userId, mode, RequestStatus.Success);
+            await _requestLogService.LogRequest(userId, mode, subMode, RequestStatus.Success);
             await _unitOfWork.CommitAsync();
 
             var storedMessage = await _unitOfWork.Messages.GetWithCitations(message.Id) ?? message;
+            _logger.LogInformation(
+                "AskQuestion completed for UserId {UserId}, ChatSessionId {ChatSessionId}, MessageId {MessageId}",
+                userId,
+                chatSessionId,
+                message.Id);
+
             return _mapper.Map<MessageDto>(storedMessage);
         }
-        catch
+        catch (Exception ex)
         {
-            await _requestLogService.LogRequest(userId, mode, RequestStatus.Failed);
-            await _unitOfWork.RollbackAsync();
+            if (transactionStarted)
+            {
+                await _unitOfWork.RollbackAsync();
+            }
+
+            await _requestLogService.LogRequest(userId, mode, subMode, RequestStatus.Failed);
+
+            _logger.LogError(
+                ex,
+                "AskQuestion failed for UserId {UserId}, ChatSessionId {ChatSessionId}, Mode {Mode}, SubMode {SubMode}",
+                userId,
+                chatSessionId,
+                mode,
+                subMode);
+
             throw;
         }
     }

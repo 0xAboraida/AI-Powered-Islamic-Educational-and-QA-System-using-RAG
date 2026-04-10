@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Zad.Application.DTOs;
@@ -27,6 +28,13 @@ public class AiClient : IAiClient
     {
         ArgumentNullException.ThrowIfNull(request);
 
+        _logger.LogInformation(
+            "Sending AI request. Mode: {Mode}, SubMode: {SubMode}",
+            request.Mode,
+            request.SubMode);
+
+        var stopwatch = Stopwatch.StartNew();
+
         using var httpRequest = new HttpRequestMessage(HttpMethod.Post, "/api/ask")
         {
             Content = JsonContent.Create(request)
@@ -51,22 +59,31 @@ public class AiClient : IAiClient
             if (!response.IsSuccessStatusCode)
             {
                 var errorContent = await response.Content.ReadAsStringAsync();
-                _logger.LogError("AI service request failed with status {StatusCode}. Response: {Response}", (int)response.StatusCode, errorContent);
+                _logger.LogError(
+                    "AI service request failed with status {StatusCode} after {ElapsedMs} ms. Response: {Response}",
+                    (int)response.StatusCode,
+                    stopwatch.ElapsedMilliseconds,
+                    errorContent);
                 throw new HttpRequestException($"AI service request failed with status code {(int)response.StatusCode}.");
             }
 
             var result = await response.Content.ReadFromJsonAsync<AiResponseDto>(JsonSerializerOptions);
 
+            _logger.LogInformation(
+                "AI request completed successfully in {ElapsedMs} ms with status {StatusCode}",
+                stopwatch.ElapsedMilliseconds,
+                (int)response.StatusCode);
+
             return result ?? throw new InvalidOperationException("AI service returned an empty response body.");
         }
         catch (TaskCanceledException ex)
         {
-            _logger.LogError(ex, "AI service request timed out.");
+            _logger.LogWarning(ex, "AI service request timed out after {ElapsedMs} ms.", stopwatch.ElapsedMilliseconds);
             throw new TimeoutException("The AI service request timed out.", ex);
         }
         catch (HttpRequestException ex)
         {
-            _logger.LogError(ex, "AI service request failed.");
+            _logger.LogError(ex, "AI service request failed after {ElapsedMs} ms.", stopwatch.ElapsedMilliseconds);
             throw;
         }
     }
