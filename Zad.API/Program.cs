@@ -13,7 +13,7 @@ namespace Zad.API
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -75,7 +75,16 @@ namespace Zad.API
             using (var scope = app.Services.CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<ZadDbContext>();
-                dbContext.Database.Migrate();
+                await dbContext.Database.MigrateAsync();
+
+                var isFirstRun = !await dbContext.Categories.AnyAsync()
+                    && !await dbContext.Documents.AnyAsync()
+                    && !await dbContext.Users.AnyAsync();
+
+                if (isFirstRun)
+                {
+                    await SeedData.SeedAsync(dbContext);
+                }
             }
 
             if (app.Environment.IsDevelopment())
@@ -96,7 +105,7 @@ namespace Zad.API
 
             app.MapControllers();
 
-            app.Run();
+            await app.RunAsync();
         }
     }
 }
