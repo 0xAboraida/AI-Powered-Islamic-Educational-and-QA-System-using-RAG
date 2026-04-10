@@ -6,5 +6,6 @@ public interface IAuthService
 {
     Task<UserDto> Register(string email, string password, bool isChild);
     Task<string> Login(string email, string password);
+    Task<UserDto?> GetByEmail(string email);
     bool ValidateToken(string token);
 }

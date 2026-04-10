@@ -73,6 +73,35 @@ public class ChatService : IChatService
         return _mapper.Map<MessageDto>(storedMessage);
     }
 
+    public async Task<IReadOnlyList<ChatSessionDto>> GetUserSessions(int userId)
+    {
+        var sessions = await _unitOfWork.ChatSessions.GetUserSessions(userId);
+        return _mapper.Map<IReadOnlyList<ChatSessionDto>>(sessions);
+    }
+
+    public async Task<ChatSessionDetailsDto?> GetSessionDetails(int userId, int sessionId)
+    {
+        var chatSession = await _unitOfWork.ChatSessions.GetWithMessages(sessionId);
+        if (chatSession is null)
+        {
+            return null;
+        }
+
+        if (chatSession.UserId != userId)
+        {
+            throw new UnauthorizedAccessException("Chat session does not belong to this user.");
+        }
+
+        var messages = await _unitOfWork.Messages.GetByChatSession(sessionId);
+        var messageDtos = _mapper.Map<List<MessageDto>>(messages);
+
+        return new ChatSessionDetailsDto
+        {
+            Session = _mapper.Map<ChatSessionDto>(chatSession),
+            Messages = messageDtos
+        };
+    }
+
     public async Task<IReadOnlyList<MessageDto>> GetHistory(int userId)
     {
         var sessions = await _unitOfWork.ChatSessions.GetUserSessions(userId);

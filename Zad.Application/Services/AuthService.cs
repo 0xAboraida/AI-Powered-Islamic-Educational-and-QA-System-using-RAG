@@ -75,6 +75,13 @@ public class AuthService : IAuthService
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
+    public async Task<UserDto?> GetByEmail(string email)
+    {
+        var normalizedEmail = email.Trim().ToLowerInvariant();
+        var user = await _unitOfWork.Users.GetByEmailAsync(normalizedEmail);
+        return user is null ? null : _mapper.Map<UserDto>(user);
+    }
+
     public bool ValidateToken(string token)
     {
         if (string.IsNullOrWhiteSpace(token))
