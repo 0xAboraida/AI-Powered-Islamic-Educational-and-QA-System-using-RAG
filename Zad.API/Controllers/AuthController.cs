@@ -24,21 +24,14 @@ public class AuthController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
-        try
-        {
-            var user = await _authService.Register(request.Email, request.Password, request.IsChild);
-            var token = await _authService.Login(request.Email, request.Password);
+        var user = await _authService.Register(request.Email, request.Password, request.IsChild);
+        var token = await _authService.Login(request.Email, request.Password);
 
-            return StatusCode(StatusCodes.Status201Created, new
-            {
-                token,
-                user
-            });
-        }
-        catch (Exception ex)
+        return StatusCode(StatusCodes.Status201Created, new
         {
-            return HandleException(ex);
-        }
+            token,
+            user
+        });
     }
 
     [HttpPost("login")]
@@ -49,35 +42,17 @@ public class AuthController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        try
+        var token = await _authService.Login(request.Email, request.Password);
+        var user = await _authService.GetByEmail(request.Email);
+        if (user is null)
         {
-            var token = await _authService.Login(request.Email, request.Password);
-            var user = await _authService.GetByEmail(request.Email);
-            if (user is null)
-            {
-                return Unauthorized(new { message = "Invalid email or password." });
-            }
-
-            return Ok(new
-            {
-                token,
-                user
-            });
+            return Unauthorized(new { message = "Invalid email or password." });
         }
-        catch (Exception ex)
-        {
-            return HandleException(ex);
-        }
-    }
 
-    private IActionResult HandleException(Exception ex)
-    {
-        return ex switch
+        return Ok(new
         {
-            UnauthorizedAccessException => Unauthorized(new { message = ex.Message }),
-            InvalidOperationException => BadRequest(new { message = ex.Message }),
-            ArgumentException => BadRequest(new { message = ex.Message }),
-            _ => StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred." })
-        };
+            token,
+            user
+        });
     }
 }

@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Zad.Application.Exceptions;
 
 namespace Zad.API.Middlewares;
 
@@ -30,6 +31,7 @@ public class ExceptionHandlingMiddleware
     {
         var statusCode = exception switch
         {
+            AppException appException => appException.StatusCode,
             UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
             InvalidOperationException => StatusCodes.Status400BadRequest,
             ArgumentException => StatusCodes.Status400BadRequest,
@@ -40,12 +42,21 @@ public class ExceptionHandlingMiddleware
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = statusCode;
 
-        var response = new
+        object response = new
         {
             message = statusCode == StatusCodes.Status500InternalServerError
                 ? "An unexpected error occurred."
                 : exception.Message
         };
+
+        if (exception is ValidationException validationException)
+        {
+            response = new
+            {
+                message = validationException.Message,
+                errors = validationException.Errors
+            };
+        }
 
         await context.Response.WriteAsync(JsonSerializer.Serialize(response));
     }

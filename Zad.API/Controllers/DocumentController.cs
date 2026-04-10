@@ -22,15 +22,8 @@ public class DocumentController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetDocuments()
     {
-        try
-        {
-            var documents = await _documentService.GetAllDocuments();
-            return Ok(documents);
-        }
-        catch (Exception)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred." });
-        }
+        var documents = await _documentService.GetAllDocuments();
+        return Ok(documents);
     }
 
     [HttpGet("/api/documents/category/{categoryId:int}")]
@@ -40,20 +33,13 @@ public class DocumentController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetDocumentsByCategory(int categoryId)
     {
-        try
+        var documents = await _documentService.GetDocumentsByCategory(categoryId);
+        if (documents.Count == 0)
         {
-            var documents = await _documentService.GetDocumentsByCategory(categoryId);
-            if (documents.Count == 0)
-            {
-                return NotFound(new { message = "No documents found for this category." });
-            }
+            return NotFound(new { message = "No documents found for this category." });
+        }
 
-            return Ok(documents);
-        }
-        catch (Exception)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred." });
-        }
+        return Ok(documents);
     }
 
     [HttpGet("/api/categories")]
@@ -62,14 +48,7 @@ public class DocumentController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetCategories()
     {
-        try
-        {
-            var categories = await _documentService.GetCategories();
-            return Ok(categories);
-        }
-        catch (Exception)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred." });
-        }
+        var categories = await _documentService.GetCategories();
+        return Ok(categories);
     }
 }

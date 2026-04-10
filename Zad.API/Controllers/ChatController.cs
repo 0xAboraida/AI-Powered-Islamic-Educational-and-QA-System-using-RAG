@@ -27,21 +27,14 @@ public class ChatController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> CreateSession([FromBody] CreateChatSessionRequest request)
     {
-        try
+        var userId = GetCurrentUserId();
+        if (userId is null)
         {
-            var userId = GetCurrentUserId();
-            if (userId is null)
-            {
-                return Unauthorized();
-            }
+            return Unauthorized();
+        }
 
-            var session = await _chatService.CreateSession(userId.Value, request.Name);
-            return CreatedAtAction(nameof(GetSessionById), new { id = session.Id }, session);
-        }
-        catch (Exception ex)
-        {
-            return HandleException(ex);
-        }
+        var session = await _chatService.CreateSession(userId.Value, request.Name);
+        return CreatedAtAction(nameof(GetSessionById), new { id = session.Id }, session);
     }
 
     [HttpGet("sessions")]
@@ -50,21 +43,14 @@ public class ChatController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetSessions()
     {
-        try
+        var userId = GetCurrentUserId();
+        if (userId is null)
         {
-            var userId = GetCurrentUserId();
-            if (userId is null)
-            {
-                return Unauthorized();
-            }
+            return Unauthorized();
+        }
 
-            var sessions = await _chatService.GetUserSessions(userId.Value);
-            return Ok(sessions);
-        }
-        catch (Exception ex)
-        {
-            return HandleException(ex);
-        }
+        var sessions = await _chatService.GetUserSessions(userId.Value);
+        return Ok(sessions);
     }
 
     [HttpGet("sessions/{id:int}")]
@@ -74,26 +60,19 @@ public class ChatController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetSessionById(int id)
     {
-        try
+        var userId = GetCurrentUserId();
+        if (userId is null)
         {
-            var userId = GetCurrentUserId();
-            if (userId is null)
-            {
-                return Unauthorized();
-            }
-
-            var session = await _chatService.GetSessionDetails(userId.Value, id);
-            if (session is null)
-            {
-                return NotFound(new { message = "Chat session not found." });
-            }
-
-            return Ok(session);
+            return Unauthorized();
         }
-        catch (Exception ex)
+
+        var session = await _chatService.GetSessionDetails(userId.Value, id);
+        if (session is null)
         {
-            return HandleException(ex);
+            return NotFound(new { message = "Chat session not found." });
         }
+
+        return Ok(session);
     }
 
     [HttpPost("sessions/{id:int}/messages")]
@@ -104,39 +83,19 @@ public class ChatController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> SendMessage(int id, [FromBody] AskQuestionRequest request)
     {
-        try
+        var userId = GetCurrentUserId();
+        if (userId is null)
         {
-            var userId = GetCurrentUserId();
-            if (userId is null)
-            {
-                return Unauthorized();
-            }
+            return Unauthorized();
+        }
 
-            var result = await _questionService.AskQuestion(userId.Value, id, request.Question, request.ChatMode, request.ExpertSubMode);
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return HandleException(ex);
-        }
+        var result = await _questionService.AskQuestion(userId.Value, id, request.Question, request.ChatMode, request.ExpertSubMode);
+        return Ok(result);
     }
 
     private int? GetCurrentUserId()
     {
         var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
         return int.TryParse(userIdClaim, out var userId) ? userId : null;
-    }
-
-    private IActionResult HandleException(Exception ex)
-    {
-        return ex switch
-        {
-            UnauthorizedAccessException => Unauthorized(new { message = ex.Message }),
-            InvalidOperationException when ex.Message.Contains("not found", StringComparison.OrdinalIgnoreCase)
-                => NotFound(new { message = ex.Message }),
-            InvalidOperationException => BadRequest(new { message = ex.Message }),
-            ArgumentException => BadRequest(new { message = ex.Message }),
-            _ => StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred." })
-        };
     }
 }

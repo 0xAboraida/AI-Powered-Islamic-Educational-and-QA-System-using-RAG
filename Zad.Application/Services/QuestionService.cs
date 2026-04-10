@@ -1,8 +1,12 @@
 using AutoMapper;
+using AutoMapper;
+using FluentValidation;
 using Zad.Application.DTOs;
+using Zad.Application.Exceptions;
 using Zad.Application.Interfaces;
 using Zad.Domain.Entities;
 using Zad.Domain.Enums;
+using AppValidationException = Zad.Application.Exceptions.ValidationException;
 
 namespace Zad.Application.Services;
 
@@ -12,36 +16,46 @@ public class QuestionService : IQuestionService
     private readonly IAiClient _aiClient;
     private readonly IRequestLogService _requestLogService;
     private readonly IMapper _mapper;
+    private readonly IValidator<AskQuestionRequest> _askQuestionRequestValidator;
 
-    public QuestionService(IUnitOfWork unitOfWork, IAiClient aiClient, IRequestLogService requestLogService, IMapper mapper)
+    public QuestionService(
+        IUnitOfWork unitOfWork,
+        IAiClient aiClient,
+        IRequestLogService requestLogService,
+        IMapper mapper,
+        IValidator<AskQuestionRequest> askQuestionRequestValidator)
     {
         _unitOfWork = unitOfWork;
         _aiClient = aiClient;
         _requestLogService = requestLogService;
         _mapper = mapper;
+        _askQuestionRequestValidator = askQuestionRequestValidator;
     }
 
     public async Task<MessageDto> AskQuestion(int userId, int chatSessionId, string question, ChatMode mode, ExpertSubMode? subMode)
     {
-        if (string.IsNullOrWhiteSpace(question))
+        var request = new AskQuestionRequest
         {
-            throw new ArgumentException("Question is required.", nameof(question));
+            Question = question,
+            ChatMode = mode,
+            ExpertSubMode = subMode
+        };
+
+        var validationResult = await _askQuestionRequestValidator.ValidateAsync(request);
+        if (!validationResult.IsValid)
+        {
+            throw new AppValidationException(validationResult.Errors);
         }
 
         var user = await _unitOfWork.Users.GetByIdAsync(userId)
-            ?? throw new InvalidOperationException("User not found.");
+            ?? throw new NotFoundException("User not found.");
 
         var chatSession = await _unitOfWork.ChatSessions.GetByIdAsync(chatSessionId)
-            ?? throw new InvalidOperationException("Chat session not found.");
+            ?? throw new NotFoundException("Chat session not found.");
 
         if (chatSession.UserId != user.Id)
         {
-            throw new UnauthorizedAccessException("Chat session does not belong to this user.");
-        }
-
-        if (mode == ChatMode.Expert && subMode is null)
-        {
-            throw new InvalidOperationException("Expert sub mode is required for expert mode.");
+            throw new UnauthorizedException("Chat session does not belong to this user.");
         }
 
         await _unitOfWork.BeginTransactionAsync();
