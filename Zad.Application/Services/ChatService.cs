@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.Extensions.Logging;
 using Zad.Application.DTOs;
+using Zad.Application.Exceptions;
 using Zad.Application.Interfaces;
 using Zad.Domain.Entities;
 
@@ -22,7 +23,7 @@ public class ChatService : IChatService
     public async Task<ChatSessionDto> CreateSession(int userId, string? sessionName)
     {
         var user = await _unitOfWork.Users.GetByIdAsync(userId)
-            ?? throw new InvalidOperationException("User not found.");
+            ?? throw new NotFoundException("User not found.");
 
         var chatSession = new ChatSession
         {

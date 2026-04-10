@@ -1,0 +1,155 @@
+{
+  "info": {
+    "name": "Zad Backend - Phase 14 Integration",
+    "_postman_id": "7f449f6f-bba3-4fa0-bbf4-2fbe4b8b6d2b",
+    "description": "Integration and E2E collection for authentication, chat flow, question flow, history, citations, and error scenarios.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "https://localhost:5001" },
+    { "key": "email", "value": "user@test.local" },
+    { "key": "password", "value": "Strong@12345" },
+    { "key": "token", "value": "" },
+    { "key": "sessionId", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "Auth - Register",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/api/auth/register",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"isChild\": false\n}"
+        }
+      }
+    },
+    {
+      "name": "Auth - Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const json = pm.response.json();",
+              "if (json.token) { pm.collectionVariables.set('token', json.token); }"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/api/auth/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Chat - Create Session",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const json = pm.response.json();",
+              "if (json.id) { pm.collectionVariables.set('sessionId', json.id); }"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": "{{baseUrl}}/api/chat/sessions",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Manual Test Session\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Chat - Ask Question (existing session)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": "{{baseUrl}}/api/chat/sessions/{{sessionId}}/messages",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"question\": \"What is the meaning of Tawheed?\",\n  \"chatMode\": 1,\n  \"expertSubMode\": 2\n}"
+        }
+      }
+    },
+    {
+      "name": "Chat - View Session History",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": "{{baseUrl}}/api/chat/sessions/{{sessionId}}"
+      }
+    },
+    {
+      "name": "Question - Ask in New Session",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": "{{baseUrl}}/api/question/ask",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"question\": \"Explain fasting briefly for children\",\n  \"chatMode\": 2\n}"
+        }
+      }
+    },
+    {
+      "name": "Documents - Get All",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": "{{baseUrl}}/api/documents"
+      }
+    },
+    {
+      "name": "Error - Invalid JWT",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer invalid.jwt.token" }
+        ],
+        "url": "{{baseUrl}}/api/chat/sessions"
+      }
+    },
+    {
+      "name": "Error - Session Not Found",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": "{{baseUrl}}/api/chat/sessions/999999/messages",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"question\": \"Will this fail?\",\n  \"chatMode\": 2\n}"
+        }
+      }
+    }
+  ]
+}

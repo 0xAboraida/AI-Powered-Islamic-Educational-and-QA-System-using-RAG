@@ -131,7 +131,14 @@ namespace Zad.API
             using (var scope = app.Services.CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<ZadDbContext>();
-                await dbContext.Database.MigrateAsync();
+                if (dbContext.Database.IsSqlServer())
+                {
+                    await dbContext.Database.MigrateAsync();
+                }
+                else
+                {
+                    await dbContext.Database.EnsureCreatedAsync();
+                }
 
                 var isFirstRun = !await dbContext.Categories.AnyAsync()
                     && !await dbContext.Documents.AnyAsync()

@@ -14,6 +14,8 @@ public class MessageRepository : GenericRepository<Message>, IMessageRepository
     {
         return await Context.Messages
             .Where(x => x.ChatSessionId == chatSessionId)
+            .Include(x => x.Citations)
+            .ThenInclude(x => x.Document)
             .OrderBy(x => x.CreatedAt)
             .ToListAsync();
     }

@@ -32,6 +32,7 @@ public class ExceptionHandlingMiddleware
         var statusCode = exception switch
         {
             AppException appException => appException.StatusCode,
+            TimeoutException => StatusCodes.Status504GatewayTimeout,
             UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
             InvalidOperationException => StatusCodes.Status400BadRequest,
             ArgumentException => StatusCodes.Status400BadRequest,

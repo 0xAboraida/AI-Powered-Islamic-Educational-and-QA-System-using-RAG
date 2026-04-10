@@ -83,6 +83,7 @@ public class UnitOfWork : IUnitOfWork, IAsyncDisposable
         await _transaction.RollbackAsync(cancellationToken);
         await _transaction.DisposeAsync();
         _transaction = null;
+        _context.ChangeTracker.Clear();
     }
 
     public async ValueTask DisposeAsync()
