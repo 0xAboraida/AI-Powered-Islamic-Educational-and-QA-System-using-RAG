@@ -189,12 +189,20 @@ namespace Zad.API
             {
                 options.AddPolicy("AllowedOrigins", policy =>
                 {
-                    policy.WithOrigins(
-                            "http://localhost:3000", // frontend dev
-                            "https://yourdomain.com" // production
-                        )
-                        .AllowAnyHeader()
-                        .AllowAnyMethod();
+                    if (allowedOrigins.Length > 0)
+                    {
+                        policy.WithOrigins(allowedOrigins)
+                            .WithHeaders(allowedHeaders)
+                            .WithMethods(allowedMethods);
+                        return;
+                    }
+
+                    if (builder.Environment.IsDevelopment() || builder.Environment.IsEnvironment("Testing"))
+                    {
+                        policy.AllowAnyOrigin()
+                            .WithHeaders(allowedHeaders)
+                            .WithMethods(allowedMethods);
+                    }
                 });
             });
 

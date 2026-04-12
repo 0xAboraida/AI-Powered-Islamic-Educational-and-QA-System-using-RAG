@@ -1,4 +1,4 @@
-@Zad.API_HostAddress = http://localhost:5055
+@Zad.API_HostAddress = https://localhost:7000
 
 GET {{Zad.API_HostAddress}}/weatherforecast/
 Accept: application/json

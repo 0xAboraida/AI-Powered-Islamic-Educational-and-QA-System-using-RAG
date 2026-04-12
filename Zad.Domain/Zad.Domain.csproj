@@ -6,9 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="AutoMapper.Collection" Version="13.0.0" />
-    <PackageReference Include="AutoMapper.Extensions.ExpressionMapping" Version="11.0.0" />
-  </ItemGroup>
-
 </Project>

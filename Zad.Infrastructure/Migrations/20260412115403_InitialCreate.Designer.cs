@@ -9,11 +9,11 @@ using Zad.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace Zad.Infrastructure.Persistence.Migrations
+namespace Zad.Infrastructure.Migrations
 {
     [DbContext(typeof(ZadDbContext))]
-    [Migration("20260410044006_AddChatSessionNameAndCitationIndexFix")]
-    partial class AddChatSessionNameAndCitationIndexFix
+    [Migration("20260412115403_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -111,12 +111,18 @@ namespace Zad.Infrastructure.Persistence.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 
+                    b.Property<byte[]>("ReferenceTextHash")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("binary(32)")
+                        .HasComputedColumnSql("CONVERT(binary(32), HASHBYTES('SHA2_256', [ReferenceText]))", true);
+
                     b.HasKey("Id");
 
                     b.HasIndex("DocumentId");
 
-                    b.HasIndex("MessageId", "DocumentId")
-                        .IsUnique();
+                    b.HasIndex("MessageId", "DocumentId");
+
+                    b.HasIndex("MessageId", "DocumentId", "ReferenceTextHash");
 
                     b.ToTable("Citations", (string)null);
                 });

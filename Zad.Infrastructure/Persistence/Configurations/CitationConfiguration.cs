@@ -31,8 +31,8 @@ public class CitationConfiguration : IEntityTypeConfiguration<Citation>
 
         builder.HasIndex(x => new { x.MessageId, x.DocumentId });
 
-        builder.HasIndex("MessageId", "DocumentId", "ReferenceTextHash")
-            .IsUnique();
+        builder.HasIndex("MessageId", "DocumentId", "ReferenceTextHash");
+            
 
         builder.HasOne(x => x.Message)
             .WithMany(x => x.Citations)

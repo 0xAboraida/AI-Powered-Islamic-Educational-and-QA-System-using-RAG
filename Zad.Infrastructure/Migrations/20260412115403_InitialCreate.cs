@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Zad.Infrastructure.Persistence.Migrations
+namespace Zad.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
@@ -84,6 +84,7 @@ namespace Zad.Infrastructure.Persistence.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -175,6 +176,7 @@ namespace Zad.Infrastructure.Persistence.Migrations
                     MessageId = table.Column<int>(type: "int", nullable: false),
                     DocumentId = table.Column<int>(type: "int", nullable: false),
                     ReferenceText = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
+                    ReferenceTextHash = table.Column<byte[]>(type: "binary(32)", nullable: true, computedColumnSql: "CONVERT(binary(32), HASHBYTES('SHA2_256', [ReferenceText]))", stored: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -213,8 +215,12 @@ namespace Zad.Infrastructure.Persistence.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Citations_MessageId_DocumentId",
                 table: "Citations",
-                columns: new[] { "MessageId", "DocumentId" },
-                unique: true);
+                columns: new[] { "MessageId", "DocumentId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Citations_MessageId_DocumentId_ReferenceTextHash",
+                table: "Citations",
+                columns: new[] { "MessageId", "DocumentId", "ReferenceTextHash" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Documents_CategoryId",
