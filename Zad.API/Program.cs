@@ -187,14 +187,14 @@ namespace Zad.API
 
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("DefaultCors", policy =>
+                options.AddPolicy("AllowedOrigins", policy =>
                 {
-                    if (allowedOrigins.Length > 0)
-                    {
-                        policy.WithOrigins(allowedOrigins)
-                            .WithHeaders(allowedHeaders)
-                            .WithMethods(allowedMethods);
-                    }
+                    policy.WithOrigins(
+                            "http://localhost:3000", // frontend dev
+                            "https://yourdomain.com" // production
+                        )
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
                 });
             });
 
@@ -258,7 +258,7 @@ namespace Zad.API
 
             app.UseHttpsRedirection();
 
-            app.UseCors("DefaultCors");
+            app.UseCors("AllowedOrigins");
 
             app.UseAuthentication();
 
