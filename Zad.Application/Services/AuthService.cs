@@ -88,9 +88,14 @@ public class AuthService : IAuthService
             throw new UnauthorizedException("Invalid email or password.");
         }
 
-        var userWithRoles = await _unitOfWork.Users.GetByIdWithRolesAsync(user.Id) ?? user;
+        var userWithRoles = await _unitOfWork.Users.GetByIdWithRolesAsync(user.Id);
+        if (userWithRoles is null)
+        {
+            _logger.LogWarning("Login failed while loading roles for UserId: {UserId}", user.Id);
+            throw new UnauthorizedException("Invalid email or password.");
+        }
 
-        _logger.LogInformation("Login successful for UserId: {UserId}", user.Id);
+        _logger.LogInformation("Login successful for UserId: {UserId}", userWithRoles.Id);
 
         return _jwtTokenProvider.GenerateToken(userWithRoles);
     }

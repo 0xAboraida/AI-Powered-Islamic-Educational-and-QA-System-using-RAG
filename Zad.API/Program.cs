@@ -112,9 +112,9 @@ namespace Zad.API
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToArray() ?? [];
 
-            if (allowedOrigins.Length == 0)
+            if (builder.Environment.IsProduction() && allowedOrigins.Length == 0)
             {
-                throw new InvalidOperationException("Cors:AllowedOrigins must contain at least one origin.");
+                throw new InvalidOperationException("Cors:AllowedOrigins must contain at least one origin in production.");
             }
 
             if (allowedOrigins.Any(origin => origin == "*" || origin.Contains('*')))
@@ -167,9 +167,12 @@ namespace Zad.API
             {
                 options.AddPolicy("DefaultCors", policy =>
                 {
-                    policy.WithOrigins(allowedOrigins)
-                        .AllowAnyHeader()
-                        .AllowAnyMethod();
+                    if (allowedOrigins.Length > 0)
+                    {
+                        policy.WithOrigins(allowedOrigins)
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                    }
                 });
             });
 
@@ -219,7 +222,8 @@ namespace Zad.API
                 options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
                 options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
                 {
-                    diagnosticContext.Set("RequestHost", httpContext.Request.Host.Value ?? string.Empty);
+                    var requestHost = httpContext.Request.Host.Value;
+                    diagnosticContext.Set("RequestHost", string.IsNullOrWhiteSpace(requestHost) ? string.Empty : requestHost);
                     diagnosticContext.Set("RequestScheme", httpContext.Request.Scheme ?? string.Empty);
                     diagnosticContext.Set("TraceIdentifier", httpContext.TraceIdentifier ?? string.Empty);
                 };

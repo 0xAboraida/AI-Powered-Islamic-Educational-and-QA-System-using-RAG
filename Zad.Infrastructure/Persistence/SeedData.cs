@@ -64,53 +64,5 @@ public static class SeedData
             await dbContext.SaveChangesAsync();
         }
 
-        const string adminRoleName = "Admin";
-        var adminRole = await dbContext.Roles.FirstOrDefaultAsync(r => r.Name == adminRoleName);
-        if (adminRole is null)
-        {
-            adminRole = new Role { Name = adminRoleName };
-            await dbContext.Roles.AddAsync(adminRole);
-            await dbContext.SaveChangesAsync();
-        }
-
-        var adminEmail = Environment.GetEnvironmentVariable("SEED_ADMIN_EMAIL");
-        if (string.IsNullOrWhiteSpace(adminEmail))
-        {
-            adminEmail = configuration?["Seed:AdminEmail"];
-        }
-
-        var adminPassword = Environment.GetEnvironmentVariable("SEED_ADMIN_PASSWORD");
-        if (string.IsNullOrWhiteSpace(adminPassword))
-        {
-            adminPassword = configuration?["Seed:AdminPassword"];
-        }
-
-        if (string.IsNullOrWhiteSpace(adminEmail) || string.IsNullOrWhiteSpace(adminPassword))
-        {
-            return;
-        }
-
-        var adminUser = await dbContext.Users
-            .Include(u => u.Roles)
-            .FirstOrDefaultAsync(u => u.Email == adminEmail);
-
-        if (adminUser is null)
-        {
-            adminUser = new User
-            {
-                Email = adminEmail,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(adminPassword),
-                IsChild = false
-            };
-
-            adminUser.Roles.Add(adminRole);
-            await dbContext.Users.AddAsync(adminUser);
-            await dbContext.SaveChangesAsync();
-        }
-        else if (adminUser.Roles.All(r => !string.Equals(r.Name, adminRoleName, StringComparison.OrdinalIgnoreCase)))
-        {
-            adminUser.Roles.Add(adminRole);
-            await dbContext.SaveChangesAsync();
-        }
     }
 }
