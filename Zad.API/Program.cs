@@ -112,6 +112,18 @@ namespace Zad.API
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToArray() ?? [];
 
+            var allowedMethods = builder.Configuration.GetSection("Cors:AllowedMethods").Get<string[]>()?
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Select(x => x.Trim().ToUpperInvariant())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToArray() ?? ["GET", "POST"];
+
+            var allowedHeaders = builder.Configuration.GetSection("Cors:AllowedHeaders").Get<string[]>()?
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Select(x => x.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToArray() ?? ["Authorization", "Content-Type"];
+
             if (builder.Environment.IsProduction() && allowedOrigins.Length == 0)
             {
                 throw new InvalidOperationException("Cors:AllowedOrigins must contain at least one origin in production.");
@@ -120,6 +132,16 @@ namespace Zad.API
             if (allowedOrigins.Any(origin => origin == "*" || origin.Contains('*')))
             {
                 throw new InvalidOperationException("Wildcard CORS origins are not allowed. Configure explicit origins in Cors:AllowedOrigins.");
+            }
+
+            if (allowedMethods.Any(method => method == "*" || method.Contains('*')))
+            {
+                throw new InvalidOperationException("Wildcard CORS methods are not allowed. Configure explicit methods in Cors:AllowedMethods.");
+            }
+
+            if (allowedHeaders.Any(header => header == "*" || header.Contains('*')))
+            {
+                throw new InvalidOperationException("Wildcard CORS headers are not allowed. Configure explicit headers in Cors:AllowedHeaders.");
             }
 
             var invalidOrigins = allowedOrigins
@@ -170,8 +192,8 @@ namespace Zad.API
                     if (allowedOrigins.Length > 0)
                     {
                         policy.WithOrigins(allowedOrigins)
-                            .AllowAnyHeader()
-                            .AllowAnyMethod();
+                            .WithHeaders(allowedHeaders)
+                            .WithMethods(allowedMethods);
                     }
                 });
             });
@@ -207,25 +229,28 @@ namespace Zad.API
                 await SeedData.SeedAsync(dbContext, builder.Configuration);
             }
 
-            app.UseSwagger();
-            app.UseSwaggerUI(options =>
+            if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing"))
             {
-                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Zad API v1");
-                options.RoutePrefix = "swagger";
-                options.DisplayRequestDuration();
-            });
+                app.UseSwagger();
+                app.UseSwaggerUI(options =>
+                {
+                    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Zad API v1");
+                    options.RoutePrefix = "swagger";
+                    options.DisplayRequestDuration();
+                });
 
-            app.MapGet("/api-docs", () => Results.Redirect("/swagger"));
+                app.MapGet("/api-docs", () => Results.Redirect("/swagger"));
+            }
 
             app.UseSerilogRequestLogging(options =>
             {
                 options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
                 options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
                 {
-                    var requestHost = httpContext.Request.Host.Value;
-                    diagnosticContext.Set("RequestHost", string.IsNullOrWhiteSpace(requestHost) ? string.Empty : requestHost);
-                    diagnosticContext.Set("RequestScheme", httpContext.Request.Scheme ?? string.Empty);
-                    diagnosticContext.Set("TraceIdentifier", httpContext.TraceIdentifier ?? string.Empty);
+                    var requestHost = httpContext.Request.Host.Value ?? string.Empty;
+                    diagnosticContext.Set("RequestHost", requestHost);
+                    diagnosticContext.Set("RequestScheme", httpContext.Request.Scheme);
+                    diagnosticContext.Set("TraceIdentifier", httpContext.TraceIdentifier);
                 };
             });
 

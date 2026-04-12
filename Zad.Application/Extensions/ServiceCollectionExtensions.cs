@@ -9,7 +9,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
-        services.AddAutoMapper(typeof(ServiceCollectionExtensions).Assembly);
+        services.AddAutoMapper(_ => { }, typeof(ServiceCollectionExtensions).Assembly);
 
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IChatService, ChatService>();
