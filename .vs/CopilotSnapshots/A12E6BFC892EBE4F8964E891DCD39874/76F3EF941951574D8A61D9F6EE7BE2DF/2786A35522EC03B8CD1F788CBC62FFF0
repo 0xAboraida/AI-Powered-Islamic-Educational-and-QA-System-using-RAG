@@ -109,7 +109,6 @@ namespace Zad.Infrastructure.Migrations
                         .HasColumnType("nvarchar(2000)");
 
                     b.Property<byte[]>("ReferenceTextHash")
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("binary(32)")
                         .HasComputedColumnSql("CONVERT(binary(32), HASHBYTES('SHA2_256', [ReferenceText]))", true);
@@ -121,7 +120,8 @@ namespace Zad.Infrastructure.Migrations
                     b.HasIndex("MessageId", "DocumentId");
 
                     b.HasIndex("MessageId", "DocumentId", "ReferenceTextHash")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[ReferenceTextHash] IS NOT NULL");
 
                     b.ToTable("Citations", (string)null);
                 });

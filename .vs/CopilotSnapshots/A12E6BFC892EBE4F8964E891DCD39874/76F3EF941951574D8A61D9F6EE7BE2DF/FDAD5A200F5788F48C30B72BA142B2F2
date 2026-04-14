@@ -1,0 +1,39 @@
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+
+#nullable disable
+
+namespace Zad.Infrastructure.Migrations
+{
+    /// <inheritdoc />
+    public partial class _CheckPendingModelChanges : Migration
+    {
+        /// <inheritdoc />
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropIndex(
+                name: "IX_Citations_MessageId_DocumentId_ReferenceTextHash",
+                table: "Citations");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Citations_MessageId_DocumentId_ReferenceTextHash",
+                table: "Citations",
+                columns: new[] { "MessageId", "DocumentId", "ReferenceTextHash" },
+                unique: true,
+                filter: "[ReferenceTextHash] IS NOT NULL");
+        }
+
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropIndex(
+                name: "IX_Citations_MessageId_DocumentId_ReferenceTextHash",
+                table: "Citations");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Citations_MessageId_DocumentId_ReferenceTextHash",
+                table: "Citations",
+                columns: new[] { "MessageId", "DocumentId", "ReferenceTextHash" },
+                unique: true);
+        }
+    }
+}

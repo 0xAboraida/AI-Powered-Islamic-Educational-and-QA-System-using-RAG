@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Zad.Domain.Entities;
 
@@ -24,7 +24,6 @@ public class CitationConfiguration : IEntityTypeConfiguration<Citation>
 
         builder.Property<byte[]>("ReferenceTextHash")
             .HasColumnType("binary(32)")
-            .IsRequired()
             .HasComputedColumnSql("CONVERT(binary(32), HASHBYTES('SHA2_256', [ReferenceText]))", stored: true);
 
         builder.Property(x => x.CreatedAt)

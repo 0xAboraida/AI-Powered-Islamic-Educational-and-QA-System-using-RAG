@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Zad.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using Zad.Infrastructure.Persistence;
 namespace Zad.Infrastructure.Migrations
 {
     [DbContext(typeof(ZadDbContext))]
-    partial class ZadDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260414181930__CheckPendingModelChanges")]
+    partial class _CheckPendingModelChanges
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -109,7 +112,6 @@ namespace Zad.Infrastructure.Migrations
                         .HasColumnType("nvarchar(2000)");
 
                     b.Property<byte[]>("ReferenceTextHash")
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("binary(32)")
                         .HasComputedColumnSql("CONVERT(binary(32), HASHBYTES('SHA2_256', [ReferenceText]))", true);
@@ -121,7 +123,8 @@ namespace Zad.Infrastructure.Migrations
                     b.HasIndex("MessageId", "DocumentId");
 
                     b.HasIndex("MessageId", "DocumentId", "ReferenceTextHash")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[ReferenceTextHash] IS NOT NULL");
 
                     b.ToTable("Citations", (string)null);
                 });

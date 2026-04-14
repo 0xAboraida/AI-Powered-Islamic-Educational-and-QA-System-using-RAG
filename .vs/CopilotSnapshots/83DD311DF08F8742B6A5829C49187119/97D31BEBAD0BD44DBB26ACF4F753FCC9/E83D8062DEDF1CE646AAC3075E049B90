@@ -1,4 +1,4 @@
-{
+﻿{
   "ConnectionStrings": {
     "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=ZadDbDev;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True"
   },
@@ -30,7 +30,6 @@
   },
   "AiService": {
     "BaseUrl": "https://localhost:7000",
-    "AskPath": "/api/ask",
     "TimeoutSeconds": 30
   }
 }
