@@ -6,6 +6,13 @@ namespace Zad.Infrastructure.Persistence.Configurations;
 
 public class CitationConfiguration : IEntityTypeConfiguration<Citation>
 {
+    private readonly bool _useSqlServerHash;
+
+    public CitationConfiguration(bool useSqlServerHash)
+    {
+        _useSqlServerHash = useSqlServerHash;
+    }
+
     public void Configure(EntityTypeBuilder<Citation> builder)
     {
         builder.ToTable("Citations");
@@ -22,17 +29,29 @@ public class CitationConfiguration : IEntityTypeConfiguration<Citation>
             .HasMaxLength(2000)
             .IsRequired();
 
-        builder.Property<byte[]>("ReferenceTextHash")
-            .HasColumnType("binary(32)")
-            .IsRequired()
-            .HasComputedColumnSql("CONVERT(binary(32), HASHBYTES('SHA2_256', [ReferenceText]))", stored: true);
+        var uniqueReferenceColumnName = "ReferenceTextNormalized";
+
+        if (_useSqlServerHash)
+        {
+            uniqueReferenceColumnName = "ReferenceTextHash";
+            builder.Property<byte[]>(uniqueReferenceColumnName)
+                .HasColumnType("binary(32)")
+                .IsRequired()
+                .HasComputedColumnSql("CONVERT(binary(32), HASHBYTES('SHA2_256', [ReferenceText]))", stored: true);
+        }
+        else
+        {
+            builder.Property<string>(uniqueReferenceColumnName)
+                .HasMaxLength(2000)
+                .HasComputedColumnSql("LOWER([ReferenceText])", stored: true);
+        }
 
         builder.Property(x => x.CreatedAt)
             .IsRequired();
 
         builder.HasIndex(x => new { x.MessageId, x.DocumentId });
 
-        builder.HasIndex("MessageId", "DocumentId", "ReferenceTextHash")
+        builder.HasIndex("MessageId", "DocumentId", uniqueReferenceColumnName)
             .IsUnique();
             
 

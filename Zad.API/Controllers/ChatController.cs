@@ -118,7 +118,13 @@ public class ChatController : ControllerBase
             return Unauthorized(new ErrorResponseDto { Message = "User is not authorized." });
         }
 
-        var result = await _questionService.AskQuestion(userId.Value, id, request.Question, request.ChatMode, request.ExpertSubMode);
+        var result = await _questionService.AskQuestion(
+            userId.Value,
+            id,
+            request.Question,
+            request.ChatMode,
+            request.ExpertSubMode,
+            request.ContextDocumentIds);
         return Ok(result);
     }
 

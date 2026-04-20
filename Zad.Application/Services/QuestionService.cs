@@ -35,7 +35,7 @@ public class QuestionService : IQuestionService
         _logger = logger;
     }
 
-    public async Task<MessageDto> AskQuestion(int userId, int chatSessionId, string question, ChatMode mode, ExpertSubMode? subMode)
+    public async Task<MessageDto> AskQuestion(int userId, int chatSessionId, string question, ChatMode mode, ExpertSubMode? subMode, IReadOnlyList<int>? contextDocumentIds = null)
     {
         var request = new AskQuestionRequest
         {
@@ -74,13 +74,18 @@ public class QuestionService : IQuestionService
             await _unitOfWork.BeginTransactionAsync();
             transactionStarted = true;
 
-            var prompt = BuildPrompt(question, mode, null);
+            var normalizedContextDocumentIds = contextDocumentIds?
+                .Where(x => x > 0)
+                .Distinct()
+                .ToList();
+
+            var prompt = BuildPrompt(question, mode, normalizedContextDocumentIds);
             var aiRequest = new AiRequestDto
             {
                 Question = prompt,
                 Mode = mode,
                 SubMode = subMode,
-                Context = null
+                Context = normalizedContextDocumentIds
             };
 
             var aiResponse = await _aiClient.AskAsync(aiRequest);
@@ -95,7 +100,7 @@ public class QuestionService : IQuestionService
             await _unitOfWork.Messages.AddAsync(message);
             await _unitOfWork.SaveChangesAsync();
 
-            foreach (var citation in aiResponse.Citations)
+            foreach (var citation in aiResponse.Citations ?? [])
             {
                 await _unitOfWork.Citations.AddAsync(new Citation
                 {
@@ -125,7 +130,14 @@ public class QuestionService : IQuestionService
                 await _unitOfWork.RollbackAsync();
             }
 
-            await _requestLogService.LogRequest(userId, mode, subMode, RequestStatus.Failed);
+            try
+            {
+                await _requestLogService.LogRequest(userId, mode, subMode, RequestStatus.Failed);
+            }
+            catch (Exception logEx)
+            {
+                _logger.LogWarning(logEx, "Failed to write failed-request log for UserId {UserId}", userId);
+            }
 
             _logger.LogError(
                 ex,

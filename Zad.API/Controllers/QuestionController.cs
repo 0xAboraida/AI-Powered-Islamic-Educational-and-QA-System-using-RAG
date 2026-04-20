@@ -42,7 +42,13 @@ public class QuestionController : ControllerBase
         }
 
         var session = await _chatService.CreateSession(userId.Value, null);
-        var result = await _questionService.AskQuestion(userId.Value, session.Id, request.Question, request.ChatMode, request.ExpertSubMode);
+        var result = await _questionService.AskQuestion(
+            userId.Value,
+            session.Id,
+            request.Question,
+            request.ChatMode,
+            request.ExpertSubMode,
+            request.ContextDocumentIds);
 
         return Ok(result);
     }

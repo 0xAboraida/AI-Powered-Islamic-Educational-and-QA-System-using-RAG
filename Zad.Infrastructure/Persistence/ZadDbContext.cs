@@ -27,7 +27,7 @@ public class ZadDbContext : DbContext
         modelBuilder.ApplyConfiguration(new RoleConfiguration());
         modelBuilder.ApplyConfiguration(new ChatSessionConfiguration());
         modelBuilder.ApplyConfiguration(new MessageConfiguration());
-        modelBuilder.ApplyConfiguration(new CitationConfiguration());
+        modelBuilder.ApplyConfiguration(new CitationConfiguration(Database.IsSqlServer()));
         modelBuilder.ApplyConfiguration(new DocumentConfiguration());
         modelBuilder.ApplyConfiguration(new CategoryConfiguration());
         modelBuilder.ApplyConfiguration(new RequestLogConfiguration());
