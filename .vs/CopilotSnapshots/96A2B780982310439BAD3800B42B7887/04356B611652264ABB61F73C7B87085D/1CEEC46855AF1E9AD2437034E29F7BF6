@@ -1,0 +1,19 @@
+﻿namespace Zad.Application.DTOs;
+
+/// <summary>
+/// Chat session overview information.
+/// </summary>
+public class ChatSessionDto
+{
+    /// <example>45</example>
+    public int Id { get; set; }
+
+    /// <example>Weekly Islamic Study</example>
+    public string? Name { get; set; }
+
+    /// <example>2026-01-01T10:30:00Z</example>
+    public DateTime CreatedAt { get; set; }
+
+    /// <example>3</example>
+    public int MessageCount { get; set; }
+}

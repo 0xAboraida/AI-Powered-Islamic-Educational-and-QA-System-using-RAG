@@ -26,6 +26,9 @@ namespace Zad.API
                 .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables();
 
+            var isDevelopmentOrTesting = builder.Environment.IsDevelopment() || builder.Environment.IsEnvironment("Testing");
+            var swaggerEnabled = builder.Configuration.GetValue<bool?>("Swagger:Enabled") ?? !builder.Environment.IsProduction();
+
             builder.Host.UseSerilog((context, services, configuration) =>
             {
                 configuration
@@ -112,6 +115,19 @@ namespace Zad.API
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToArray() ?? [];
 
+            if (allowedOrigins.Length == 0 && isDevelopmentOrTesting)
+            {
+                allowedOrigins =
+                [
+                    "http://localhost:3000",
+                    "http://localhost:4200",
+                    "http://localhost:5173",
+                    "https://localhost:3000",
+                    "https://localhost:4200",
+                    "https://localhost:5173"
+                ];
+            }
+
             var allowedMethods = builder.Configuration.GetSection("Cors:AllowedMethods").Get<string[]>()?
                 .Where(x => !string.IsNullOrWhiteSpace(x))
                 .Select(x => x.Trim().ToUpperInvariant())
@@ -155,7 +171,7 @@ namespace Zad.API
                 throw new InvalidOperationException($"Invalid CORS origins configured: {string.Join(", ", invalidOrigins)}");
             }
 
-            if (!builder.Environment.IsDevelopment() && !builder.Environment.IsEnvironment("Testing"))
+            if (!isDevelopmentOrTesting)
             {
                 var nonHttpsOrigins = allowedOrigins
                     .Where(origin => Uri.TryCreate(origin, UriKind.Absolute, out var uri) && uri.Scheme != Uri.UriSchemeHttps)
@@ -194,14 +210,6 @@ namespace Zad.API
                         policy.WithOrigins(allowedOrigins)
                             .WithHeaders(allowedHeaders)
                             .WithMethods(allowedMethods);
-                        return;
-                    }
-
-                    if (builder.Environment.IsDevelopment() || builder.Environment.IsEnvironment("Testing"))
-                    {
-                        policy.AllowAnyOrigin()
-                            .WithHeaders(allowedHeaders)
-                            .WithMethods(allowedMethods);
                     }
                 });
             });
@@ -237,7 +245,7 @@ namespace Zad.API
                 await SeedData.SeedAsync(dbContext, builder.Configuration);
             }
 
-            if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing"))
+            if (swaggerEnabled)
             {
                 app.UseSwagger();
                 app.UseSwaggerUI(options =>
@@ -255,8 +263,8 @@ namespace Zad.API
                 options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
                 options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
                 {
-                    var requestHost = httpContext.Request.Host.Value ?? string.Empty;
-                    diagnosticContext.Set("RequestHost", requestHost);
+                    var requestHost = httpContext.Request.Host;
+                    diagnosticContext.Set("RequestHost", requestHost.HasValue ? requestHost.Value : string.Empty);
                     diagnosticContext.Set("RequestScheme", httpContext.Request.Scheme);
                     diagnosticContext.Set("TraceIdentifier", httpContext.TraceIdentifier);
                 };

@@ -169,7 +169,7 @@ public class FinalIntegrationTests : IClassFixture<ZadApiFactory>, IAsyncLifetim
     }
 
     [Fact]
-    public async Task DatabaseConstraintFailure_ShouldRollbackMessageAndStoreFailedRequestLog()
+    public async Task DuplicateAiCitations_ShouldBeDeduplicatedAndPersistMessage()
     {
         var token = await RegisterAndGetTokenAsync();
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -184,16 +184,22 @@ public class FinalIntegrationTests : IClassFixture<ZadApiFactory>, IAsyncLifetim
             ChatMode = ChatMode.Kids
         });
 
-        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var messagePayload = await response.Content.ReadFromJsonAsync<MessageDto>(JsonOptions);
+        Assert.NotNull(messagePayload);
 
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<ZadDbContext>();
 
         var messagesInSession = db.Messages.Count(m => m.ChatSessionId == session.Id);
-        Assert.Equal(0, messagesInSession);
+        Assert.Equal(1, messagesInSession);
+
+        var citationsInMessage = db.Citations.Count(c => c.MessageId == messagePayload!.Id);
+        Assert.Equal(1, citationsInMessage);
 
         var userId = db.ChatSessions.Where(x => x.Id == session.Id).Select(x => x.UserId).Single();
-        Assert.Contains(db.RequestLogs, x => x.UserId == userId && x.Status == RequestStatus.Failed);
+        Assert.Contains(db.RequestLogs, x => x.UserId == userId && x.Status == RequestStatus.Success);
     }
 
     private async Task<string> RegisterAndGetTokenAsync()

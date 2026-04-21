@@ -16,8 +16,10 @@ namespace Zad.Infrastructure.Extensions;
 
 public static class InfrastructureExtensions
 {
-    public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration, JwtOptions? jwtOptions = null)
+    public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration, JwtOptions jwtOptions)
     {
+        ArgumentNullException.ThrowIfNull(jwtOptions);
+
         var connectionString = configuration.GetConnectionString("DefaultConnection")
             ?? throw new InvalidOperationException("Connection string 'DefaultConnection' was not found.");
 
@@ -50,14 +52,7 @@ public static class InfrastructureExtensions
         services.AddScoped<Zad.Infrastructure.External.IAiClient>(sp =>
             (Zad.Infrastructure.External.IAiClient)sp.GetRequiredService<Zad.Application.Interfaces.IAiClient>());
 
-        if (jwtOptions is null)
-        {
-            services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
-        }
-        else
-        {
-            services.AddSingleton<IOptions<JwtOptions>>(Options.Create(jwtOptions));
-        }
+        services.AddSingleton<IOptions<JwtOptions>>(Options.Create(jwtOptions));
 
         services.AddScoped<IJwtTokenProvider, JwtTokenProvider>();
 

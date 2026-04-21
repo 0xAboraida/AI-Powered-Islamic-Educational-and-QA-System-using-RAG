@@ -1,0 +1,13 @@
+﻿namespace Zad.Application.DTOs;
+
+/// <summary>
+/// Content category metadata.
+/// </summary>
+public class CategoryDto
+{
+    /// <example>3</example>
+    public int Id { get; set; }
+
+    /// <example>Fiqh</example>
+    public string Name { get; set; } = string.Empty;
+}

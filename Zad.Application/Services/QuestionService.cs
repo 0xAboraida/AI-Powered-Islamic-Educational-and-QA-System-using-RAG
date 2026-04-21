@@ -41,7 +41,8 @@ public class QuestionService : IQuestionService
         {
             Question = question,
             ChatMode = mode,
-            ExpertSubMode = subMode
+            ExpertSubMode = subMode,
+            ContextDocumentIds = contextDocumentIds?.ToList()
         };
 
         _logger.LogInformation(
@@ -74,7 +75,7 @@ public class QuestionService : IQuestionService
             await _unitOfWork.BeginTransactionAsync();
             transactionStarted = true;
 
-            var normalizedContextDocumentIds = contextDocumentIds?
+            var normalizedContextDocumentIds = request.ContextDocumentIds?
                 .Where(x => x > 0)
                 .Distinct()
                 .ToList();
@@ -100,13 +101,38 @@ public class QuestionService : IQuestionService
             await _unitOfWork.Messages.AddAsync(message);
             await _unitOfWork.SaveChangesAsync();
 
-            foreach (var citation in aiResponse.Citations ?? [])
+            var deduplicatedCitations = (aiResponse.Citations ?? [])
+                .DistinctBy(citation =>
+                    (
+                        citation.DocumentId,
+                        (citation.ReferenceText ?? string.Empty).ToLowerInvariant()
+                    ))
+                .ToList();
+
+            var existingDocumentIds = new HashSet<int>();
+            var citationDocumentIds = deduplicatedCitations
+                .Select(citation => citation.DocumentId)
+                .Where(documentId => documentId > 0)
+                .Distinct();
+
+            foreach (var documentId in citationDocumentIds)
+            {
+                if (await _unitOfWork.Documents.GetByIdAsync(documentId) is not null)
+                {
+                    existingDocumentIds.Add(documentId);
+                }
+            }
+
+            var validCitations = deduplicatedCitations
+                .Where(citation => existingDocumentIds.Contains(citation.DocumentId));
+
+            foreach (var citation in validCitations)
             {
                 await _unitOfWork.Citations.AddAsync(new Citation
                 {
                     MessageId = message.Id,
                     DocumentId = citation.DocumentId,
-                    ReferenceText = citation.ReferenceText
+                    ReferenceText = citation.ReferenceText ?? string.Empty
                 });
             }
 
@@ -130,14 +156,7 @@ public class QuestionService : IQuestionService
                 await _unitOfWork.RollbackAsync();
             }
 
-            try
-            {
-                await _requestLogService.LogRequest(userId, mode, subMode, RequestStatus.Failed);
-            }
-            catch (Exception logEx)
-            {
-                _logger.LogWarning(logEx, "Failed to write failed-request log for UserId {UserId}", userId);
-            }
+            await TryLogFailedRequestAsync(userId, mode, subMode);
 
             _logger.LogError(
                 ex,
@@ -160,6 +179,27 @@ public class QuestionService : IQuestionService
     {
         var message = await _unitOfWork.Messages.GetByIdAsync(messageId);
         return message?.Answer;
+    }
+
+    private async Task TryLogFailedRequestAsync(int userId, ChatMode mode, ExpertSubMode? subMode)
+    {
+        try
+        {
+            var userExists = await _unitOfWork.Users.GetByIdAsync(userId) is not null;
+            if (!userExists)
+            {
+                _logger.LogWarning(
+                    "Skipping failed-request log for non-existent UserId {UserId}",
+                    userId);
+                return;
+            }
+
+            await _requestLogService.LogRequest(userId, mode, subMode, RequestStatus.Failed);
+        }
+        catch (Exception logEx)
+        {
+            _logger.LogWarning(logEx, "Failed to write failed-request log for UserId {UserId}", userId);
+        }
     }
 
     public string BuildPrompt(string question, ChatMode mode, IReadOnlyList<int>? context)
