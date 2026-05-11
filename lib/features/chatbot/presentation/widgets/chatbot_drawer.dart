@@ -23,9 +23,10 @@ class ChatbotDrawer extends StatelessWidget {
       AppStrings.twoDaysAgo: ['سيرة عبد الملك بن مروان', 'تفسير سورة الفاتحة'],
     };
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Drawer(
       width: 300.w,
-      backgroundColor: Colors.white,
+      backgroundColor: isDark ? AppColors.darkPrimary : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(30),
@@ -40,11 +41,11 @@ class ChatbotDrawer extends StatelessWidget {
             children: [
               _buildHeader(context),
               SizedBox(height: 15.h),
-              _buildSearchBar(),
+              _buildSearchBar(context),
               SizedBox(height: 15.h),
-              _buildNewChatButton(),
+              _buildNewChatButton(context),
               SizedBox(height: 25.h),
-              _buildConversationsTitle(),
+              _buildConversationsTitle(context),
               SizedBox(height: 10.h),
               Expanded(
                 child: ListView.builder(
@@ -67,7 +68,7 @@ class ChatbotDrawer extends StatelessWidget {
                             ),
                           ),
                         ),
-                        ...items.map((item) => _buildChatItem(item)),
+                        ...items.map((item) => _buildChatItem(item, context)),
                       ],
                     );
                   },
@@ -81,6 +82,7 @@ class ChatbotDrawer extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -89,16 +91,24 @@ class ChatbotDrawer extends StatelessWidget {
             Container(
               width: 45.w,
               height: 45.w,
-              decoration: BoxDecoration(
+              padding: EdgeInsets.all(2.w),
+              decoration: const BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.grey),
+                gradient: AppColors.textGradient,
               ),
-              child: Padding(
-                padding: EdgeInsets.all(8.w),
-                child: SvgPicture.asset(
-                  AppAssets.user,
-                  colorFilter: const ColorFilter.mode(
-                      AppColors.primary, BlendMode.srcIn),
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isDark ? const Color(0xFF0E0F14) : Colors.white,
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(8.w),
+                  child: SvgPicture.asset(
+                    AppAssets.user,
+                    colorFilter: ColorFilter.mode(
+                        isDark ? Colors.white : AppColors.primary,
+                        BlendMode.srcIn),
+                  ),
                 ),
               ),
             ),
@@ -119,30 +129,38 @@ class ChatbotDrawer extends StatelessWidget {
         ),
         IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: Icon(Icons.close, color: AppColors.primary, size: 28.sp),
+          icon: Icon(Icons.close,
+              color: isDark ? Colors.white : AppColors.primary, size: 28.sp),
         ),
       ],
     );
   }
 
-  Widget _buildSearchBar() {
+  Widget _buildSearchBar(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       height: 45.h,
       decoration: BoxDecoration(
-        color: const Color(0xFFFBF7FF),
+        color:
+            isDark ? Colors.white.withOpacity(0.05) : const Color(0xFFFBF7FF),
         borderRadius: BorderRadius.circular(15.r),
-        border: Border.all(color: AppColors.primary.withOpacity(0.1)),
+        border: Border.all(
+            color: isDark
+                ? Colors.white.withOpacity(0.1)
+                : AppColors.primary.withOpacity(0.1)),
       ),
       child: TextField(
         textAlign: TextAlign.right,
+        style: TextStyle(color: isDark ? Colors.white : Colors.black87),
         decoration: InputDecoration(
           hintText: AppStrings.searchChats,
           hintStyle: TextStyle(
-            color: Colors.grey[400],
+            color: isDark ? Colors.white38 : Colors.grey[400],
             fontSize: 13.sp,
           ),
           border: InputBorder.none,
-          prefixIcon: Icon(Icons.search, color: AppColors.primary, size: 20.sp),
+          prefixIcon: Icon(Icons.search,
+              color: isDark ? Colors.white38 : AppColors.primary, size: 20.sp),
           contentPadding:
               EdgeInsets.symmetric(vertical: 10.h, horizontal: 15.w),
         ),
@@ -150,7 +168,7 @@ class ChatbotDrawer extends StatelessWidget {
     );
   }
 
-  Widget _buildNewChatButton() {
+  Widget _buildNewChatButton(BuildContext context) {
     return Container(
       width: double.infinity,
       height: 50.h,
@@ -169,22 +187,24 @@ class ChatbotDrawer extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Icon(Icons.add, color: Colors.white, size: 20.sp),
+            SizedBox(width: 8.w),
             Text(
               AppStrings.newChat,
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 17.sp,
+                fontSize: 15.sp,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            Icon(Icons.add, color: Colors.white, size: 20.sp),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildConversationsTitle() {
+  Widget _buildConversationsTitle(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Align(
       alignment: Alignment.centerRight,
       child: Text(
@@ -192,13 +212,14 @@ class ChatbotDrawer extends StatelessWidget {
         style: TextStyle(
           fontSize: 16.sp,
           fontWeight: FontWeight.w800,
-          color: AppColors.primary,
+          color: isDark ? Colors.white70 : AppColors.primary,
         ),
       ),
     );
   }
 
-  Widget _buildChatItem(String title) {
+  Widget _buildChatItem(String title, BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
       padding: EdgeInsets.only(bottom: 14.h),
       child: Row(
@@ -207,15 +228,18 @@ class ChatbotDrawer extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(8.w),
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(20.r),
+              color: isDark
+                  ? AppColors.darkSecondary.withOpacity(0.4)
+                  : AppColors.primary.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12.r),
             ),
             child: SvgPicture.asset(
               AppAssets.message,
               width: 18.w,
               height: 18.w,
-              colorFilter:
-                  const ColorFilter.mode(AppColors.primary, BlendMode.srcIn),
+              colorFilter: ColorFilter.mode(
+                  isDark ? AppColors.darkSecondary : AppColors.primary,
+                  BlendMode.srcIn),
             ),
           ),
           SizedBox(width: 12.w),
@@ -223,9 +247,10 @@ class ChatbotDrawer extends StatelessWidget {
             title,
             style: TextStyle(
               fontSize: 14.sp,
-              color: Colors.grey[700],
+              color: isDark ? Colors.white70 : Colors.grey[700],
               fontWeight: FontWeight.w500,
             ),
+            textAlign: TextAlign.right,
           ),
         ],
       ),

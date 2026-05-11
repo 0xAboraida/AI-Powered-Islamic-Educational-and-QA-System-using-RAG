@@ -17,8 +17,13 @@ class AppAssets {
   static const String icon1 = '$iconsBase/Icon (1).svg';
   static const String bg = '$imagesBase/bg.png';
   static const String topBg = '$imagesBase/top_bg.png';
+  static const String topBackground = '$imagesBase/topBackground.svg';
+  static const String zaadLogo = '$imagesBase/zadLogo.svg';
+  static const String zaadSecondLogo = '$imagesBase/zadSecondLogo.svg';
+  static const String splashBg = '$imagesBase/splashBg.svg';
+  static const String mosque = '$imagesBase/mosque.svg';
 
-  static const String splashBg = '$imagesBase/bg.png';
+
   static const String splashLogo = '$imagesBase/splashLogo.png';
   static const String send = '$iconsBase/send.svg';
   static const String mic = '$iconsBase/mic.svg';

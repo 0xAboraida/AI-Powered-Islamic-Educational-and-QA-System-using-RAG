@@ -1,8 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:zaad/core/utils/app_strings.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../core/utils/app_assets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import 'package:flutter_animate/flutter_animate.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -19,7 +23,7 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   void _goNext() {
-    Future<void>.delayed(const Duration(seconds: 9)).then((_) {
+    Future<void>.delayed(const Duration(seconds: 4)).then((_) {
       if (!mounted) return;
       Navigator.pushReplacementNamed(context, AppRoutes.login);
     });
@@ -28,31 +32,73 @@ class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Directionality(
-        textDirection: TextDirection.rtl,
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Image.asset(
-                AppAssets.bg,
-                fit: BoxFit.cover,
-              ),
-            ),
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  SizedBox(height: 69.h),
-                  Image.asset(
-                    "assets/images/splashLogo.png",
-                    height: 310.h,
-                    fit: BoxFit.cover,
+      backgroundColor: Colors.white,
+      body: Stack(
+        clipBehavior: Clip.none,
+        fit: StackFit.expand,
+        children: [
+          SvgPicture.asset(
+            AppAssets.splashBg,
+            width: double.infinity,
+            height: double.infinity,
+            fit: BoxFit.fill,
+          ),
+          Positioned(
+            right: 0,
+            left: 0,
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 69.h,
+                ),
+                SvgPicture.asset(
+                  AppAssets.zaadLogo,
+                  height: 220.h,
+                  width: 220.w,
+                  fit: BoxFit.contain,
+                )
+                    .animate()
+                    .fade(duration: 700.ms)
+                    .scale(
+                      begin: const Offset(0.7, 0.7),
+                      end: const Offset(1, 1),
+                      curve: Curves.easeOutBack,
+                    )
+                    .slideY(begin: 0.2, end: 0, curve: Curves.easeOut),
+                SizedBox(
+                  height: 15.h,
+                ),
+                Text(
+                  AppStrings.splashWelcome,
+                  style: TextStyle(
+                    fontSize: 28.sp,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.white,
+                    letterSpacing: 1.2,
                   ),
-                ],
-              ),
+                )
+                    .animate(delay: 600.ms)
+                    .fade(duration: 700.ms)
+                    .slideY(begin: 0.3, end: 0, curve: Curves.easeOut),
+              ],
             ),
-          ],
-        ),
+          ),
+          Positioned(
+            right: 0,
+            left: 0,
+            bottom: 0,
+            child: SvgPicture.asset(
+              AppAssets.mosque,
+              height: 200.h,
+              width: double.infinity,
+              fit: BoxFit.cover,
+            ).animate().slideY(
+                begin: 0.5,
+                end: 0,
+                curve: Curves.easeOut,
+                duration: 700.milliseconds),
+          ),
+        ],
       ),
     );
   }

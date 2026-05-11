@@ -14,13 +14,22 @@ class ChatbotAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       backgroundColor: Colors.transparent,
       elevation: 0,
+      surfaceTintColor: Colors.transparent,
+      shadowColor: Colors.transparent,
+      scrolledUnderElevation: 0,
       leadingWidth: 70.w,
       leading: IconButton(
         onPressed: () => Scaffold.of(context).openDrawer(),
+        style: ButtonStyle(
+          overlayColor: WidgetStateProperty.all(Colors.transparent),
+          shadowColor: WidgetStateProperty.all(Colors.transparent),
+          surfaceTintColor: WidgetStateProperty.all(Colors.transparent),
+        ),
         icon: SvgPicture.asset(
           AppAssets.bar,
           width: 24.w,
           height: 24.w,
+          fit: BoxFit.contain,
         ),
       ),
       centerTitle: true,
@@ -51,10 +60,10 @@ class ChatbotAppBar extends StatelessWidget implements PreferredSizeWidget {
                 gradient: AppColors.textGradient,
               ),
               child: Padding(
-                padding: EdgeInsets.all(8.0.sp),
+                padding: EdgeInsets.all(5.0.sp),
                 child: SvgPicture.asset(
                   AppAssets.user,
-                  fit: BoxFit.cover,
+                  fit: BoxFit.contain,
                   colorFilter:
                       const ColorFilter.mode(Colors.white, BlendMode.srcIn),
                 ),

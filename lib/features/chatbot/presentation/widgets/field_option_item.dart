@@ -19,6 +19,7 @@ class FieldOptionItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(15.r),
@@ -27,8 +28,11 @@ class FieldOptionItem extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15.r),
           border: Border.all(
-            color:
-                isSelected ? AppColors.primary : Colors.grey.withOpacity(0.1),
+            color: isSelected
+                ? AppColors.primary
+                : (isDark
+                    ? Colors.white.withOpacity(0.1)
+                    : Colors.grey.withOpacity(0.1)),
             width: isSelected ? 1.5.w : 1.w,
           ),
         ),
@@ -40,13 +44,15 @@ class FieldOptionItem extends StatelessWidget {
               style: TextStyle(
                 fontSize: 15.sp,
                 fontWeight: FontWeight.w600,
-                color: isSelected ? AppColors.primary : const Color(0xFF4B5563),
+                color: isSelected
+                    ? AppColors.primary
+                    : (isDark ? Colors.white : const Color(0xFF4B5563)),
               ),
             ),
             Container(
               padding: EdgeInsets.all(8.w),
-              decoration: const BoxDecoration(
-                color: Color(0xFFFBF7FF),
+              decoration: BoxDecoration(
+                color: isDark ? Colors.white.withOpacity(0.05) : const Color(0xFFFBF7FF),
                 shape: BoxShape.circle,
               ),
               child: SvgPicture.asset(
@@ -62,4 +68,5 @@ class FieldOptionItem extends StatelessWidget {
       ),
     );
   }
+
 }

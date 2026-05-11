@@ -3,14 +3,19 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../core/utils/app_assets.dart';
 import '../../../../core/utils/app_colors/app_colors.dart';
+import 'package:provider/provider.dart';
+import '../../../../core/theme/theme_provider.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDark = themeProvider.isDarkMode;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDark ? AppColors.darkPrimary : Colors.white,
       body: SingleChildScrollView(
         child: Stack(
           children: [
@@ -36,17 +41,17 @@ class ProfilePage extends StatelessWidget {
                     _buildUserInfo(),
                     SizedBox(height: 20.h),
                     // Stats Row
-                    _buildStatsRow(),
+                    _buildStatsRow(context),
                     SizedBox(height: 30.h),
                     // Sections
-                    _buildAccountSection(),
+                    _buildAccountSection(context),
                     SizedBox(height: 20.h),
-                    _buildPreferencesSection(),
+                    _buildPreferencesSection(context),
                     SizedBox(height: 20.h),
-                    _buildSupportSection(),
+                    _buildSupportSection(context),
                     SizedBox(height: 30.h),
                     // Logout Footer
-                    _buildLogoutSection(),
+                    _buildLogoutSection(context),
                     SizedBox(height: 40.h),
                   ],
                 ),
@@ -138,24 +143,24 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildStatsRow() {
+  Widget _buildStatsRow(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         Expanded(
           child: _buildStatCard(
-              value: '١٣٤', label: 'سؤال', iconPath: AppAssets.comment),
+              value: '١٣٤', label: 'سؤال', iconPath: AppAssets.comment, context: context),
         ),
         Expanded(
             child: _buildStatCard(
-                value: '٦', label: 'مجال', iconPath: AppAssets.book)),
+                value: '٦', label: 'مجال', iconPath: AppAssets.book, context: context)),
         Expanded(
           child: _buildStatCard(
-              value: '٤٥', label: 'يوم متتالي', iconPath: AppAssets.calendar),
+              value: '٤٥', label: 'يوم متتالي', iconPath: AppAssets.calendar, context: context),
         ),
         Expanded(
             child: _buildStatCard(
-                value: '٨٩٠', label: 'نقطة', iconPath: AppAssets.point)),
+                value: '٨٩٠', label: 'نقطة', iconPath: AppAssets.point, context: context)),
       ],
     );
   }
@@ -163,13 +168,15 @@ class ProfilePage extends StatelessWidget {
   Widget _buildStatCard(
       {required String value,
       required String label,
-      required String iconPath}) {
+      required String iconPath, required BuildContext context}) {
     return Container(
       width: 90.w,
       padding: EdgeInsets.symmetric(vertical: 12.h),
       margin: EdgeInsets.symmetric(horizontal: 5.w),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.85),
+        color: Theme.of(context).brightness == Brightness.dark
+            ? AppColors.fieldDarkColor
+            : Colors.white.withOpacity(0.85),
         borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
           BoxShadow(
@@ -194,7 +201,9 @@ class ProfilePage extends StatelessWidget {
             style: TextStyle(
               fontSize: 18.sp,
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white
+                  : Colors.black87,
             ),
           ),
           Text(
@@ -210,7 +219,7 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionHeader(String title) {
+  Widget _buildSectionHeader(String title, BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(bottom: 12.h, right: 8.w),
       child: Align(
@@ -220,23 +229,30 @@ class ProfilePage extends StatelessWidget {
           style: TextStyle(
             fontSize: 16.sp,
             fontWeight: FontWeight.bold,
-            color: Colors.grey.shade600,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white.withOpacity(0.6)
+                : Colors.grey.shade100,
           ),
         ),
       ),
     );
   }
 
-  Widget _buildAccountSection() {
+  Widget _buildAccountSection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        _buildSectionHeader('الحساب'),
+        _buildSectionHeader('الحساب' , context),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.fieldDarkColor
+                : Colors.white,
             borderRadius: BorderRadius.circular(16.r),
-            border: Border.all(color: Colors.grey.shade100),
+            border: Border.all(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white.withOpacity(0.1)
+                    : Colors.grey.shade100),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.4),
@@ -247,16 +263,19 @@ class ProfilePage extends StatelessWidget {
           child: Column(
             children: [
               _buildListTile(
+                context: context,
                 title: 'تعديل الملف الشخصي',
                 iconPath: AppAssets.user,
               ),
               _buildDivider(),
               _buildListTile(
+                context: context,
                 title: 'تغيير كلمة المرور',
                 iconPath: AppAssets.password,
               ),
               _buildDivider(),
               _buildListTile(
+                context: context,
                 title: 'البريد الإلكتروني',
                 iconPath: AppAssets.email,
                 trailingWidget: Container(
@@ -274,6 +293,7 @@ class ProfilePage extends StatelessWidget {
               ),
               _buildDivider(),
               _buildListTile(
+                context: context,
                 title: 'الخصوصية والأمان',
                 iconPath: AppAssets.privacy,
                 showArrow: false,
@@ -285,16 +305,21 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildPreferencesSection() {
+  Widget _buildPreferencesSection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        _buildSectionHeader('التفضيلات'),
+        _buildSectionHeader('التفضيلات', context),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.fieldDarkColor
+                : Colors.white,
             borderRadius: BorderRadius.circular(16.r),
-            border: Border.all(color: Colors.grey.shade100),
+            border: Border.all(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white.withOpacity(0.1)
+                    : Colors.grey.shade100),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.4),
@@ -305,6 +330,7 @@ class ProfilePage extends StatelessWidget {
           child: Column(
             children: [
               _buildListTile(
+                context: context,
                 title: 'الإشعارات',
                 iconPath: AppAssets.notification,
                 trailingWidget: Transform.scale(
@@ -320,13 +346,17 @@ class ProfilePage extends StatelessWidget {
               ),
               _buildDivider(),
               _buildListTile(
+                context: context,
                 title: 'الوضع الداكن',
                 iconPath: AppAssets.mode,
                 trailingWidget: Transform.scale(
                   scale: 0.8,
                   child: Switch(
-                    value: false,
-                    onChanged: (val) {},
+                    value: Provider.of<ThemeProvider>(context).isDarkMode,
+                    onChanged: (val) {
+                      Provider.of<ThemeProvider>(context, listen: false)
+                          .toggleTheme();
+                    },
                     activeColor: Colors.white,
                     activeTrackColor: const Color(0xFFA855F7),
                   ),
@@ -335,6 +365,7 @@ class ProfilePage extends StatelessWidget {
               ),
               _buildDivider(),
               _buildListTile(
+                context: context,
                 title: 'اللغة',
                 iconPath: AppAssets.lang,
               ),
@@ -345,16 +376,21 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildSupportSection() {
+  Widget _buildSupportSection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        _buildSectionHeader('الدعم'),
+        _buildSectionHeader('الدعم', context),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.fieldDarkColor
+                : Colors.white,
             borderRadius: BorderRadius.circular(16.r),
-            border: Border.all(color: Colors.grey.shade100),
+            border: Border.all(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white.withOpacity(0.1)
+                    : Colors.grey.shade100),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.4),
@@ -365,11 +401,13 @@ class ProfilePage extends StatelessWidget {
           child: Column(
             children: [
               _buildListTile(
+                context: context,
                 title: 'المساعدة والأسئلة الشائعة',
                 iconPath: AppAssets.help,
               ),
               _buildDivider(),
               _buildListTile(
+                context: context,
                 title: 'عن التطبيق',
                 iconPath: AppAssets.about,
               ),
@@ -380,12 +418,17 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildLogoutSection() {
+  Widget _buildLogoutSection(BuildContext context) {
     return Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).brightness == Brightness.dark
+              ? AppColors.fieldDarkColor
+              : Colors.white,
           borderRadius: BorderRadius.circular(16.r),
-          border: Border.all(color: Colors.grey.shade100),
+          border: Border.all(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white.withOpacity(0.1)
+                  : Colors.grey.shade100),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.4),
@@ -393,7 +436,7 @@ class ProfilePage extends StatelessWidget {
             ),
           ],
         ),
-        child: _buildListTile(
+        child: _buildListTile(context: context,
             title: "تسجيل الخروج", iconPath: AppAssets.logout, isLogout: true));
   }
 
@@ -403,6 +446,7 @@ class ProfilePage extends StatelessWidget {
     Widget? trailingWidget,
     bool showArrow = true,
     bool isLogout = false,
+    required BuildContext context,
   }) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 4.h),
@@ -423,7 +467,11 @@ class ProfilePage extends StatelessWidget {
             style: TextStyle(
               fontSize: 16.sp,
               fontWeight: FontWeight.w600,
-              color: isLogout ? Colors.red : Colors.black87,
+              color: isLogout
+                  ? Colors.red
+                  : (Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white
+                      : Colors.black87),
             ),
             textAlign: TextAlign.right,
           ),

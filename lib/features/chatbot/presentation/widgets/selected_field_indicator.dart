@@ -16,7 +16,7 @@ class SelectedFieldIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 7.h),
         decoration: BoxDecoration(
           color: Colors.white,
           border: Border.all(color: AppColors.primary, width: 2),
@@ -35,8 +35,8 @@ class SelectedFieldIndicator extends StatelessWidget {
           children: [
             SvgPicture.asset(
               AppAssets.grid,
-              width: 24.w,
-              height: 24.w,
+              width: 22.w,
+              height: 22.w,
               colorFilter:
                   const ColorFilter.mode(AppColors.primary, BlendMode.srcIn),
             ),

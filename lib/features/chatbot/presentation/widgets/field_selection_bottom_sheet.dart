@@ -34,13 +34,16 @@ class _FieldSelectionBottomSheetState extends State<FieldSelectionBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 15.h),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.darkPrimary : Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
         border: Border.all(
-          color: AppColors.primary.withOpacity(0.3),
+          color: isDark
+              ? Colors.white.withOpacity(0.1)
+              : AppColors.primary.withOpacity(0.3),
           width: 1.5,
         ),
       ),
@@ -51,7 +54,7 @@ class _FieldSelectionBottomSheetState extends State<FieldSelectionBottomSheet> {
             width: 40.w,
             height: 4.h,
             decoration: BoxDecoration(
-              color: Colors.grey[300],
+              color: isDark ? Colors.white24 : Colors.grey[300],
               borderRadius: BorderRadius.circular(2.r),
             ),
           ),
@@ -61,7 +64,7 @@ class _FieldSelectionBottomSheetState extends State<FieldSelectionBottomSheet> {
             style: TextStyle(
               fontSize: 22.sp,
               fontWeight: FontWeight.bold,
-              color: Colors.black,
+              color: isDark ? Colors.white : Colors.black,
             ),
           ),
           SizedBox(height: 20.h),
@@ -97,9 +100,12 @@ class _FieldSelectionBottomSheetState extends State<FieldSelectionBottomSheet> {
               height: 55.h,
               decoration: BoxDecoration(
                 color: _selectedIndex != null
-                    ? AppColors.primary
-                    : const Color(0xFFE5E7EB),
+                    ? (isDark ? Colors.black : AppColors.primary)
+                    : (isDark ? Colors.white10 : const Color(0xFFE5E7EB)),
                 borderRadius: BorderRadius.circular(15.r),
+                border: isDark && _selectedIndex != null
+                    ? Border.all(color: Colors.white12)
+                    : null,
               ),
               child: Center(
                 child: Text(
@@ -109,7 +115,7 @@ class _FieldSelectionBottomSheetState extends State<FieldSelectionBottomSheet> {
                     fontWeight: FontWeight.bold,
                     color: _selectedIndex != null
                         ? Colors.white
-                        : Colors.grey[600],
+                        : (isDark ? Colors.white24 : Colors.grey[600]),
                   ),
                 ),
               ),
@@ -120,4 +126,5 @@ class _FieldSelectionBottomSheetState extends State<FieldSelectionBottomSheet> {
       ),
     );
   }
+
 }

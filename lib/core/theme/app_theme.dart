@@ -7,6 +7,7 @@ class AppTheme {
     return ThemeData(
       fontFamily: "Cairo",
       useMaterial3: true,
+      brightness: Brightness.light,
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primary,
         secondary: AppColors.secondary,
@@ -46,4 +47,50 @@ class AppTheme {
       ),
     );
   }
+
+  static ThemeData get darkThemeData {
+    return ThemeData(
+      fontFamily: "Cairo",
+      useMaterial3: true,
+      brightness: Brightness.dark,
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: AppColors.primary,
+        secondary: AppColors.secondary,
+        brightness: Brightness.dark,
+      ),
+      scaffoldBackgroundColor: AppColors.darkPrimary,
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: AppColors.fieldDarkColor,
+        contentPadding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 16.h),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16.r),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16.r),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16.r),
+          borderSide: BorderSide(color: AppColors.primary, width: 1.2.w),
+        ),
+        hintStyle: TextStyle(
+          color: Colors.white.withOpacity(0.5),
+          fontSize: 14.sp,
+        ),
+        labelStyle: TextStyle(
+          color: Colors.white.withOpacity(0.7),
+          fontSize: 14.sp,
+        ),
+      ),
+      textTheme: TextTheme(
+        bodyMedium: TextStyle(fontSize: 14.sp, color: Colors.white),
+        bodyLarge: TextStyle(fontSize: 16.sp, color: Colors.white),
+        headlineMedium: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w700, color: Colors.white),
+        headlineSmall: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600, color: Colors.white),
+      ),
+    );
+  }
+
 }

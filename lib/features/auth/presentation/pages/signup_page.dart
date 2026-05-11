@@ -67,9 +67,12 @@ class _SignupBodyState extends State<SignupBody> {
             keyboardType: TextInputType.visiblePassword,
             obscureText: _obscurePassword,
             suffix: IconButton(
-              onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+              onPressed: () =>
+                  setState(() => _obscurePassword = !_obscurePassword),
               icon: Icon(
-                _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                _obscurePassword
+                    ? Icons.visibility_outlined
+                    : Icons.visibility_off_outlined,
                 color: AppColors.primary,
                 size: 22.sp,
               ),
@@ -83,9 +86,12 @@ class _SignupBodyState extends State<SignupBody> {
             keyboardType: TextInputType.visiblePassword,
             obscureText: _obscureConfirmPassword,
             suffix: IconButton(
-              onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+              onPressed: () => setState(
+                  () => _obscureConfirmPassword = !_obscureConfirmPassword),
               icon: Icon(
-                _obscureConfirmPassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                _obscureConfirmPassword
+                    ? Icons.visibility_outlined
+                    : Icons.visibility_off_outlined,
                 color: AppColors.primary,
                 size: 22.sp,
               ),
@@ -142,6 +148,9 @@ class _SignupBodyState extends State<SignupBody> {
             linkText: AppStrings.loginLink,
             onToggle: widget.onToggle,
           ),
+          SizedBox(
+            height: 20.h,
+          )
         ],
       ),
     );

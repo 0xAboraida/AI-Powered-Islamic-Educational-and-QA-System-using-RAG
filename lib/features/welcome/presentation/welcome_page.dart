@@ -6,6 +6,8 @@ import '../../../../core/utils/app_strings.dart';
 import '../../../../core/routes/app_routes.dart';
 import 'widgets/welcome_mode_card.dart';
 
+import 'package:flutter_animate/flutter_animate.dart';
+
 class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});
 
@@ -41,40 +43,52 @@ class _WelcomePageState extends State<WelcomePage> {
                     ),
                   ),
                 ),
-              ),
+              )
+                  .animate()
+                  .fade(duration: 600.ms)
+                  .scale(begin: const Offset(0.9, 0.9))
+                  .slideY(begin: -0.2, end: 0),
               SizedBox(height: 40.h),
               WelcomeModeCard(
+                isSelected: _selectedIndex == 0,
+                iconBackgroundColor: Colors.white,
                 title: AppStrings.youngExplorer,
                 subtitle: AppStrings.kidsMode,
                 description: AppStrings.kidsDescription,
                 iconAsset: AppAssets.starPng,
                 onTap: () => setState(() => _selectedIndex = 0),
-                backgroundGradient: AppColors.cardGradient,
+                backgroundGradient: _selectedIndex == 0
+                    ? AppColors.selectedCardGradient
+                    : AppColors.cardGradient,
                 titleColor: Colors.black,
                 subtitleColor: AppColors.primary,
                 descriptionColor: Colors.black,
-                borderColor: _selectedIndex == 0
-                    ? AppColors.primary
-                    : Colors.transparent,
-              ),
+              )
+                  .animate()
+                  .fade(delay: 200.ms, duration: 600.ms)
+                  .slideX(begin: 0.2, end: 0),
               SizedBox(height: 20.h),
               WelcomeModeCard(
+                isSelected: _selectedIndex == 1,
                 title: AppStrings.knowledgeSeeker,
                 subtitle: AppStrings.advancedMode,
                 description: AppStrings.advancedDescription,
                 iconAsset: AppAssets.book,
                 onTap: () => setState(() => _selectedIndex = 1),
-                backgroundGradient: AppColors.primaryGradient,
+                backgroundGradient: _selectedIndex == 1
+                    ? AppColors.selectedSecondaryCardGradient
+                    : AppColors.primaryGradient,
                 titleColor: Colors.white,
                 subtitleColor: Colors.grey,
                 descriptionColor: Colors.white,
-                borderColor:
-                    _selectedIndex == 1 ? Colors.white : Colors.transparent,
-              ),
-              SizedBox(height: 40.h),
+              )
+                  .animate()
+                  .fade(delay: 400.ms, duration: 600.ms)
+                  .slideX(begin: -0.2, end: 0),
+              SizedBox(height: 30.h),
               Container(
                 width: double.infinity,
-                height: 67.h,
+                height: 60.h,
                 decoration: BoxDecoration(
                   color: _selectedIndex == null ? Colors.grey : null,
                   gradient:
@@ -90,12 +104,8 @@ class _WelcomePageState extends State<WelcomePage> {
                   borderRadius: BorderRadius.circular(16.r),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const Icon(
-                        Icons.arrow_back,
-                        color: Colors.white,
-                      ),
-                      SizedBox(width: 8.w),
                       Text(
                         AppStrings.startJourney,
                         style: TextStyle(
@@ -104,11 +114,22 @@ class _WelcomePageState extends State<WelcomePage> {
                           fontWeight: FontWeight.w700,
                         ),
                       ),
+                      SizedBox(width: 8.w),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Icon(
+                          size: 22.sp,
+                          Icons.arrow_forward,
+                          color: Colors.white,
+                        ),
+                      ),
                     ],
                   ),
                 ),
-              ),
-              SizedBox(height: 10.h),
+              )
+                  .animate(delay: 600.ms)
+                  .fade(duration: 600.ms)
+                  .slideY(begin: 0.5, end: 0),
             ],
           ),
         ),
@@ -116,3 +137,4 @@ class _WelcomePageState extends State<WelcomePage> {
     );
   }
 }
+
