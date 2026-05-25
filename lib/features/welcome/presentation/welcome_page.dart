@@ -98,7 +98,11 @@ class _WelcomePageState extends State<WelcomePage> {
                 child: InkWell(
                   onTap: () {
                     if (_selectedIndex != null) {
-                      Navigator.pushNamed(context, AppRoutes.chatbot);
+                      if (_selectedIndex == 0) {
+                        Navigator.pushNamed(context, AppRoutes.childMode);
+                      } else {
+                        Navigator.pushNamed(context, AppRoutes.chatbot);
+                      }
                     }
                   },
                   borderRadius: BorderRadius.circular(16.r),

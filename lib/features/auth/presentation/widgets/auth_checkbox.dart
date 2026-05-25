@@ -13,6 +13,7 @@ class AuthCheckbox extends StatelessWidget {
       height: 24.h,
       width: 24.w,
       child: Checkbox(
+        checkColor: Colors.white,
         value: value,
         onChanged: onChanged,
         activeColor: AppColors.primary,

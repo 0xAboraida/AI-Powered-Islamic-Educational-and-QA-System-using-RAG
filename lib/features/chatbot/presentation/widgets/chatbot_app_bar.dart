@@ -7,7 +7,8 @@ import '../../../../core/utils/app_strings.dart';
 import '../../../../core/routes/app_routes.dart';
 
 class ChatbotAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const ChatbotAppBar({super.key});
+  const ChatbotAppBar({super.key,this.actionWidget});
+  final Widget? actionWidget;
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +21,9 @@ class ChatbotAppBar extends StatelessWidget implements PreferredSizeWidget {
       leadingWidth: 70.w,
       leading: IconButton(
         onPressed: () => Scaffold.of(context).openDrawer(),
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        hoverColor: Colors.transparent,
         style: ButtonStyle(
           overlayColor: WidgetStateProperty.all(Colors.transparent),
           shadowColor: WidgetStateProperty.all(Colors.transparent),
@@ -45,7 +49,7 @@ class ChatbotAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
       ),
       actions: [
-        Padding(
+     actionWidget==null?   Padding(
           padding: EdgeInsets.only(right: 16.w),
           child: GestureDetector(
             onTap: () {
@@ -70,7 +74,7 @@ class ChatbotAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
             ),
           ),
-        ),
+        ):actionWidget!,
         SizedBox(width: 8.w),
       ],
     );

@@ -23,7 +23,7 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   void _goNext() {
-    Future<void>.delayed(const Duration(seconds: 4)).then((_) {
+    Future<void>.delayed(const Duration(seconds: 7)).then((_) {
       if (!mounted) return;
       Navigator.pushReplacementNamed(context, AppRoutes.login);
     });

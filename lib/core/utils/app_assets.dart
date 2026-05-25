@@ -22,6 +22,7 @@ class AppAssets {
   static const String zaadSecondLogo = '$imagesBase/zadSecondLogo.svg';
   static const String splashBg = '$imagesBase/splashBg.svg';
   static const String mosque = '$imagesBase/mosque.svg';
+  static const String zadColoredLogo = '$imagesBase/zadColoredLogo.svg';
 
 
   static const String splashLogo = '$imagesBase/splashLogo.png';
@@ -46,4 +47,5 @@ class AppAssets {
   static const String calendar = '$iconsBase/calendar.svg';
   static const String comment = '$iconsBase/comment.svg';
   static const String point = '$iconsBase/point.svg';
+  static const String sun = '$iconsBase/sun.svg';
 }

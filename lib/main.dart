@@ -25,7 +25,6 @@ void main() async {
   );
 }
 
-
 class ZaadApp extends StatelessWidget {
   const ZaadApp({super.key});
 
@@ -39,7 +38,6 @@ class ZaadApp extends StatelessWidget {
         return Consumer<ThemeProvider>(
           builder: (context, themeProvider, child) {
             return MaterialApp(
-              
               locale: const Locale("ar"),
               supportedLocales: const [Locale("ar")],
               localizationsDelegates: const [
@@ -55,6 +53,8 @@ class ZaadApp extends StatelessWidget {
                   themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
               initialRoute: AppRoutes.splash,
               onGenerateRoute: ScreenRoutes.onGenerateRoute,
+              themeAnimationDuration: const Duration(milliseconds: 300),
+              themeAnimationCurve: Curves.easeInOut,
             );
           },
         );
@@ -62,5 +62,3 @@ class ZaadApp extends StatelessWidget {
     );
   }
 }
-
-

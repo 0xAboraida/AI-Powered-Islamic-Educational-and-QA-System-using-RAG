@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zaad/features/chatbot/presentation/child_mode_screen.dart';
 
 import '../../features/auth/presentation/pages/auth_page.dart';
 import '../../features/splash/presentation/pages/splash_page.dart';
@@ -38,6 +39,11 @@ class ScreenRoutes {
       case AppRoutes.profile:
         return MaterialPageRoute(
           builder: (_) => const ProfilePage(),
+          settings: settings,
+        );
+      case AppRoutes.childMode:
+        return MaterialPageRoute(
+          builder: (_) => const ChildModeScreen(),
           settings: settings,
         );
       default:

@@ -23,6 +23,7 @@ class _LoginBodyState extends State<LoginBody> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+  bool isChecked = false;
 
   @override
   void dispose() {
@@ -96,7 +97,13 @@ class _LoginBodyState extends State<LoginBody> {
                         fontWeight: FontWeight.w500),
                   ),
                   SizedBox(width: 4.w),
-                  AuthCheckbox(value: true, onChanged: (v) {}),
+                  AuthCheckbox(
+                      value: isChecked,
+                      onChanged: (value) {
+                        setState(() {
+                          isChecked = value!;
+                        });
+                      }),
                 ],
               ),
             ],

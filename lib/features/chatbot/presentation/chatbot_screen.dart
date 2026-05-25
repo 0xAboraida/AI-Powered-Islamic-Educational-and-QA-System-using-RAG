@@ -104,14 +104,12 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
-      
       extendBody: true,
       extendBodyBehindAppBar: true,
+      resizeToAvoidBottomInset: false,
       appBar: const ChatbotAppBar(),
       drawer: const ChatbotDrawer(),
       body: Container(
-        
         width: double.infinity,
         height: double.infinity,
         decoration: BoxDecoration(
@@ -126,7 +124,6 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                   ],
                 ),
         ),
-
         child: SafeArea(
           child: Column(
             children: [
@@ -149,10 +146,15 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: ChatInputField(
-        controller: _messageController,
-        onSend: _sendMessage,
-        onGridTap: () => _showFieldSelectionBottomSheet(context),
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: ChatInputField(
+          controller: _messageController,
+          onSend: _sendMessage,
+          onGridTap: () => _showFieldSelectionBottomSheet(context),
+        ),
       ),
     );
   }

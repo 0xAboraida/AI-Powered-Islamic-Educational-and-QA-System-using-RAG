@@ -11,8 +11,7 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
-    final isDark = themeProvider.isDarkMode;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkPrimary : Colors.white,
@@ -149,18 +148,30 @@ class ProfilePage extends StatelessWidget {
       children: [
         Expanded(
           child: _buildStatCard(
-              value: '١٣٤', label: 'سؤال', iconPath: AppAssets.comment, context: context),
+              value: '١٣٤',
+              label: 'سؤال',
+              iconPath: AppAssets.comment,
+              context: context),
         ),
         Expanded(
             child: _buildStatCard(
-                value: '٦', label: 'مجال', iconPath: AppAssets.book, context: context)),
+                value: '٦',
+                label: 'مجال',
+                iconPath: AppAssets.book,
+                context: context)),
         Expanded(
           child: _buildStatCard(
-              value: '٤٥', label: 'يوم متتالي', iconPath: AppAssets.calendar, context: context),
+              value: '٤٥',
+              label: 'يوم متتالي',
+              iconPath: AppAssets.calendar,
+              context: context),
         ),
         Expanded(
             child: _buildStatCard(
-                value: '٨٩٠', label: 'نقطة', iconPath: AppAssets.point, context: context)),
+                value: '٨٩٠',
+                label: 'نقطة',
+                iconPath: AppAssets.point,
+                context: context)),
       ],
     );
   }
@@ -168,13 +179,16 @@ class ProfilePage extends StatelessWidget {
   Widget _buildStatCard(
       {required String value,
       required String label,
-      required String iconPath, required BuildContext context}) {
+      required String iconPath,
+      
+      required BuildContext context}) {
+         bool isDark= Theme.of(context).brightness==Brightness.dark;
     return Container(
       width: 90.w,
       padding: EdgeInsets.symmetric(vertical: 12.h),
       margin: EdgeInsets.symmetric(horizontal: 5.w),
       decoration: BoxDecoration(
-        color: Theme.of(context).brightness == Brightness.dark
+        color: isDark
             ? AppColors.fieldDarkColor
             : Colors.white.withOpacity(0.85),
         borderRadius: BorderRadius.circular(16.r),
@@ -201,7 +215,7 @@ class ProfilePage extends StatelessWidget {
             style: TextStyle(
               fontSize: 18.sp,
               fontWeight: FontWeight.bold,
-              color: Theme.of(context).brightness == Brightness.dark
+              color: isDark
                   ? Colors.white
                   : Colors.black87,
             ),
@@ -220,6 +234,7 @@ class ProfilePage extends StatelessWidget {
   }
 
   Widget _buildSectionHeader(String title, BuildContext context) {
+    bool isDark=Theme.of(context).brightness==Brightness.dark;
     return Padding(
       padding: EdgeInsets.only(bottom: 12.h, right: 8.w),
       child: Align(
@@ -229,7 +244,7 @@ class ProfilePage extends StatelessWidget {
           style: TextStyle(
             fontSize: 16.sp,
             fontWeight: FontWeight.bold,
-            color: Theme.of(context).brightness == Brightness.dark
+            color: isDark
                 ? Colors.white.withOpacity(0.6)
                 : Colors.grey.shade100,
           ),
@@ -239,18 +254,19 @@ class ProfilePage extends StatelessWidget {
   }
 
   Widget _buildAccountSection(BuildContext context) {
+    bool isDark=Theme.of(context).brightness==Brightness.dark;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        _buildSectionHeader('الحساب' , context),
+        _buildSectionHeader('الحساب', context),
         Container(
           decoration: BoxDecoration(
-            color: Theme.of(context).brightness == Brightness.dark
+            color: isDark
                 ? AppColors.fieldDarkColor
                 : Colors.white,
             borderRadius: BorderRadius.circular(16.r),
             border: Border.all(
-                color: Theme.of(context).brightness == Brightness.dark
+                color: isDark
                     ? Colors.white.withOpacity(0.1)
                     : Colors.grey.shade100),
             boxShadow: [
@@ -306,18 +322,19 @@ class ProfilePage extends StatelessWidget {
   }
 
   Widget _buildPreferencesSection(BuildContext context) {
+    bool isDark=Theme.of(context).brightness==Brightness.dark;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         _buildSectionHeader('التفضيلات', context),
         Container(
           decoration: BoxDecoration(
-            color: Theme.of(context).brightness == Brightness.dark
+            color: isDark
                 ? AppColors.fieldDarkColor
                 : Colors.white,
             borderRadius: BorderRadius.circular(16.r),
             border: Border.all(
-                color: Theme.of(context).brightness == Brightness.dark
+                color: isDark
                     ? Colors.white.withOpacity(0.1)
                     : Colors.grey.shade100),
             boxShadow: [
@@ -345,23 +362,27 @@ class ProfilePage extends StatelessWidget {
                 showArrow: false,
               ),
               _buildDivider(),
-              _buildListTile(
-                context: context,
-                title: 'الوضع الداكن',
-                iconPath: AppAssets.mode,
-                trailingWidget: Transform.scale(
-                  scale: 0.8,
-                  child: Switch(
-                    value: Provider.of<ThemeProvider>(context).isDarkMode,
-                    onChanged: (val) {
-                      Provider.of<ThemeProvider>(context, listen: false)
-                          .toggleTheme();
-                    },
-                    activeColor: Colors.white,
-                    activeTrackColor: const Color(0xFFA855F7),
+              Consumer<ThemeProvider>(
+                builder: (context, themeProvider, child) {
+                  return _buildListTile(
+                  context: context,
+                  title: 'الوضع الداكن',
+                  iconPath: AppAssets.mode,
+                  trailingWidget: Transform.scale(
+                    scale: 0.8,
+                    child: Switch(
+
+                      value: themeProvider.isDarkMode,
+                      onChanged: (val) {
+                        themeProvider.toggleTheme();
+                      },
+                      activeColor: Colors.white,
+                      activeTrackColor: const Color(0xFFA855F7),
+                    ),
                   ),
-                ),
-                showArrow: false,
+                  showArrow: false,
+                );
+              },
               ),
               _buildDivider(),
               _buildListTile(
@@ -377,18 +398,19 @@ class ProfilePage extends StatelessWidget {
   }
 
   Widget _buildSupportSection(BuildContext context) {
+    bool isDark=Theme.of(context).brightness==Brightness.dark;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         _buildSectionHeader('الدعم', context),
         Container(
           decoration: BoxDecoration(
-            color: Theme.of(context).brightness == Brightness.dark
+            color: isDark
                 ? AppColors.fieldDarkColor
                 : Colors.white,
             borderRadius: BorderRadius.circular(16.r),
             border: Border.all(
-                color: Theme.of(context).brightness == Brightness.dark
+                color: isDark
                     ? Colors.white.withOpacity(0.1)
                     : Colors.grey.shade100),
             boxShadow: [
@@ -419,14 +441,15 @@ class ProfilePage extends StatelessWidget {
   }
 
   Widget _buildLogoutSection(BuildContext context) {
+    bool isDark=Theme.of(context).brightness==Brightness.dark;
     return Container(
         decoration: BoxDecoration(
-          color: Theme.of(context).brightness == Brightness.dark
+          color: isDark
               ? AppColors.fieldDarkColor
               : Colors.white,
           borderRadius: BorderRadius.circular(16.r),
           border: Border.all(
-              color: Theme.of(context).brightness == Brightness.dark
+              color: isDark
                   ? Colors.white.withOpacity(0.1)
                   : Colors.grey.shade100),
           boxShadow: [
@@ -436,8 +459,11 @@ class ProfilePage extends StatelessWidget {
             ),
           ],
         ),
-        child: _buildListTile(context: context,
-            title: "تسجيل الخروج", iconPath: AppAssets.logout, isLogout: true));
+        child: _buildListTile(
+            context: context,
+            title: "تسجيل الخروج",
+            iconPath: AppAssets.logout,
+            isLogout: true));
   }
 
   Widget _buildListTile({
@@ -448,6 +474,7 @@ class ProfilePage extends StatelessWidget {
     bool isLogout = false,
     required BuildContext context,
   }) {
+    bool isDark=Theme.of(context).brightness==Brightness.dark;
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 4.h),
       child: ListTile(
@@ -469,7 +496,7 @@ class ProfilePage extends StatelessWidget {
               fontWeight: FontWeight.w600,
               color: isLogout
                   ? Colors.red
-                  : (Theme.of(context).brightness == Brightness.dark
+                  : (isDark
                       ? Colors.white
                       : Colors.black87),
             ),

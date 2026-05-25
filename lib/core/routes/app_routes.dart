@@ -5,4 +5,5 @@ class AppRoutes {
   static const String welcome = '/welcome';
   static const String chatbot = '/chatbot';
   static const String profile = '/profile';
+  static const String childMode = '/childMode';
 }

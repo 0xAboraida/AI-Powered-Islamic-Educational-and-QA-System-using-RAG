@@ -36,6 +36,7 @@ class AuthTextField extends StatelessWidget {
         ),
         SizedBox(height: 5.h),
         TextFormField(
+          
           controller: controller,
           keyboardType: keyboardType,
           obscureText: obscureText,

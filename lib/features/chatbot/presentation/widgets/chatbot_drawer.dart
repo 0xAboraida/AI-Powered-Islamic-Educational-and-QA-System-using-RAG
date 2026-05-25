@@ -104,7 +104,7 @@ class ChatbotDrawer extends StatelessWidget {
                 child: Padding(
                   padding: EdgeInsets.all(8.w),
                   child: SvgPicture.asset(
-                    AppAssets.user,
+                    AppAssets.zaadLogo,
                     colorFilter: ColorFilter.mode(
                         isDark ? Colors.white : AppColors.primary,
                         BlendMode.srcIn),

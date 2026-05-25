@@ -37,6 +37,7 @@ class _AuthPageState extends State<AuthPage> {
     return Directionality(
         textDirection: TextDirection.ltr,
         child: Scaffold(
+            resizeToAvoidBottomInset: false,
             backgroundColor: Colors.white,
             body: Stack(children: [
               SvgPicture.asset(
