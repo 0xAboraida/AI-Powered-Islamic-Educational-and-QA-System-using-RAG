@@ -44,7 +44,7 @@ dependencies:
   top_snackbar_flutter: ^3.1.0
   provider: ^6.1.5+1
   shared_preferences: ^2.5.3
-  
+  siri_wave:
 
 dev_dependencies:
   flutter_test:

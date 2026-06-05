@@ -48,4 +48,5 @@ class AppAssets {
   static const String comment = '$iconsBase/comment.svg';
   static const String point = '$iconsBase/point.svg';
   static const String sun = '$iconsBase/sun.svg';
+  static const String close = '$iconsBase/close.svg';
 }
