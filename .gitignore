@@ -1,0 +1,43 @@
+# ======================
+# VS Code
+# ======================
+.vscode/
+
+# ======================
+# Environment
+# ======================
+.env
+.env.*
+
+# ======================
+# Python
+# ======================
+__pycache__/
+*.pyc
+*.pyo
+
+# ======================
+# Virtual Environment
+# ======================
+ZAD/
+venv/
+
+# ======================
+# Models & Embeddings
+# ======================
+models/
+embeddings/
+app/models/weights/
+*.bin
+*.pt
+*.pth
+
+# ======================
+# Data
+/data/ 
+
+# ======================
+# Misc
+# ======================
+.pytest_cache/
+AppDataLocalPackages*
