@@ -78,9 +78,9 @@
                     │      "search_query": "...(MSA)...",   │
                     │      "is_safe": true,                 │
                     │      "metadata": {                    │
-                    │        "domain": "فقه",               │
-                    │        "kitab": "كتاب الصلاة",        │
-                    │        "madhhab": "حنبلي",            │
+                    │        "domain": "فقه",                │
+                    │        "kitab": "كتاب الصلاة",           │
+                    │        "madhhab": "حنبلي",             │
                     │        "author": null,                │
                     │        "source_book": null            │
                     │      }                                │
