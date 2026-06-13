@@ -1,7 +1,9 @@
 import sys
+import os
 import json
 import logging
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Setup logging
 logging.basicConfig(
@@ -12,8 +14,18 @@ logger = logging.getLogger(__name__)
 
 # Add the project root to sys.path to allow absolute imports
 current_dir = Path(__file__).resolve().parent
-project_root = current_dir.parent.parent.parent
+project_root = None
+for parent in [current_dir] + list(current_dir.parents):
+    if parent.name == "Zad-AI":
+        project_root = parent
+        break
+if not project_root:
+    project_root = current_dir.parent.parent.parent.parent
 sys.path.insert(0, str(project_root))
+
+# Load environment variables
+env_path = project_root / "services" / "ai_rag_engine" / ".env"
+load_dotenv(dotenv_path=env_path)
 
 from services.ai_rag_engine.app.models.embedding_models.factory import get_embedding_model, ModelType
 from services.ai_rag_engine.app.pipeline.embeddings.filters.metadata_filter import MetadataFilter
@@ -25,25 +37,44 @@ from services.ai_rag_engine.app.pipeline.embeddings.embedding_pipeline import Em
 
 def run():
     logger.info("=" * 70)
-    logger.info("Starting ingestion pipeline...")
+    logger.info("🟣 Starting ingestion pipeline...")
     logger.info("=" * 70)
 
     # =====================================================
     # ====================== CONFIG ========================
     # =====================================================
+    
+    # Helper to resolve variables like ${MY_VAR} just in case python-dotenv didn't
+    def get_env_var(key, default=None):
+        val = os.getenv(key, default)
+        if val and val.startswith('${') and val.endswith('}'):
+            return os.getenv(val[2:-1], default)
+        return val
 
-    MONGO_URI_FIQH_HANBALI_HANAFI_CLUSTER1 = "mongodb+srv://aboraidaahmed_db_user:2wX62vgs5CrsBUkv@zad-rag-cluster.nv8rp1b.mongodb.net/?appName=zad-rag-cluster"
-    MONGO_URI_FIQH_SHAFII_MALIKI_CLUSTER2 = "mongodb+srv://shafii_maliki_db:bpx6dQrX9aNosuCk@zad-rag-cluster2.tfdsgpc.mongodb.net/?appName=zad-rag-cluster2"
-    QDRANT_URL = "https://9455bfe8-df54-49c1-8b09-f5c17b3ff5f3.sa-east-1-0.aws.cloud.qdrant.io:6333"
-    QDRANT_API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIiwiZXhwIjoxNzk0ODA2MTI3LCJzdWJqZWN0IjoiYXBpLWtleTo4ZTUxOWNiZi1lMzIxLTRkODMtYmI5My00MzJhMTBlOTE1ZDIifQ.M03UW5DbK0AuSTy2jwgfudS-xZog-V48Sd_HXI6IZFU"
-    CURRENT_MONGO = MONGO_URI_FIQH_SHAFII_MALIKI_CLUSTER2
+    BGEM3_VECTOR_SIZE = 1024
+    
+    # =====================================================
+    # ================= DOMAIN CONFIG =====================
+    # =====================================================
+    # Update these values when ingesting a new domain.
+    
+    TARGET_DOMAIN = "التاريخ"
+    BOOKS_REL_PATH = "data/02_extracted/05_Tarikh"
+    
+    QDRANT_COLLECTION = "zad_tarikh_collection"
+    MONGO_DB_NAME = "zad_rag_db_tarikh"
+    MONGO_COLLECTION = "parents_tarikh"
 
-    # Modified to local path as requested
-    BOOKS_PATH = project_root / "data" / "02_extracted" / "01_Fiqh" / "shafii"
+    # =====================================================
+    
+    CURRENT_MONGO = get_env_var("CURRENT_MONGO_URI")
+    QDRANT_URL = get_env_var("CURRENT_QDRANT_URL")
+    QDRANT_API_KEY = get_env_var("CURRENT_QDRANT_API_KEY")
 
-    QDRANT_COLLECTION = "zad_sharia_collection_childs"
-    MONGO_DB_NAME = "zad_rag_db_shafii_maliki"
-    MONGO_COLLECTION = "parents_shafii"
+    if "kaggle" in BOOKS_REL_PATH:
+        BOOKS_PATH = Path(BOOKS_REL_PATH)
+    else:
+        BOOKS_PATH = project_root / BOOKS_REL_PATH
 
     USE_EXISTING_MONGO_CLUSTER = False
     NEW_MONGO_URI = CURRENT_MONGO
@@ -54,12 +85,12 @@ def run():
     # ================= INITIALIZATION =====================
     # =====================================================
 
-    metadata_filter = MetadataFilter(target_domain="فقه")
+    metadata_filter = MetadataFilter(target_domain=TARGET_DOMAIN)
     hierarchy_injector = HierarchyInjector()
     bge_m3_model = get_embedding_model(ModelType.BGE_M3)
 
     qdrant_manager = QdrantManager(url=QDRANT_URL, api_key=QDRANT_API_KEY)
-    qdrant_manager.initialize_collection(collection_name=QDRANT_COLLECTION, dense_dim=1024)
+    qdrant_manager.initialize_collection(collection_name=QDRANT_COLLECTION, dense_dim=BGEM3_VECTOR_SIZE)
 
     mongo_uri = CURRENT_MONGO if USE_EXISTING_MONGO_CLUSTER else NEW_MONGO_URI
     mongo_manager = MongoManager(uri=mongo_uri, db_name=MONGO_DB_NAME)
@@ -82,7 +113,10 @@ def run():
     # ==================== LOAD BOOKS ======================
     # =====================================================
 
-    all_books = sorted(BOOKS_PATH.rglob("*.json"))
+    all_books = sorted(BOOKS_PATH.rglob("*_chunks.json"))
+    if not all_books:
+        # Fallback to .json if *_chunks.json not found
+        all_books = sorted(BOOKS_PATH.rglob("*.json"))
 
     logger.info(f"Found {len(all_books)} books.")
 
@@ -125,7 +159,7 @@ def run():
             continue
 
     logger.info("=" * 70)
-    logger.info("INGESTION COMPLETE")
+    logger.info("✅ INGESTION COMPLETE")
     logger.info("=" * 70)
 
     mongo_manager.close()
