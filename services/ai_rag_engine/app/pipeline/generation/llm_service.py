@@ -21,7 +21,7 @@ class LLMService:
         self.llm_model = get_llm_model(ModelType.GEMINI)
 
     async def generate_streaming_response(
-        self, query: str, domain: str, parents: List[RetrievedParent]
+        self, query: str, domain: str, parents: List[RetrievedParent], conversation_history: list | None = None
     ) -> AsyncGenerator[str, None]:
         """
         Yields JSON strings containing context, chunks of the answer, and final citations.
@@ -41,8 +41,20 @@ class LLMService:
         # 2. Get domain-specific prompt and inject context + query
         system_prompt = build_prompt(query, domain, parents)
 
-        from langchain_core.messages import HumanMessage, SystemMessage
-        messages = [SystemMessage(content=system_prompt), HumanMessage(content=query)]
+        from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
+
+        # 3. Build messages list: system → history → current query
+        messages = [SystemMessage(content=system_prompt)]
+
+        # Inject conversation history for memory context
+        for msg in (conversation_history or []):
+            if msg.get("role") == "user":
+                messages.append(HumanMessage(content=msg.get("content", "")))
+            elif msg.get("role") == "assistant":
+                messages.append(AIMessage(content=msg.get("content", "")))
+
+        # Append the current user query
+        messages.append(HumanMessage(content=query))
 
         logger.info(f"[LLMService] Starting stream for domain='{domain}' | query='{query[:60]}...'")
 

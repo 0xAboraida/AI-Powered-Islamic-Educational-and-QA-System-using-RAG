@@ -1,0 +1,48 @@
+import httpx
+import json
+
+url = "http://localhost:8000/api/v1/chat/stream"
+
+payload = {
+    "query": "وما هي شروطه؟",
+    "domain": "فقه",
+    # Notice how we pass previous conversation history to provide context!
+    "conversation_history": [
+        {"role": "user", "content": "ما حكم الوضوء؟"},
+        {"role": "assistant", "content": "الوضوء واجب للصلاة."},
+    ],
+}
+
+print("🚀 Connecting to Zad-AI Engine...\n")
+
+# Using httpx to receive the SSE Stream
+with httpx.stream("POST", url, json=payload, timeout=60.0) as response:
+    for line in response.iter_lines():
+        if not line:
+            continue
+
+        try:
+            data = json.loads(line)
+
+            # If the event contains context chunks retrieved from the database
+            if data["type"] == "context":
+                print(
+                    f"📚 Retrieved {len(data['data'])} documents from the database as reference.\n"
+                )
+
+            # If the event is streaming LLM tokens
+            elif data["type"] == "chunk":
+                # Print the word immediately without a newline
+                print(data["content"], end="", flush=True)
+
+            # If the event contains final citations used
+            elif data["type"] == "citations":
+                print("\n\n📑 Citations used in the answer:")
+                for c in data["data"]:
+                    print(f"- Book: {c.get('book_title')} (Author: {c.get('author')})")
+                    print(f"  URL: {c.get('source_url')}")
+
+        except json.JSONDecodeError:
+            print("Error decoding response:", line)
+
+print("\n\n✅ Generation Complete!")
