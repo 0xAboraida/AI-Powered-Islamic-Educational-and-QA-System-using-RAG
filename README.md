@@ -630,3 +630,15 @@ This project is licensed under the MIT License — see the [LICENSE](./LICENSE) 
 ---
 
 *Built with ❤️ for the Muslim community*
+
+---
+
+User Query
+    ↓
+Domain Detection
+    ↓
+Domain Prompt
+    ↓
+Structured Filters
+    ↓
+Qdrant Search

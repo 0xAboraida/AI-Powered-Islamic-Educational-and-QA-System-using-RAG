@@ -1,5 +1,5 @@
 import logging
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
 
@@ -81,3 +81,106 @@ class QdrantManager:
                 logger.info(f"Payload index created for '{field_name}'.")
             except Exception as e:
                 logger.warning(f"Could not create payload index for '{field_name}': {e}")
+
+    # =========================================================================
+    # ========================= SEARCH / RETRIEVAL ============================
+    # =========================================================================
+
+    def build_filter(
+        self, filters: Optional[Dict[str, Any]]
+    ) -> Optional[models.Filter]:
+        """
+        Converts a plain Python dict into a Qdrant Filter object.
+
+        Example input:
+            {"metadata.domain": "fiqh", "metadata.madhhab": "shafii"}
+        """
+        if not filters:
+            return None
+
+        must_conditions = [
+            models.FieldCondition(
+                key=key,
+                match=models.MatchValue(value=value),
+            )
+            for key, value in filters.items()
+        ]
+        return models.Filter(must=must_conditions)
+
+    def search_dense(
+        self,
+        collection_name: str,
+        query_vector: List[float],
+        limit: int = 10,
+        filters: Optional[Dict[str, Any]] = None,
+    ) -> List[Any]:
+        """
+        Perform a dense (semantic) vector search using cosine similarity.
+
+        Args:
+            collection_name: Target Qdrant collection.
+            query_vector:    The dense embedding of the query.
+            limit:           Number of results to return.
+            filters:         Optional metadata filters dict.
+
+        Returns:
+            List of Qdrant ScoredPoint objects.
+        """
+        logger.info(
+            f"Dense search in '{collection_name}' — top_k={limit}, "
+            f"filters={filters}"
+        )
+        qdrant_filter = self.build_filter(filters)
+        results = self.client.query_points(
+            collection_name=collection_name,
+            query=query_vector,
+            using="dense",
+            query_filter=qdrant_filter,
+            limit=limit,
+            with_payload=True,
+        ).points
+        logger.info(f"Dense search returned {len(results)} results.")
+        return results
+
+    def search_sparse(
+        self,
+        collection_name: str,
+        query_sparse_vector: Dict[str, float],
+        limit: int = 10,
+        filters: Optional[Dict[str, Any]] = None,
+    ) -> List[Any]:
+        """
+        Perform a sparse (lexical/BM42) vector search.
+
+        Args:
+            collection_name:      Target Qdrant collection.
+            query_sparse_vector:  Dict mapping token indices (as str) to weights.
+            limit:                Number of results to return.
+            filters:              Optional metadata filters dict.
+
+        Returns:
+            List of Qdrant ScoredPoint objects.
+        """
+        logger.info(
+            f"Sparse search in '{collection_name}' — top_k={limit}, "
+            f"filters={filters}"
+        )
+        qdrant_filter = self.build_filter(filters)
+
+        # Convert {token: weight} dict → Qdrant SparseVector format
+        indices = [int(k) for k in query_sparse_vector.keys()]
+        values  = list(query_sparse_vector.values())
+
+        results = self.client.query_points(
+            collection_name=collection_name,
+            query=models.SparseVector(
+                indices=indices,
+                values=values,
+            ),
+            using="sparse",
+            query_filter=qdrant_filter,
+            limit=limit,
+            with_payload=True,
+        ).points
+        logger.info(f"Sparse search returned {len(results)} results.")
+        return results

@@ -5,6 +5,7 @@ from pathlib import Path
 # Fix Windows console unicode printing
 sys.stdout.reconfigure(encoding="utf-8")
 
+# Resolve project root dynamically and add it to system path
 current_path = Path(__file__).resolve()
 project_root = None
 for parent in [current_path] + list(current_path.parents):
@@ -14,7 +15,9 @@ for parent in [current_path] + list(current_path.parents):
 if not project_root:
     project_root = current_path.parents[4]
 
-sys.path.append(str(project_root))
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
 
 logging.basicConfig(
     level=logging.INFO,
@@ -26,7 +29,13 @@ logging.basicConfig(
 from services.ai_rag_engine.app.pipeline.extraction.books_config import SEERAH_BOOKS, TAFSEER_BOOKS, NAHW_SARF_BOOK, HISTORY_BOOKS, HADITH_BOOKS
 from services.ai_rag_engine.app.pipeline.extraction.extractor import BookExtractor
 
-BookConfig = []
+BookConfig = {
+    **SEERAH_BOOKS,
+    **TAFSEER_BOOKS,
+    **NAHW_SARF_BOOK,
+    **HISTORY_BOOKS,
+    **HADITH_BOOKS
+}
 
 def main():
     # ----------------------------------------------------

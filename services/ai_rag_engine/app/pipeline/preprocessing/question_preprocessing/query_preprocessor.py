@@ -45,20 +45,23 @@ class QueryPreprocessor:
     evaluate safety, and rewrite the query for semantic search.
     """
     def __init__(self, model_name: Optional[str] = None, temperature: float = 0.0):
-        # Read the model name from .env if not provided (defaults to gpt-4o which is free via GitHub PAT)
         actual_model_name = model_name or os.getenv("LLM_MODEL_NAME", "gpt-4o")
         
-        # Initialize the LLM
-        # Support GitHub Models if the key is a GitHub PAT
-        api_key = os.getenv("OPENAI_API_KEY", "")
-        base_url = "https://models.inference.ai.azure.com" if api_key.startswith("github_pat") else None
-        
-        # You can change the model to a local one (like Llama3) or any other supported by Langchain
-        self.llm = ChatOpenAI(
-            model=actual_model_name, 
-            temperature=temperature,
-            base_url=base_url
-        )
+        if "gemini" in actual_model_name.lower():
+            from langchain_google_genai import ChatGoogleGenerativeAI
+            self.llm = ChatGoogleGenerativeAI(
+                model=actual_model_name,
+                temperature=temperature,
+                google_api_key=os.getenv("GOOGLE_API_KEY", "")
+            )
+        else:
+            api_key = os.getenv("OPENAI_API_KEY", "")
+            base_url = "https://models.inference.ai.azure.com" if api_key.startswith("github_pat") else None
+            self.llm = ChatOpenAI(
+                model=actual_model_name, 
+                temperature=temperature,
+                base_url=base_url
+            )
         
         # Enforce the LLM to output our exact Pydantic model structure
         self.structured_llm = self.llm.with_structured_output(QuestionProcessingResult)

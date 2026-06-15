@@ -15,7 +15,8 @@ for parent in [current_path] + list(current_path.parents):
 if not project_root:
     project_root = current_path.parents[4]
 
-sys.path.append(str(project_root))
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
 
 # Configure professional logging
 logging.basicConfig(

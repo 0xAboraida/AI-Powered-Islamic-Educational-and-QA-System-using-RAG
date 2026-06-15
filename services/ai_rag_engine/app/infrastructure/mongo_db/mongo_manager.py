@@ -1,6 +1,6 @@
 import logging
 import certifi
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
 
@@ -19,9 +19,12 @@ class MongoManager:
             self.client = MongoClient(
                 self.uri,
                 tls=True,
-                tlsAllowInvalidCertificates=True,
                 tlsCAFile=certifi.where(),
-                serverSelectionTimeoutMS=60000,
+                serverSelectionTimeoutMS=5000,
+                connectTimeoutMS=5000,
+                socketTimeoutMS=10000,
+                tlsDisableOCSPEndpointCheck=True,
+                readPreference="secondaryPreferred"
             )
             self.client.admin.command("ping")
             self.db = self.client[self.db_name]
@@ -46,6 +49,39 @@ class MongoManager:
             logger.info(f"🟣 Inserted {len(documents)} parent chunks 🟢 into MongoDB.")
         except Exception as e:
             logger.warning(f"❌ MongoDB insert warning/error: {e}")
+
+    def fetch_by_ids(
+        self,
+        collection_name: str,
+        ids: List[str],
+    ) -> List[Dict[str, Any]]:
+        """
+        Fetch parent documents from MongoDB by their _id field.
+
+        Args:
+            collection_name: The collection to query.
+            ids:             List of parent_id strings to look up.
+                             These correspond to the `_id` field set during
+                             ingestion (doc['_id'] = doc['chunk_id']).
+
+        Returns:
+            List of matching documents as plain dicts.
+        """
+        if not ids:
+            return []
+
+        collection = self.db[collection_name]
+        try:
+            cursor = collection.find({"_id": {"$in": ids}})
+            results = list(cursor)
+            logger.info(
+                f"📦 Fetched {len(results)}/{len(ids)} parents "
+                f"from '{self.db_name}.{collection_name}'"
+            )
+            return results
+        except Exception as e:
+            logger.error(f"❌ MongoDB fetch error in '{collection_name}': {e}")
+            return []
 
     def close(self):
         if self.client:

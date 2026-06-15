@@ -21,7 +21,9 @@ for parent in [current_dir] + list(current_dir.parents):
         break
 if not project_root:
     project_root = current_dir.parent.parent.parent.parent
-sys.path.insert(0, str(project_root))
+
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
 
 # Load environment variables
 env_path = project_root / "services" / "ai_rag_engine" / ".env"
