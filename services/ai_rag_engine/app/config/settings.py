@@ -23,25 +23,35 @@ else:
 
 class Settings(BaseSettings):
     # ── Qdrant — Account 1 ───────────────────────────────────────────────────
-    QDRANT_URL_1: str = os.getenv("QDRANT_URL", "https://9455bfe8-df54-49c1-8b09-f5c17b3ff5f3.sa-east-1-0.aws.cloud.qdrant.io:6333")
+    QDRANT_URL_1: str = os.getenv(
+        "QDRANT_URL",
+        "https://9455bfe8-df54-49c1-8b09-f5c17b3ff5f3.sa-east-1-0.aws.cloud.qdrant.io:6333",
+    )
     QDRANT_API_KEY_1: str = os.getenv("QDRANT_API_KEY", "")
 
     # ── Qdrant — Account 2 ───────────────────────────────────────────────────
-    QDRANT_URL_2: str = os.getenv("QDRANT_URL2", "https://99047c07-cb7e-4a87-bc9f-371ac3466a0f.sa-east-1-0.aws.cloud.qdrant.io:6333")
+    QDRANT_URL_2: str = os.getenv(
+        "QDRANT_URL2",
+        "https://99047c07-cb7e-4a87-bc9f-371ac3466a0f.sa-east-1-0.aws.cloud.qdrant.io:6333",
+    )
     QDRANT_API_KEY_2: str = os.getenv("QDRANT_API_KEY2", "")
 
     # ── MongoDB cluster URIs ──────────────────────────────────────────────────
     # Names match the env keys used in mongo_router.py → get_routes()
     # Cluster 1: Fiqh — Hanbali + Hanafi
-    MONGO_URI_FIQH_HANBALI_HANAFI_CLUSTER1: str = os.getenv("MONGO_URI_FIQH_HANBALI_HANAFI_CLUSTER1", "")
+    MONGO_URI_FIQH_HANBALI_HANAFI_CLUSTER1: str = os.getenv(
+        "MONGO_URI_FIQH_HANBALI_HANAFI_CLUSTER1", ""
+    )
 
     # Cluster 2: Fiqh — Shafi'i + Maliki
-    MONGO_URI_FIQH_SHAFII_MALIKI_CLUSTER2: str = os.getenv("MONGO_URI_FIQH_SHAFII_MALIKI_CLUSTER2", "")
+    MONGO_URI_FIQH_SHAFII_MALIKI_CLUSTER2: str = os.getenv(
+        "MONGO_URI_FIQH_SHAFII_MALIKI_CLUSTER2", ""
+    )
 
-    # Cluster 3: Aqeedah (+ Tafseer part 1 shares same cluster)
+    # Cluster 3: Aqeedah
     MONGO_URI_AQEEDAH_CLUSTER3: str = os.getenv("MONGO_URI_AQEEDAH_CLUSTER3", "")
 
-    # Cluster 4: Tafseer part 2
+    # Cluster 4: Tafseer
     MONGO_URI_TAFSEER_CLUSTER4: str = os.getenv("MONGO_URI_TAFSEER_CLUSTER4", "")
 
     # Cluster 5: Seerah
@@ -56,8 +66,14 @@ class Settings(BaseSettings):
     # Cluster 8: Nahw & Sarf
     MONGO_URI_TARIKH_CLUSTER8: str = os.getenv("MONGO_URI_TARIKH_CLUSTER8", "")
 
-    # Cluster 9: Hadith
+    # Cluster 9: Hadith 1
     MONGO_URI_HADITH_CLUSTER9: str = os.getenv("MONGO_URI_HADITH_CLUSTER9", "")
+
+    # Cluster 11: Hadith 2
+    MONGO_URI_HADITH_CLUSTER11: str = os.getenv("MONGO_URI_HADITH_CLUSTER11", "")
+
+    # Cluster 12: Hadith 3
+    MONGO_URI_HADITH_CLUSTER12: str = os.getenv("MONGO_URI_HADITH_CLUSTER12", "")
 
     # Cluster 10: Adab & Akhlaq (provision when ready)
     MONGO_URI_ADAB_CLUSTER10: str = os.getenv("MONGO_URI_ADAB_CLUSTER10", "")
@@ -69,10 +85,14 @@ class Settings(BaseSettings):
 
     # ── RAG Pipeline Tuning ──────────────────────────────────────────────────
     # Number of final parent documents sent to the LLM when there is a single query
-    RAG_SINGLE_QUERY_PARENT_TOP_K: int = int(os.getenv("RAG_SINGLE_QUERY_PARENT_TOP_K", "5"))
+    RAG_SINGLE_QUERY_PARENT_TOP_K: int = int(
+        os.getenv("RAG_SINGLE_QUERY_PARENT_TOP_K", "5")
+    )
 
     # Number of final parent documents per sub-query when there are multiple queries
-    RAG_MULTI_QUERY_PARENT_TOP_K: int = int(os.getenv("RAG_MULTI_QUERY_PARENT_TOP_K", "3"))
+    RAG_MULTI_QUERY_PARENT_TOP_K: int = int(
+        os.getenv("RAG_MULTI_QUERY_PARENT_TOP_K", "3")
+    )
 
     # Number of child chunks fetched from Qdrant before parent expansion
     RAG_CHILD_TOP_K: int = int(os.getenv("RAG_CHILD_TOP_K", "25"))

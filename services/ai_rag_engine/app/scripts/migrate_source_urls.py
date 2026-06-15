@@ -45,10 +45,10 @@ def migrate_collection(mongo_uri: str, db_name: str, collection_name: str):
     total_docs = collection.count_documents({})
     logger.info(f"Found {total_docs} documents. Scanning for incorrect URLs...")
 
-    # We only fetch documents that have 'id' (book_id) and 'page_id'
+    # We only fetch documents that have 'book_id' and 'page_id'
     cursor = collection.find(
-        {"metadata.id": {"$exists": True}, "metadata.page_id": {"$exists": True}},
-        {"metadata.id": 1, "metadata.page_id": 1, "metadata.source_url": 1}
+        {"metadata.book_id": {"$exists": True}, "metadata.page_id": {"$exists": True}},
+        {"metadata.book_id": 1, "metadata.page_id": 1, "metadata.source_url": 1}
     )
 
     updates = []
@@ -59,14 +59,17 @@ def migrate_collection(mongo_uri: str, db_name: str, collection_name: str):
     for doc in cursor:
         processed += 1
         meta = doc.get("metadata", {})
-        book_id = meta.get("id")
+        book_id = meta.get("book_id")
         page_id = meta.get("page_id")
+        part = meta.get("part", "1")
         old_url = meta.get("source_url", "")
 
-        # The correct URL format
-        new_url = f"https://ketabonline.com/ar/books/{book_id}/pages/{page_id}"
+        # The correct URL format as requested:
+        # /read?part={part}&page={page_id} 
+        # (where page_id is the internal index, NOT the printed page number)
+        new_url = f"https://ketabonline.com/ar/books/{book_id}/read?part={part}&page={page_id}"
 
-        # Only update if it's different (i.e. contains ?part=...&page=...)
+        # Only update if it's different
         if old_url != new_url:
             updates.append(
                 UpdateOne(
@@ -97,17 +100,22 @@ def run_migration():
     logger.info("=" * 60)
 
     # Define all your DBs, Collections, and the corresponding URI from settings
+    # Matched exactly with mongo_router.py
     targets = [
-        (settings.MONGO_URI_FIQH_HANBALI_HANAFI_CLUSTER1, "zad_rag_db_fiqh_hanbali_hanafi", "parents_fiqh"),
-        (settings.MONGO_URI_FIQH_SHAFII_MALIKI_CLUSTER2, "zad_rag_db_fiqh_shafii_maliki", "parents_fiqh"),
+        (settings.MONGO_URI_FIQH_HANBALI_HANAFI_CLUSTER1, "zad_rag_db", "parents_hanafi"),
+        (settings.MONGO_URI_FIQH_HANBALI_HANAFI_CLUSTER1, "zad_rag_db", "parents_hanbali"),
+        (settings.MONGO_URI_FIQH_SHAFII_MALIKI_CLUSTER2, "zad_rag_db_shafii_maliki", "parents_maliki"),
+        (settings.MONGO_URI_FIQH_SHAFII_MALIKI_CLUSTER2, "zad_rag_db_shafii_maliki", "parents_shafii"),
         (settings.MONGO_URI_AQEEDAH_CLUSTER3, "zad_rag_db_aqeedah", "parents_aqeedah"),
-        (settings.MONGO_URI_AQEEDAH_CLUSTER3, "zad_rag_db_tafseer_1", "parents_tafseer_1"),
-        (settings.MONGO_URI_TAFSEER_CLUSTER4, "zad_rag_db_tafseer_2", "parents_tafseer_2"),
+        (settings.MONGO_URI_AQEEDAH_CLUSTER3, "zad_rag_db_tafseer", "parents_tafseer"),
+        (settings.MONGO_URI_TAFSEER_CLUSTER4, "zad_rag_db_tafseer", "parents_tafseer"),
         (settings.MONGO_URI_SEERAH_CLUSTER5, "zad_rag_db_seerah", "parents_seerah"),
-        (settings.MONGO_URI_TARIKH_CLUSTER6, "zad_rag_db_tarikh_1", "parents_tarikh_1"),
-        (settings.MONGO_URI_TARIKH_CLUSTER7, "zad_rag_db_tarikh_2", "parents_tarikh_2"),
-        (settings.MONGO_URI_TARIKH_CLUSTER8, "zad_rag_db_nahw_sarf", "parents_nahw_sarf"),
+        (settings.MONGO_URI_TARIKH_CLUSTER6, "zad_rag_db_tarikh", "parents_tarikh"),
+        (settings.MONGO_URI_TARIKH_CLUSTER7, "zad_rag_db_tarikh2", "parents_tarikh2"),
+        (settings.MONGO_URI_TARIKH_CLUSTER8, "zad_rag_db_nahwSarf", "parents_nahwSarf"),
         (settings.MONGO_URI_HADITH_CLUSTER9, "zad_rag_db_hadith", "parents_hadith"),
+        (settings.MONGO_URI_HADITH_CLUSTER11, "zad_rag_db_hadith2", "parents_hadith2"),
+        (settings.MONGO_URI_HADITH_CLUSTER12, "zad_rag_db_hadith3", "parents_hadith3"),
     ]
 
     for uri, db_name, collection_name in targets:

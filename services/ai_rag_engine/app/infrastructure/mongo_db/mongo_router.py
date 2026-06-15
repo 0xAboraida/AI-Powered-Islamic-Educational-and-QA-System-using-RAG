@@ -148,7 +148,7 @@ _ROUTES: dict[tuple, List[MongoRouteConfig]] = {
     # ── Tarikh — split across cluster6 and cluster7 ────────────────────────
     ("tarikh", None): [
         MongoRouteConfig("MONGO_URI_TARIKH_CLUSTER6", "zad_rag_db_tarikh",  "parents_tarikh"),
-        MongoRouteConfig("MONGO_URI_TARIKH_CLUSTER7", "zad_rag_db_tarikh2", "parents_tarikh"),
+        MongoRouteConfig("MONGO_URI_TARIKH_CLUSTER7", "zad_rag_db_tarikh2", "parents_tarikh2"),
     ],
 
     # ── Nahw & Sarf ────────────────────────────────────────────────────────
@@ -159,6 +159,8 @@ _ROUTES: dict[tuple, List[MongoRouteConfig]] = {
     # ── Hadith ─────────────────────────────────────────────────────────────
     ("hadith", None): [
         MongoRouteConfig("MONGO_URI_HADITH_CLUSTER9", "zad_rag_db_hadith", "parents_hadith"),
+        MongoRouteConfig("MONGO_URI_HADITH_CLUSTER11", "zad_rag_db_hadith2", "parents_hadith2"),
+        MongoRouteConfig("MONGO_URI_HADITH_CLUSTER12", "zad_rag_db_hadith3", "parents_hadith3"),
     ],
 
     # ── آداب وأخلاق ────────────────────────────────────────────────────────

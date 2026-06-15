@@ -53,24 +53,24 @@ def process_page(
         nonlocal chunk_counter
         # Build a direct deep-link URL to the exact page in ketabonline.com.
         # ─────────────────────────────────────────────────────────────────────
-        # IMPORTANT: Use db_page_id (the internal DB page ID) NOT page_num
-        # (the printed book page number like "٤٢").
-        # ketabonline ignores the ?page= query-param and only responds to
-        # the /pages/{id} path segment for direct linking.
+        # IMPORTANT: KetabOnline's reader URL format is /read?part={part}&page={index}
+        # The 'page' query parameter must be the internal DB page index (db_page_id),
+        # NOT the printed book page number (page_num).
         # ─────────────────────────────────────────────────────────────────────
-        direct_page_url = (
-            f"https://ketabonline.com/ar/books/{book_meta['id']}/pages/{db_page_id}"
+        part_name = page_data.get('part', {}).get('name', '1')
+        correct_url = (
+            f"https://ketabonline.com/ar/books/{book_meta['id']}/read?part={part_name}&page={db_page_id}"
         )
         chunk = {
             **book_meta,
             "page_id": db_page_id,
             "printed_page": page_num,
-            "part": page_data.get('part', {}).get('name', '1'),
+            "part": part_name,
             "hierarchy": h,
             "chunk_id": chunk_counter,
             "has_title": is_title,
             "content": content,
-            "source_url": direct_page_url,
+            "source_url": correct_url,
         }
         chunk_counter += 1
         return chunk
