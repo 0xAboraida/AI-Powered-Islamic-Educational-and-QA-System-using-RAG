@@ -22,20 +22,24 @@ class QdrantRouter:
 
     def get_client_and_collection(self, domain: str) -> Tuple[QdrantManager, str]:
         """
-        Returns the appropriate QdrantManager and collection name for a given domain.
-        Raises ValueError for unknown domains instead of silently falling back
-        to a wrong collection.
+        Returns the appropriate QdrantManager and collection name for the given domain.
+
+        The domain must be one of the 8 fixed Arabic strings chosen by the user:
+            'فقه', 'العقيدة', 'السيرة', 'التفسير',
+            'التاريخ', 'الحديث', 'النحو والصرف', 'الآداب والأخلاق'
+
+        Raises:
+            ValueError: If the domain is not recognised — fails fast instead of
+                        silently routing to the wrong collection.
         """
         if domain in self.domain_mapping:
             return self.domain_mapping[domain]
 
-        # Fallback with a loud warning — prevents silent wrong-collection routing
-        import logging
-        logging.getLogger(__name__).warning(
+        raise ValueError(
             f"[QdrantRouter] Unknown domain '{domain}'. "
-            f"Falling back to default collection. Add this domain to qdrant_router.py."
+            f"Valid domains are: {list(self.domain_mapping.keys())}. "
+            f"Add the new domain to qdrant_router.py if needed."
         )
-        return self.client_1, "zad_sharia_collection_childs"
 
 try:
     qdrant_router = QdrantRouter()

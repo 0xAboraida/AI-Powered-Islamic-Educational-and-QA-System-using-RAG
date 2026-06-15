@@ -1,7 +1,8 @@
 import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from services.ai_rag_engine.app.api.v1.endpoints import chat
+
+from services.ai_rag_engine.app.api.routes import api_router
 
 # Configure logging
 logging.basicConfig(
@@ -19,8 +20,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(chat.router, prefix="/api/v1/chat", tags=["chat"])
+# Mount all versioned routes from the central router registry
+app.include_router(api_router, prefix="/api")
 
-@app.get("/")
+
+@app.get("/", tags=["health"])
 def health_check():
     return {"status": "Zad-AI Engine is running"}

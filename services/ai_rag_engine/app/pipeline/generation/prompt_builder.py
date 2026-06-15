@@ -4,28 +4,32 @@ from services.ai_rag_engine.app.pipeline.generation.prompts import get_prompt_fo
 
 def build_context_string(parents: List[RetrievedParent]) -> str:
     """
-    Builds the formatted context string to be injected into the LLM prompt.
-    Uses normalized content without diacritics for faster LLM comprehension.
+    Builds the formatted context string injected into the LLM system prompt.
+
+    Uses `parent.content` (normalized, no diacritics) for faster LLM comprehension.
+    The diacritized `original_content` is sent separately to the UI via citations.py.
     """
     context_parts = []
-    
+
     for i, parent in enumerate(parents, start=1):
         metadata = parent.metadata
-        book_title = metadata.get("book_title", "Unknown Book")
-        author = metadata.get("author", "Unknown Author")
-        part = metadata.get("part", "")
-        page_id = metadata.get("page_id", "")
-        domain = metadata.get("domain", "")
-        madhhab = metadata.get("madhhab", "")
+        book_title  = metadata.get("book_title", "Unknown Book")
+        author      = metadata.get("author", "Unknown Author")
+        part        = metadata.get("part", "")
+        page_id     = metadata.get("page_id", "")
+        domain      = metadata.get("domain", "")
+        madhhab     = metadata.get("madhhab", "")
+        kitab       = metadata.get("hierarchy", {}).get("kitab", "")
 
         context_parts.append(
             f"--- المصدر {i} ---\n"
-            f"القسم: {domain} | المذهب: {madhhab}\n"
+            f"القسم: {domain} | المذهب: {madhhab}"
+            + (f" | الكتاب الفقهي: {kitab}" if kitab else "") + "\n"
             f"الكتاب: {book_title} | المؤلف: {author}\n"
             f"الجزء: {part} | الصفحة: {page_id}\n"
-            f"النص:\n{parent.original_content or parent.content}\n"
+            f"النص:\n{parent.content}\n"   # ← content فقط (بدون تشكيل) للـ LLM
         )
-        
+
     return "\n".join(context_parts)
 
 def build_prompt(query: str, domain: str, parents: List[RetrievedParent]) -> str:

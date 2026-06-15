@@ -60,12 +60,65 @@ class RetrievalService:
         parents = parent_retriever.retrieve(
             query=query,
             collection_name=collection_name,
-            top_k=top_k,
+            child_top_k=settings.RAG_CHILD_TOP_K,
+            parent_top_k=top_k,
             filters=filters
         )
         logger.info(f"⏱️ [TIME TRACKING] ParentChildRetriever execution took: {time.time() - init_t:.2f} seconds")
         print(f"⏱️ [TIME TRACKING] ParentChildRetriever execution took: {time.time() - init_t:.2f} seconds")
         return parents
+
+    async def retrieve_multi(self, queries: List[str], domain: str, madhhab: Optional[str] = None, custom_filters: Optional[Dict[str, Any]] = None) -> List[RetrievedParent]:
+        import time
+        import asyncio
+        logger.info(f"⏳ Starting parallel retrieval for {len(queries)} queries, domain={domain}")
+        start_t = time.time()
+        
+        if not queries:
+            return []
+
+        if len(queries) == 1:
+            parent_top_k = getattr(settings, "RAG_SINGLE_QUERY_PARENT_TOP_K", 5)
+            child_top_k = settings.RAG_CHILD_TOP_K
+        else:
+            parent_top_k = getattr(settings, "RAG_MULTI_QUERY_PARENT_TOP_K", 3)
+            child_top_k = settings.RAG_CHILD_TOP_K
+
+        filters = {"metadata.domain": domain}
+        if madhhab:
+            filters["metadata.madhhab"] = madhhab
+        if custom_filters:
+            filters.update(custom_filters)
+
+        parent_retriever = self._get_or_create_retriever(domain)
+        _, collection_name = qdrant_router.get_client_and_collection(domain)
+
+        def _fetch(q: str):
+            return parent_retriever.retrieve(
+                query=q,
+                collection_name=collection_name,
+                child_top_k=child_top_k,
+                parent_top_k=parent_top_k,
+                filters=filters
+            )
+
+        tasks = [asyncio.to_thread(_fetch, q) for q in queries]
+        results_lists = await asyncio.gather(*tasks)
+
+        all_parents: Dict[str, RetrievedParent] = {}
+        for res_list in results_lists:
+            for parent in res_list:
+                if parent.parent_id in all_parents:
+                    if parent.best_child_score > all_parents[parent.parent_id].best_child_score:
+                        all_parents[parent.parent_id] = parent
+                else:
+                    all_parents[parent.parent_id] = parent
+
+        final_results = list(all_parents.values())
+        final_results.sort(key=lambda p: p.best_child_score, reverse=True)
+
+        logger.info(f"⏱️ [TIME TRACKING] retrieve_multi execution took: {time.time() - start_t:.2f} seconds")
+        return final_results
 
 try:
     retrieval_service = RetrievalService()

@@ -151,7 +151,8 @@ class ParentChildRetriever:
         self,
         query: str,
         collection_name: str,
-        top_k: int = 10,
+        child_top_k: int = 10,
+        parent_top_k: int = 5,
         filters: Optional[Dict[str, Any]] = None,
     ) -> List[RetrievedParent]:
         """
@@ -160,7 +161,8 @@ class ParentChildRetriever:
         Args:
             query:           Raw Arabic query string.
             collection_name: Qdrant collection to search.
-            top_k:           Max number of PARENT documents to return.
+            child_top_k:     Number of child chunks to fetch from Qdrant.
+            parent_top_k:    Max number of PARENT documents to return.
             filters:         Optional Qdrant metadata filters dict.
 
         Returns:
@@ -170,12 +172,12 @@ class ParentChildRetriever:
         # ── Step 1: Retrieve child chunks from Qdrant via Hybrid Search ──────
         logger.info(
             f"[ParentChildRetriever] Step 1: Hybrid search "
-            f"(child_top_k={self.child_top_k})"
+            f"(child_top_k={child_top_k})"
         )
         child_chunks: List[RetrievedChunk] = self.hybrid_retriever.retrieve(
             query=query,
             collection_name=collection_name,
-            top_k=self.child_top_k,
+            top_k=child_top_k,
             filters=filters,
         )
 
@@ -311,7 +313,7 @@ class ParentChildRetriever:
 
         # Sort by best child score descending, then slice to top_k
         results.sort(key=lambda p: p.best_child_score, reverse=True)
-        results = results[:top_k]
+        results = results[:parent_top_k]
 
         logger.info(
             f"[ParentChildRetriever] ✅ Returning {len(results)} parent documents."
