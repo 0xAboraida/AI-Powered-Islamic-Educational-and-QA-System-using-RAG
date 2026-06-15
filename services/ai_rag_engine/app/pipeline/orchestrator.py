@@ -20,7 +20,7 @@ class PipelineOrchestrator:
         self.llm_service = llm_service
 
     async def stream_chat_response(
-        self, query: str, domain: str
+        self, query: str, domain: str, conversation_history: list | None = None
     ) -> AsyncGenerator[str, None]:
         logger.info(
             f"[Orchestrator] New Request | domain='{domain}' | query='{query[:50]}...'"
@@ -70,7 +70,7 @@ class PipelineOrchestrator:
             # Step 3: Generation (Streaming)
             logger.info("[Orchestrator] Step 3: بدء توليد الإجابة (Generation)...")
             async for chunk in self.llm_service.generate_streaming_response(
-                query=query, domain=domain, parents=parents
+                query=query, domain=domain, parents=parents, conversation_history=conversation_history
             ):
                 yield chunk
 
@@ -78,7 +78,7 @@ class PipelineOrchestrator:
             logger.error(
                 f"[Orchestrator] Unexpected error in Pipeline: {e}", exc_info=True
             )
-            yield '{"type": "error", "content": "حدث خطأ غير متوقع في معالجة طلبك."}\n'
+            yield 'event: error\ndata: {"text": "حدث خطأ غير متوقع في معالجة طلبك."}\n\n'
 
 
 orchestrator = PipelineOrchestrator()

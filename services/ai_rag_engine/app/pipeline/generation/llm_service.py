@@ -60,19 +60,15 @@ class LLMService:
 
         # 3. Stream the response with in-text citation tracking
         try:
-            # ── 3a. Send the raw context chunks to the UI first ──────────────
-            yield json.dumps({"type": "context", "data": context_payload}, ensure_ascii=False) + "\n"
-
-            # ── 3b. Stream LLM tokens via the abstract model interface ────────
+            # ── 3a. Stream LLM tokens via the abstract model interface (SSE) ──
             generated_text_parts: List[str] = []
 
             async for content_chunk in self.llm_model.astream(messages):
                 generated_text_parts.append(content_chunk)
-                yield json.dumps(
-                    {"type": "chunk", "content": content_chunk}, ensure_ascii=False
-                ) + "\n"
+                payload = json.dumps({"text": content_chunk}, ensure_ascii=False)
+                yield f"event: token\ndata: {payload}\n\n"
 
-            # ── 3c. Extract which citation IDs the model actually used ────────
+            # ── 3b. Extract which citation IDs the model actually used ────────
             full_generated_text = "".join(generated_text_parts)
             used_ids = {
                 int(m) for m in _CITATION_PATTERN.findall(full_generated_text)
@@ -95,15 +91,14 @@ class LLMService:
                 )
                 used_citations = all_citations
 
-            # ── 3e. Yield filtered citations at end of stream ─────────────────
-            yield json.dumps({"type": "citations", "data": used_citations}, ensure_ascii=False) + "\n"
+            # ── 3d. Yield filtered citations at end of stream (SSE) ───────────
+            citations_payload = json.dumps({"citations": used_citations}, ensure_ascii=False)
+            yield f"event: citations\ndata: {citations_payload}\n\n"
 
         except Exception as e:
             logger.error(f"[LLMService] Error during LLM generation: {e}", exc_info=True)
-            yield json.dumps(
-                {"type": "error", "content": "حدث خطأ أثناء توليد الإجابة."},
-                ensure_ascii=False,
-            ) + "\n"
+            error_payload = json.dumps({"text": "حدث خطأ أثناء توليد الإجابة."}, ensure_ascii=False)
+            yield f"event: error\ndata: {error_payload}\n\n"
 
 
 try:
