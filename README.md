@@ -100,7 +100,7 @@
                                        │
                     ┌──────────────────▼───────────────────┐
                     │     BGE-M3 Embedding Model           │
-                    │  (Hosted on Cloud — Production)      │
+                    │  (Hosted Locally via FlagEmbedding)  │
                     │                                      │
                     │  Input: search_query (MSA)           │
                     │                                      │
@@ -251,8 +251,8 @@
                                │
                     ┌──────────▼──────────────────┐
                     │      LLM Generator           │
-                    │   (GPT-4o / Claude / etc.)   │
-                    │                              │
+                    │   (Primary: Gemini + Keys)   │
+                    │   (Fallback: Groq / GitHub)  │
                     │  Generates grounded answer   │
                     │  with source citations       │
                     └──────────┬──────────────────┘
@@ -332,8 +332,8 @@
 | **Mobile App** | Flutter (Dart) — iOS / Android / Web |
 | **API Server** | ASP.NET Core (.NET 8+) |
 | **AI Engine** | Python 3.12+, FastAPI |
-| **LLM (Preprocessing + Generation)** | GPT-4o via OpenAI / GitHub Models |
-| **Embedding Model** | BGE-M3 (Dense 1024-dim + Sparse) |
+| **LLM (Preprocessing + Generation)** | Gemini (Primary w/ Rotation) / Groq / GitHub Models |
+| **Embedding Model** | BGE-M3 (Dense 1024-dim + Sparse) — Local Execution |
 | **Vector Database** | Qdrant Cloud |
 | **Document Database** | MongoDB Atlas |
 | **Reranker** | Cross-Encoder (sentence-transformers) |
@@ -360,7 +360,8 @@ Zad-AI/
 │           ├── api/                                        # FastAPI endpoints
 │           │
 │           ├── config/
-│           │   └── settings.py
+│           │   ├── settings.py
+│           │   └── key_manager.py                          # Gemini API Key Rotation Manager
 │           │
 │           ├── infrastructure/
 │           │   ├── mongo_db/
@@ -373,107 +374,76 @@ Zad-AI/
 │           ├── models/
 │           │   ├── embedding_models/
 │           │   │   ├── base.py                             # Abstract EmbeddingModel
-│           │   │   ├── bge_m3_model.py                     # BGE-M3 (dense + sparse)
+│           │   │   ├── bge_m3_model.py                     # BGE-M3 (dense + sparse) - Local
 │           │   │   ├── e5_model.py                         # E5 model (legacy)
 │           │   │   ├── factory.py                          # Model factory
 │           │   │   └── __init__.py
 │           │   └── LLM/
-│           │       ├── client.py                           # LLM client wrapper
-│           │       ├── providers.py                        # Provider configs (OpenAI, GitHub)
+│           │       ├── factory.py                          # LLM Factory (Gemini / Groq / GitHub)
+│           │       ├── gemini_model.py                     # Primary Model with Rotation
+│           │       ├── groq_model.py                       # Fallback Model
+│           │       ├── openai_model.py                     # GitHub Models / OpenAI Fallback
+│           │       ├── base.py
 │           │       └── __init__.py
 │           │
 │           ├── notebooks/                                  # Experimentation notebooks
 │           │
-│           └── pipeline/
-│               │
-│               ├── extraction/                             # Offline: book scraping from API
-│               │   ├── api_client.py                       # Ketabonline API client
-│               │   ├── books_config.py                     # Book IDs & domain mapping
-│               │   ├── extractor.py                        # Main extraction logic
-│               │   ├── hierarchy_builder.py                # TOC → hierarchy tree
-│               │   ├── html_processor.py                   # HTML → clean text
-│               │   ├── state_manager.py                    # Resume/checkpoint support
-│               │   ├── text_utils.py                       # Arabic text utilities
-│               │   └── __init__.py
-│               │
-│               ├── preprocessing/                          # Offline & Online preprocessing
-│               │   ├── data_preprocessing/                 # Offline: cleaning & chunking
-│               │   │   ├── base.py
-│               │   │   ├── chunker.py                      # Parent-child chunking strategy
-│               │   │   ├── cleaner.py                      # Arabic text cleaner
-│               │   │   ├── entity_linker.py                # Scholar/book entity linking
-│               │   │   ├── preprocessing_pipeline.py       # Full offline pipeline
-│               │   │   └── __init__.py
-│               │   ├── question_preprocessing/             # Online: query understanding (LLM)
-│               │   │   ├── models.py                       # Pydantic schemas (ProcessedQuestion)
-│               │   │   ├── prompt.py                       # LLM system prompt
-│               │   │   └── query_preprocessor.py           # QueryPreprocessor class
-│               │   ├── question_processing/                # Online: advanced query ops
-│               │   │   ├── metadata_extractor.py           # Structured metadata extraction
-│               │   │   ├── multi_query_gen.py              # Multi-query generation
-│               │   │   ├── query_preprocessor.py
-│               │   │   ├── query_rewriter.py               # MSA rewriting
-│               │   │   └── __init__.py
-│               │   └── response_preprocessing/
-│               │
-│               ├── embeddings/                             # Offline: embedding ingestion pipeline
-│               │   ├── embedding_pipeline.py               # Main ingestion orchestrator
-│               │   ├── core/
-│               │   │   ├── base.py                         # Unified base interfaces
-│               │   │   ├── base_cache.py
-│               │   │   ├── base_filter.py
-│               │   │   ├── base_processor.py
-│               │   │   ├── base_storage.py
-│               │   │   └── __init__.py
-│               │   ├── cache/
-│               │   │   ├── redis_cache.py                  # Redis embedding cache
-│               │   │   └── __init__.py
-│               │   ├── filters/
-│               │   │   ├── metadata_filter.py              # Skip already-embedded chunks
-│               │   │   └── __init__.py
-│               │   ├── processors/
-│               │   │   ├── hierarchy_injector.py           # Inject hierarchy into metadata
-│               │   │   └── __init__.py
-│               │   └── storage/
-│               │       ├── dual_storage_router.py          # child→Qdrant, parent→MongoDB
-│               │       └── __init__.py
-│               │
-│               ├── retrieval/                              # Online: vector search
-│               │   ├── base_retriever.py
-│               │   ├── dense_retriever.py                  # Dense cosine similarity search
-│               │   ├── sparse_retriever.py                 # Sparse BM25-style search
-│               │   ├── hybrid_search.py                    # Dense + Sparse combined
-│               │   ├── fusion.py                           # RRF fusion (Top-30)
-│               │   ├── parent_child.py                     # Fetch parents from MongoDB
-│               │   ├── graph_retrieval.py                  # Graph-based retrieval (future)
-│               │   ├── multi_hop.py                        # Multi-hop retrieval (future)
-│               │   └── __init__.py
-│               │
-│               ├── reranking/                              # Online: cross-encoder reranking
-│               │   ├── base_reranker.py
-│               │   ├── cross_encoder.py                    # Cross-Encoder (Top-30 → Top-10)
-│               │   ├── diversity_scorer.py                 # MMR diversity scoring
-│               │   └── __init__.py
-│               │
-│               └── generation/                             # Online: answer generation
-│                   ├── prompt_builder.py                   # Build final LLM prompt
-│                   ├── llm_generator.py                    # LLM call + streaming
-│                   ├── citations.py                        # Source citation formatter
-│                   ├── verifier.py                         # Answer factuality check
-│                   ├── self_reflection/
-│                   │   ├── evaluator.py                    # Self-reflection evaluator
-│                   │   ├── retry_logic.py                  # Retry on low-quality answers
-│                   │   └── __init__.py
-│                   └── __init__.py
-│
-├── scripts/                                                # Offline runner scripts
-│   ├── run_extraction.py                                   # Run book extraction
-│   ├── run_preprocessing_pipeline.py                       # Run data preprocessing
-│   ├── run_preprocessing_pipeline_dirct.py
-│   ├── run_ingestion.py                                    # Run embedding + storage
-│   ├── normalize_tafsir.py                                 # Tafseer QUL normalization
-│   ├── extracted_nb.py
-│   └── add_comments.py
+│           ├── pipeline/
+│           │   ├── extraction/                             # Offline: book scraping from API
+│           │   │   ├── api_client.py                       # Ketabonline API client
+│           │   │   ├── books_config.py                     # Book IDs & domain mapping
+│           │   │   ├── extractor.py                        # Main extraction logic
+│           │   │   ├── hierarchy_builder.py                # TOC → hierarchy tree
+│           │   │   ├── html_processor.py                   # HTML → clean text
+│           │   │   ├── state_manager.py                    # Resume/checkpoint support
+│           │   │   ├── text_utils.py                       # Arabic text utilities
+│           │   │   └── __init__.py
+│           │   │
+│           │   ├── preprocessing/                          # Offline & Online preprocessing
+│           │   │   ├── data_preprocessing/                 # Offline: cleaning & chunking
+│           │   │   ├── question_preprocessing/             # Online: query understanding (LLM)
+│           │   │   │   ├── models.py                       # Pydantic schemas (ProcessedQuestion)
+│           │   │   │   ├── prompt.py                       # LLM system prompt
+│           │   │   │   └── query_preprocessor.py           # QueryPreprocessor class
+│           │   │   └── question_processing/                # Online: advanced query ops
+│           │   │
+│           │   ├── embeddings/                             # Offline: embedding ingestion pipeline
+│           │   │   ├── embedding_pipeline.py               # Main ingestion orchestrator
+│           │   │   ├── core/
+│           │   │   ├── cache/
+│           │   │   ├── filters/
+│           │   │   ├── processors/
+│           │   │   └── storage/
+│           │   │
+│           │   ├── retrieval/                              # Online: vector search
+│           │   │   ├── base_retriever.py
+│           │   │   ├── dense_retriever.py                  # Dense cosine similarity search
+│           │   │   ├── sparse_retriever.py                 # Sparse BM25-style search
+│           │   │   ├── hybrid_search.py                    # Dense + Sparse combined
+│           │   │   ├── fusion.py                           # RRF fusion (Top-30)
+│           │   │   ├── parent_child.py                     # Fetch parents from MongoDB
+│           │   │   └── __init__.py
+│           │   │
+│           │   ├── reranking/                              # Online: cross-encoder reranking
+│           │   │   ├── base_reranker.py
+│           │   │   ├── cross_encoder.py                    # Cross-Encoder (Top-30 → Top-10)
+│           │   │   ├── diversity_scorer.py                 # MMR diversity scoring
+│           │   │   └── __init__.py
+│           │   │
+│           │   └── generation/                             # Online: answer generation
+│           │       ├── prompt_builder.py                   # Build final LLM prompt
+│           │       ├── llm_service.py                      # LLM Streamer with Key Rotation
+│           │       ├── citations.py                        # Source citation formatter
+│           │       └── __init__.py
+│           │
+│           ├── scripts/                                    # Offline runner scripts & Testing
+│           │   ├── run_extraction.py                       # Run book extraction
+│           │   ├── run_preprocessing_pipeline.py           # Run data preprocessing
+│           │   ├── run_ingestion.py                        # Run embedding + storage
+│           │   ├── test_stream.html                        # UI Tester for Streaming
+│           │   └── test_retrieval.py                       # Retrieval tester
+│           │
+│           └── templates/                                  # HTML Templates for endpoints
 │
 ├── data/
 │   ├── raw/                                                # Scraped Islamic texts (JSON)
@@ -489,9 +459,11 @@ Zad-AI/
 │       └── qdrant-config.yaml
 │
 ├── docs/
+├── start_api.ps1                                           # Helper script to launch Server
 ├── requirements.txt
 ├── README.md
 └── LICENSE
+```
 ```
 
 ---
@@ -542,12 +514,34 @@ docker-compose -f infrastructure/docker/docker-compose.yml up -d
 
 ### 4. Run AI Engine Locally
 
+You can run the engine manually or use the provided helper script for Windows.
+
+**Option A: Quick Start (Windows)**
+If you are on Windows, you can simply run the provided PowerShell script which will handle activating the environment and starting the server for you:
+```powershell
+.\start_api.ps1
+```
+
+**Option B: Manual Start (All Platforms)**
 ```bash
+# 1. Navigate to the engine directory
 cd services/ai_rag_engine
-python -m venv venv
-venv\Scripts\activate   # Windows
+
+# 2. Create and activate a virtual environment
+python -m venv .venv
+# On Windows:
+.venv\Scripts\activate
+# On Linux/Mac:
+source .venv/bin/activate
+
+# 3. Install the package locally (uses setup.py to resolve imports)
+pip install -e .
+
+# 4. Install requirements
 pip install -r requirements.txt
-uvicorn app.main:app --reload
+
+# 5. Run the server
+uvicorn services.ai_rag_engine.app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 ### 5. Run Mobile App

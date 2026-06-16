@@ -135,7 +135,7 @@ class HybridRetriever(BaseRetriever):
 
         start_t = time.time()
         
-        # Run Dense and Sparse retrieval in parallel using asyncio.gather
+        # Run Dense and Sparse retrieval in parallel for maximum speed
         dense_task = self.dense_retriever.aretrieve(
             query=query, collection_name=collection_name, top_k=candidate_k, filters=filters
         )

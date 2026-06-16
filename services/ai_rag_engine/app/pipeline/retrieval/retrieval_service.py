@@ -42,6 +42,20 @@ class RetrievalService:
         self._retrievers[domain] = parent_retriever
         return parent_retriever
 
+    def warm_up_all(self):
+        """Eagerly load and connect all Qdrant and MongoDB clients."""
+        logger.info("🔥 Starting Eager Warm Up for all databases...")
+        # A list of primary domains to warm up
+        domains_to_warm = ['فقه', 'العقيدة', 'التفسير', 'السيرة', 'التاريخ', 'الحديث', 'النحو والصرف']
+        for domain in domains_to_warm:
+            try:
+                retriever = self._get_or_create_retriever(domain)
+                # Warm up Mongo connections specifically for this domain's routes
+                retriever.warm_up_mongo(domain)
+            except Exception as e:
+                logger.warning(f"⚠️ Warm up failed for domain '{domain}': {e}")
+        logger.info("✅ All databases warmed up successfully!")
+
     def retrieve(self, query: str, domain: str, top_k: int = 10, madhhab: Optional[str] = None) -> List[RetrievedParent]:
         import time
         logger.info(f"⏳ Starting retrieval for domain={domain}")

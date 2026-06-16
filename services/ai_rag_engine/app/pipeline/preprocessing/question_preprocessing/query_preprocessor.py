@@ -30,6 +30,8 @@ except ImportError:
 
 from langchain_core.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
+from langchain_groq import ChatGroq
+from services.ai_rag_engine.app.config.settings import settings
 
 # Import the precise Pydantic schemas we built using absolute path
 from services.ai_rag_engine.app.pipeline.preprocessing.question_preprocessing.models import QuestionProcessingResult
@@ -45,26 +47,8 @@ class QueryPreprocessor:
     evaluate safety, and rewrite the query for semantic search.
     """
     def __init__(self, model_name: Optional[str] = None, temperature: float = 0.0):
-        actual_model_name = model_name or os.getenv("LLM_MODEL_NAME", "gpt-4o")
-        
-        if "gemini" in actual_model_name.lower():
-            from langchain_google_genai import ChatGoogleGenerativeAI
-            self.llm = ChatGoogleGenerativeAI(
-                model=actual_model_name,
-                temperature=temperature,
-                google_api_key=os.getenv("GOOGLE_API_KEY", "")
-            )
-        else:
-            api_key = os.getenv("OPENAI_API_KEY", "")
-            base_url = "https://models.inference.ai.azure.com" if api_key.startswith("github_pat") else None
-            self.llm = ChatOpenAI(
-                model=actual_model_name, 
-                temperature=temperature,
-                base_url=base_url
-            )
-        
-        # Enforce the LLM to output our exact Pydantic model structure
-        self.structured_llm = self.llm.with_structured_output(QuestionProcessingResult)
+        self.actual_model_name = model_name or os.getenv("LLM_MODEL_NAME", "gpt-4o")
+        self.temperature = temperature
         
         # Setup the prompt template
         self.prompt_template = PromptTemplate(
@@ -88,17 +72,79 @@ class QueryPreprocessor:
             user_input=user_input
         )
         
+        from services.ai_rag_engine.app.config.key_manager import gemini_key_manager
+        all_keys = gemini_key_manager.get_all_keys()
+        if not all_keys:
+            all_keys = [""] # Fallback if empty
+            
+        last_exception = None
+        
+        for attempt, key in enumerate(all_keys):
+            try:
+                # Instantiate structured LLM dynamically with the rotated key
+                if "gemini" in self.actual_model_name.lower():
+                    from langchain_google_genai import ChatGoogleGenerativeAI
+                    llm = ChatGoogleGenerativeAI(
+                        model=self.actual_model_name,
+                        temperature=self.temperature,
+                        google_api_key=key,
+                        max_retries=0
+                    )
+                else:
+                    api_key = os.getenv("OPENAI_API_KEY", "")
+                    base_url = "https://models.inference.ai.azure.com" if api_key.startswith("github_pat") else None
+                    llm = ChatOpenAI(
+                        model=self.actual_model_name, 
+                        temperature=self.temperature,
+                        base_url=base_url
+                    )
+                    
+                structured_llm = llm.with_structured_output(QuestionProcessingResult)
+                
+                logger.info(f"Calling LLM (Attempt {attempt+1}/{len(all_keys)}) for query preprocessing...")
+                result: QuestionProcessingResult = await structured_llm.ainvoke(formatted_prompt)
+                
+                logger.info(f"Successfully processed {result.total_questions} question(s) via Primary LLM.")
+                return result
+                
+            except Exception as e:
+                logger.warning(f"⚠️ Primary LLM failed on attempt {attempt+1}: {e}")
+                last_exception = e
+                # If it's not Gemini, no need to loop through Gemini keys
+                if "gemini" not in self.actual_model_name.lower():
+                    break
+        
+        # If we exhausted all keys or non-Gemini failed
+        logger.warning(f"⚠️ All Primary LLM attempts failed. Switching to Fallback LLM...")
         try:
-            # Call the LLM to process and extract data asynchronously
-            logger.info("Calling LLM for query preprocessing and metadata extraction...")
-            result: QuestionProcessingResult = await self.structured_llm.ainvoke(formatted_prompt)
+            # Initialize Fallback Model based on Settings
+            provider_str = settings.FALLBACK_PROVIDER.lower()
+            fallback_model_name = settings.FALLBACK_MODEL_NAME
             
-            # Additional safety/fallback logic can be added here if needed
-            logger.info(f"Successfully processed {result.total_questions} question(s).")
+            if provider_str == "openai":
+                api_key = settings.OPENAI_API_KEY
+                base_url = "https://models.inference.ai.azure.com" if api_key.startswith("github_pat") else None
+                fallback_llm = ChatOpenAI(
+                    api_key=api_key,
+                    model=fallback_model_name,
+                    temperature=0.0,
+                    base_url=base_url
+                )
+            else:
+                api_key = settings.GROQ_API_KEY
+                fallback_llm = ChatGroq(
+                    api_key=api_key,
+                    model_name=fallback_model_name,
+                    temperature=0.0
+                )
+                
+            fallback_structured_llm = fallback_llm.with_structured_output(QuestionProcessingResult)
+            
+            result: QuestionProcessingResult = await fallback_structured_llm.ainvoke(formatted_prompt)
+            logger.info(f"Successfully processed {result.total_questions} question(s) via Fallback LLM.")
             return result
-            
-        except Exception as e:
-            logger.error(f"Error during query preprocessing: {e}")
+        except Exception as fallback_e:
+            logger.error(f"Both Primary and Fallback LLMs failed during preprocessing! Error: {fallback_e}")
             raise
 
 # Example Usage (For Testing)

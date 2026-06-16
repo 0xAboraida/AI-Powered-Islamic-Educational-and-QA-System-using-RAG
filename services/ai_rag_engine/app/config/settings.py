@@ -75,11 +75,11 @@ class Settings(BaseSettings):
     # Cluster 12: Hadith 3
     MONGO_URI_HADITH_CLUSTER12: str = os.getenv("MONGO_URI_HADITH_CLUSTER12", "")
 
-    # Cluster 10: Adab & Akhlaq (provision when ready)
-    MONGO_URI_ADAB_CLUSTER10: str = os.getenv("MONGO_URI_ADAB_CLUSTER10", "")
+    # # Cluster 10: Adab & Akhlaq (provision when ready)
+    # MONGO_URI_ADAB_CLUSTER10: str = os.getenv("MONGO_URI_ADAB_CLUSTER10", "")
 
     # ── LLM ──────────────────────────────────────────────────────────────────
-    GOOGLE_API_KEY: str = os.getenv("GOOGLE_API_KEY", "")
+    GOOGLE_API_KEYS: str = os.getenv("GOOGLE_API_KEYS", "")
     LLM_MODEL_NAME: str = os.getenv("LLM_MODEL_NAME", "gemini-2.0-flash")
     LLM_TEMPERATURE: float = float(os.getenv("LLM_TEMPERATURE", "0.0"))
 
@@ -102,6 +102,17 @@ class Settings(BaseSettings):
 
     # RRF smoothing constant (original paper recommends 60)
     RAG_RRF_K: int = int(os.getenv("RAG_RRF_K", "60"))
+
+    # ── Reranker Settings ────────────────────────────────────────────────────
+    USE_RERANKER: bool = os.getenv("USE_RERANKER", "True").lower() in ("true", "1", "yes")
+    RERANKER_MODEL_NAME: str = os.getenv("RERANKER_MODEL_NAME", "BAAI/bge-reranker-v2-m3")
+    RAG_RERANKER_TOP_K: int = int(os.getenv("RAG_RERANKER_TOP_K", "3"))
+
+    # ── Fallback LLM Settings ────────────────────────────────────────────────
+    FALLBACK_PROVIDER: str = os.getenv("FALLBACK_PROVIDER", "openai")
+    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
+    GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
+    FALLBACK_MODEL_NAME: str = os.getenv("FALLBACK_MODEL_NAME", "gpt-4o-mini")
 
 
 settings = Settings()

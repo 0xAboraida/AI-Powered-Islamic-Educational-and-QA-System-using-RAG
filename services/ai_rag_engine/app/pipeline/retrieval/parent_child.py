@@ -185,7 +185,12 @@ class ParentChildRetriever:
             logger.warning("[ParentChildRetriever] No child chunks returned.")
             return []
 
-        logger.info(f"[ParentChildRetriever] Got {len(child_chunks)} child chunks.")
+        logger.info(f"[ParentChildRetriever] Got {len(child_chunks)} child chunks. Passing to Reranker...")
+        
+        from services.ai_rag_engine.app.models.embedding_models.reranker import reranker_service
+        child_chunks = reranker_service.rerank(query, child_chunks)
+        
+        logger.info(f"[ParentChildRetriever] Reranker kept top {len(child_chunks)} child chunks.")
 
         # ── Step 2: Group children by (domain, madhhab) for routing ──────────
         logger.info("[ParentChildRetriever] Step 2: Grouping by domain/madhhab...")
@@ -342,7 +347,12 @@ class ParentChildRetriever:
             logger.warning("[ParentChildRetriever] No child chunks returned.")
             return []
 
-        logger.info(f"[ParentChildRetriever] Got {len(child_chunks)} child chunks.")
+        logger.info(f"[ParentChildRetriever] Got {len(child_chunks)} child chunks. Passing to Reranker...")
+        
+        from services.ai_rag_engine.app.models.embedding_models.reranker import reranker_service
+        child_chunks = await reranker_service.arerank(query, child_chunks)
+        
+        logger.info(f"[ParentChildRetriever] Reranker kept top {len(child_chunks)} child chunks.")
 
         logger.info("[ParentChildRetriever] Step 2: Grouping by domain/madhhab...")
 
@@ -440,6 +450,19 @@ class ParentChildRetriever:
         logger.info(f"[ParentChildRetriever] ✅ Returning {len(results)} parent documents (async).")
         return results
 
+    def warm_up_mongo(self, domain: str):
+        """Eagerly connect to MongoDB clusters for the given domain."""
+        logger.info(f"🔥 Warming up MongoDB connections for domain='{domain}'")
+        from services.ai_rag_engine.app.infrastructure.mongo_db.mongo_router import _ROUTES, _normalize_domain
+        
+        norm_domain = _normalize_domain(domain)
+        for route_key, routes in _ROUTES.items():
+            r_domain, r_madhhab = route_key
+            if r_domain == norm_domain or domain == "all":
+                for route in routes:
+                    # Calling get() will instantiate MongoManager and Ping the DB
+                    self._pool.get(route)
+                    
     def close(self):
         """Close all open MongoDB connections."""
         self._pool.close_all()

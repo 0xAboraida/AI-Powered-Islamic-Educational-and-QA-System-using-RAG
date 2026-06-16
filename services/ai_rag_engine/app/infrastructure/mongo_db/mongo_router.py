@@ -163,11 +163,11 @@ _ROUTES: dict[tuple, List[MongoRouteConfig]] = {
         MongoRouteConfig("MONGO_URI_HADITH_CLUSTER12", "zad_rag_db_hadith3", "parents_hadith3"),
     ],
 
-    # ── آداب وأخلاق ────────────────────────────────────────────────────────
-    # NOTE: Add MONGO_URI_ADAB_CLUSTER10 to .env when this cluster is provisioned
-    ("adab", None): [
-        MongoRouteConfig("MONGO_URI_ADAB_CLUSTER10", "zad_rag_db_adab", "parents_adab"),
-    ],
+    # # ── آداب وأخلاق ────────────────────────────────────────────────────────
+    # # NOTE: Add MONGO_URI_ADAB_CLUSTER10 to .env when this cluster is provisioned
+    # ("adab", None): [
+    #     MongoRouteConfig("MONGO_URI_ADAB_CLUSTER10", "zad_rag_db_adab", "parents_adab"),
+    # ],
 }
 
 

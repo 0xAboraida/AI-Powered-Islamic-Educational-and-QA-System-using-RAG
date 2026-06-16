@@ -182,7 +182,7 @@
                 const response = await fetch('http://localhost:8000/api/v1/chat/stream', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ query: query, domain: domain, chat_history: [] })
+                    body: JSON.stringify({ query: query, domain: domain, conversation_history: [] })
                 });
 
                 if (!response.ok) throw new Error('Network response was not ok');
@@ -201,63 +201,71 @@
                     let lines = buffer.split('\n');
                     buffer = lines.pop(); // Keep the last incomplete line in buffer
 
+                    let currentEvent = 'message';
                     for (let line of lines) {
-                        if (line.trim() === '') continue;
+                        if (line.trim() === '') {
+                            currentEvent = 'message'; // reset on empty line
+                            continue;
+                        }
 
-                        try {
-                            const parsed = JSON.parse(line);
+                        if (line.startsWith('event: ')) {
+                            currentEvent = line.substring(7).trim();
+                            continue;
+                        }
 
-                            if (parsed.type === "chunk") {
-                                // Accumulate markdown text and render it to HTML
-                                accumulatedMarkdown += parsed.content;
-                                chatBox.innerHTML = marked.parse(accumulatedMarkdown);
-                                chatBox.scrollTop = chatBox.scrollHeight;
-                            }
-                            else if (parsed.type === "context") {
-                                parsed.data.forEach(ctx => {
-                                    contextBox.innerHTML += `
-                                    <div class="citation-item">
-                                        <div style="margin-bottom: 5px;">
-                                            <strong>[${ctx.id}] ${ctx.book_title || 'كتاب غير معروف'}</strong> 
+                        if (line.startsWith('data: ')) {
+                            try {
+                                const jsonStr = line.substring(6).trim();
+                                const parsed = JSON.parse(jsonStr);
+
+                                if (currentEvent === "token") {
+                                    // Accumulate markdown text and render it to HTML
+                                    accumulatedMarkdown += parsed.text;
+                                    chatBox.innerHTML = marked.parse(accumulatedMarkdown);
+                                    chatBox.scrollTop = chatBox.scrollHeight;
+                                }
+                                else if (currentEvent === "context") {
+                                    parsed.context.forEach(ctx => {
+                                        contextBox.innerHTML += `
+                                        <div class="citation-item">
+                                            <div style="margin-bottom: 5px;">
+                                                <strong>[${ctx.id}] ${ctx.book_title || 'كتاب غير معروف'}</strong> 
+                                            </div>
+                                            <div style="font-size: 0.85rem; color: #555; background: #fff; padding: 10px; border-radius: 4px; border: 1px solid #ddd; max-height: 150px; overflow-y: auto;">
+                                                ${ctx.content}
+                                            </div>
                                         </div>
-                                        <div style="font-size: 0.85rem; color: #555; background: #fff; padding: 10px; border-radius: 4px; border: 1px solid #ddd; max-height: 150px; overflow-y: auto;">
-                                            ${ctx.content}
+                                    `;
+                                    });
+                                }
+                                else if (currentEvent === "citations") {
+                                    parsed.citations.forEach(cite => {
+                                        citationsBox.innerHTML += `
+                                        <div class="citation-item">
+                                            <div style="margin-bottom: 5px;">
+                                                <strong>[${cite.id}] ${cite.book_title || 'كتاب غير معروف'}</strong> 
+                                                <span class="badge" style="background-color: #2c3e50; color: white;">${cite.domain || ''}</span>
+                                                ${cite.madhhab ? `<span class="badge" style="background-color: #16a085; color: white;">${cite.madhhab}</span>` : ''}
+                                            </div>
+                                            <div style="font-size: 0.85rem; color: #555; line-height: 1.6;">
+                                                <strong>المؤلف:</strong> ${cite.author || 'غير معروف'} (توفى: ${cite.author_death || '؟'})<br>
+                                                <strong>العنوان التفصيلي:</strong> ${cite.hierarchy?.kitab || 'بدون قسم'} ${cite.hierarchy?.sections && cite.hierarchy.sections.length > 0 ? '> ' + cite.hierarchy.sections.join(' > ') : ''}<br>
+                                                <strong>المجلد:</strong> ${cite.part || '1'} من ${cite.total_parts || '1'} | <strong>الصفحة:</strong> ${cite.page_id || 'غير معروف'}
+                                            </div>
+                                            <div style="margin-top: 8px;">
+                                                <a href="${cite.source_url}" target="_blank" style="display: inline-block; padding: 4px 10px; background-color: #3498db; color: white; text-decoration: none; border-radius: 4px; font-size: 0.85rem;">🔗 فتح المصدر الأصلي</a>
+                                            </div>
                                         </div>
-                                    </div>
-                                `;
-                                });
+                                    `;
+                                    });
+                                }
+                                else if (currentEvent === "error") {
+                                    accumulatedMarkdown += `\n> ❌ **خطأ:** ${parsed.text}\n\n`;
+                                    chatBox.innerHTML = marked.parse(accumulatedMarkdown);
+                                }
+                            } catch (e) {
+                                console.error("Error parsing JSON chunk", e, line);
                             }
-                            else if (parsed.type === "citations") {
-                                parsed.data.forEach(cite => {
-                                    citationsBox.innerHTML += `
-                                    <div class="citation-item">
-                                        <div style="margin-bottom: 5px;">
-                                            <strong>[${cite.id}] ${cite.book_title || 'كتاب غير معروف'}</strong> 
-                                            <span class="badge" style="background-color: #2c3e50; color: white;">${cite.domain || ''}</span>
-                                            ${cite.madhhab ? `<span class="badge" style="background-color: #16a085; color: white;">${cite.madhhab}</span>` : ''}
-                                        </div>
-                                        <div style="font-size: 0.85rem; color: #555; line-height: 1.6;">
-                                            <strong>المؤلف:</strong> ${cite.author || 'غير معروف'} (توفى: ${cite.author_death || '؟'})<br>
-                                            <strong>العنوان التفصيلي:</strong> ${cite.hierarchy?.kitab || 'بدون قسم'} ${cite.hierarchy?.sections && cite.hierarchy.sections.length > 0 ? '> ' + cite.hierarchy.sections.join(' > ') : ''}<br>
-                                            <strong>المجلد:</strong> ${cite.part || '1'} من ${cite.total_parts || '1'} | <strong>الصفحة:</strong> ${cite.page_id || 'غير معروف'}
-                                        </div>
-                                        <div style="margin-top: 8px;">
-                                            <a href="${cite.source_url}" target="_blank" style="display: inline-block; padding: 4px 10px; background-color: #3498db; color: white; text-decoration: none; border-radius: 4px; font-size: 0.85rem;">🔗 فتح المصدر الأصلي</a>
-                                        </div>
-                                    </div>
-                                `;
-                                });
-                            }
-                            else if (parsed.type === "info") {
-                                accumulatedMarkdown += `\n> ℹ️ **ملاحظة:** ${parsed.content}\n\n`;
-                                chatBox.innerHTML = marked.parse(accumulatedMarkdown);
-                            }
-                            else if (parsed.type === "error") {
-                                accumulatedMarkdown += `\n> ❌ **خطأ:** ${parsed.content}\n\n`;
-                                chatBox.innerHTML = marked.parse(accumulatedMarkdown);
-                            }
-                        } catch (e) {
-                            console.error("Error parsing JSON chunk", e, line);
                         }
                     }
                 }
