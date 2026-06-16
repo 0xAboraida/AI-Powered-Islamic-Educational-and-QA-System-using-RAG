@@ -48,8 +48,7 @@ class RetrievalService:
         start_t = time.time()
         parent_retriever = self._get_or_create_retriever(domain)
         init_t = time.time()
-        logger.info(f"⏱️ [TIME TRACKING] getting/creating retriever took: {init_t - start_t:.2f} seconds")
-        print(f"⏱️ [TIME TRACKING] getting/creating retriever took: {init_t - start_t:.2f} seconds")
+        logger.info(f"[⏱️ TIMER] RetrievalService _get_or_create_retriever took: {init_t - start_t:.2f} seconds")
 
         _, collection_name = qdrant_router.get_client_and_collection(domain)
 
@@ -64,8 +63,7 @@ class RetrievalService:
             parent_top_k=top_k,
             filters=filters
         )
-        logger.info(f"⏱️ [TIME TRACKING] ParentChildRetriever execution took: {time.time() - init_t:.2f} seconds")
-        print(f"⏱️ [TIME TRACKING] ParentChildRetriever execution took: {time.time() - init_t:.2f} seconds")
+        logger.info(f"[⏱️ TIMER] RetrievalService ParentChildRetriever sync execution took: {time.time() - init_t:.2f} seconds")
         return parents
 
     async def retrieve_multi(self, queries: List[str], domain: str, madhhab: Optional[str] = None, custom_filters: Optional[Dict[str, Any]] = None) -> List[RetrievedParent]:
@@ -93,16 +91,17 @@ class RetrievalService:
         parent_retriever = self._get_or_create_retriever(domain)
         _, collection_name = qdrant_router.get_client_and_collection(domain)
 
-        def _fetch(q: str):
-            return parent_retriever.retrieve(
+        tasks = [
+            parent_retriever.aretrieve(
                 query=q,
                 collection_name=collection_name,
                 child_top_k=child_top_k,
                 parent_top_k=parent_top_k,
                 filters=filters
             )
+            for q in queries
+        ]
 
-        tasks = [asyncio.to_thread(_fetch, q) for q in queries]
         results_lists = await asyncio.gather(*tasks)
 
         all_parents: Dict[str, RetrievedParent] = {}
@@ -117,7 +116,7 @@ class RetrievalService:
         final_results = list(all_parents.values())
         final_results.sort(key=lambda p: p.best_child_score, reverse=True)
 
-        logger.info(f"⏱️ [TIME TRACKING] retrieve_multi execution took: {time.time() - start_t:.2f} seconds")
+        logger.info(f"[⏱️ TIMER] RetrievalService Parallel retrieve_multi execution took: {time.time() - start_t:.2f} seconds")
         return final_results
 
 try:

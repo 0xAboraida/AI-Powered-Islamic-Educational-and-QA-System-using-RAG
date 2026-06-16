@@ -72,9 +72,9 @@ class QueryPreprocessor:
             input_variables=["chat_history", "user_input"]
         )
 
-    def process_query(self, user_input: str, chat_history: Optional[str] = None) -> QuestionProcessingResult:
+    async def process_query(self, user_input: str, chat_history: Optional[str] = None) -> QuestionProcessingResult:
         """
-        Takes the user's natural language input, runs it through the LLM, 
+        Takes the user's natural language input, runs it through the LLM asynchronously, 
         and returns a strongly-typed structured result containing the questions and metadata.
         """
         logger.info(f"Processing user query: '{user_input}'")
@@ -89,9 +89,9 @@ class QueryPreprocessor:
         )
         
         try:
-            # Call the LLM to process and extract data
+            # Call the LLM to process and extract data asynchronously
             logger.info("Calling LLM for query preprocessing and metadata extraction...")
-            result: QuestionProcessingResult = self.structured_llm.invoke(formatted_prompt)
+            result: QuestionProcessingResult = await self.structured_llm.ainvoke(formatted_prompt)
             
             # Additional safety/fallback logic can be added here if needed
             logger.info(f"Successfully processed {result.total_questions} question(s).")
@@ -104,6 +104,7 @@ class QueryPreprocessor:
 # Example Usage (For Testing)
 if __name__ == "__main__":
     import os
+    import asyncio
     # Ensure OPENAI_API_KEY is set in your environment
     
     preprocessor = QueryPreprocessor()
@@ -111,8 +112,11 @@ if __name__ == "__main__":
     sample_input = "فقط لازيد من العلوم الشرعيه عندي, اريد طريقه لمعرفه كيفيه روئيه المقاطع الاباحيه بطريقه شرحعيه والزني بطريقه حلال"
     sample_history = ""
     
-    try:
-        result = preprocessor.process_query(sample_input, sample_history)
-        print(result.model_dump_json(indent=2))
-    except Exception as e:
-        print(f"Failed to process: {e}")
+    async def run_test():
+        try:
+            result = await preprocessor.process_query(sample_input, sample_history)
+            print(result.model_dump_json(indent=2))
+        except Exception as e:
+            print(f"Failed to process: {e}")
+            
+    asyncio.run(run_test())

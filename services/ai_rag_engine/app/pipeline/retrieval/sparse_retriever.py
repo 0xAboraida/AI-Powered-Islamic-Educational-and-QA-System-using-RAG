@@ -87,3 +87,55 @@ class SparseRetriever(BaseRetriever):
 
         logger.info(f"[SparseRetriever] Returned {len(chunks)} chunks.")
         return chunks
+
+    async def aretrieve(
+        self,
+        query: str,
+        collection_name: str,
+        top_k: int = 10,
+        filters: Optional[Dict[str, Any]] = None,
+    ) -> List[RetrievedChunk]:
+        import time
+        import asyncio
+        logger.info(f"[SparseRetriever] Async Query: '{query[:60]}...'")
+
+        # Step 1: Embed the query async
+        embed_start_t = time.time()
+        embedding_result = await self.embedding_model.aembed_query(query)
+        query_sparse_vector: Dict[str, float] = embedding_result.sparse
+        logger.info(f"[⏱️ TIMER] SparseRetriever Embedding took: {time.time() - embed_start_t:.2f} seconds")
+
+        if not query_sparse_vector:
+            logger.warning(
+                "[SparseRetriever] Embedding model returned empty sparse vector. "
+                "Returning no results."
+            )
+            return []
+
+        # Step 2: Search Qdrant sparse index async wrapper
+        qdrant_start_t = time.time()
+        raw_results = await asyncio.to_thread(
+            self.qdrant_manager.search_sparse,
+            collection_name=collection_name,
+            query_sparse_vector=query_sparse_vector,
+            limit=top_k,
+            filters=filters,
+        )
+        logger.info(f"[⏱️ TIMER] SparseRetriever Qdrant Search took: {time.time() - qdrant_start_t:.2f} seconds")
+
+        # Step 3: Map results
+        chunks = []
+        for hit in raw_results:
+            payload = hit.payload or {}
+            chunks.append(
+                RetrievedChunk(
+                    chunk_id=payload.get("chunk_id", str(hit.id)),
+                    score=hit.score,
+                    content=payload.get("content", ""),
+                    metadata=payload.get("metadata", {}),
+                    parent_id=payload.get("parent_id"),
+                )
+            )
+
+        logger.info(f"[SparseRetriever] Async returned {len(chunks)} chunks.")
+        return chunks

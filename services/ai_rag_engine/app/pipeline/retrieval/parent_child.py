@@ -284,8 +284,7 @@ class ParentChildRetriever:
         logger.info(
             f"[ParentChildRetriever] Fetched {len(fetched_docs)} parent docs from MongoDB."
         )
-        logger.info(f"⏱️ [TIME TRACKING] MongoDB fetching took: {time.time() - mongo_t:.2f} seconds")
-        print(f"⏱️ [TIME TRACKING] MongoDB fetching took: {time.time() - mongo_t:.2f} seconds")
+        logger.info(f"[⏱️ TIMER] ParentChild MongoDB fetching took: {time.time() - mongo_t:.2f} seconds")
 
         # ── Step 5: Build RetrievedParent list ────────────────────────────────
         results: List[RetrievedParent] = []
@@ -318,6 +317,127 @@ class ParentChildRetriever:
         logger.info(
             f"[ParentChildRetriever] ✅ Returning {len(results)} parent documents."
         )
+        return results
+
+    async def aretrieve(
+        self,
+        query: str,
+        collection_name: str,
+        child_top_k: int = 10,
+        parent_top_k: int = 5,
+        filters: Optional[Dict[str, Any]] = None,
+    ) -> List[RetrievedParent]:
+        logger.info(
+            f"[ParentChildRetriever] Step 1: Async Hybrid search "
+            f"(child_top_k={child_top_k})"
+        )
+        child_chunks: List[RetrievedChunk] = await self.hybrid_retriever.aretrieve(
+            query=query,
+            collection_name=collection_name,
+            top_k=child_top_k,
+            filters=filters,
+        )
+
+        if not child_chunks:
+            logger.warning("[ParentChildRetriever] No child chunks returned.")
+            return []
+
+        logger.info(f"[ParentChildRetriever] Got {len(child_chunks)} child chunks.")
+
+        logger.info("[ParentChildRetriever] Step 2: Grouping by domain/madhhab...")
+
+        RouteKey = Tuple[str, Optional[str]]
+        parent_map: Dict[str, Dict] = {}
+
+        for chunk in child_chunks:
+            parent_id = chunk.parent_id
+            if not parent_id:
+                continue
+
+            domain  = chunk.metadata.get("domain")
+            madhhab = chunk.metadata.get("madhhab")
+
+            if parent_id not in parent_map:
+                parent_map[parent_id] = {
+                    "score":     chunk.score,
+                    "child_ids": [chunk.chunk_id],
+                    "metadata":  chunk.metadata,
+                    "domain":    domain,
+                    "madhhab":   madhhab,
+                }
+            else:
+                existing = parent_map[parent_id]
+                if chunk.score > existing["score"]:
+                    existing["score"] = chunk.score
+                existing["child_ids"].append(chunk.chunk_id)
+
+        route_groups: Dict[RouteKey, List[str]] = defaultdict(list)
+        route_meta:   Dict[RouteKey, Tuple[str, str]] = {}
+
+        for parent_id, info in parent_map.items():
+            key = (info["domain"], info["madhhab"])
+            route_groups[key].append(parent_id)
+            route_meta[key] = (info["domain"], info["madhhab"])
+
+        import time
+        import asyncio
+        mongo_t = time.time()
+        
+        def fetch_all_mongo():
+            fetched_docs_local = {}
+            for route_key, parent_ids in route_groups.items():
+                domain, madhhab = route_meta[route_key]
+                try:
+                    routes = get_routes(domain, madhhab)
+                except KeyError:
+                    continue
+                
+                remaining_ids = set(parent_ids)
+                for route in routes:
+                    if not remaining_ids:
+                        break
+                    manager = self._pool.get(route)
+                    if not manager:
+                        continue
+                    docs = manager.fetch_by_ids(
+                        collection_name=route.collection_name,
+                        ids=list(remaining_ids),
+                    )
+                    for doc in docs:
+                        doc_id = str(doc.get("_id", ""))
+                        fetched_docs_local[doc_id] = doc
+                        remaining_ids.discard(doc_id)
+            return fetched_docs_local
+
+        fetched_docs = await asyncio.to_thread(fetch_all_mongo)
+        
+        logger.info(f"[⏱️ TIMER] ParentChild Async MongoDB fetching took: {time.time() - mongo_t:.2f} seconds")
+
+        results: List[RetrievedParent] = []
+
+        for parent_id, info in parent_map.items():
+            doc = fetched_docs.get(parent_id)
+            if not doc:
+                continue
+
+            content = doc.get("content", doc.get("text", ""))
+            original_content = doc.get("original_content", content)
+
+            results.append(
+                RetrievedParent(
+                    parent_id=parent_id,
+                    content=content,
+                    original_content=original_content,
+                    metadata=doc.get("metadata", info["metadata"]),
+                    best_child_score=info["score"],
+                    triggered_by=info["child_ids"],
+                )
+            )
+
+        results.sort(key=lambda p: p.best_child_score, reverse=True)
+        results = results[:parent_top_k]
+
+        logger.info(f"[ParentChildRetriever] ✅ Returning {len(results)} parent documents (async).")
         return results
 
     def close(self):
