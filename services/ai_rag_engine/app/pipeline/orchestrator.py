@@ -20,7 +20,7 @@ class PipelineOrchestrator:
         self.llm_service = llm_service
 
     async def stream_chat_response(
-        self, query: str, domain: str, conversation_history: list | None = None
+        self, query: str, domain: str
     ) -> AsyncGenerator[str, None]:
         logger.info(
             f"[Orchestrator] New Request | domain='{domain}' | query='{query[:50]}...'"
@@ -74,7 +74,7 @@ class PipelineOrchestrator:
             logger.info("[Orchestrator] Step 3: بدء توليد الإجابة (Generation)...")
             first_token_received = False
             async for chunk in self.llm_service.generate_streaming_response(
-                query=query, domain=domain, parents=parents, conversation_history=conversation_history
+                query=query, domain=domain, parents=parents
             ):
                 if not first_token_received and "event: token" in chunk:
                     logger.info(f"[⏱️ TIMER] Time To First Token (TTFT): {time.time() - global_start_time:.2f} seconds")

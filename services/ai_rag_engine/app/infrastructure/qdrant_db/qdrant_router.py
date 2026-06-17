@@ -17,6 +17,7 @@ class QdrantRouter:
             "الحديث":          (self.client_2, "zad_hadith_collection"),
             "النحو والصرف":    (self.client_2, "zad_nahwSarf_collection"),
             "التاريخ":         (self.client_2, "zad_tarikh_collection"),
+            "علوم القران":     (self.client_2, "zad_quranScience_collection"),
             "الآداب والأخلاق": (self.client_2, "zad_adab_collection"),  # NOTE: requires collection creation
         }
 

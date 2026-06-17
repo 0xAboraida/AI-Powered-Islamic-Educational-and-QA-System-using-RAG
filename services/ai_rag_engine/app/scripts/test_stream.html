@@ -138,13 +138,14 @@
         <div class="input-group">
             <label>القسم (Domain):</label>
             <select id="domainInput">
-                <option value="فقه">فقه</option>
-                <option value="العقيدة">العقيدة</option>
-                <option value="التفسير">التفسير</option>
-                <option value="الحديث">الحديث</option>
-                <option value="السيرة">السيرة</option>
-                <option value="التاريخ">التاريخ</option>
-                <option value="النحو والصرف">النحو والصرف</option>
+                <option value="1">فقه</option>
+                <option value="2">العقيدة</option>
+                <option value="3">السيرة</option>
+                <option value="4">التفسير</option>
+                <option value="5">الحديث</option>
+                <option value="6">التاريخ</option>
+                <option value="7">علوم القران</option>
+                <option value="8">النحو والصرف</option>
             </select>
         </div>
 
@@ -182,7 +183,7 @@
                 const response = await fetch('http://localhost:8000/api/v1/chat/stream', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ query: query, domain: domain, conversation_history: [] })
+                    body: JSON.stringify({ query: query, domain: parseInt(domain) })
                 });
 
                 if (!response.ok) throw new Error('Network response was not ok');

@@ -22,7 +22,7 @@ class LLMService:
         pass
 
     async def generate_streaming_response(
-        self, query: str, domain: str, parents: List[RetrievedParent], conversation_history: list | None = None
+        self, query: str, domain: str, parents: List[RetrievedParent]
     ) -> AsyncGenerator[str, None]:
         """
         Yields JSON strings containing context, chunks of the answer, and final citations.
@@ -39,14 +39,8 @@ class LLMService:
 
         from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 
-        # 3. Build messages list: system → history → current query
+        # 3. Build messages list: system → current query
         messages = [SystemMessage(content=system_prompt)]
-
-        for msg in (conversation_history or []):
-            if msg.get("role") == "user":
-                messages.append(HumanMessage(content=msg.get("content", "")))
-            elif msg.get("role") == "assistant":
-                messages.append(AIMessage(content=msg.get("content", "")))
 
         messages.append(HumanMessage(content=query))
         logger.info(f"[LLMService] Starting stream for domain='{domain}' | query='{query[:60]}...'")

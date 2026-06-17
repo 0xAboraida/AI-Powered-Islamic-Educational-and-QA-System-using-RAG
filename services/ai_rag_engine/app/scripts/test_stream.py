@@ -4,13 +4,8 @@ import json
 url = "http://localhost:8000/api/v1/chat/stream"
 
 payload = {
-    "query": "وما هي شروطه؟",
-    "domain": "فقه",
-    # Notice how we pass previous conversation history to provide context!
-    "conversation_history": [
-        {"role": "user", "content": "ما حكم الوضوء؟"},
-        {"role": "assistant", "content": "الوضوء واجب للصلاة."},
-    ],
+    "query": "ما حكم الوضوء وما هي شروطه؟",
+    "domain": 1,
 }
 
 print("🚀 Connecting to Zad-AI Engine...\n")

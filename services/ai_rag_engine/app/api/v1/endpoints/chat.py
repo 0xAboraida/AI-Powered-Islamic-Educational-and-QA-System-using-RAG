@@ -9,21 +9,27 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
+DOMAIN_MAPPING = {
+    1: "فقه",
+    2: "العقيدة",
+    3: "السيرة",
+    4: "التفسير",
+    5: "الحديث",
+    6: "التاريخ",
+    7: "علوم القران",
+    8: "النحو والصرف"  # علوم اللغة
+}
+
 @router.post("/stream", summary="Stream a chat response based on RAG")
 async def chat_stream(request: ChatRequest):
     try:
-        # Convert ConversationMessage objects to plain dicts for the pipeline
-        # SAFETY LIMIT: Keep only the last 6 messages (3 pairs of question/answer) 
-        # to prevent token overflow if the client accidentally sends a massive history.
-        history = [
-            {"role": msg.role, "content": msg.content}
-            for msg in (request.conversation_history or [])
-        ][-6:]
+        domain_str = DOMAIN_MAPPING.get(request.domain)
+        if not domain_str:
+            raise HTTPException(status_code=400, detail="Invalid domain ID")
 
         generator = orchestrator.stream_chat_response(
             query=request.query,
-            domain=request.domain,
-            conversation_history=history,
+            domain=domain_str
         )
 
         return StreamingResponse(generator, media_type="text/event-stream")
