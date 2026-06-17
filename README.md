@@ -1,9 +1,12 @@
 <div align="center">
-  <!-- أضف مسار لوجو المشروع هنا -->
-  <img src="https://via.placeholder.com/150x150.png?text=Zad+Logo" alt="Zad AI Logo" width="150" height="150">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/WhiteLogo.png">
+    <source media="(prefers-color-scheme: light)" srcset="docs/assets/DarkLogo.png">
+    <img alt="Zad AI Logo" src="docs/assets/DarkLogo.png" width="150" height="150">
+  </picture>
   
   # Zad Islamic AI 🤖🕌
-  ### مساعد زاد الذكي للعلوم الإسلامية
+  ### The Intelligent Islamic Educational Assistant
   
   [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
   [![Python](https://img.shields.io/badge/Python-3.12+-blue.svg)](https://www.python.org/)
@@ -13,16 +16,15 @@
   [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-green.svg)](https://www.mongodb.com/atlas)
 
   **Zad** is an intelligent Islamic AI assistant powered by a production-grade **Hybrid RAG** pipeline.
-  
-  **زاد** هو مساعد ذكاء اصطناعي إسلامي يعتمد على تقنية **Hybrid RAG** المتطورة لتقديم إجابات دقيقة وموثقة في العلوم الإسلامية (الفقه، العقيدة، التفسير، السيرة، التاريخ) معتمداً على أمهات الكتب.
+  It provides accurate, context-aware answers to questions about Islamic sciences (Fiqh, Aqeedah, Tafseer, Seerah, Tarikh) using trusted classical texts.
 </div>
 
 ---
 
-## ✨ Key Features | أبرز المميزات
+## ✨ Key Features
 
-- 📚 **Comprehensive Knowledge (مكتبة شاملة):** Answers extracted directly from trusted classical Islamic texts across multiple domains.
-- 🔍 **Hybrid Search (بحث هجين متطور):** Combines dense semantic search (BGE-M3) with sparse keyword search for high accuracy.
+- 📚 **Comprehensive Knowledge:** Answers extracted directly from trusted classical Islamic texts across multiple domains.
+- 🔍 **Hybrid Search:** Combines dense semantic search (BGE-M3) with sparse keyword search for high accuracy.
 - 🧩 **Parent-Child Chunking:** Retains deep context from MongoDB while keeping vector searches in Qdrant lightning fast.
 - 🧠 **Cross-Encoder Reranking:** Ensures the absolute most relevant paragraphs are sent to the AI for generation.
 - ⚡ **Multi-LLM Support:** Primary generation via Gemini with fast streaming, plus fallbacks to Groq and GitHub Models.
@@ -30,9 +32,9 @@
 
 ---
 
-## 📸 Screenshots | واجهة التطبيق
+## 📸 Screenshots
 
-*(أضف صور أو صور متحركة لتطبيق Flutter هنا)*
+*(Add Flutter app screenshots or GIFs here)*
 <p align="center">
   <img src="https://via.placeholder.com/250x500.png?text=App+Screenshot+1" width="200" alt="screenshot">
   &nbsp;&nbsp;&nbsp;&nbsp;

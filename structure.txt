@@ -1,0 +1,75 @@
+ZAD-Islamic-AI/
+│
+├── apps/
+│   ├── mobile-app/                 # Flutter Application
+│   │   ├── lib/
+│   │   │   ├── core/               # constants, theme, utilities
+│   │   │   ├── features/
+│   │   │   │   ├── auth/
+│   │   │   │   ├── ask_question/
+│   │   │   │   ├── answer_view/
+│   │   │   │   └── profile/
+│   │   │   ├── shared_widgets/
+│   │   │   └── main.dart
+│   │   ├── assets/
+│   │   ├── test/
+│   │   └── pubspec.yaml
+│   │
+│   └── api-server/                 # .NET Backend
+│       ├── ZAD.API/                # Controllers layer
+│       ├── ZAD.Application/        # Use cases & services
+│       ├── ZAD.Domain/             # Entities & business rules
+│       ├── ZAD.Infrastructure/     # DB, external services
+│       ├── ZAD.Persistence/        # EF Core, repositories
+│       ├── tests/
+│       └── ZAD.sln
+│
+├── services/
+│   └── ai-rag-engine/              # Python AI Service
+│       ├── app/
+│       │   ├── api/                # FastAPI endpoints
+│       │   ├── pipeline/
+│       │   │   ├── preprocessing/  # normalization, dialect handling
+│       │   │   ├── embeddings/
+│       │   │   ├── retrieval/
+│       │   │   ├── reranking/
+│       │   │   └── generation/
+│       │   ├── models/
+│       │   ├── config/
+│       │   └── main.py
+│       │
+│       ├── scripts/                # data ingestion scripts
+│       ├── notebooks/              # experimentation
+│       ├── tests/
+│       └── requirements.txt
+│
+├── data/
+│   ├── raw/                        # scraped Islamic texts
+│   ├── processed/                  # cleaned & chunked
+│   └── embeddings/                 # cached embeddings
+│
+├── infrastructure/
+│   ├── docker/
+│   │   ├── backend.Dockerfile
+│   │   ├── ai.Dockerfile
+│   │   └── docker-compose.yml
+│   │
+│   ├── database/
+│   │   ├── migrations/
+│   │   └── seed-data.sql
+│   │
+│   └── vector-db/
+│       └── qdrant-config.yaml
+│
+├── docs/
+│   ├── architecture-diagrams/
+│   ├── api-documentation/
+│   ├── ai-design.md
+│   └── deployment-guide.md
+│
+├── .github/
+│   └── workflows/                  # CI/CD pipelines
+│
+├── README.md
+├── CONTRIBUTING.md
+└── LICENSE
