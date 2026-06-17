@@ -5,7 +5,9 @@ public enum ExpertSubMode
     Fiqh = 1,
     Aqidah = 2,
     Sirah = 3,
-    History = 4,
-    Language = 5,
-    Quran = 6
+    Tafseer = 4,
+    Hadeeth = 5,
+    Quraan = 6,
+    History = 7,
+    Language = 8
 }

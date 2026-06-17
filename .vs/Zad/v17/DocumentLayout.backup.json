@@ -3,8 +3,8 @@
   "WorkspaceRootPath": "C:\\Users\\Mahmoud\\Documents\\GitHub\\Zad.Net\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{19F3D938-F759-4DCA-9504-49F2CB25A02C}|Zad.API\\Zad.API.csproj|c:\\users\\mahmoud\\documents\\github\\zad.net\\zad.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{19F3D938-F759-4DCA-9504-49F2CB25A02C}|Zad.API\\Zad.API.csproj|solutionrelative:zad.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+      "AbsoluteMoniker": "D:0:0:{AD041B8B-5E39-4206-8CFB-C814BF8BC427}|Zad.Domain\\Zad.Domain.csproj|c:\\users\\mahmoud\\documents\\github\\zad.net\\zad.domain\\entities\\category.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AD041B8B-5E39-4206-8CFB-C814BF8BC427}|Zad.Domain\\Zad.Domain.csproj|solutionrelative:zad.domain\\entities\\category.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -19,14 +19,14 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "C:\\Users\\Mahmoud\\Documents\\GitHub\\Zad.Net\\Zad.API\\appsettings.json",
-              "RelativeDocumentMoniker": "Zad.API\\appsettings.json",
-              "ToolTip": "C:\\Users\\Mahmoud\\Documents\\GitHub\\Zad.Net\\Zad.API\\appsettings.json",
-              "RelativeToolTip": "Zad.API\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAA0AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-05-25T21:36:25.027Z",
+              "Title": "Category.cs",
+              "DocumentMoniker": "C:\\Users\\Mahmoud\\Documents\\GitHub\\Zad.Net\\Zad.Domain\\Entities\\Category.cs",
+              "RelativeDocumentMoniker": "Zad.Domain\\Entities\\Category.cs",
+              "ToolTip": "C:\\Users\\Mahmoud\\Documents\\GitHub\\Zad.Net\\Zad.Domain\\Entities\\Category.cs",
+              "RelativeToolTip": "Zad.Domain\\Entities\\Category.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-16T22:54:12.124Z",
               "EditorCaption": ""
             }
           ]
