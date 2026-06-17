@@ -1,13 +1,43 @@
-# AI-Powered-Islamic-Educational-and-QA-System-using-RAG
+<div align="center">
+  <!-- أضف مسار لوجو المشروع هنا -->
+  <img src="https://via.placeholder.com/150x150.png?text=Zad+Logo" alt="Zad AI Logo" width="150" height="150">
+  
+  # Zad Islamic AI 🤖🕌
+  ### مساعد زاد الذكي للعلوم الإسلامية
+  
+  [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+  [![Python](https://img.shields.io/badge/Python-3.12+-blue.svg)](https://www.python.org/)
+  [![.NET](https://img.shields.io/badge/.NET-8.0+-purple.svg)](https://dotnet.microsoft.com/)
+  [![Flutter](https://img.shields.io/badge/Flutter-3.10+-blue.svg)](https://flutter.dev/)
+  [![Qdrant](https://img.shields.io/badge/Qdrant-Cloud-red.svg)](https://qdrant.tech/)
+  [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-green.svg)](https://www.mongodb.com/atlas)
 
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Python](https://img.shields.io/badge/Python-3.12+-blue.svg)](https://www.python.org/)
-[![.NET](https://img.shields.io/badge/.NET-8.0+-purple.svg)](https://dotnet.microsoft.com/)
-[![Flutter](https://img.shields.io/badge/Flutter-3.10+-blue.svg)](https://flutter.dev/)
-[![Qdrant](https://img.shields.io/badge/Qdrant-Cloud-red.svg)](https://qdrant.tech/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-green.svg)](https://www.mongodb.com/atlas)
+  **Zad** is an intelligent Islamic AI assistant powered by a production-grade **Hybrid RAG** pipeline.
+  
+  **زاد** هو مساعد ذكاء اصطناعي إسلامي يعتمد على تقنية **Hybrid RAG** المتطورة لتقديم إجابات دقيقة وموثقة في العلوم الإسلامية (الفقه، العقيدة، التفسير، السيرة، التاريخ) معتمداً على أمهات الكتب.
+</div>
 
-**Zad** is an intelligent Islamic AI assistant powered by a production-grade **Hybrid RAG** (Retrieval-Augmented Generation) pipeline. It provides accurate, context-aware answers to questions about Islamic sciences (Fiqh, Aqeedah, Tafseer, Seerah, Tarikh) using a parent-child chunking strategy, hybrid dense+sparse vector search, and cross-encoder reranking.
+---
+
+## ✨ Key Features | أبرز المميزات
+
+- 📚 **Comprehensive Knowledge (مكتبة شاملة):** Answers extracted directly from trusted classical Islamic texts across multiple domains.
+- 🔍 **Hybrid Search (بحث هجين متطور):** Combines dense semantic search (BGE-M3) with sparse keyword search for high accuracy.
+- 🧩 **Parent-Child Chunking:** Retains deep context from MongoDB while keeping vector searches in Qdrant lightning fast.
+- 🧠 **Cross-Encoder Reranking:** Ensures the absolute most relevant paragraphs are sent to the AI for generation.
+- ⚡ **Multi-LLM Support:** Primary generation via Gemini with fast streaming, plus fallbacks to Groq and GitHub Models.
+- 📱 **Cross-Platform App:** Beautiful, responsive mobile application built with Flutter (iOS/Android/Web).
+
+---
+
+## 📸 Screenshots | واجهة التطبيق
+
+*(أضف صور أو صور متحركة لتطبيق Flutter هنا)*
+<p align="center">
+  <img src="https://via.placeholder.com/250x500.png?text=App+Screenshot+1" width="200" alt="screenshot">
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="https://via.placeholder.com/250x500.png?text=App+Screenshot+2" width="200" alt="screenshot">
+</p>
 
 ---
 
