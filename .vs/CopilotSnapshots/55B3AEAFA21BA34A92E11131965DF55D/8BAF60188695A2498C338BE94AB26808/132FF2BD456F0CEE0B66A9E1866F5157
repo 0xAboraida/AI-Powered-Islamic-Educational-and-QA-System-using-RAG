@@ -1,0 +1,28 @@
+﻿using AutoMapper;
+using Zad.Application.DTOs;
+using Zad.Domain.Entities;
+
+namespace Zad.Application.Mapping;
+
+public class ApplicationMappingProfile : Profile
+{
+    public ApplicationMappingProfile()
+    {
+        CreateMap<User, UserDto>();
+
+        CreateMap<ChatSession, ChatSessionDto>()
+            .ForMember(dest => dest.MessageCount, opt => opt.MapFrom(src => src.Messages.Count));
+
+        CreateMap<Citation, CitationDto>()
+            .ForMember(dest => dest.DocumentTitle, opt => opt.MapFrom(src => src.Document.Title));
+
+        CreateMap<Message, MessageDto>();
+
+        CreateMap<Document, DocumentDto>()
+            .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.Name));
+
+        CreateMap<Category, CategoryDto>();
+
+        CreateMap<RequestLog, RequestLogDto>();
+    }
+}

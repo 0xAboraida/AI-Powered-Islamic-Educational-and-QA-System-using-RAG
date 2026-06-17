@@ -5,9 +5,8 @@ namespace Zad.Domain.Entities;
 public class Citation : BaseEntity
 {
     public int MessageId { get; set; }
-    public int DocumentId { get; set; }
+    public string DocumentTitle { get; set; } = string.Empty;
     public string ReferenceText { get; set; } = string.Empty;
 
     public Message Message { get; set; } = null!;
-    public Document Document { get; set; } = null!;
 }

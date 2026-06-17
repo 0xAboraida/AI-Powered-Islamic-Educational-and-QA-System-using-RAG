@@ -15,8 +15,6 @@ public class ZadDbContext : DbContext
     public DbSet<ChatSession> ChatSessions => Set<ChatSession>();
     public DbSet<Message> Messages => Set<Message>();
     public DbSet<Citation> Citations => Set<Citation>();
-    public DbSet<Document> Documents => Set<Document>();
-    public DbSet<Category> Categories => Set<Category>();
     public DbSet<RequestLog> RequestLogs => Set<RequestLog>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -28,8 +26,6 @@ public class ZadDbContext : DbContext
         modelBuilder.ApplyConfiguration(new ChatSessionConfiguration());
         modelBuilder.ApplyConfiguration(new MessageConfiguration());
         modelBuilder.ApplyConfiguration(new CitationConfiguration(Database.IsSqlServer()));
-        modelBuilder.ApplyConfiguration(new DocumentConfiguration());
-        modelBuilder.ApplyConfiguration(new CategoryConfiguration());
         modelBuilder.ApplyConfiguration(new RequestLogConfiguration());
     }
 }

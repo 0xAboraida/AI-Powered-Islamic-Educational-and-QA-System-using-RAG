@@ -33,9 +33,8 @@ public class AiClient : IAiClient
         var askPath = string.IsNullOrWhiteSpace(_options.AskPath) ? "/api/ask" : _options.AskPath;
 
         _logger.LogInformation(
-            "Sending AI request. Mode: {Mode}, SubMode: {SubMode}",
-            request.Mode,
-            request.SubMode);
+            "Sending AI request. Mode: {Mode}",
+            request.Mode);
 
         var stopwatch = Stopwatch.StartNew();
 

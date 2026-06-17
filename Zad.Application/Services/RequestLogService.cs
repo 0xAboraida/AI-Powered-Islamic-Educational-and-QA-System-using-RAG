@@ -16,13 +16,12 @@ public class RequestLogService : IRequestLogService
         _logger = logger;
     }
 
-    public async Task LogRequest(int userId, ChatMode mode, ExpertSubMode? subMode, RequestStatus status)
+    public async Task LogRequest(int userId, SpecializationMode mode, RequestStatus status)
     {
         var requestLog = new RequestLog
         {
             UserId = userId,
             Mode = mode,
-            ExpertSubMode = subMode,
             Status = status
         };
 
@@ -30,10 +29,9 @@ public class RequestLogService : IRequestLogService
         await _unitOfWork.SaveChangesAsync();
 
         _logger.LogInformation(
-            "Request log created for UserId {UserId}. Mode: {Mode}, SubMode: {SubMode}, Status: {Status}, RequestLogId: {RequestLogId}",
+            "Request log created for UserId {UserId}. Mode: {Mode}, Status: {Status}, RequestLogId: {RequestLogId}",
             userId,
             mode,
-            subMode,
             status,
             requestLog.Id);
     }

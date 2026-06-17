@@ -14,20 +14,8 @@ public class AskQuestionRequest
     public string Question { get; set; } = string.Empty;
 
     /// <summary>
-    /// Chat response mode.
+    /// Specialization mode for the topic.
     /// </summary>
     /// <example>1</example>
-    public ChatMode ChatMode { get; set; }
-
-    /// <summary>
-    /// Optional expert sub-mode for specialized responses.
-    /// </summary>
-    /// <example>1</example>
-    public ExpertSubMode? ExpertSubMode { get; set; }
-
-    /// <summary>
-    /// Optional knowledge base document identifiers to prioritize context.
-    /// </summary>
-    /// <example>[1,2]</example>
-    public List<int>? ContextDocumentIds { get; set; }
+    public SpecializationMode Mode { get; set; }
 }

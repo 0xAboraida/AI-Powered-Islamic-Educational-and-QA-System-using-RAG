@@ -18,8 +18,6 @@ public class RequestLogConfiguration : IEntityTypeConfiguration<RequestLog>
         builder.Property(x => x.Mode)
             .IsRequired();
 
-        builder.Property(x => x.ExpertSubMode);
-
         builder.Property(x => x.Status)
             .IsRequired();
 

@@ -1,4 +1,5 @@
 using FluentValidation;
+using FluentValidation;
 using Zad.Application.DTOs;
 using Zad.Domain.Enums;
 
@@ -13,15 +14,7 @@ public class AskQuestionRequestValidator : AbstractValidator<AskQuestionRequest>
             .MinimumLength(3)
             .MaximumLength(2000);
 
-        RuleFor(x => x.ChatMode)
+        RuleFor(x => x.Mode)
             .IsInEnum();
-
-        RuleFor(x => x.ExpertSubMode)
-            .NotNull()
-            .When(x => x.ChatMode == ChatMode.Expert)
-            .WithMessage("Expert sub mode is required for expert mode.");
-
-        RuleForEach(x => x.ContextDocumentIds)
-            .GreaterThan(0);
     }
 }

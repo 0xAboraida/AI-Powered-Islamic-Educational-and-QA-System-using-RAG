@@ -13,15 +13,9 @@ public class ApplicationMappingProfile : Profile
         CreateMap<ChatSession, ChatSessionDto>()
             .ForMember(dest => dest.MessageCount, opt => opt.MapFrom(src => src.Messages.Count));
 
-        CreateMap<Citation, CitationDto>()
-            .ForMember(dest => dest.DocumentTitle, opt => opt.MapFrom(src => src.Document.Title));
+        CreateMap<Citation, CitationDto>();
 
         CreateMap<Message, MessageDto>();
-
-        CreateMap<Document, DocumentDto>()
-            .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.Name));
-
-        CreateMap<Category, CategoryDto>();
 
         CreateMap<RequestLog, RequestLogDto>();
     }

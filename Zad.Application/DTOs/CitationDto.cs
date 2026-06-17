@@ -6,12 +6,6 @@ namespace Zad.Application.DTOs;
 public class CitationDto
 {
     /// <summary>
-    /// Source document identifier.
-    /// </summary>
-    /// <example>7</example>
-    public int DocumentId { get; set; }
-
-    /// <summary>
     /// Exact citation text.
     /// </summary>
     /// <example>Sahih al-Bukhari 1:1</example>

@@ -1,7 +1,0 @@
-namespace Zad.Domain.Enums;
-
-public enum ChatMode
-{
-    Expert = 1,
-    Kids = 2
-}

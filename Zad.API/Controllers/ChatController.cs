@@ -122,9 +122,7 @@ public class ChatController : ControllerBase
             userId.Value,
             id,
             request.Question,
-            request.ChatMode,
-            request.ExpertSubMode,
-            request.ContextDocumentIds);
+            request.Mode);
         return Ok(result);
     }
 

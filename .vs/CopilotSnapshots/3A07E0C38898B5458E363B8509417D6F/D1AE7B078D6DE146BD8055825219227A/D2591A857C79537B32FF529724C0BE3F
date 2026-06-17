@@ -1,0 +1,306 @@
+﻿using System.Net;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Text.Json;
+using Microsoft.Extensions.DependencyInjection;
+using Zad.Application.DTOs;
+using Zad.Domain.Entities;
+using Zad.Domain.Enums;
+using Zad.Infrastructure.Persistence;
+using Zad.IntegrationTests.Infrastructure;
+
+namespace Zad.IntegrationTests;
+
+public class FinalIntegrationTests : IClassFixture<ZadApiFactory>, IAsyncLifetime
+{
+    private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
+
+    private readonly ZadApiFactory _factory;
+    private HttpClient _client = null!;
+
+    public FinalIntegrationTests(ZadApiFactory factory)
+    {
+        _factory = factory;
+    }
+
+    public async Task InitializeAsync()
+    {
+        await _factory.ResetDatabaseAsync();
+        _client = _factory.CreateClient();
+    }
+
+    public Task DisposeAsync()
+    {
+        _client.Dispose();
+        return Task.CompletedTask;
+    }
+
+    [Fact]
+    public async Task FullFlow_ShouldRegisterLoginCreateSessionAskAndReturnHistoryWithCitations()
+    {
+        var email = $"user-{Guid.NewGuid():N}@zad.local";
+        var password = "Strong@12345";
+
+        var registerResponse = await _client.PostAsJsonAsync("/api/auth/register", new
+        {
+            Email = email,
+            Name = "Integration User",
+            ConfirmPassword = password,
+            Password = password
+        });
+
+        Assert.Equal(HttpStatusCode.Created, registerResponse.StatusCode);
+
+        var loginResponse = await _client.PostAsJsonAsync("/api/auth/login", new
+        {
+            Email = email,
+            Password = password
+        });
+
+        Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
+        var loginPayload = await loginResponse.Content.ReadFromJsonAsync<AuthResponseDto>(JsonOptions);
+        Assert.False(string.IsNullOrWhiteSpace(loginPayload?.Token));
+
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", loginPayload!.Token);
+
+        var createSessionResponse = await _client.PostAsJsonAsync("/api/chat/sessions", new
+        {
+            Name = "Integration Session"
+        });
+
+        Assert.Equal(HttpStatusCode.Created, createSessionResponse.StatusCode);
+        var sessionPayload = await createSessionResponse.Content.ReadFromJsonAsync<ChatSessionDto>(JsonOptions);
+        Assert.NotNull(sessionPayload);
+
+        var askResponse = await _client.PostAsJsonAsync($"/api/chat/sessions/{sessionPayload!.Id}/messages", new
+        {
+            Question = "What is Tawheed?",
+            ChatMode = ChatMode.Expert,
+            ExpertSubMode = ExpertSubMode.Aqidah
+        });
+
+        Assert.Equal(HttpStatusCode.OK, askResponse.StatusCode);
+        var messagePayload = await askResponse.Content.ReadFromJsonAsync<MessageDto>(JsonOptions);
+        Assert.NotNull(messagePayload);
+        Assert.NotEmpty(messagePayload!.Citations);
+
+        var historyResponse = await _client.GetAsync($"/api/chat/sessions/{sessionPayload.Id}");
+        Assert.Equal(HttpStatusCode.OK, historyResponse.StatusCode);
+
+        var historyPayload = await historyResponse.Content.ReadFromJsonAsync<ChatSessionDetailsDto>(JsonOptions);
+        Assert.NotNull(historyPayload);
+        Assert.Single(historyPayload!.Messages);
+        Assert.NotEmpty(historyPayload.Messages[0].Citations);
+
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ZadDbContext>();
+
+        var message = await db.Messages.FindAsync(messagePayload.Id);
+        Assert.NotNull(message);
+
+        var citationsCount = db.Citations.Count(c => c.MessageId == messagePayload.Id);
+        Assert.True(citationsCount >= 1);
+
+        var successRequestLogs = db.RequestLogs.Where(x => x.Status == RequestStatus.Success).ToList();
+        Assert.Single(successRequestLogs);
+        Assert.Equal(loginPayload.User.Id, successRequestLogs[0].UserId);
+    }
+
+    [Fact]
+    public async Task InvalidJwt_ShouldReturnUnauthorized()
+    {
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "invalid-token");
+
+        var response = await _client.GetAsync("/api/chat/sessions");
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task UserNotFound_ShouldReturnNotFound()
+    {
+        var token = TestJwtTokenFactory.CreateToken(999999);
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var response = await _client.PostAsJsonAsync("/api/question/ask", new
+        {
+            Question = "Where is this user?",
+            ChatMode = ChatMode.Kids
+        });
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task SessionNotFound_ShouldReturnNotFound()
+    {
+        var token = await RegisterAndGetTokenAsync();
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var response = await _client.PostAsJsonAsync("/api/chat/sessions/987654/messages", new
+        {
+            Question = "Missing session",
+            ChatMode = ChatMode.Kids
+        });
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task DeleteSession_ShouldReturnNoContent()
+    {
+        var token = await RegisterAndGetTokenAsync();
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var createSessionResponse = await _client.PostAsJsonAsync("/api/chat/sessions", new
+        {
+            Name = "Delete Session"
+        });
+
+        Assert.Equal(HttpStatusCode.Created, createSessionResponse.StatusCode);
+        var sessionPayload = await createSessionResponse.Content.ReadFromJsonAsync<ChatSessionDto>(JsonOptions);
+        Assert.NotNull(sessionPayload);
+
+        var deleteResponse = await _client.DeleteAsync($"/api/chat/sessions/{sessionPayload!.Id}");
+        Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
+
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ZadDbContext>();
+        var deletedSession = await db.ChatSessions.FindAsync(sessionPayload.Id);
+        Assert.Null(deletedSession);
+    }
+
+    [Fact]
+    public async Task DeleteSession_InvalidJwt_ShouldReturnUnauthorized()
+    {
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "invalid-token");
+
+        var response = await _client.DeleteAsync("/api/chat/sessions/1");
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task DeleteSession_NotFound_ShouldReturnNotFound()
+    {
+        var token = await RegisterAndGetTokenAsync();
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var response = await _client.DeleteAsync("/api/chat/sessions/987654");
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task DeleteSession_OtherUser_ShouldReturnUnauthorized()
+    {
+        var ownerToken = await RegisterAndGetTokenAsync();
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", ownerToken);
+
+        var createSessionResponse = await _client.PostAsJsonAsync("/api/chat/sessions", new
+        {
+            Name = "Other User Session"
+        });
+
+        Assert.Equal(HttpStatusCode.Created, createSessionResponse.StatusCode);
+        var sessionPayload = await createSessionResponse.Content.ReadFromJsonAsync<ChatSessionDto>(JsonOptions);
+        Assert.NotNull(sessionPayload);
+
+        var otherUserToken = await RegisterAndGetTokenAsync();
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", otherUserToken);
+
+        var response = await _client.DeleteAsync($"/api/chat/sessions/{sessionPayload!.Id}");
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ZadDbContext>();
+        var existingSession = await db.ChatSessions.FindAsync(sessionPayload.Id);
+        Assert.NotNull(existingSession);
+    }
+
+    [Fact]
+    public async Task AiTimeout_ShouldReturnGatewayTimeoutAndLogFailure()
+    {
+        var token = await RegisterAndGetTokenAsync();
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var createSessionResponse = await _client.PostAsJsonAsync("/api/chat/sessions", new { Name = "Timeout Session" });
+        Assert.Equal(HttpStatusCode.Created, createSessionResponse.StatusCode);
+        var session = await createSessionResponse.Content.ReadFromJsonAsync<ChatSessionDto>(JsonOptions);
+
+        var response = await _client.PostAsJsonAsync($"/api/chat/sessions/{session!.Id}/messages", new
+        {
+            Question = "TIMEOUT_TRIGGER",
+            ChatMode = ChatMode.Kids
+        });
+
+        Assert.Equal(HttpStatusCode.GatewayTimeout, response.StatusCode);
+
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ZadDbContext>();
+        var userId = db.ChatSessions.Where(x => x.Id == session.Id).Select(x => x.UserId).Single();
+        Assert.Contains(db.RequestLogs, x => x.UserId == userId && x.Status == RequestStatus.Failed);
+    }
+
+    [Fact]
+    public async Task DuplicateAiCitations_ShouldBeDeduplicatedAndPersistMessage()
+    {
+        var token = await RegisterAndGetTokenAsync();
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var createSessionResponse = await _client.PostAsJsonAsync("/api/chat/sessions", new { Name = "Constraint Session" });
+        Assert.Equal(HttpStatusCode.Created, createSessionResponse.StatusCode);
+        var session = await createSessionResponse.Content.ReadFromJsonAsync<ChatSessionDto>(JsonOptions);
+
+        var response = await _client.PostAsJsonAsync($"/api/chat/sessions/{session!.Id}/messages", new
+        {
+            Question = "DUPLICATE_CITATION_TRIGGER",
+            ChatMode = ChatMode.Kids
+        });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var messagePayload = await response.Content.ReadFromJsonAsync<MessageDto>(JsonOptions);
+        Assert.NotNull(messagePayload);
+
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ZadDbContext>();
+
+        var messagesInSession = db.Messages.Count(m => m.ChatSessionId == session.Id);
+        Assert.Equal(1, messagesInSession);
+
+        var citationsInMessage = db.Citations.Count(c => c.MessageId == messagePayload!.Id);
+        Assert.Equal(1, citationsInMessage);
+
+        var userId = db.ChatSessions.Where(x => x.Id == session.Id).Select(x => x.UserId).Single();
+        Assert.Contains(db.RequestLogs, x => x.UserId == userId && x.Status == RequestStatus.Success);
+    }
+
+    private async Task<string> RegisterAndGetTokenAsync()
+    {
+        var email = $"e2e-{Guid.NewGuid():N}@zad.local";
+        var password = "Strong@12345";
+
+        var registerResponse = await _client.PostAsJsonAsync("/api/auth/register", new
+        {
+            Email = email,
+            Name = "E2E User",
+            ConfirmPassword = password,
+            Password = password
+        });
+
+        registerResponse.EnsureSuccessStatusCode();
+
+        var loginResponse = await _client.PostAsJsonAsync("/api/auth/login", new
+        {
+            Email = email,
+            Password = password
+        });
+
+        loginResponse.EnsureSuccessStatusCode();
+
+        var authPayload = await loginResponse.Content.ReadFromJsonAsync<AuthResponseDto>(JsonOptions);
+        return authPayload!.Token;
+    }
+}

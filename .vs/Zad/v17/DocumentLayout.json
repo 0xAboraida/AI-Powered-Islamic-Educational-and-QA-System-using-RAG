@@ -1,71 +1,12 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\Mahmoud\\Documents\\GitHub\\Zad.Net\\",
-  "Documents": [
-    {
-      "AbsoluteMoniker": "D:0:0:{12623951-EAD6-4C42-9BA1-3BDF34841865}|Zad.Infrastructure\\Zad.Infrastructure.csproj|c:\\users\\mahmoud\\documents\\github\\zad.net\\zad.infrastructure\\persistence\\zaddbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{12623951-EAD6-4C42-9BA1-3BDF34841865}|Zad.Infrastructure\\Zad.Infrastructure.csproj|solutionrelative:zad.infrastructure\\persistence\\zaddbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AD041B8B-5E39-4206-8CFB-C814BF8BC427}|Zad.Domain\\Zad.Domain.csproj|c:\\users\\mahmoud\\documents\\github\\zad.net\\zad.domain\\enums\\expertsubmode.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{AD041B8B-5E39-4206-8CFB-C814BF8BC427}|Zad.Domain\\Zad.Domain.csproj|solutionrelative:zad.domain\\enums\\expertsubmode.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AD041B8B-5E39-4206-8CFB-C814BF8BC427}|Zad.Domain\\Zad.Domain.csproj|c:\\users\\mahmoud\\documents\\github\\zad.net\\zad.domain\\entities\\category.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{AD041B8B-5E39-4206-8CFB-C814BF8BC427}|Zad.Domain\\Zad.Domain.csproj|solutionrelative:zad.domain\\entities\\category.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    }
-  ],
+  "Documents": [],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": [
-        {
-          "DockedWidth": 200,
-          "SelectedChildIndex": 0,
-          "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "ZadDbContext.cs",
-              "DocumentMoniker": "C:\\Users\\Mahmoud\\Documents\\GitHub\\Zad.Net\\Zad.Infrastructure\\Persistence\\ZadDbContext.cs",
-              "RelativeDocumentMoniker": "Zad.Infrastructure\\Persistence\\ZadDbContext.cs",
-              "ToolTip": "C:\\Users\\Mahmoud\\Documents\\GitHub\\Zad.Net\\Zad.Infrastructure\\Persistence\\ZadDbContext.cs",
-              "RelativeToolTip": "Zad.Infrastructure\\Persistence\\ZadDbContext.cs",
-              "ViewState": "AgIAAAgAAAAAAAAAAAAQwBMAAAA6AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-17T00:29:46.415Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "ExpertSubMode.cs",
-              "DocumentMoniker": "C:\\Users\\Mahmoud\\Documents\\GitHub\\Zad.Net\\Zad.Domain\\Enums\\ExpertSubMode.cs",
-              "RelativeDocumentMoniker": "Zad.Domain\\Enums\\ExpertSubMode.cs",
-              "ToolTip": "C:\\Users\\Mahmoud\\Documents\\GitHub\\Zad.Net\\Zad.Domain\\Enums\\ExpertSubMode.cs",
-              "RelativeToolTip": "Zad.Domain\\Enums\\ExpertSubMode.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAQAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-17T00:23:46.135Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Category.cs",
-              "DocumentMoniker": "C:\\Users\\Mahmoud\\Documents\\GitHub\\Zad.Net\\Zad.Domain\\Entities\\Category.cs",
-              "RelativeDocumentMoniker": "Zad.Domain\\Entities\\Category.cs",
-              "ToolTip": "C:\\Users\\Mahmoud\\Documents\\GitHub\\Zad.Net\\Zad.Domain\\Entities\\Category.cs",
-              "RelativeToolTip": "Zad.Domain\\Entities\\Category.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-16T22:54:12.124Z",
-              "EditorCaption": ""
-            }
-          ]
-        }
-      ]
+      "DocumentGroups": []
     }
   ]
 }

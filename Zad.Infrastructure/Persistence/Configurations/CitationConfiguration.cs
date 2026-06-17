@@ -22,8 +22,9 @@ public class CitationConfiguration : IEntityTypeConfiguration<Citation>
         builder.Property(x => x.MessageId)
             .IsRequired();
 
-        builder.Property(x => x.DocumentId)
-            .IsRequired();
+        builder.Property(x => x.DocumentTitle)
+            .IsRequired()
+            .HasMaxLength(300);
 
         builder.Property(x => x.ReferenceText)
             .HasMaxLength(2000)
@@ -49,9 +50,9 @@ public class CitationConfiguration : IEntityTypeConfiguration<Citation>
         builder.Property(x => x.CreatedAt)
             .IsRequired();
 
-        builder.HasIndex(x => new { x.MessageId, x.DocumentId });
+        builder.HasIndex(x => new { x.MessageId, x.DocumentTitle });
 
-        builder.HasIndex("MessageId", "DocumentId", uniqueReferenceColumnName)
+        builder.HasIndex("MessageId", "DocumentTitle", uniqueReferenceColumnName)
             .IsUnique();
             
 
@@ -59,10 +60,5 @@ public class CitationConfiguration : IEntityTypeConfiguration<Citation>
             .WithMany(x => x.Citations)
             .HasForeignKey(x => x.MessageId)
             .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasOne(x => x.Document)
-            .WithMany(x => x.Citations)
-            .HasForeignKey(x => x.DocumentId)
-            .OnDelete(DeleteBehavior.Restrict);
     }
 }

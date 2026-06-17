@@ -46,9 +46,7 @@ public class QuestionController : ControllerBase
             userId.Value,
             session.Id,
             request.Question,
-            request.ChatMode,
-            request.ExpertSubMode,
-            request.ContextDocumentIds);
+            request.Mode);
 
         return Ok(result);
     }

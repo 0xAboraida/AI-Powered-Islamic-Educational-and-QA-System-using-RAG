@@ -16,8 +16,6 @@ public class UnitOfWork : IUnitOfWork
         IChatSessionRepository chatSessions,
         IMessageRepository messages,
         ICitationRepository citations,
-        IDocumentRepository documents,
-        ICategoryRepository categories,
         IRequestLogRepository requestLogs)
     {
         _context = context;
@@ -25,8 +23,6 @@ public class UnitOfWork : IUnitOfWork
         ChatSessions = chatSessions;
         Messages = messages;
         Citations = citations;
-        Documents = documents;
-        Categories = categories;
         RequestLogs = requestLogs;
     }
 
@@ -34,16 +30,12 @@ public class UnitOfWork : IUnitOfWork
     public IChatSessionRepository ChatSessions { get; }
     public IMessageRepository Messages { get; }
     public ICitationRepository Citations { get; }
-    public IDocumentRepository Documents { get; }
-    public ICategoryRepository Categories { get; }
     public IRequestLogRepository RequestLogs { get; }
 
     Zad.Application.Interfaces.Repositories.IUserRepository Zad.Application.Interfaces.IUnitOfWork.Users => Users;
     Zad.Application.Interfaces.Repositories.IChatSessionRepository Zad.Application.Interfaces.IUnitOfWork.ChatSessions => ChatSessions;
     Zad.Application.Interfaces.Repositories.IMessageRepository Zad.Application.Interfaces.IUnitOfWork.Messages => Messages;
     Zad.Application.Interfaces.Repositories.ICitationRepository Zad.Application.Interfaces.IUnitOfWork.Citations => Citations;
-    Zad.Application.Interfaces.Repositories.IDocumentRepository Zad.Application.Interfaces.IUnitOfWork.Documents => Documents;
-    Zad.Application.Interfaces.Repositories.ICategoryRepository Zad.Application.Interfaces.IUnitOfWork.Categories => Categories;
     Zad.Application.Interfaces.Repositories.IRequestLogRepository Zad.Application.Interfaces.IUnitOfWork.RequestLogs => RequestLogs;
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

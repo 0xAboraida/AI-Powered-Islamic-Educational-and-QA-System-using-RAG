@@ -15,7 +15,6 @@ public class MessageRepository : GenericRepository<Message>, IMessageRepository
         return await Context.Messages
             .Where(x => x.ChatSessionId == chatSessionId)
             .Include(x => x.Citations)
-            .ThenInclude(x => x.Document)
             .OrderBy(x => x.CreatedAt)
             .ToListAsync();
     }
@@ -25,7 +24,6 @@ public class MessageRepository : GenericRepository<Message>, IMessageRepository
         return await Context.Messages
             .Where(x => x.ChatSession.UserId == userId)
             .Include(x => x.Citations)
-            .ThenInclude(x => x.Document)
             .OrderBy(x => x.CreatedAt)
             .ToListAsync();
     }
@@ -43,7 +41,6 @@ public class MessageRepository : GenericRepository<Message>, IMessageRepository
     {
         return await Context.Messages
             .Include(x => x.Citations)
-            .ThenInclude(x => x.Document)
             .FirstOrDefaultAsync(x => x.Id == messageId);
     }
 }

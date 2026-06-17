@@ -75,8 +75,7 @@ public class FinalIntegrationTests : IClassFixture<ZadApiFactory>, IAsyncLifetim
         var askResponse = await _client.PostAsJsonAsync($"/api/chat/sessions/{sessionPayload!.Id}/messages", new
         {
             Question = "What is Tawheed?",
-            ChatMode = ChatMode.Expert,
-            ExpertSubMode = ExpertSubMode.Aqidah
+            Mode = SpecializationMode.Aqidah
         });
 
         Assert.Equal(HttpStatusCode.OK, askResponse.StatusCode);
@@ -125,7 +124,7 @@ public class FinalIntegrationTests : IClassFixture<ZadApiFactory>, IAsyncLifetim
         var response = await _client.PostAsJsonAsync("/api/question/ask", new
         {
             Question = "Where is this user?",
-            ChatMode = ChatMode.Kids
+            Mode = SpecializationMode.Aqidah
         });
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -140,7 +139,7 @@ public class FinalIntegrationTests : IClassFixture<ZadApiFactory>, IAsyncLifetim
         var response = await _client.PostAsJsonAsync("/api/chat/sessions/987654/messages", new
         {
             Question = "Missing session",
-            ChatMode = ChatMode.Kids
+            Mode = SpecializationMode.Aqidah
         });
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -232,7 +231,7 @@ public class FinalIntegrationTests : IClassFixture<ZadApiFactory>, IAsyncLifetim
         var response = await _client.PostAsJsonAsync($"/api/chat/sessions/{session!.Id}/messages", new
         {
             Question = "TIMEOUT_TRIGGER",
-            ChatMode = ChatMode.Kids
+            Mode = SpecializationMode.Aqidah
         });
 
         Assert.Equal(HttpStatusCode.GatewayTimeout, response.StatusCode);
@@ -256,7 +255,7 @@ public class FinalIntegrationTests : IClassFixture<ZadApiFactory>, IAsyncLifetim
         var response = await _client.PostAsJsonAsync($"/api/chat/sessions/{session!.Id}/messages", new
         {
             Question = "DUPLICATE_CITATION_TRIGGER",
-            ChatMode = ChatMode.Kids
+            Mode = SpecializationMode.Aqidah
         });
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);

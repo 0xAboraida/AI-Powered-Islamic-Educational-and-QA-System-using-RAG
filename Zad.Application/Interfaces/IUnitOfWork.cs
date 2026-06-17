@@ -8,8 +8,6 @@ public interface IUnitOfWork : IDisposable, IAsyncDisposable
     IChatSessionRepository ChatSessions { get; }
     IMessageRepository Messages { get; }
     ICitationRepository Citations { get; }
-    IDocumentRepository Documents { get; }
-    ICategoryRepository Categories { get; }
     IRequestLogRepository RequestLogs { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

@@ -1,0 +1,13 @@
+﻿namespace Zad.Domain.Enums;
+
+public enum SpecializationMode
+{
+    Fiqh = 1,
+    Aqidah = 2,
+    Sirah = 3,
+    Tafseer = 4,
+    Hadeeth = 5,
+    Quraan = 6,
+    History = 7,
+    Language = 8
+}

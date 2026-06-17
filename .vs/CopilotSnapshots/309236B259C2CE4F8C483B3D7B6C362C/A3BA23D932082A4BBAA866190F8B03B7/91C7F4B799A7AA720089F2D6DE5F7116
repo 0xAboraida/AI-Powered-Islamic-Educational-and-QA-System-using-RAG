@@ -1,0 +1,10 @@
+﻿using Zad.Domain.Enums;
+
+namespace Zad.Application.DTOs;
+
+public class AiRequestDto
+{
+    public string Question { get; set; } = string.Empty;
+    public SpecializationMode Mode { get; set; }
+    public List<int>? Context { get; set; }
+}

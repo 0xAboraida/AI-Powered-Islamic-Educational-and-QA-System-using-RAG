@@ -1,11 +1,14 @@
+using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 using Zad.Domain.Enums;
 
 namespace Zad.Application.DTOs;
 
 public class AiRequestDto
 {
-    public string Question { get; set; } = string.Empty;
-    public ChatMode Mode { get; set; }
-    public ExpertSubMode? SubMode { get; set; }
-    public List<int>? Context { get; set; }
+    [JsonPropertyName("prompt")]
+    public string Prompt { get; set; } = string.Empty;
+
+    [JsonPropertyName("mode")]
+    public SpecializationMode Mode { get; set; }
 }

@@ -1,0 +1,19 @@
+﻿namespace Zad.Application.DTOs;
+
+/// <summary>
+/// Citation reference attached to an AI answer.
+/// </summary>
+public class CitationDto
+{
+    /// <summary>
+    /// Exact citation text.
+    /// </summary>
+    /// <example>Sahih al-Bukhari 1:1</example>
+    public string ReferenceText { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Source document title.
+    /// </summary>
+    /// <example>Sahih al-Bukhari</example>
+    public string DocumentTitle { get; set; } = string.Empty;
+}

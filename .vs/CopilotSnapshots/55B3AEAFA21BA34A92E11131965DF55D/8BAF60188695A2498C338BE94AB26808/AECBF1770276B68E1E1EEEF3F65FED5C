@@ -1,0 +1,64 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Zad.Domain.Entities;
+
+namespace Zad.Infrastructure.Persistence.Configurations;
+
+public class CitationConfiguration : IEntityTypeConfiguration<Citation>
+{
+    private readonly bool _useSqlServerHash;
+
+    public CitationConfiguration(bool useSqlServerHash)
+    {
+        _useSqlServerHash = useSqlServerHash;
+    }
+
+    public void Configure(EntityTypeBuilder<Citation> builder)
+    {
+        builder.ToTable("Citations");
+
+        builder.HasKey(x => x.Id);
+
+        builder.Property(x => x.MessageId)
+            .IsRequired();
+
+        builder.Property(x => x.DocumentTitle)
+            .IsRequired()
+            .HasMaxLength(300);
+
+        builder.Property(x => x.ReferenceText)
+            .HasMaxLength(2000)
+            .IsRequired();
+
+        var uniqueReferenceColumnName = "ReferenceTextNormalized";
+
+        if (_useSqlServerHash)
+        {
+            uniqueReferenceColumnName = "ReferenceTextHash";
+            builder.Property<byte[]>(uniqueReferenceColumnName)
+                .HasColumnType("binary(32)")
+                .IsRequired()
+                .HasComputedColumnSql("CONVERT(binary(32), HASHBYTES('SHA2_256', [ReferenceText]))", stored: true);
+        }
+        else
+        {
+            builder.Property<string>(uniqueReferenceColumnName)
+                .HasMaxLength(2000)
+                .HasComputedColumnSql("LOWER([ReferenceText])", stored: true);
+        }
+
+        builder.Property(x => x.CreatedAt)
+            .IsRequired();
+
+        builder.HasIndex(x => new { x.MessageId, x.DocumentTitle });
+
+        builder.HasIndex("MessageId", "DocumentTitle", uniqueReferenceColumnName)
+            .IsUnique();
+            
+
+        builder.HasOne(x => x.Message)
+            .WithMany(x => x.Citations)
+            .HasForeignKey(x => x.MessageId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
+}

@@ -1,0 +1,7 @@
+﻿namespace Zad.Application.DTOs;
+
+public class AiCitationDto
+{
+    public int DocumentId { get; set; }
+    public string ReferenceText { get; set; } = string.Empty;
+}

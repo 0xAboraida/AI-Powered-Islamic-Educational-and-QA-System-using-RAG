@@ -37,30 +37,6 @@ namespace Zad.Infrastructure.Migrations
                     b.ToTable("UserRoles", (string)null);
                 });
 
-            modelBuilder.Entity("Zad.Domain.Entities.Category", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("Categories", (string)null);
-                });
-
             modelBuilder.Entity("Zad.Domain.Entities.ChatSession", b =>
                 {
                     b.Property<int>("Id")
@@ -97,8 +73,10 @@ namespace Zad.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("DocumentId")
-                        .HasColumnType("int");
+                    b.Property<string>("DocumentTitle")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<int>("MessageId")
                         .HasColumnType("int");
@@ -116,48 +94,12 @@ namespace Zad.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DocumentId");
+                    b.HasIndex("MessageId", "DocumentTitle");
 
-                    b.HasIndex("MessageId", "DocumentId");
-
-                    b.HasIndex("MessageId", "DocumentId", "ReferenceTextHash")
+                    b.HasIndex("MessageId", "DocumentTitle", "ReferenceTextHash")
                         .IsUnique();
 
                     b.ToTable("Citations", (string)null);
-                });
-
-            modelBuilder.Entity("Zad.Domain.Entities.Document", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Source")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
-
-                    b.HasIndex("Title", "Source")
-                        .IsUnique();
-
-                    b.ToTable("Documents", (string)null);
                 });
 
             modelBuilder.Entity("Zad.Domain.Entities.Message", b =>
@@ -201,9 +143,6 @@ namespace Zad.Infrastructure.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<int?>("ExpertSubMode")
-                        .HasColumnType("int");
 
                     b.Property<int>("Mode")
                         .HasColumnType("int");
@@ -307,32 +246,13 @@ namespace Zad.Infrastructure.Migrations
 
             modelBuilder.Entity("Zad.Domain.Entities.Citation", b =>
                 {
-                    b.HasOne("Zad.Domain.Entities.Document", "Document")
-                        .WithMany("Citations")
-                        .HasForeignKey("DocumentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("Zad.Domain.Entities.Message", "Message")
                         .WithMany("Citations")
                         .HasForeignKey("MessageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Document");
-
                     b.Navigation("Message");
-                });
-
-            modelBuilder.Entity("Zad.Domain.Entities.Document", b =>
-                {
-                    b.HasOne("Zad.Domain.Entities.Category", "Category")
-                        .WithMany("Documents")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("Zad.Domain.Entities.Message", b =>
@@ -357,19 +277,9 @@ namespace Zad.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Zad.Domain.Entities.Category", b =>
-                {
-                    b.Navigation("Documents");
-                });
-
             modelBuilder.Entity("Zad.Domain.Entities.ChatSession", b =>
                 {
                     b.Navigation("Messages");
-                });
-
-            modelBuilder.Entity("Zad.Domain.Entities.Document", b =>
-                {
-                    b.Navigation("Citations");
                 });
 
             modelBuilder.Entity("Zad.Domain.Entities.Message", b =>

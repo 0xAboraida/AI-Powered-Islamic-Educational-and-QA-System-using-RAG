@@ -14,7 +14,6 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IChatService, ChatService>();
         services.AddScoped<IQuestionService, QuestionService>();
-        services.AddScoped<IDocumentService, DocumentService>();
         services.AddScoped<IRequestLogService, RequestLogService>();
 
         services.AddValidatorsFromAssembly(typeof(ServiceCollectionExtensions).Assembly);

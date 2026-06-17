@@ -1,0 +1,61 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Zad.Application.Interfaces;
+using Zad.Infrastructure.External;
+using Zad.Infrastructure.Persistence;
+using Zad.Infrastructure.Repositories;
+using Zad.Infrastructure.Security;
+using Zad.Infrastructure.UnitOfWork;
+using ApplicationUnitOfWork = Zad.Application.Interfaces.IUnitOfWork;
+using InfrastructureUnitOfWork = Zad.Infrastructure.UnitOfWork.IUnitOfWork;
+using InfrastructureUnitOfWorkImplementation = Zad.Infrastructure.UnitOfWork.UnitOfWork;
+
+namespace Zad.Infrastructure.Extensions;
+
+public static class InfrastructureExtensions
+{
+    public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration, JwtOptions jwtOptions)
+    {
+        ArgumentNullException.ThrowIfNull(jwtOptions);
+
+        var connectionString = configuration.GetConnectionString("DefaultConnection")
+            ?? throw new InvalidOperationException("Connection string 'DefaultConnection' was not found.");
+
+        services.AddDbContext<ZadDbContext>(options => options.UseSqlServer(connectionString));
+
+        services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IChatSessionRepository, ChatSessionRepository>();
+        services.AddScoped<IMessageRepository, MessageRepository>();
+        services.AddScoped<ICitationRepository, CitationRepository>();
+        services.AddScoped<IDocumentRepository, DocumentRepository>();
+        services.AddScoped<ICategoryRepository, CategoryRepository>();
+        services.AddScoped<IRequestLogRepository, RequestLogRepository>();
+        services.AddScoped<InfrastructureUnitOfWork, InfrastructureUnitOfWorkImplementation>();
+        services.AddScoped<ApplicationUnitOfWork>(sp => sp.GetRequiredService<InfrastructureUnitOfWork>());
+
+        services.Configure<AiClientOptions>(configuration.GetSection("AiService"));
+        services.AddHttpClient<Zad.Application.Interfaces.IAiClient, AiClient>((serviceProvider, client) =>
+        {
+            var options = serviceProvider.GetRequiredService<IOptions<AiClientOptions>>().Value;
+
+            if (!string.IsNullOrWhiteSpace(options.BaseUrl))
+            {
+                client.BaseAddress = new Uri(options.BaseUrl);
+            }
+
+            client.Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds > 0 ? options.TimeoutSeconds : 30);
+        });
+
+        services.AddScoped<Zad.Infrastructure.External.IAiClient>(sp =>
+            (Zad.Infrastructure.External.IAiClient)sp.GetRequiredService<Zad.Application.Interfaces.IAiClient>());
+
+        services.AddSingleton<IOptions<JwtOptions>>(Options.Create(jwtOptions));
+
+        services.AddScoped<IJwtTokenProvider, JwtTokenProvider>();
+
+        return services;
+    }
+}

@@ -35,22 +35,19 @@ public class QuestionService : IQuestionService
         _logger = logger;
     }
 
-    public async Task<MessageDto> AskQuestion(int userId, int chatSessionId, string question, ChatMode mode, ExpertSubMode? subMode, IReadOnlyList<int>? contextDocumentIds = null)
+    public async Task<MessageDto> AskQuestion(int userId, int chatSessionId, string question, SpecializationMode mode)
     {
         var request = new AskQuestionRequest
         {
             Question = question,
-            ChatMode = mode,
-            ExpertSubMode = subMode,
-            ContextDocumentIds = contextDocumentIds?.ToList()
+            Mode = mode
         };
 
         _logger.LogInformation(
-            "AskQuestion started for UserId {UserId}, ChatSessionId {ChatSessionId}, Mode {Mode}, SubMode {SubMode}",
+            "AskQuestion started for UserId {UserId}, ChatSessionId {ChatSessionId}, Mode {Mode}",
             userId,
             chatSessionId,
-            mode,
-            subMode);
+            mode);
 
         var transactionStarted = false;
         try
@@ -75,18 +72,11 @@ public class QuestionService : IQuestionService
             await _unitOfWork.BeginTransactionAsync();
             transactionStarted = true;
 
-            var normalizedContextDocumentIds = request.ContextDocumentIds?
-                .Where(x => x > 0)
-                .Distinct()
-                .ToList();
-
-            var prompt = BuildPrompt(question, mode, normalizedContextDocumentIds);
+            var prompt = BuildPrompt(question, mode);
             var aiRequest = new AiRequestDto
             {
-                Question = prompt,
-                Mode = mode,
-                SubMode = subMode,
-                Context = normalizedContextDocumentIds
+                Prompt = prompt,
+                Mode = mode
             };
 
             var aiResponse = await _aiClient.AskAsync(aiRequest);
@@ -104,40 +94,23 @@ public class QuestionService : IQuestionService
             var deduplicatedCitations = (aiResponse.Citations ?? [])
                 .DistinctBy(citation =>
                     (
-                        citation.DocumentId,
+                        citation.DocumentTitle ?? string.Empty,
                         (citation.ReferenceText ?? string.Empty).ToLowerInvariant()
                     ))
                 .ToList();
 
-            var existingDocumentIds = new HashSet<int>();
-            var citationDocumentIds = deduplicatedCitations
-                .Select(citation => citation.DocumentId)
-                .Where(documentId => documentId > 0)
-                .Distinct();
-
-            foreach (var documentId in citationDocumentIds)
-            {
-                if (await _unitOfWork.Documents.GetByIdAsync(documentId) is not null)
-                {
-                    existingDocumentIds.Add(documentId);
-                }
-            }
-
-            var validCitations = deduplicatedCitations
-                .Where(citation => existingDocumentIds.Contains(citation.DocumentId));
-
-            foreach (var citation in validCitations)
+            foreach (var citation in deduplicatedCitations)
             {
                 await _unitOfWork.Citations.AddAsync(new Citation
                 {
                     MessageId = message.Id,
-                    DocumentId = citation.DocumentId,
+                    DocumentTitle = citation.DocumentTitle ?? string.Empty,
                     ReferenceText = citation.ReferenceText ?? string.Empty
                 });
             }
 
             await _unitOfWork.SaveChangesAsync();
-            await _requestLogService.LogRequest(userId, mode, subMode, RequestStatus.Success);
+            await _requestLogService.LogRequest(userId, mode, RequestStatus.Success);
             await _unitOfWork.CommitAsync();
 
             var storedMessage = await _unitOfWork.Messages.GetWithCitationsAsync(message.Id) ?? message;
@@ -156,15 +129,14 @@ public class QuestionService : IQuestionService
                 await _unitOfWork.RollbackAsync();
             }
 
-            await TryLogFailedRequestAsync(userId, mode, subMode);
+            await TryLogFailedRequestAsync(userId, mode);
 
             _logger.LogError(
                 ex,
-                "AskQuestion failed for UserId {UserId}, ChatSessionId {ChatSessionId}, Mode {Mode}, SubMode {SubMode}",
+                "AskQuestion failed for UserId {UserId}, ChatSessionId {ChatSessionId}, Mode {Mode}",
                 userId,
                 chatSessionId,
-                mode,
-                subMode);
+                mode);
 
             if (ex is AppException)
             {
@@ -181,7 +153,7 @@ public class QuestionService : IQuestionService
         return message?.Answer;
     }
 
-    private async Task TryLogFailedRequestAsync(int userId, ChatMode mode, ExpertSubMode? subMode)
+    private async Task TryLogFailedRequestAsync(int userId, SpecializationMode mode)
     {
         try
         {
@@ -194,7 +166,7 @@ public class QuestionService : IQuestionService
                 return;
             }
 
-            await _requestLogService.LogRequest(userId, mode, subMode, RequestStatus.Failed);
+            await _requestLogService.LogRequest(userId, mode, RequestStatus.Failed);
         }
         catch (Exception logEx)
         {
@@ -202,16 +174,10 @@ public class QuestionService : IQuestionService
         }
     }
 
-    public string BuildPrompt(string question, ChatMode mode, IReadOnlyList<int>? context)
+    public string BuildPrompt(string question, SpecializationMode mode)
     {
-        var modeText = mode == ChatMode.Kids
-            ? "Provide a simple, age-appropriate Islamic answer for a child."
-            : "Provide a detailed Islamic answer with clear scholarly citations.";
+        var modeText = $"Provide a detailed Islamic answer focusing on {mode}.";
 
-        var contextText = context is not null && context.Count > 0
-            ? $" Use these context document IDs: {string.Join(", ", context)}."
-            : string.Empty;
-
-        return $"{modeText} Question: {question}.{contextText}";
+        return $"{modeText} Question: {question}.";
     }
 }

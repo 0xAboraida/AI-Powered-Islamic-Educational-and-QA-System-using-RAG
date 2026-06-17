@@ -30,8 +30,6 @@ public static class InfrastructureExtensions
         services.AddScoped<IChatSessionRepository, ChatSessionRepository>();
         services.AddScoped<IMessageRepository, MessageRepository>();
         services.AddScoped<ICitationRepository, CitationRepository>();
-        services.AddScoped<IDocumentRepository, DocumentRepository>();
-        services.AddScoped<ICategoryRepository, CategoryRepository>();
         services.AddScoped<IRequestLogRepository, RequestLogRepository>();
         services.AddScoped<InfrastructureUnitOfWork, InfrastructureUnitOfWorkImplementation>();
         services.AddScoped<ApplicationUnitOfWork>(sp => sp.GetRequiredService<InfrastructureUnitOfWork>());

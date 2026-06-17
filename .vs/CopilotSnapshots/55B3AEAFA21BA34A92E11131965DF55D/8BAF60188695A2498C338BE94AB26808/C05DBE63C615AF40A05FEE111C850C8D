@@ -1,0 +1,54 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Zad.Domain.Entities;
+
+namespace Zad.Infrastructure.Persistence;
+
+public static class SeedData
+{
+    public static async Task SeedAsync(ZadDbContext dbContext, IConfiguration? configuration = null)
+    {
+        var adminRole = await dbContext.Roles
+            .FirstOrDefaultAsync(r => r.Name == "Admin");
+
+        if (adminRole is null)
+        {
+            adminRole = new Role { Name = "Admin" };
+            await dbContext.Roles.AddAsync(adminRole);
+            await dbContext.SaveChangesAsync();
+        }
+
+        var seedAdminEmail = Environment.GetEnvironmentVariable("SEED_ADMIN_EMAIL")
+            ?? configuration?["Seed:AdminEmail"];
+        var seedAdminPassword = Environment.GetEnvironmentVariable("SEED_ADMIN_PASSWORD")
+            ?? configuration?["Seed:AdminPassword"];
+
+        if (!string.IsNullOrWhiteSpace(seedAdminEmail) && !string.IsNullOrWhiteSpace(seedAdminPassword))
+        {
+            var normalizedAdminEmail = seedAdminEmail.Trim().ToLowerInvariant();
+
+            var existingAdminUser = await dbContext.Users
+                .Include(u => u.Roles)
+                .FirstOrDefaultAsync(u => u.Email == normalizedAdminEmail);
+
+            if (existingAdminUser is null)
+            {
+                var adminUser = new User
+                {
+                    Email = normalizedAdminEmail,
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword(seedAdminPassword),
+                    Roles = new List<Role> { adminRole }
+                };
+
+                await dbContext.Users.AddAsync(adminUser);
+                await dbContext.SaveChangesAsync();
+            }
+            else if (existingAdminUser.Roles.All(r => !string.Equals(r.Name, "Admin", StringComparison.OrdinalIgnoreCase)))
+            {
+                existingAdminUser.Roles.Add(adminRole);
+                await dbContext.SaveChangesAsync();
+            }
+        }
+
+    }
+}

@@ -4,5 +4,5 @@ namespace Zad.Application.Interfaces;
 
 public interface IRequestLogService
 {
-    Task LogRequest(int userId, ChatMode mode, ExpertSubMode? subMode, RequestStatus status);
+    Task LogRequest(int userId, SpecializationMode mode, RequestStatus status);
 }

@@ -1,0 +1,19 @@
+﻿using Zad.Application.Interfaces.Repositories;
+
+namespace Zad.Application.Interfaces;
+
+public interface IUnitOfWork : IDisposable, IAsyncDisposable
+{
+    IUserRepository Users { get; }
+    IChatSessionRepository ChatSessions { get; }
+    IMessageRepository Messages { get; }
+    ICitationRepository Citations { get; }
+    IDocumentRepository Documents { get; }
+    ICategoryRepository Categories { get; }
+    IRequestLogRepository RequestLogs { get; }
+
+    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+    Task BeginTransactionAsync(CancellationToken cancellationToken = default);
+    Task CommitAsync(CancellationToken cancellationToken = default);
+    Task RollbackAsync(CancellationToken cancellationToken = default);
+}

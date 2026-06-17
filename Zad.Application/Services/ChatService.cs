@@ -104,7 +104,7 @@ public class ChatService : IChatService
                     await _unitOfWork.Citations.AddAsync(new Citation
                     {
                         MessageId = message.Id,
-                        DocumentId = citation.DocumentId,
+                        DocumentTitle = citation.DocumentTitle,
                         ReferenceText = citation.ReferenceText
                     });
                 }
