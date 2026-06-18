@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from pydantic_settings import BaseSettings
+from pydantic import Field
 from dotenv import load_dotenv
 
 # Explicitly load the .env from services/ai_rag_engine to avoid loading the UTF-16 one in ML Codes
@@ -108,11 +109,35 @@ class Settings(BaseSettings):
     RERANKER_MODEL_NAME: str = os.getenv("RERANKER_MODEL_NAME", "BAAI/bge-reranker-v2-m3")
     RAG_RERANKER_TOP_K: int = int(os.getenv("RAG_RERANKER_TOP_K", "3"))
 
+    # ── API Response Settings ────────────────────────────────────────────────
+    RETURN_CONTEXT_CHUNKS: bool = os.getenv("RETURN_CONTEXT_CHUNKS", "False").lower() in ("true", "1", "yes")
+    RETURN_CITATION_CONTENT: bool = os.getenv("RETURN_CITATION_CONTENT", "False").lower() in ("true", "1", "yes")
+
     # ── Fallback LLM Settings ────────────────────────────────────────────────
     FALLBACK_PROVIDER: str = os.getenv("FALLBACK_PROVIDER", "openai")
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
     GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
     FALLBACK_MODEL_NAME: str = os.getenv("FALLBACK_MODEL_NAME", "gpt-4o-mini")
+
+    # ── Application Constants ────────────────────────────────────────────────
+    SUPPORTED_DOMAINS: list[str] = [
+        "فقه", "العقيدة", "السيرة", "التفسير", "الحديث", "التاريخ", "علوم القران", "النحو والصرف"
+    ]
+    
+    DOMAIN_MAPPING: dict[int, str] = {
+        1: "فقه",
+        2: "العقيدة",
+        3: "السيرة",
+        4: "التفسير",
+        5: "الحديث",
+        6: "علوم القران",
+        7: "التاريخ",
+        8: "علوم اللغه"
+    }
+
+    # Redis Chat Memory
+    REDIS_URL: str = Field("redis://localhost:6379/0", description="Redis connection URL")
+    CHAT_HISTORY_TTL: int = Field(7200, description="Time to live for chat history in seconds (2 hours default)")
 
 
 settings = Settings()

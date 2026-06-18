@@ -133,14 +133,18 @@ class HybridRetriever(BaseRetriever):
 
         candidate_k = top_k * self.dense_top_k_multiplier
 
-        start_t = time.time()
-        
         # Run Dense and Sparse retrieval in parallel for maximum speed
+        # But first, embed the query ONCE to prevent Tokenizer thread-deadlock on CPU and save 2x compute
+        embed_t = time.time()
+        shared_embedding = await self.dense_retriever.embedding_model.aembed_query(query)
+        logger.info(f"[⏱️ TIMER] Hybrid Shared Embedding took: {time.time() - embed_t:.2f} seconds")
+
+        start_t = time.time()
         dense_task = self.dense_retriever.aretrieve(
-            query=query, collection_name=collection_name, top_k=candidate_k, filters=filters
+            query=query, collection_name=collection_name, top_k=candidate_k, filters=filters, embedding_result=shared_embedding
         )
         sparse_task = self.sparse_retriever.aretrieve(
-            query=query, collection_name=collection_name, top_k=candidate_k, filters=filters
+            query=query, collection_name=collection_name, top_k=candidate_k, filters=filters, embedding_result=shared_embedding
         )
         
         dense_results, sparse_results = await asyncio.gather(dense_task, sparse_task)

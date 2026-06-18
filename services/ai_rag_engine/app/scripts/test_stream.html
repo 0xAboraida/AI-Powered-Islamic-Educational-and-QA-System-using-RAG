@@ -177,10 +177,8 @@
             contextBox.innerHTML = '';
             spinner.style.display = 'block';
 
-            let accumulatedMarkdown = "";
-
             try {
-                const response = await fetch('http://localhost:8000/api/v1/chat/stream', {
+                const response = await fetch('http://127.0.0.1:8000/api/v1/chat/ask', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ query: query, domain: parseInt(domain) })
@@ -188,88 +186,54 @@
 
                 if (!response.ok) throw new Error('Network response was not ok');
 
-                const reader = response.body.getReader();
-                const decoder = new TextDecoder('utf-8');
-                let buffer = "";
+                const parsed = await response.json();
+                spinner.style.display = 'none';
 
-                while (true) {
-                    const { done, value } = await reader.read();
-                    if (done) break;
+                // Render answer
+                chatBox.innerHTML = marked.parse(parsed.answer);
+                chatBox.scrollTop = chatBox.scrollHeight;
 
-                    spinner.style.display = 'none';
-                    buffer += decoder.decode(value, { stream: true });
-
-                    let lines = buffer.split('\n');
-                    buffer = lines.pop(); // Keep the last incomplete line in buffer
-
-                    let currentEvent = 'message';
-                    for (let line of lines) {
-                        if (line.trim() === '') {
-                            currentEvent = 'message'; // reset on empty line
-                            continue;
-                        }
-
-                        if (line.startsWith('event: ')) {
-                            currentEvent = line.substring(7).trim();
-                            continue;
-                        }
-
-                        if (line.startsWith('data: ')) {
-                            try {
-                                const jsonStr = line.substring(6).trim();
-                                const parsed = JSON.parse(jsonStr);
-
-                                if (currentEvent === "token") {
-                                    // Accumulate markdown text and render it to HTML
-                                    accumulatedMarkdown += parsed.text;
-                                    chatBox.innerHTML = marked.parse(accumulatedMarkdown);
-                                    chatBox.scrollTop = chatBox.scrollHeight;
-                                }
-                                else if (currentEvent === "context") {
-                                    parsed.context.forEach(ctx => {
-                                        contextBox.innerHTML += `
-                                        <div class="citation-item">
-                                            <div style="margin-bottom: 5px;">
-                                                <strong>[${ctx.id}] ${ctx.book_title || 'كتاب غير معروف'}</strong> 
-                                            </div>
-                                            <div style="font-size: 0.85rem; color: #555; background: #fff; padding: 10px; border-radius: 4px; border: 1px solid #ddd; max-height: 150px; overflow-y: auto;">
-                                                ${ctx.content}
-                                            </div>
-                                        </div>
-                                    `;
-                                    });
-                                }
-                                else if (currentEvent === "citations") {
-                                    parsed.citations.forEach(cite => {
-                                        citationsBox.innerHTML += `
-                                        <div class="citation-item">
-                                            <div style="margin-bottom: 5px;">
-                                                <strong>[${cite.id}] ${cite.book_title || 'كتاب غير معروف'}</strong> 
-                                                <span class="badge" style="background-color: #2c3e50; color: white;">${cite.domain || ''}</span>
-                                                ${cite.madhhab ? `<span class="badge" style="background-color: #16a085; color: white;">${cite.madhhab}</span>` : ''}
-                                            </div>
-                                            <div style="font-size: 0.85rem; color: #555; line-height: 1.6;">
-                                                <strong>المؤلف:</strong> ${cite.author || 'غير معروف'} (توفى: ${cite.author_death || '؟'})<br>
-                                                <strong>العنوان التفصيلي:</strong> ${cite.hierarchy?.kitab || 'بدون قسم'} ${cite.hierarchy?.sections && cite.hierarchy.sections.length > 0 ? '> ' + cite.hierarchy.sections.join(' > ') : ''}<br>
-                                                <strong>المجلد:</strong> ${cite.part || '1'} من ${cite.total_parts || '1'} | <strong>الصفحة:</strong> ${cite.page_id || 'غير معروف'}
-                                            </div>
-                                            <div style="margin-top: 8px;">
-                                                <a href="${cite.source_url}" target="_blank" style="display: inline-block; padding: 4px 10px; background-color: #3498db; color: white; text-decoration: none; border-radius: 4px; font-size: 0.85rem;">🔗 فتح المصدر الأصلي</a>
-                                            </div>
-                                        </div>
-                                    `;
-                                    });
-                                }
-                                else if (currentEvent === "error") {
-                                    accumulatedMarkdown += `\n> ❌ **خطأ:** ${parsed.text}\n\n`;
-                                    chatBox.innerHTML = marked.parse(accumulatedMarkdown);
-                                }
-                            } catch (e) {
-                                console.error("Error parsing JSON chunk", e, line);
-                            }
-                        }
-                    }
+                // Render context if exists
+                if (parsed.context && parsed.context.length > 0) {
+                    parsed.context.forEach(ctx => {
+                        contextBox.innerHTML += `
+                        <div class="citation-item">
+                            <div style="margin-bottom: 5px;">
+                                <strong>[${ctx.id}] ${ctx.book_title || 'كتاب غير معروف'}</strong> 
+                            </div>
+                            <div style="font-size: 0.85rem; color: #555; background: #fff; padding: 10px; border-radius: 4px; border: 1px solid #ddd; max-height: 150px; overflow-y: auto;">
+                                ${ctx.content}
+                            </div>
+                        </div>
+                        `;
+                    });
+                } else {
+                    contextBox.innerHTML = "<em>تم تعطيل عرض النصوص (RETURN_CONTEXT_CHUNKS=False)</em>";
                 }
+
+                // Render citations
+                if (parsed.citations && parsed.citations.length > 0) {
+                    parsed.citations.forEach(cite => {
+                        citationsBox.innerHTML += `
+                        <div class="citation-item">
+                            <div style="margin-bottom: 5px;">
+                                <strong>[${cite.id}] ${cite.book_title || 'كتاب غير معروف'}</strong> 
+                                <span class="badge" style="background-color: #2c3e50; color: white;">${cite.domain || ''}</span>
+                                ${cite.madhhab ? `<span class="badge" style="background-color: #16a085; color: white;">${cite.madhhab}</span>` : ''}
+                            </div>
+                            <div style="font-size: 0.85rem; color: #555; line-height: 1.6;">
+                                <strong>المؤلف:</strong> ${cite.author || 'غير معروف'} (توفى: ${cite.author_death || '؟'})<br>
+                                <strong>العنوان التفصيلي:</strong> ${cite.hierarchy?.kitab || 'بدون قسم'} ${cite.hierarchy?.sections && cite.hierarchy.sections.length > 0 ? '> ' + cite.hierarchy.sections.join(' > ') : ''}<br>
+                                <strong>المجلد:</strong> ${cite.part || '1'} من ${cite.total_parts || '1'} | <strong>الصفحة:</strong> ${cite.page_id || 'غير معروف'}
+                            </div>
+                            <div style="margin-top: 8px;">
+                                <a href="${cite.source_url}" target="_blank" style="display: inline-block; padding: 4px 10px; background-color: #3498db; color: white; text-decoration: none; border-radius: 4px; font-size: 0.85rem;">🔗 فتح المصدر الأصلي</a>
+                            </div>
+                        </div>
+                        `;
+                    });
+                }
+
             } catch (error) {
                 spinner.style.display = 'none';
                 chatBox.innerHTML = `<span style="color: red;">Failed to connect to the server. Make sure FastAPI is running.</span>`;

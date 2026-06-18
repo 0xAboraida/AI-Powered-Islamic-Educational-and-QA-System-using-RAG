@@ -32,6 +32,7 @@ class DenseRetriever(BaseRetriever):
         collection_name: str,
         top_k: int = 10,
         filters: Optional[Dict[str, Any]] = None,
+        embedding_result: Optional[any] = None,
     ) -> List[RetrievedChunk]:
         """
         Args:
@@ -47,8 +48,11 @@ class DenseRetriever(BaseRetriever):
         logger.info(f"[DenseRetriever] Query: '{query[:60]}...'")
 
         # Step 1: Embed the query
-        embedding_result = self.embedding_model.embed_query(query)
-        query_vector = embedding_result.dense
+        if embedding_result:
+            query_vector = embedding_result.dense
+        else:
+            embedding_result = self.embedding_model.embed_query(query)
+            query_vector = embedding_result.dense
 
         # Step 2: Search Qdrant
         raw_results = self.qdrant_manager.search_dense(
@@ -81,16 +85,20 @@ class DenseRetriever(BaseRetriever):
         collection_name: str,
         top_k: int = 10,
         filters: Optional[Dict[str, Any]] = None,
+        embedding_result: Optional[any] = None,
     ) -> List[RetrievedChunk]:
         import time
         import asyncio
         logger.info(f"[DenseRetriever] Async Query: '{query[:60]}...'")
 
         # Step 1: Embed the query async
-        embed_start_t = time.time()
-        embedding_result = await self.embedding_model.aembed_query(query)
-        query_vector = embedding_result.dense
-        logger.info(f"[⏱️ TIMER] DenseRetriever Embedding took: {time.time() - embed_start_t:.2f} seconds")
+        if embedding_result:
+            query_vector = embedding_result.dense
+        else:
+            embed_start_t = time.time()
+            embedding_result = await self.embedding_model.aembed_query(query)
+            query_vector = embedding_result.dense
+            logger.info(f"[⏱️ TIMER] DenseRetriever Embedding took: {time.time() - embed_start_t:.2f} seconds")
 
         # Step 2: Search Qdrant (wrap sync qdrant call in to_thread)
         qdrant_start_t = time.time()

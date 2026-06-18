@@ -19,7 +19,7 @@ def build_context_string(parents: List[RetrievedParent]) -> str:
         page_id     = metadata.get("page_id", "")
         domain      = metadata.get("domain", "")
         madhhab     = metadata.get("madhhab", "")
-        kitab       = metadata.get("hierarchy", {}).get("kitab", "")
+        kitab       = (metadata.get("hierarchy") or {}).get("kitab", "")
 
         context_parts.append(
             f"--- المصدر {i} ---\n"

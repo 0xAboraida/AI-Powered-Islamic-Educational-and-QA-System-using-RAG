@@ -21,34 +21,25 @@ class LLMService:
         # It will be dynamically requested inside generate_streaming_response.
         pass
 
-    async def generate_streaming_response(
+    async def generate_response(
         self, query: str, domain: str, parents: List[RetrievedParent]
-    ) -> AsyncGenerator[str, None]:
+    ) -> dict:
         """
-        Yields JSON strings containing context, chunks of the answer, and final citations.
+        Returns a single dictionary containing the full text, citations, and optionally context.
         """
         # 1. Prepare all citation dicts and context payload for UI
         all_citations, context_payload = prepare_citations_payloads(parents)
         
-        # Yield the context chunks to the frontend
-        context_json = json.dumps({"context": context_payload}, ensure_ascii=False)
-        yield f"event: context\ndata: {context_json}\n\n"
-
         # 2. Get domain-specific prompt and inject context + query
         system_prompt = build_prompt(query, domain, parents)
 
         from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 
         # 3. Build messages list: system → current query
-        messages = [SystemMessage(content=system_prompt)]
+        messages = [SystemMessage(content=system_prompt), HumanMessage(content=query)]
+        logger.info(f"[LLMService] Starting generation for domain='{domain}' | query='{query[:60]}...'")
 
-        messages.append(HumanMessage(content=query))
-        logger.info(f"[LLMService] Starting stream for domain='{domain}' | query='{query[:60]}...'")
-
-        # 3. Stream the response with in-text citation tracking
-        used_ids = set()
-        generated_text_parts: List[str] = []
-        
+        # 3. Generate the response with in-text citation tracking
         from services.ai_rag_engine.app.config.key_manager import gemini_key_manager
         all_keys = gemini_key_manager.get_all_keys()
         if not all_keys:
@@ -56,6 +47,7 @@ class LLMService:
             
         success = False
         last_exception = None
+        full_generated_text = ""
 
         # ── 3a. Loop over Gemini keys to bypass Rate Limits ──
         for attempt, key in enumerate(all_keys):
@@ -63,14 +55,9 @@ class LLMService:
                 # Instantiate fresh model wrapper with the rotated key
                 current_llm_model = get_llm_model(ModelType.GEMINI, api_key=key)
                 
-                # Clear text parts if this is a retry
-                if attempt > 0:
-                    generated_text_parts.clear()
-                    
+                full_generated_text = ""
                 async for content_chunk in current_llm_model.astream(messages):
-                    generated_text_parts.append(content_chunk)
-                    payload = json.dumps({"text": content_chunk}, ensure_ascii=False)
-                    yield f"event: token\ndata: {payload}\n\n"
+                    full_generated_text += content_chunk
                     
                 success = True
                 break # If successfully completed, break out of rotation loop
@@ -78,14 +65,9 @@ class LLMService:
             except Exception as e:
                 logger.warning(f"⚠️ Primary LLM (Gemini) failed on attempt {attempt+1}: {e}")
                 last_exception = e
-                # Do NOT yield anything to the client yet so we don't pollute the stream 
-                # (unless we partially yielded, which means the stream broke midway. 
-                # Handling mid-stream errors requires complex recovery, we just retry).
 
         if not success:
             logger.warning("⚠️ All Primary LLM attempts failed. Switching to Fallback LLM...")
-            if not generated_text_parts: # Only yield fallback message if we haven't already yielded tokens
-                yield f"event: token\ndata: {json.dumps({'text': '\n\n*(عذراً، الخادم الأساسي مشغول. جاري التبديل للمولد الاحتياطي)*\n\n'}, ensure_ascii=False)}\n\n"
             
             try:
                 # Initialize Fallback Model based on settings
@@ -93,43 +75,56 @@ class LLMService:
                 fallback_model_type = ModelType[provider_str] if hasattr(ModelType, provider_str) else ModelType.OPENAI
                 fallback_model = get_llm_model(fallback_model_type)
                 
-                # Stream via Fallback Model
+                ai_message_content = ""
                 async for content_chunk in fallback_model.astream(messages):
-                    generated_text_parts.append(content_chunk)
-                    payload = json.dumps({"text": content_chunk}, ensure_ascii=False)
-                    yield f"event: token\ndata: {payload}\n\n"
+                    ai_message_content += content_chunk
+                    
+                full_generated_text = "\n\n*(عذراً، الخادم الأساسي مشغول. تم توليد الإجابة بالمولد الاحتياطي)*\n\n" + ai_message_content
                     
             except Exception as fallback_e:
                 logger.error(f"[LLMService] Both Primary and Fallback LLMs failed! Error: {fallback_e}", exc_info=True)
-                error_payload = json.dumps({"text": "\n\nعذراً، حدث خطأ في جميع خوادم التوليد. يرجى المحاولة لاحقاً."}, ensure_ascii=False)
-                yield f"event: error\ndata: {error_payload}\n\n"
-                return
+                return {
+                    "answer": "عذراً، حدث خطأ في جميع خوادم التوليد. يرجى المحاولة لاحقاً.",
+                    "citations": []
+                }
 
         # ── 3b. Extract which citation IDs the model actually used ────────
-        full_generated_text = "".join(generated_text_parts)
         used_ids = {
             int(m) for m in _CITATION_PATTERN.findall(full_generated_text)
         }
 
+        # Available IDs are extracted from the keys like "cit_1" -> 1
+        available_ids = [int(k.split("_")[1]) for k in all_citations.keys()]
+
         logger.info(
-            f"[LLMService] Stream complete. "
+            f"[LLMService] Generation complete. "
             f"Model cited IDs: {sorted(used_ids)} / "
-            f"Available IDs: {[c['id'] for c in all_citations]}"
+            f"Available IDs: {sorted(available_ids)}"
         )
 
         # ── 3c. Filter citations to only those the model referenced ───────
-        used_citations = [c for c in all_citations if c["id"] in used_ids]
+        used_citations = {
+            k: v for k, v in all_citations.items()
+            if int(k.split("_")[1]) in used_ids
+        }
 
-        if not used_citations:
+        if not used_citations and all_citations:
             logger.warning(
                 "[LLMService] No citation markers found in generated text. "
                 "Falling back to sending all citations."
             )
             used_citations = all_citations
 
-        # ── 3d. Yield filtered citations at end of stream (SSE) ───────────
-        citations_payload = json.dumps({"citations": used_citations}, ensure_ascii=False)
-        yield f"event: citations\ndata: {citations_payload}\n\n"
+        # ── 3d. Return final dictionary ───────────
+        response_dict = {
+            "answer": full_generated_text,
+            "citations": used_citations
+        }
+        
+        if settings.RETURN_CONTEXT_CHUNKS:
+            response_dict["context"] = context_payload
+            
+        return response_dict
 
 
 llm_service = LLMService()

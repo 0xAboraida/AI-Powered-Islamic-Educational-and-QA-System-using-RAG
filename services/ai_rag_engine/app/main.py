@@ -20,7 +20,7 @@ from services.ai_rag_engine.app.pipeline.retrieval.retrieval_service import retr
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Eagerly initialize MongoDB connections so first user request doesn't suffer 30s delay
-    retrieval_service.warm_up_all()
+    await retrieval_service.warm_up_all()
     
     yield
     
@@ -43,3 +43,16 @@ app.include_router(api_router, prefix="/api")
 @app.get("/", tags=["health"])
 def health_check():
     return {"status": "Zad-AI Engine is running"}
+
+from fastapi.responses import HTMLResponse
+import os
+
+@app.get("/test", tags=["dev"], response_class=HTMLResponse)
+def test_ui():
+    """Serves the test_stream.html file directly to avoid CORS/file:// protocol issues."""
+    html_path = os.path.join(os.path.dirname(__file__), "scripts", "test_stream.html")
+    try:
+        with open(html_path, "r", encoding="utf-8") as f:
+            return f.read()
+    except Exception as e:
+        return f"<h1>Error loading UI: {e}</h1>"

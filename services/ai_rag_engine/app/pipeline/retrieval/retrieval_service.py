@@ -42,43 +42,29 @@ class RetrievalService:
         self._retrievers[domain] = parent_retriever
         return parent_retriever
 
-    def warm_up_all(self):
-        """Eagerly load and connect all Qdrant and MongoDB clients."""
+    async def warm_up_all(self):
+        """Eagerly load and connect all Qdrant and MongoDB clients asynchronously."""
+        import asyncio
         logger.info("🔥 Starting Eager Warm Up for all databases...")
-        # A list of primary domains to warm up
-        domains_to_warm = ['فقه', 'العقيدة', 'التفسير', 'السيرة', 'التاريخ', 'الحديث', 'النحو والصرف']
-        for domain in domains_to_warm:
-            try:
-                retriever = self._get_or_create_retriever(domain)
-                # Warm up Mongo connections specifically for this domain's routes
-                retriever.warm_up_mongo(domain)
-            except Exception as e:
-                logger.warning(f"⚠️ Warm up failed for domain '{domain}': {e}")
+        
+        # Limit concurrent warmups to avoid DNS/Network timeouts when connecting to 8 clusters at once
+        sem = asyncio.Semaphore(2)
+
+        async def warm_domain(domain):
+            async with sem:
+                try:
+                    retriever = self._get_or_create_retriever(domain)
+                    # Run the blocking mongo warm up in a separate thread
+                    await asyncio.to_thread(retriever.warm_up_mongo, domain)
+                except Exception as e:
+                    logger.warning(f"⚠️ Warm up failed for domain '{domain}': {e}")
+
+        # Run warmups concurrently for all supported domains
+        tasks = [warm_domain(domain) for domain in settings.SUPPORTED_DOMAINS]
+        await asyncio.gather(*tasks)
         logger.info("✅ All databases warmed up successfully!")
 
-    def retrieve(self, query: str, domain: str, top_k: int = 10, madhhab: Optional[str] = None) -> List[RetrievedParent]:
-        import time
-        logger.info(f"⏳ Starting retrieval for domain={domain}")
-        start_t = time.time()
-        parent_retriever = self._get_or_create_retriever(domain)
-        init_t = time.time()
-        logger.info(f"[⏱️ TIMER] RetrievalService _get_or_create_retriever took: {init_t - start_t:.2f} seconds")
 
-        _, collection_name = qdrant_router.get_client_and_collection(domain)
-
-        filters = {"metadata.domain": domain}
-        if madhhab:
-            filters["metadata.madhhab"] = madhhab
-
-        parents = parent_retriever.retrieve(
-            query=query,
-            collection_name=collection_name,
-            child_top_k=settings.RAG_CHILD_TOP_K,
-            parent_top_k=top_k,
-            filters=filters
-        )
-        logger.info(f"[⏱️ TIMER] RetrievalService ParentChildRetriever sync execution took: {time.time() - init_t:.2f} seconds")
-        return parents
 
     async def retrieve_multi(self, queries: List[str], domain: str, madhhab: Optional[str] = None, custom_filters: Optional[Dict[str, Any]] = None) -> List[RetrievedParent]:
         import time

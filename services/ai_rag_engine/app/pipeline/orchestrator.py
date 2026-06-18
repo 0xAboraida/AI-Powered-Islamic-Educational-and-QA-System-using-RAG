@@ -9,6 +9,7 @@ from services.ai_rag_engine.app.pipeline.retrieval.retrieval_service import (
     retrieval_service,
 )
 from services.ai_rag_engine.app.pipeline.generation.llm_service import llm_service
+from services.ai_rag_engine.app.pipeline.memory_service import memory_service
 
 logger = logging.getLogger(__name__)
 
@@ -19,22 +20,27 @@ class PipelineOrchestrator:
         self.retrieval_service = retrieval_service
         self.llm_service = llm_service
 
-    async def stream_chat_response(
-        self, query: str, domain: str
-    ) -> AsyncGenerator[str, None]:
+    async def generate_chat_response(
+        self, query: str, domain: str, session_id: str = None
+    ) -> dict:
         logger.info(
-            f"[Orchestrator] New Request | domain='{domain}' | query='{query[:50]}...'"
+            f"[Orchestrator] New Request | session_id='{session_id}' | domain='{domain}' | query='{query[:50]}...'"
         )
 
         global_start_time = time.time()
         try:
-            # Step 1: Preprocessing
-            logger.info("[Orchestrator] Step 1.5: Starting Query Preprocessing...")
+            # Step 1: Preprocessing & Memory
+            logger.info("[Orchestrator] Step 1: Fetching Memory and Preprocessing...")
             prep_start_time = time.time()
+
+            # جلب المحادثة السابقة من الذاكرة
+            chat_history = await memory_service.get_history(session_id)
+            if chat_history:
+                logger.info(f"[Orchestrator] Fetched chat history for session '{session_id}'")
 
             # تحليل السؤال واستخراج الميتا داتا بشكل غير متزامن
             preprocessing_result = await self.preprocessor.process_query(
-                user_input=query, chat_history=""
+                user_input=query, chat_history=chat_history
             )
 
             prep_time = time.time() - prep_start_time
@@ -70,24 +76,30 @@ class PipelineOrchestrator:
                     f"[Orchestrator] لم يتم العثور على أي نصوص متعلقة بالسؤال في قسم '{domain}'."
                 )
 
-            # Step 3: Generation (Streaming)
+            # Step 3: Generation (Single Response)
             logger.info("[Orchestrator] Step 3: بدء توليد الإجابة (Generation)...")
-            first_token_received = False
-            async for chunk in self.llm_service.generate_streaming_response(
+            
+            response_data = await self.llm_service.generate_response(
                 query=query, domain=domain, parents=parents
-            ):
-                if not first_token_received and "event: token" in chunk:
-                    logger.info(f"[⏱️ TIMER] Time To First Token (TTFT): {time.time() - global_start_time:.2f} seconds")
-                    first_token_received = True
-                yield chunk
+            )
+
+            # Step 4: Save Interaction to Memory
+            if session_id:
+                answer_text = response_data.get("answer", "")
+                await memory_service.add_interaction(session_id, query, answer_text)
 
             logger.info(f"[⏱️ TIMER] Total Request Processing took: {time.time() - global_start_time:.2f} seconds")
+            
+            return response_data
 
         except Exception as e:
             logger.error(
                 f"[Orchestrator] Unexpected error in Pipeline: {e}", exc_info=True
             )
-            yield 'event: error\ndata: {"text": "حدث خطأ غير متوقع في معالجة طلبك."}\n\n'
+            return {
+                "answer": "حدث خطأ غير متوقع في معالجة طلبك.",
+                "citations": {}
+            }
 
 
 orchestrator = PipelineOrchestrator()

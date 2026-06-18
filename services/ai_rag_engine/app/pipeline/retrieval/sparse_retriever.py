@@ -38,6 +38,7 @@ class SparseRetriever(BaseRetriever):
         collection_name: str,
         top_k: int = 10,
         filters: Optional[Dict[str, Any]] = None,
+        embedding_result: Optional[any] = None,
     ) -> List[RetrievedChunk]:
         """
         Args:
@@ -53,8 +54,11 @@ class SparseRetriever(BaseRetriever):
         logger.info(f"[SparseRetriever] Query: '{query[:60]}...'")
 
         # Step 1: Embed the query → get sparse lexical weights
-        embedding_result = self.embedding_model.embed_query(query)
-        query_sparse_vector: Dict[str, float] = embedding_result.sparse
+        if embedding_result:
+            query_sparse_vector: Dict[str, float] = embedding_result.sparse
+        else:
+            embedding_result = self.embedding_model.embed_query(query)
+            query_sparse_vector: Dict[str, float] = embedding_result.sparse
 
         if not query_sparse_vector:
             logger.warning(
@@ -94,16 +98,20 @@ class SparseRetriever(BaseRetriever):
         collection_name: str,
         top_k: int = 10,
         filters: Optional[Dict[str, Any]] = None,
+        embedding_result: Optional[any] = None,
     ) -> List[RetrievedChunk]:
         import time
         import asyncio
         logger.info(f"[SparseRetriever] Async Query: '{query[:60]}...'")
 
         # Step 1: Embed the query async
-        embed_start_t = time.time()
-        embedding_result = await self.embedding_model.aembed_query(query)
-        query_sparse_vector: Dict[str, float] = embedding_result.sparse
-        logger.info(f"[⏱️ TIMER] SparseRetriever Embedding took: {time.time() - embed_start_t:.2f} seconds")
+        if embedding_result:
+            query_sparse_vector: Dict[str, float] = embedding_result.sparse
+        else:
+            embed_start_t = time.time()
+            embedding_result = await self.embedding_model.aembed_query(query)
+            query_sparse_vector: Dict[str, float] = embedding_result.sparse
+            logger.info(f"[⏱️ TIMER] SparseRetriever Embedding took: {time.time() - embed_start_t:.2f} seconds")
 
         if not query_sparse_vector:
             logger.warning(

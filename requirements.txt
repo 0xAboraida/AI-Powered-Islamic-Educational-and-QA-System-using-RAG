@@ -84,7 +84,7 @@ langchain-google-genai
 pydantic-settings
 beautifulsoup4
 aiohttp
-redis
+redis==8.0.0
 requests
 langchain-groq
 transformers<5.0.0
