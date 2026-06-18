@@ -7,6 +7,7 @@ using System.Globalization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Zad.Application.DTOs;
+using Zad.Application.Interfaces;
 
 namespace Zad.Infrastructure.External;
 
@@ -34,7 +35,7 @@ public class AiClient : IAiClient
 
         _logger.LogInformation(
             "Sending AI request. Mode: {Mode}",
-            request.Mode);
+            request.Domain);
 
         var stopwatch = Stopwatch.StartNew();
 

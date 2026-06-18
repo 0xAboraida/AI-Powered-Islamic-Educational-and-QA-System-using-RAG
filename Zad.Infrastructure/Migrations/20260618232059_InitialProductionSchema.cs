@@ -6,25 +6,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Zad.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialProductionSchema : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "Categories",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Categories", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "Roles",
                 columns: table => new
@@ -46,34 +32,13 @@ namespace Zad.Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Documents",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
-                    Source = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
-                    CategoryId = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Documents", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Documents_Categories_CategoryId",
-                        column: x => x.CategoryId,
-                        principalTable: "Categories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -105,7 +70,6 @@ namespace Zad.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     Mode = table.Column<int>(type: "int", nullable: false),
-                    ExpertSubMode = table.Column<int>(type: "int", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -173,20 +137,20 @@ namespace Zad.Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     MessageId = table.Column<int>(type: "int", nullable: false),
-                    DocumentId = table.Column<int>(type: "int", nullable: false),
-                    ReferenceText = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
-                    ReferenceTextHash = table.Column<byte[]>(type: "binary(32)", nullable: true, computedColumnSql: "CONVERT(binary(32), HASHBYTES('SHA2_256', [ReferenceText]))", stored: true),
+                    BookTitle = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
+                    Madhhab = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Author = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
+                    AuthorDeath = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    TotalParts = table.Column<int>(type: "int", nullable: false),
+                    Part = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    PageId = table.Column<int>(type: "int", nullable: false),
+                    Hierarchy = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
+                    SourceUrl = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Citations", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Citations_Documents_DocumentId",
-                        column: x => x.DocumentId,
-                        principalTable: "Documents",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Citations_Messages_MessageId",
                         column: x => x.MessageId,
@@ -196,40 +160,19 @@ namespace Zad.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Categories_Name",
-                table: "Categories",
-                column: "Name",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ChatSessions_UserId_CreatedAt",
                 table: "ChatSessions",
                 columns: new[] { "UserId", "CreatedAt" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Citations_DocumentId",
+                name: "IX_Citations_MessageId_BookTitle",
                 table: "Citations",
-                column: "DocumentId");
+                columns: new[] { "MessageId", "BookTitle" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Citations_MessageId_DocumentId",
+                name: "IX_Citations_MessageId_BookTitle_PageId",
                 table: "Citations",
-                columns: new[] { "MessageId", "DocumentId" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Citations_MessageId_DocumentId_ReferenceTextHash",
-                table: "Citations",
-                columns: new[] { "MessageId", "DocumentId", "ReferenceTextHash" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Documents_CategoryId",
-                table: "Documents",
-                column: "CategoryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Documents_Title_Source",
-                table: "Documents",
-                columns: new[] { "Title", "Source" },
+                columns: new[] { "MessageId", "BookTitle", "PageId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -273,16 +216,10 @@ namespace Zad.Infrastructure.Migrations
                 name: "UserRoles");
 
             migrationBuilder.DropTable(
-                name: "Documents");
-
-            migrationBuilder.DropTable(
                 name: "Messages");
 
             migrationBuilder.DropTable(
                 name: "Roles");
-
-            migrationBuilder.DropTable(
-                name: "Categories");
 
             migrationBuilder.DropTable(
                 name: "ChatSessions");

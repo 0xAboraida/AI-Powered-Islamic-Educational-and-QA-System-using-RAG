@@ -72,7 +72,7 @@ public class ChatService : IChatService
         }
     }
 
-    public async Task<MessageDto> SendMessage(int userId, int chatSessionId, string question, string answer, IReadOnlyList<AiCitationDto>? citations = null)
+    public async Task<MessageDto> SendMessage(int userId, int chatSessionId, string question, string answer, IReadOnlyDictionary<string, AiCitationDto>? citations = null)
     {
         try
         {
@@ -99,13 +99,22 @@ public class ChatService : IChatService
 
             if (citations is not null && citations.Count > 0)
             {
-                foreach (var citation in citations)
+                foreach (var citationEntry in citations)
                 {
+                    var citation = citationEntry.Value;
+
                     await _unitOfWork.Citations.AddAsync(new Citation
                     {
                         MessageId = message.Id,
-                        DocumentTitle = citation.DocumentTitle,
-                        ReferenceText = citation.ReferenceText
+                        BookTitle = citation.BookTitle,
+                        Madhhab = citation.Madhhab,
+                        Author = citation.Author,
+                        AuthorDeath = citation.AuthorDeath,
+                        TotalParts = citation.TotalParts,
+                        Part = citation.Part,
+                        PageId = citation.PageId,
+                        Hierarchy = citation.Hierarchy,
+                        SourceUrl = citation.SourceUrl
                     });
                 }
 

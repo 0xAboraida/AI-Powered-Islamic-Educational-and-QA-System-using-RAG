@@ -72,11 +72,12 @@ public class QuestionService : IQuestionService
             await _unitOfWork.BeginTransactionAsync();
             transactionStarted = true;
 
-            var prompt = BuildPrompt(question, mode);
+            
             var aiRequest = new AiRequestDto
             {
-                Prompt = prompt,
-                Mode = mode
+                SessionId = chatSessionId,
+                Query = question,
+                Domain = (int)mode
             };
 
             var aiResponse = await _aiClient.AskAsync(aiRequest);
@@ -91,21 +92,29 @@ public class QuestionService : IQuestionService
             await _unitOfWork.Messages.AddAsync(message);
             await _unitOfWork.SaveChangesAsync();
 
-            var deduplicatedCitations = (aiResponse.Citations ?? [])
-                .DistinctBy(citation =>
-                    (
-                        citation.DocumentTitle ?? string.Empty,
-                        (citation.ReferenceText ?? string.Empty).ToLowerInvariant()
-                    ))
-                .ToList();
+            var deduplicatedCitations = (aiResponse.Citations ?? new())
+            .Values
+            .DistinctBy(citation => (
+            citation.BookTitle,
+            citation.PageId,
+            citation.SourceUrl 
+            ))
+            .ToList();
 
             foreach (var citation in deduplicatedCitations)
             {
                 await _unitOfWork.Citations.AddAsync(new Citation
                 {
                     MessageId = message.Id,
-                    DocumentTitle = citation.DocumentTitle ?? string.Empty,
-                    ReferenceText = citation.ReferenceText ?? string.Empty
+                    BookTitle = citation.BookTitle,
+                    Madhhab = citation.Madhhab,
+                    Author = citation.Author,
+                    AuthorDeath = citation.AuthorDeath,
+                    TotalParts = citation.TotalParts,
+                    Part = citation.Part,
+                    PageId = citation.PageId,
+                    Hierarchy = citation.Hierarchy,
+                    SourceUrl = citation.SourceUrl
                 });
             }
 

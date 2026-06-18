@@ -18,7 +18,7 @@ services:
     container_name: zad-api
     environment:
       ASPNETCORE_ENVIRONMENT: "Development"
-      ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=ZadDb;User Id=sa;Password=Your_password123!;TrustServerCertificate=True;MultipleActiveResultSets=true;Encrypt=False"
+      ConnectionStrings__DefaultConnection: "Server=(localdb)\\mssqllocaldb;Database=ZadDb;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True;"
       Jwt__Secret: "ChangeThisSecretKeyForDevOnly123456"
       SEED_ADMIN_EMAIL: "admin@zad.local"
       SEED_ADMIN_PASSWORD: "ChangeMe123!"

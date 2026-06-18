@@ -8,36 +8,80 @@ public sealed class FakeAiClient : IAiClient
 {
     public Task<AiResponseDto> AskAsync(AiRequestDto request)
     {
-        if (request.Prompt.Contains("TIMEOUT_TRIGGER", StringComparison.OrdinalIgnoreCase))
+        if (request.Query.Contains("TIMEOUT_TRIGGER", StringComparison.OrdinalIgnoreCase))
         {
             throw new TimeoutException("The AI service request timed out.");
         }
 
-        if (request.Prompt.Contains("DUPLICATE_CITATION_TRIGGER", StringComparison.OrdinalIgnoreCase))
+        if (request.Query.Contains("DUPLICATE_CITATION_TRIGGER", StringComparison.OrdinalIgnoreCase))
         {
             return Task.FromResult(new AiResponseDto
             {
                 Answer = "Duplicate citation scenario",
-                Citations =
-                [
-                    new AiCitationDto { DocumentTitle = "Doc 1", ReferenceText = "Same reference" },
-                    new AiCitationDto { DocumentTitle = "Doc 1", ReferenceText = "Same reference" }
-                ]
+                Citations = new Dictionary<string, AiCitationDto>
+                {
+                    ["cit_1"] = new AiCitationDto
+                    {
+                        BookTitle = "Doc 1",
+                        Madhhab = "Test",
+                        Author = "Test Author",
+                        AuthorDeath = "0",
+                        TotalParts = 1,
+                        Part = "1",
+                        PageId = 1,
+                        Hierarchy = "Test",
+                        SourceUrl = "same-url"
+                    },
+                    ["cit_2"] = new AiCitationDto
+                    {
+                        BookTitle = "Doc 1",
+                        Madhhab = "Test",
+                        Author = "Test Author",
+                        AuthorDeath = "0",
+                        TotalParts = 1,
+                        Part = "1",
+                        PageId = 1,
+                        Hierarchy = "Test",
+                        SourceUrl = "same-url"
+                    }
+                }
             });
         }
 
-        var answer = request.Mode == SpecializationMode.Language
+        var answer = request.Domain == (int)SpecializationMode.Language
             ? "This is a simple answer in the language."
             : "This is a detailed expert answer with sources.";
 
         return Task.FromResult(new AiResponseDto
         {
             Answer = answer,
-            Citations =
-            [
-                new AiCitationDto { DocumentTitle = "Quran 112", ReferenceText = "Quran 112:1-4" },
-                new AiCitationDto { DocumentTitle = "Sahih Bukhari", ReferenceText = "Sahih al-Bukhari 1" }
-            ]
+            Citations = new Dictionary<string, AiCitationDto>
+            {
+                ["cit_1"] = new AiCitationDto
+                {
+                    BookTitle = "Quran 112",
+                    Madhhab = "General",
+                    Author = "Allah",
+                    AuthorDeath = "N/A",
+                    TotalParts = 1,
+                    Part = "1",
+                    PageId = 112,
+                    Hierarchy = "Surah Al-Ikhlas",
+                    SourceUrl = "test-url-1"
+                },
+                ["cit_2"] = new AiCitationDto
+                {
+                    BookTitle = "Sahih Bukhari",
+                    Madhhab = "Sunni",
+                    Author = "Imam Bukhari",
+                    AuthorDeath = "256 AH",
+                    TotalParts = 1,
+                    Part = "1",
+                    PageId = 1,
+                    Hierarchy = "Hadith Collection",
+                    SourceUrl = "test-url-2"
+                }
+            }
         });
     }
 }

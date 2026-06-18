@@ -22,39 +22,40 @@ public class CitationConfiguration : IEntityTypeConfiguration<Citation>
         builder.Property(x => x.MessageId)
             .IsRequired();
 
-        builder.Property(x => x.DocumentTitle)
+        builder.Property(x => x.BookTitle)
+    .IsRequired()
+    .HasMaxLength(300);
+
+        builder.Property(x => x.Madhhab)
+            .IsRequired()
+            .HasMaxLength(100);
+
+        builder.Property(x => x.Author)
             .IsRequired()
             .HasMaxLength(300);
 
-        builder.Property(x => x.ReferenceText)
-            .HasMaxLength(2000)
-            .IsRequired();
+        builder.Property(x => x.AuthorDeath)
+            .HasMaxLength(50);
 
-        var uniqueReferenceColumnName = "ReferenceTextNormalized";
+        builder.Property(x => x.Part)
+            .HasMaxLength(50);
 
-        if (_useSqlServerHash)
-        {
-            uniqueReferenceColumnName = "ReferenceTextHash";
-            builder.Property<byte[]>(uniqueReferenceColumnName)
-                .HasColumnType("binary(32)")
-                .IsRequired()
-                .HasComputedColumnSql("CONVERT(binary(32), HASHBYTES('SHA2_256', [ReferenceText]))", stored: true);
-        }
-        else
-        {
-            builder.Property<string>(uniqueReferenceColumnName)
-                .HasMaxLength(2000)
-                .HasComputedColumnSql("LOWER([ReferenceText])", stored: true);
-        }
+        builder.Property(x => x.Hierarchy)
+            .HasMaxLength(2000);
+
+        builder.Property(x => x.SourceUrl)
+            .HasMaxLength(2000);
+
+        
 
         builder.Property(x => x.CreatedAt)
             .IsRequired();
 
-        builder.HasIndex(x => new { x.MessageId, x.DocumentTitle });
+        builder.HasIndex(x => new { x.MessageId, x.BookTitle });
 
-        builder.HasIndex("MessageId", "DocumentTitle", uniqueReferenceColumnName)
+        builder.HasIndex(x => new { x.MessageId, x.BookTitle, x.PageId })
             .IsUnique();
-            
+
 
         builder.HasOne(x => x.Message)
             .WithMany(x => x.Citations)
