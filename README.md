@@ -2,10 +2,10 @@
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/assets/WhiteLogo.png">
     <source media="(prefers-color-scheme: light)" srcset="docs/assets/DarkLogo.png">
-    <img alt="Zad AI Logo" src="docs/assets/DarkLogo.png" width="150" height="150">
+    <img alt="Zad AI Logo" src="docs/assets/DarkLogo.png" width="400" height="450">
   </picture>
   
-  # Zad Islamic AI 🤖🕌
+  # Zad Islamic AI
   ### The Intelligent Islamic Educational Assistant
   
   [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
