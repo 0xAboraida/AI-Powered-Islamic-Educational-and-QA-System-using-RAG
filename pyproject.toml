@@ -1,0 +1,11 @@
+[project]
+name = "zad-ai"
+version = "1.0.0"
+description = "AI-Powered Islamic Educational and QA System using RAG"
+authors = [
+    {name = "Zad Team"}
+]
+
+[tool.pyright]
+include = ["services", "app"]
+extraPaths = ["."]

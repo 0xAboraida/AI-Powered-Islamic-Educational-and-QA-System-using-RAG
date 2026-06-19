@@ -79,7 +79,8 @@
                     ┌──────────────────▼────────────────────────────┐
                     │           User Input                          │
                     │  Question: "ما حكم صلاة الجمعة للمسافر؟"     │
-                    │  Domain: "الفقه"                              │
+                    │  Domain: 1 (الفقه)                            │
+                    │  Session ID: 12345 (Optional)                 │
                     └──────────────────┬────────────────────────────┘
                                        │
 ╔══════════════════════════════════════▼═══════════════════════════════════╗
@@ -364,6 +365,7 @@
 | **Mobile App** | Flutter (Dart) — iOS / Android / Web |
 | **API Server** | ASP.NET Core (.NET 8+) |
 | **AI Engine** | Python 3.12+, FastAPI |
+| **Session Memory** | Redis |
 | **LLM (Preprocessing + Generation)** | Gemini (Primary w/ Rotation) / Groq / GitHub Models |
 | **Embedding Model** | BGE-M3 (Dense 1024-dim + Sparse) — Local Execution |
 | **Vector Database** | Qdrant Cloud |
@@ -376,127 +378,7 @@
 
 ## 📂 Project Structure
 
-```
-Zad-AI/
-│
-├── services/
-│   └── ai_rag_engine/
-│       ├── .env
-│       ├── requirements.txt
-│       └── app/
-│           ├── main.py
-│           │
-│           ├── Orchestrator/
-│           │   └── orchestrator.py
-│           │
-│           ├── api/                                        # FastAPI endpoints
-│           │
-│           ├── config/
-│           │   ├── settings.py
-│           │   └── key_manager.py                          # Gemini API Key Rotation Manager
-│           │
-│           ├── infrastructure/
-│           │   ├── mongo_db/
-│           │   │   ├── mongo_manager.py                    # MongoDB Atlas client
-│           │   │   └── __init__.py
-│           │   └── qdrant_db/
-│           │       ├── qdrant_manager.py                   # Qdrant Cloud client (dense + sparse)
-│           │       └── __init__.py
-│           │
-│           ├── models/
-│           │   ├── embedding_models/
-│           │   │   ├── base.py                             # Abstract EmbeddingModel
-│           │   │   ├── bge_m3_model.py                     # BGE-M3 (dense + sparse) - Local
-│           │   │   ├── e5_model.py                         # E5 model (legacy)
-│           │   │   ├── factory.py                          # Model factory
-│           │   │   └── __init__.py
-│           │   └── LLM/
-│           │       ├── factory.py                          # LLM Factory (Gemini / Groq / GitHub)
-│           │       ├── gemini_model.py                     # Primary Model with Rotation
-│           │       ├── groq_model.py                       # Fallback Model
-│           │       ├── openai_model.py                     # GitHub Models / OpenAI Fallback
-│           │       ├── base.py
-│           │       └── __init__.py
-│           │
-│           ├── notebooks/                                  # Experimentation notebooks
-│           │
-│           ├── pipeline/
-│           │   ├── extraction/                             # Offline: book scraping from API
-│           │   │   ├── api_client.py                       # Ketabonline API client
-│           │   │   ├── books_config.py                     # Book IDs & domain mapping
-│           │   │   ├── extractor.py                        # Main extraction logic
-│           │   │   ├── hierarchy_builder.py                # TOC → hierarchy tree
-│           │   │   ├── html_processor.py                   # HTML → clean text
-│           │   │   ├── state_manager.py                    # Resume/checkpoint support
-│           │   │   ├── text_utils.py                       # Arabic text utilities
-│           │   │   └── __init__.py
-│           │   │
-│           │   ├── preprocessing/                          # Offline & Online preprocessing
-│           │   │   ├── data_preprocessing/                 # Offline: cleaning & chunking
-│           │   │   ├── question_preprocessing/             # Online: query understanding (LLM)
-│           │   │   │   ├── models.py                       # Pydantic schemas (ProcessedQuestion)
-│           │   │   │   ├── prompt.py                       # LLM system prompt
-│           │   │   │   └── query_preprocessor.py           # QueryPreprocessor class
-│           │   │   └── question_processing/                # Online: advanced query ops
-│           │   │
-│           │   ├── embeddings/                             # Offline: embedding ingestion pipeline
-│           │   │   ├── embedding_pipeline.py               # Main ingestion orchestrator
-│           │   │   ├── core/
-│           │   │   ├── cache/
-│           │   │   ├── filters/
-│           │   │   ├── processors/
-│           │   │   └── storage/
-│           │   │
-│           │   ├── retrieval/                              # Online: vector search
-│           │   │   ├── base_retriever.py
-│           │   │   ├── dense_retriever.py                  # Dense cosine similarity search
-│           │   │   ├── sparse_retriever.py                 # Sparse BM25-style search
-│           │   │   ├── hybrid_search.py                    # Dense + Sparse combined
-│           │   │   ├── fusion.py                           # RRF fusion (Top-30)
-│           │   │   ├── parent_child.py                     # Fetch parents from MongoDB
-│           │   │   └── __init__.py
-│           │   │
-│           │   ├── reranking/                              # Online: cross-encoder reranking
-│           │   │   ├── base_reranker.py
-│           │   │   ├── cross_encoder.py                    # Cross-Encoder (Top-30 → Top-10)
-│           │   │   ├── diversity_scorer.py                 # MMR diversity scoring
-│           │   │   └── __init__.py
-│           │   │
-│           │   └── generation/                             # Online: answer generation
-│           │       ├── prompt_builder.py                   # Build final LLM prompt
-│           │       ├── llm_service.py                      # LLM Streamer with Key Rotation
-│           │       ├── citations.py                        # Source citation formatter
-│           │       └── __init__.py
-│           │
-│           ├── scripts/                                    # Offline runner scripts & Testing
-│           │   ├── run_extraction.py                       # Run book extraction
-│           │   ├── run_preprocessing_pipeline.py           # Run data preprocessing
-│           │   ├── run_ingestion.py                        # Run embedding + storage
-│           │   ├── test_stream.html                        # UI Tester for Streaming
-│           │   └── test_retrieval.py                       # Retrieval tester
-│           │
-│           └── templates/                                  # HTML Templates for endpoints
-│
-├── data/
-│   ├── raw/                                                # Scraped Islamic texts (JSON)
-│   ├── processed/                                          # Cleaned & chunked (parent + child)
-│   └── embeddings/                                         # Cached embeddings
-│
-├── infrastructure/
-│   ├── docker/
-│   │   ├── backend.Dockerfile
-│   │   ├── ai.Dockerfile
-│   │   └── docker-compose.yml
-│   └── vector-db/
-│       └── qdrant-config.yaml
-│
-├── docs/
-├── start_api.ps1                                           # Helper script to launch Server
-├── requirements.txt
-├── README.md
-└── LICENSE
-```
-```
+For a detailed breakdown of the Zad-AI engine directory, see the [AI Project Structure](docs/ai_project_structure.md) documentation.
 
 ---
 
@@ -656,15 +538,3 @@ This project is licensed under the MIT License — see the [LICENSE](./LICENSE) 
 ---
 
 *Built with ❤️ for the Muslim community*
-
----
-
-User Query
-    ↓
-Domain Detection
-    ↓
-Domain Prompt
-    ↓
-Structured Filters
-    ↓
-Qdrant Search

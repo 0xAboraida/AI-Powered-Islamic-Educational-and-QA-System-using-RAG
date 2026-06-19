@@ -1,108 +1,100 @@
-# 🐛 Bug Report: Citation URL مش بيفتح المكان الصحيح في الكتاب
+# 🐛 Bug Report: Citation URL Navigating to Incorrect Page
 
-**التاريخ:** 2026-06-15  
-**الملف المتأثر:** `services/ai_rag_engine/app/pipeline/extraction/html_processor.py`  
-**الحالة:** ✅ تم الإصلاح
-
----
-
-## 📌 وصف المشكلة
-
-عند الضغط على زر **"فتح المصدر الأصلي"** في الـ UI، كان الموقع يفتح **أول صفحة في الكتاب** بدلاً من الصفحة التي تحتوي على النص المُستشهد به.
+**Date:** 2026-06-15  
+**Affected Module:** `services/ai_rag_engine/app/pipeline/extraction/html_processor.py`  
+**Status:** ✅ Resolved
 
 ---
 
-## 🔍 السبب الجذري
+## 📌 Issue Description
 
-### أين كانت المشكلة؟
+When a user clicked the **"Open Original Source"** button in the UI, the website always navigated to the **first page of the book** rather than the specific page containing the cited text.
 
-في دالة `create_chunk()` داخل `html_processor.py` السطر 63، كان الـ `source_url` يُبنى هكذا:
+---
+
+## 🔍 Root Cause
+
+### What went wrong?
+
+In the `create_chunk()` function inside `html_processor.py` (around line 63), the `source_url` was being constructed like this:
 
 ```python
-# ❌ الكود القديم الخاطئ
+# ❌ Old Incorrect Code
 "source_url": f"https://ketabonline.com/ar/books/{book_meta['id']}/read"
               f"?part={page_data.get('part', {}).get('name', '1')}"
               f"&page={page_num}"
 ```
 
-### لماذا كان هذا خاطئاً؟
+### Why was this incorrect?
 
-فيه متغيران بيشوفهم الكود في كل صفحة:
+There are two different variables representing a page:
 
-| المتغير | القيمة | المعنى |
-|---------|--------|--------|
-| `page_num` | `"٤٢"` أو `42` | رقم الصفحة **المطبوعة** في الكتاب |
-| `db_page_id` | `198473` | الـ ID الداخلي للصفحة في قاعدة بيانات ketabonline |
+| Variable | Value Example | Meaning |
+|----------|---------------|---------|
+| `page_num` | `"42"` or `42` | The **printed** page number in the physical book. |
+| `db_page_id` | `198473` | The internal page ID in ketabonline's database. |
 
-الكود كان يستخدم `page_num` (رقم الصفحة المطبوعة) في الـ URL، لكن موقع **ketabonline.com يتجاهل تماماً** الـ `?page=` query parameter ويفتح الكتاب من أول صفحة.
+The old code used `page_num` (the printed page number) in the URL query string. However, **ketabonline.com completely ignores** the `?page=` query parameter and defaults to opening the book from the very first page. 
 
-الموقع يفهم فقط الـ **URL format** الذي يستخدم الـ `/pages/{db_page_id}` path segment.
+The website only understands the **URL format** that utilizes the `/pages/{db_page_id}` path segment.
 
-### مثال توضيحي
+### URL Examples
 
-```
-# ❌ URL قديم — يفتح أول صفحة في الكتاب دائماً
+```text
+# ❌ Old URL — Always opens the first page of the book
 https://ketabonline.com/ar/books/2130/read?part=1&page=42
 
-# ✅ URL صحيح — يفتح مباشرةً صفحة الحديث
+# ✅ Correct URL — Opens the exact page containing the text
 https://ketabonline.com/ar/books/2130/pages/198473
 ```
 
 ---
 
-## 🛠️ الإصلاح المُطبَّق
+## 🛠️ Implemented Fix
 
 ```python
-# ✅ الكود الجديد الصحيح
+# ✅ New Correct Code
 direct_page_url = (
     f"https://ketabonline.com/ar/books/{book_meta['id']}/pages/{db_page_id}"
 )
 chunk = {
     ...
-    "page_id": db_page_id,       # ID الصفحة الداخلي (للـ URL)
-    "printed_page": page_num,    # رقم الصفحة المطبوعة (للعرض في الـ UI)
+    "page_id": db_page_id,       # Internal DB page ID (for the URL)
+    "printed_page": page_num,    # Printed page number (for UI display)
     "source_url": direct_page_url,
 }
 ```
 
-**الفرق الجوهري:**
-- `db_page_id` = `page_data.get('id')` ← الـ ID الداخلي لـ ketabonline
-- `page_num` = `page_data.get('page')` ← رقم الصفحة في الكتاب المطبوع
+**Key Difference:**
+- `db_page_id` = `page_data.get('id')` ← Ketabonline's internal ID
+- `page_num` = `page_data.get('page')` ← Printed book page number
 
 ---
 
-## ⚠️ تأثير الإصلاح على البيانات الموجودة
+## ⚠️ Impact on Existing Data
 
 > [!WARNING]
-> هذا الإصلاح يعمل تلقائياً فقط على **الكتب الجديدة** التي ستُعاد استخراجها.
-> البيانات الموجودة حالياً في MongoDB تحتوي على الـ URLs القديمة الخاطئة.
+> This fix applies automatically only to **newly extracted books**.
+> The data currently stored in MongoDB still contains the old, broken URLs.
 
-### خياران للتعامل مع البيانات الموجودة:
+### Options to handle existing data:
 
-**الخيار 1 — Migration Script (الأسرع):**  
-كتابة script يُحدِّث حقل `metadata.source_url` لكل document في MongoDB بناءً على `metadata.page_id` الموجود:
+**Option 1 — Migration Script (Fastest):**  
+Write a script to update the `metadata.source_url` field for every document in MongoDB based on its existing `metadata.page_id`:
 ```python
-# لكل document في MongoDB:
+# For each document in MongoDB:
 new_url = f"https://ketabonline.com/ar/books/{doc['metadata']['book_id']}/pages/{doc['metadata']['page_id']}"
 collection.update_one({"_id": doc["_id"]}, {"$set": {"metadata.source_url": new_url}})
 ```
 
-**الخيار 2 — إعادة الاستخراج الكاملة (الأدق):**  
-إعادة تشغيل `run_extraction.py` لكل الكتب لإعادة بناء البيانات من الـ API. يضمن صحة كل الـ metadata لكنه أبطأ.
+**Option 2 — Full Re-extraction (Most Accurate):**  
+Re-run `run_extraction.py` for all books to rebuild the data directly from the API. This guarantees 100% metadata accuracy but is significantly slower.
 
 ---
 
-## 📁 الملفات المتأثرة
+## 📁 Affected Layers
 
-| الملف | التغيير |
-|-------|---------|
-| `extraction/html_processor.py` | ✅ تم تعديل `create_chunk()` لاستخدام `db_page_id` |
-| MongoDB collections (البيانات الموجودة) | ⚠️ تحتاج migration أو إعادة استخراج |
-
----
-
-## 🔗 الملفات ذات الصلة
-
-- [`html_processor.py`](../services/ai_rag_engine/app/pipeline/extraction/html_processor.py) — الإصلاح الفعلي
-- [`citations.py`](../services/ai_rag_engine/app/pipeline/generation/citations.py) — يقرأ `source_url` من MongoDB ويبعثه للـ UI
-- [`extractor.py`](../services/ai_rag_engine/app/pipeline/extraction/extractor.py) — يستدعي `html_processor.process_page()`
+| Component | Change |
+|-----------|--------|
+| `extraction/html_processor.py` | ✅ Modified `create_chunk()` to use `db_page_id` |
+| MongoDB collections (Existing Data) | ⚠️ Requires database migration or full re-extraction |

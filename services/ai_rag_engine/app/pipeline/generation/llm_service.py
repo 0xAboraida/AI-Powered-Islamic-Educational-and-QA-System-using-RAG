@@ -18,7 +18,7 @@ Why an LLM Service?
 import re
 import json
 import logging
-from typing import AsyncGenerator, List
+from typing import AsyncGenerator, List, Any
 
 from services.ai_rag_engine.app.models.LLM import get_llm_model, ModelType
 from services.ai_rag_engine.app.config.settings import settings
@@ -150,9 +150,9 @@ class LLMService:
                 used_citations = all_citations
 
         # ── 3d. Return final dictionary ───────────
-        response_dict = {
+        response_dict: dict[str, Any] = {
             "answer": full_generated_text,
-            "citations": used_citations if used_citations else None
+            "citations": used_citations if used_citations else {}
         }
         
         if settings.RETURN_CONTEXT_CHUNKS:

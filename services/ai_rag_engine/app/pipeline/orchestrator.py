@@ -108,7 +108,7 @@ class PipelineOrchestrator:
                 
                 return {
                     "answer": apology_msg,
-                    "citations": None
+                    "citations": {}
                 }
 
             # ── 🚨 Guardrail Check: Handle Ambiguous queries ──
@@ -123,7 +123,7 @@ class PipelineOrchestrator:
                 
                 return {
                     "answer": clarification_msg,
-                    "citations": None
+                    "citations": {}
                 }
 
             print("-" * 60)
@@ -183,7 +183,7 @@ class PipelineOrchestrator:
             print("============================================================\n\n")
             return {
                 "answer": "حدث خطأ غير متوقع في معالجة طلبك.",
-                "citations": None
+                "citations": {}
             }
 
 
