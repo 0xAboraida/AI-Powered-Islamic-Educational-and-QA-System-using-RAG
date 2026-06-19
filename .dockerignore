@@ -1,0 +1,34 @@
+# Git
+.git
+.gitignore
+.github
+
+# Virtual Environments
+.venv/
+venv/
+env/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# IDE / Editor
+.vscode/
+.idea/
+
+# Environment files
+.env
+*.env
+
+# Huge Data Folders (Crucial for fast Docker builds)
+data/
+data/raw/
+data/embeddings/
+data/processed/
+
+# Project docs and release
+docs/
+docker-release/
+notebooks/
+tests/

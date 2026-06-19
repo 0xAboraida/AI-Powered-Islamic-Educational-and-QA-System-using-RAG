@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   zad-ai-engine:
-    image: your_dockerhub_username/zad-ai-engine:latest
+    image: abourida/zad-ai-engine:latest
     container_name: zad-ai-engine
     ports:
       - "8000:8000"
