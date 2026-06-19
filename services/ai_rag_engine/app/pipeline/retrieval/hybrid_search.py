@@ -1,3 +1,20 @@
+"""
+hybrid_search.py
+----------------
+Combines Dense and Sparse Retrieval into a single unified search.
+
+Flow:
+    1. Parallel Execution: Runs the `DenseRetriever` (for semantic meaning) and `SparseRetriever` (for exact keyword matching) at the same time.
+    2. Shared Embedding: Embeds the query once and passes it to both retrievers to save compute and avoid tokenizer deadlocks.
+    3. Fusion: Merges both result lists using the Reciprocal Rank Fusion (RRF) algorithm to balance meaning vs. exact matching.
+
+Why Hybrid Search?
+    This approach is absolutely critical for Arabic Islamic text. 
+    - Dense search understands paraphrased questions (e.g., "what to do when I miss a prayer").
+    - Sparse search guarantees exact Quranic/Hadith terminology is strictly matched (e.g., "سورة البقرة").
+    RRF gives us the best of both worlds.
+"""
+
 import logging
 from typing import List, Dict, Any, Optional
 

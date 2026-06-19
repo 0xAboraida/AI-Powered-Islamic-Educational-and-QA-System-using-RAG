@@ -171,7 +171,7 @@ class ParentChildRetriever:
         """
         # ── Step 1: Retrieve child chunks from Qdrant via Hybrid Search ──────
         logger.info(
-            f"[ParentChildRetriever] Step 1: Hybrid search "
+            f"🔍 [RETRIEVAL: QDRANT] Step 1: Hybrid search "
             f"(child_top_k={child_top_k})"
         )
         child_chunks: List[RetrievedChunk] = self.hybrid_retriever.retrieve(
@@ -182,15 +182,15 @@ class ParentChildRetriever:
         )
 
         if not child_chunks:
-            logger.warning("[ParentChildRetriever] No child chunks returned.")
+            logger.warning("⚠️ [RETRIEVAL: QDRANT] No child chunks returned.")
             return []
 
-        logger.info(f"[ParentChildRetriever] Got {len(child_chunks)} child chunks. Passing to Reranker...")
+        logger.info(f"🧠 [RETRIEVAL: RERANKER] Got {len(child_chunks)} child chunks. Passing to Reranker...")
         
         from services.ai_rag_engine.app.models.embedding_models.reranker import reranker_service
         child_chunks = reranker_service.rerank(query, child_chunks)
         
-        logger.info(f"[ParentChildRetriever] Reranker kept top {len(child_chunks)} child chunks.")
+        logger.info(f"✅ [RETRIEVAL: RERANKER] Reranker kept top {len(child_chunks)} child chunks.")
 
         # ── Step 2: Group children by (domain, madhhab) for routing ──────────
         logger.info("[ParentChildRetriever] Step 2: Grouping by domain/madhhab...")
@@ -227,7 +227,7 @@ class ParentChildRetriever:
                 existing["child_ids"].append(chunk.chunk_id)
 
         logger.info(
-            f"[ParentChildRetriever] {len(parent_map)} unique parents identified."
+            f"📂 [RETRIEVAL: GROUPING] {len(parent_map)} unique parents identified."
         )
 
         # ── Step 3: Group parents by routing key ──────────────────────────────
@@ -242,7 +242,7 @@ class ParentChildRetriever:
 
         # ── Step 4: Fetch parents from MongoDB ───────────────────────────────
         logger.info(
-            f"[ParentChildRetriever] Step 4: Fetching from MongoDB "
+            f"🚀 [RETRIEVAL: MONGO] Step 4: Fetching from MongoDB "
             f"({len(route_groups)} route groups)..."
         )
 
@@ -287,9 +287,9 @@ class ParentChildRetriever:
                 )
 
         logger.info(
-            f"[ParentChildRetriever] Fetched {len(fetched_docs)} parent docs from MongoDB."
+            f"📦 [RETRIEVAL: MONGO] Fetched {len(fetched_docs)} parent docs from MongoDB."
         )
-        logger.info(f"[⏱️ TIMER] ParentChild MongoDB fetching took: {time.time() - mongo_t:.2f} seconds")
+        logger.info(f"⏱️ [TIMER] ParentChild MongoDB fetching took: {time.time() - mongo_t:.2f} seconds")
 
         # ── Step 5: Build RetrievedParent list ────────────────────────────────
         results: List[RetrievedParent] = []
@@ -320,7 +320,7 @@ class ParentChildRetriever:
         results = results[:parent_top_k]
 
         logger.info(
-            f"[ParentChildRetriever] ✅ Returning {len(results)} parent documents."
+            f"✅ [RETRIEVAL: COMPLETE] Returning {len(results)} parent documents."
         )
         return results
 
@@ -333,7 +333,7 @@ class ParentChildRetriever:
         filters: Optional[Dict[str, Any]] = None,
     ) -> List[RetrievedParent]:
         logger.info(
-            f"[ParentChildRetriever] Step 1: Async Hybrid search "
+            f"🔍 [RETRIEVAL: QDRANT] Step 1: Async Hybrid search "
             f"(child_top_k={child_top_k})"
         )
         child_chunks: List[RetrievedChunk] = await self.hybrid_retriever.aretrieve(
@@ -347,12 +347,12 @@ class ParentChildRetriever:
             logger.warning("[ParentChildRetriever] No child chunks returned.")
             return []
 
-        logger.info(f"[ParentChildRetriever] Got {len(child_chunks)} child chunks. Passing to Reranker...")
+        logger.info(f"🧠 [RETRIEVAL: RERANKER] Got {len(child_chunks)} child chunks. Passing to Reranker...")
         
         from services.ai_rag_engine.app.models.embedding_models.reranker import reranker_service
         child_chunks = await reranker_service.arerank(query, child_chunks)
         
-        logger.info(f"[ParentChildRetriever] Reranker kept top {len(child_chunks)} child chunks.")
+        logger.info(f"✅ [RETRIEVAL: RERANKER] Reranker kept top {len(child_chunks)} child chunks.")
 
         logger.info("[ParentChildRetriever] Step 2: Grouping by domain/madhhab...")
 
@@ -447,7 +447,7 @@ class ParentChildRetriever:
         results.sort(key=lambda p: p.best_child_score, reverse=True)
         results = results[:parent_top_k]
 
-        logger.info(f"[ParentChildRetriever] ✅ Returning {len(results)} parent documents (async).")
+        logger.info(f"✅ [RETRIEVAL: COMPLETE] Returning {len(results)} parent documents (async).")
         return results
 
     def warm_up_mongo(self, domain: str):

@@ -3,15 +3,14 @@ dependencies.py
 ---------------
 FastAPI dependency injection providers for the Zad-AI API.
 
-Usage example inside an endpoint:
-    from services.ai_rag_engine.app.api.dependencies import get_orchestrator
-    
-    @router.post("/stream")
-    async def chat_stream(
-        request: ChatRequest,
-        orc: PipelineOrchestrator = Depends(get_orchestrator),
-    ):
-        ...
+Flow:
+    1. Definition: Defines getter functions for core services (like the Orchestrator).
+    2. Injection: FastAPI endpoints use `Depends(get_orchestrator)` to receive the required service.
+
+Why this file?
+    Dependency Injection (DI) allows us to pass mock objects during testing instead of hitting the real database or LLMs. 
+    It also ensures that heavy singletons (like our embedding models or Orchestrator) are loaded once at startup and 
+    efficiently passed to each request, rather than being recreated every time a user sends a message.
 """
 
 from fastapi import Depends

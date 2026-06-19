@@ -3,9 +3,15 @@ routes.py
 ---------
 Central router registry for the Zad-AI API.
 
-All routers from all versioned endpoint modules are imported and
-assembled here. main.py includes this single router, keeping the
-app factory clean and the routing logic in one place.
+Flow:
+    1. Import: Imports all individual endpoint routers (e.g., `chat.router`).
+    2. Assembly: Mounts the sub-routers under specific prefixes (like `/v1/chat`).
+    3. Export: Exposes a single `api_router` object that `main.py` can include.
+
+Why this file?
+    As the application grows with new features (like user auth, admin panels, analytics), 
+    we don't want to clutter `main.py` with dozens of `app.include_router` calls. 
+    This file acts as a clean, centralized table of contents for the entire REST API.
 """
 
 from fastapi import APIRouter

@@ -1,3 +1,21 @@
+"""
+chat.py
+-------
+The main API endpoint for the RAG Chat Engine.
+
+Flow:
+    1. Request Handling: Receives incoming JSON payloads matching the `ChatRequest` schema.
+    2. Validation & Mapping: Maps integer `domain_id`s from the frontend to literal Arabic domain names using the `DOMAIN_MAPPING`.
+    3. Delegation: Passes the validated inputs to the `orchestrator.generate_chat_response` method.
+    4. Response: Returns the resulting generated answer and structured citations in JSON format.
+
+Why this file?
+    Separating the REST API routing logic from the core pipeline (`orchestrator.py`) 
+    ensures that our RAG engine remains decoupled from FastAPI. This makes the system 
+    easier to test, and allows us to swap out frameworks in the future without touching 
+    the core AI logic.
+"""
+
 import logging
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse

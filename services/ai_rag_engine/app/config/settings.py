@@ -1,3 +1,20 @@
+"""
+settings.py
+-----------
+Global Configuration and Environment Variables Manager.
+
+Flow:
+    1. Path Resolution: Safely locates the project root and loads the correct `.env` file, avoiding conflicts with outer environment files.
+    2. Parsing: Uses `pydantic_settings` to read environment variables (like API keys, Redis URLs, and Hyperparameters).
+    3. Type Validation: Automatically enforces types (e.g., ensuring `RAG_RRF_K` is an integer).
+    4. Export: Exposes a singleton `settings` object that can be safely imported anywhere in the project.
+
+Why this file?
+    Scattering `os.getenv("API_KEY")` throughout the code leads to silent bugs and crashes if a key is missing. 
+    By using a centralized Settings class, we validate all crucial configuration at startup. If an environment 
+    variable is missing or wrongly typed, the app fails immediately and loudly, ensuring production stability.
+"""
+
 import os
 from pathlib import Path
 from pydantic_settings import BaseSettings

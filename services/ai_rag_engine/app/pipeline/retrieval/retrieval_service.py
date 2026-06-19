@@ -1,3 +1,21 @@
+"""
+retrieval_service.py
+--------------------
+The Entry Point for the Document Retrieval Pipeline.
+
+Flow:
+    1. Initialization & Warmup: Eagerly creates embedding models and database clients.
+    2. Multi-Query Execution: Receives multiple extracted questions from the preprocessor.
+    3. Delegation: Spawns parallel tasks for each question and sends them to the `ParentChildRetriever`.
+    4. Aggregation: Collects all retrieved parent documents across all questions, deduplicates them (keeping the highest score), and returns the final sorted context.
+
+Why a Retrieval Service?
+    Managing multiple Qdrant clusters, multiple MongoDB databases, Dense vs Sparse vectors, 
+    and Reranking models can get extremely complex. This service acts as a clean facade. 
+    The Orchestrator just calls `retrieve_multi()` and this service handles the parallel execution 
+    and aggregation automatically.
+"""
+
 import os
 import logging
 from typing import List, Dict, Any, Optional

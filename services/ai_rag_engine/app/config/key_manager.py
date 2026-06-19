@@ -1,3 +1,20 @@
+"""
+key_manager.py
+--------------
+Thread-safe API Key Rotation Manager.
+
+Flow:
+    1. Parsing: Reads a comma-separated list of API keys from the settings.
+    2. Rotation: Whenever `get_next_key()` is called, it returns the current key and safely increments the index to the next key.
+    3. Thread Safety: Uses `threading.Lock()` to ensure that multiple concurrent async requests don't corrupt the rotation index.
+
+Why a Key Manager?
+    Free-tier LLM APIs (like Gemini) have strict Rate Limits (e.g., 15 requests per minute). 
+    To support production-level traffic for a RAG system, we use multiple API keys. 
+    This manager guarantees that keys are rotated evenly in a round-robin fashion 
+    across all incoming user requests, effectively bypassing rate limits.
+"""
+
 import threading
 from typing import List
 from services.ai_rag_engine.app.config.settings import settings

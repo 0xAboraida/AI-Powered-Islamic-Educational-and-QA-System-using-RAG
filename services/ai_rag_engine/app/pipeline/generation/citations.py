@@ -1,3 +1,20 @@
+"""
+citations.py
+------------
+Prepares the structured citation and context payloads for the Frontend UI.
+
+Flow:
+    1. Parsing: Loops through the list of `RetrievedParent` documents fetched from MongoDB.
+    2. Extraction: Extracts precise book metadata (title, author, part, page, domain).
+    3. Payload Creation: Builds a dictionary keyed by `cit_1`, `cit_2`, etc., containing this metadata.
+    4. Original Content: Includes the `original_content` (text WITH Arabic diacritics/Tashkeel) in a separate context payload.
+
+Why this file?
+    The LLM doesn't need to see heavy JSON structures or fully diacritized text; it just needs raw information. 
+    However, the User Interface needs beautifully formatted text and structured book metadata to render 
+    rich citation cards. This file decouples the UI preparation logic from the LLM prompt building logic.
+"""
+
 from typing import List, Dict, Any, Tuple
 from services.ai_rag_engine.app.pipeline.retrieval.parent_child import RetrievedParent
 

@@ -1,3 +1,19 @@
+"""
+prompt_builder.py
+-----------------
+Constructs the final text payload injected into the LLM context window.
+
+Flow:
+    1. Context Building: Iterates over the `RetrievedParent` documents and formats them into a structured text block.
+    2. Prompt Selection: Fetches the hardcoded Arabic Prompt Template specific to the requested domain (e.g., Fiqh vs. Seerah).
+    3. Injection: Injects the formatted context string and the user's query into the template.
+
+Why a Prompt Builder?
+    It keeps the `llm_service` clean from massive strings and formatting logic. 
+    It also ensures that we only inject the `content` (normalized text without diacritics) 
+    into the LLM context for faster generation, rather than sending the heavy `original_content`.
+"""
+
 from typing import List
 from services.ai_rag_engine.app.pipeline.retrieval.parent_child import RetrievedParent
 from services.ai_rag_engine.app.pipeline.generation.prompts import get_prompt_for_domain
@@ -27,7 +43,7 @@ def build_context_string(parents: List[RetrievedParent]) -> str:
             + (f" | الكتاب الفقهي: {kitab}" if kitab else "") + "\n"
             f"الكتاب: {book_title} | المؤلف: {author}\n"
             f"الجزء: {part} | الصفحة: {page_id}\n"
-            f"النص:\n{parent.content}\n"   # ← content فقط (بدون تشكيل) للـ LLM
+            f"النص:\n{parent.content}\n"   # <- Only content (without diacritics) for the LLM
         )
 
     return "\n".join(context_parts)

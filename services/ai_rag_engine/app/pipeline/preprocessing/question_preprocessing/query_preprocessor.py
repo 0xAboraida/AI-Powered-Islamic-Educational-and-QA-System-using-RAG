@@ -1,3 +1,24 @@
+"""
+query_preprocessor.py
+---------------------
+The Initial Filter and Analyzer of the Zad-AI Pipeline.
+
+Flow:
+    1. Input Reception: Takes the raw user query and the chat history.
+    2. LLM Analysis: Uses a fast LLM with Structured Output to analyze the query.
+    3. Output Generation: Returns a strictly typed Pydantic object containing:
+       - The extracted core question(s).
+       - Necessary search metadata (domain, madhhab).
+       - Safety and Ambiguity flags.
+
+Why a Preprocessor?
+    Users often ask complex, multi-part, or poorly worded questions. 
+    By preprocessing, we separate the "understanding" phase from the "retrieval" phase. 
+    This allows us to block unsafe questions early, handle ambiguous queries efficiently, 
+    and extract exact keywords/metadata for accurate hybrid searching, 
+    resulting in significantly better retrieval precision.
+"""
+
 from typing import List, Dict, Any, Optional
 import logging
 import sys

@@ -16,12 +16,8 @@ Analyze the user's input, which may contain one or multiple distinct questions. 
 2. **ISLAMIC DOMAIN CLASSIFICATION (Mandatory):**
    - Classify the `domain` of the question (e.g., "فقه", "عقيدة", "تفسير", "سيرة", "نحو وصرف", "تاريخ", "إعراب القرآن", "بلاغة وشعر"). This field is mandatory.
 
-3. **FIQH TOPIC CLASSIFICATION (Kitab):**
-   - IF the `domain` is Fiqh ("فقه"), you MUST classify the topic into EXACTLY ONE of the following precise categories (Kitab):
-     ["كتاب الطهارة", "كتاب الصلاة", "كتاب الزكاة", "كتاب الصيام", "كتاب الحج", "كتاب البيوع", "كتاب النكاح", "كتاب الطلاق", "كتاب العدة", "كتاب الرضاع", "كتاب الحدود", "كتاب القصاص", "كتاب الجنايات", "كتاب الأيمان", "كتاب النذور", "كتاب الأطعمة", "كتاب اللباس", "كتاب الجنائز", "كتاب الوقف", "كتاب الهبة", "كتاب القضاء", "كتاب الشهادات", "كتاب الإجارة", "كتاب الوصية", "كتاب الفرائض"]
-   - IF the `domain` is NOT Fiqh, the `kitab` value MUST be `null`.
 
-4. **METADATA EXTRACTION (Optional):**
+3. **METADATA EXTRACTION (Optional):**
    - Extract `author` if a scholar/author is explicitly or implicitly mentioned (e.g., ابن تيمية, الحجاوي).
    - Extract `source_book` if a specific book is mentioned (e.g., زاد المستقنع, الفروع).
    - Extract `madhhab` if a specific Islamic school of thought is mentioned (e.g., حنبلي, شافعي).
@@ -30,10 +26,16 @@ Analyze the user's input, which may contain one or multiple distinct questions. 
      - Shafi'i (شافعي): المجموع, الأم, منهاج الطالبين, روضة الطالبين
      - Maliki (مالكي): المدونة, الشرح الكبير, مختصر خليل, بداية المجتهد
      - Hanafi (حنفي): المبسوط, الهداية, بدائع الصنائع, حاشية ابن عابدين
-5. **SAFETY CHECK (is_safe) & NULLIFICATION:**
+
+4. **SAFETY CHECK (is_safe) & NULLIFICATION:**
    - Return `true` ONLY if the question is strictly related to Islamic sciences (e.g., Fiqh, Aqeedah, Tafseer, Seerah, etc).
    - Return `false` if the question is completely unrelated to Islamic sciences (e.g., cooking, programming, general chat) OR if it contains harmful/malicious intent.
    - **CRITICAL:** If `is_safe` is `false`, you MUST set `search_query` to `null` and `metadata` to `null`. Do not attempt to extract a search query or metadata for unsafe/unrelated questions.
+
+5. **AMBIGUITY CHECK (is_ambiguous) & CLARIFICATION:**
+   - Return `true` for `is_ambiguous` IF the question is too vague, incomplete, or lacks context to be searched accurately (e.g., "ما هي الشروط؟" without specifying what conditions).
+   - IF `is_ambiguous` is `true`, you MUST write a polite Arabic response in `clarification_message` asking the user to clarify their question (e.g., "يبدو أن سؤالك غير مكتمل. هل تقصد شروط الصلاة، أم شروط الحج، أم شيئاً آخر؟").
+   - IF `is_ambiguous` is `true`, you MUST set `search_query` to `null` because it cannot be searched yet.
 
 ### OUTPUT FORMAT
 You must strictly output valid JSON matching the following schema. Do not include markdown code blocks or any other text outside the JSON.
@@ -44,6 +46,8 @@ You must strictly output valid JSON matching the following schema. Do not includ
       "original_question": "The exact sub-question text",
       "search_query": "Standalone MSA query",
       "is_safe": true,
+      "is_ambiguous": false,
+      "clarification_message": null,
       "metadata": {{
         "domain": "فقه",
         "kitab": "كتاب الصلاة",
@@ -61,3 +65,8 @@ You must strictly output valid JSON matching the following schema. Do not includ
 ### USER_INPUT
 {user_input}
 """
+
+# 3. **Fiqh TOPIC CLASSIFICATION (Kitab):**
+#    - IF the `domain` is Fiqh ("فقه"), you MUST classify the topic into EXACTLY ONE of the following precise categories (Kitab):
+#      ["كتاب الطهارة", "كتاب الصلاة", "كتاب الزكاة", "كتاب الصيام", "كتاب الحج", "كتاب البيوع", "كتاب النكاح", "كتاب الطلاق", "كتاب العدة", "كتاب الرضاع", "كتاب الحدود", "كتاب القصاص", "كتاب الجنايات", "كتاب الأيمان", "كتاب النذور", "كتاب الأطعمة", "كتاب اللباس", "كتاب الجنائز", "كتاب الوقف", "كتاب الهبة", "كتاب القضاء", "كتاب الشهادات", "كتاب الإجارة", "كتاب الوصية", "كتاب الفرائض"]
+#    - IF the `domain` is NOT Fiqh, the `kitab` value MUST be `null`.

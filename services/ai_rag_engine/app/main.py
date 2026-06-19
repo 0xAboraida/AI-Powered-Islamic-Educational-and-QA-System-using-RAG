@@ -1,3 +1,19 @@
+"""
+main.py
+-------
+The Entry Point for the Zad-AI FastApi Application.
+
+Flow:
+    1. Initialization: Configures logging and creates the FastAPI application instance.
+    2. Lifespan Events: Eagerly connects to MongoDB clusters on startup to avoid cold-start delays.
+    3. Middleware: Injects CORS middleware to allow the external C# backend or Frontend to communicate with this API.
+    4. Routing: Mounts all API endpoints from `api/routes.py`.
+
+Why this file?
+    This is the standard execution point for uvicorn. It centralizes all application-level 
+    configurations, middleware, and lifecycle management without cluttering the business logic.
+"""
+
 import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware

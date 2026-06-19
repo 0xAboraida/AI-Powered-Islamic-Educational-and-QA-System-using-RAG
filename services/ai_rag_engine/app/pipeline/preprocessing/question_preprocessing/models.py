@@ -47,6 +47,14 @@ class ProcessedQuestion(BaseModel):
         ..., 
         description="True ONLY if the question is related to Islamic sciences. False if out of scope or harmful."
     )
+    is_ambiguous: bool = Field(
+        False, 
+        description="True if the question is too vague, incomplete, or lacks context (e.g., 'ما هي الشروط؟' without specifying for what). False if clear."
+    )
+    clarification_message: Optional[str] = Field(
+        None, 
+        description="If is_ambiguous is True, this contains a polite Arabic response asking the user to clarify their question."
+    )
     metadata: Optional[QuestionMetadata] = Field(
         None, 
         description="The metadata parameters required to filter the RAG search. Must be null if is_safe is false."

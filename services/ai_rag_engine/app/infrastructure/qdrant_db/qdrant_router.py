@@ -1,3 +1,20 @@
+"""
+qdrant_router.py
+----------------
+Routes Vector Searches to the correct Qdrant Cloud Cluster.
+
+Flow:
+    1. Initialization: Connects to multiple Qdrant cloud clusters using API keys from .env.
+    2. Mapping: Maintains a dictionary mapping each Islamic domain to its specific cluster and collection name.
+    3. Routing: When a search is requested, returns the exact Qdrant client instance and collection to search in.
+
+Why a Router?
+    Qdrant Cloud has storage limits on the free tier. To index our massive dataset, 
+    we horizontally scaled across multiple free-tier Qdrant clusters. The router abstracts 
+    this complexity so the `retrieval_service` just asks for "فقه" and the router automatically 
+    directs it to the right server and collection without any complex logic in the retriever.
+"""
+
 from typing import Tuple
 from services.ai_rag_engine.app.infrastructure.qdrant_db.qdrant_manager import QdrantManager
 from services.ai_rag_engine.app.config.settings import settings
