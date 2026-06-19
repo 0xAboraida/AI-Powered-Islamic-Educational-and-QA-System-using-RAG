@@ -18,12 +18,9 @@ RUN apt-get update && apt-get install -y \
 # Copy the requirements file into the container
 # Assuming context is at the root of the project Zad-AI
 COPY requirements.txt .
-COPY services/ai_rag_engine/requirements.txt ./services/ai_rag_engine/requirements.txt
 
 # Install python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
-# Check if ai_rag_engine has its own requirements, if so install it
-RUN pip install --no-cache-dir -r services/ai_rag_engine/requirements.txt || true
 
 # Copy the rest of the application
 COPY . .
