@@ -29,9 +29,11 @@ from pathlib import Path
 current_path = Path(__file__).resolve()
 project_root = None
 for parent in [current_path] + list(current_path.parents):
-    if parent.name == "Zad-AI":
+    if (parent / "requirements.txt").exists() and (parent / "services").is_dir():
         project_root = parent
         break
+if project_root is None:
+    project_root = Path("/app")
 
 if project_root and str(project_root) not in sys.path:
     sys.path.append(str(project_root))

@@ -19,9 +19,11 @@ logger = logging.getLogger(__name__)
 current_path = Path(__file__).resolve()
 project_root = None
 for parent in [current_path] + list(current_path.parents):
-    if parent.name == "Zad-AI":
+    if (parent / "requirements.txt").exists() and (parent / "services").is_dir():
         project_root = parent
         break
+if project_root is None:
+    project_root = Path("/app")
 if not project_root:
     project_root = current_path.parents[4]
 

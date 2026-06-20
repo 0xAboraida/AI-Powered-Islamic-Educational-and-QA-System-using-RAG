@@ -25,9 +25,11 @@ from dotenv import load_dotenv
 current_dir = Path(__file__).resolve().parent
 project_root = None
 for parent in [current_dir] + list(current_dir.parents):
-    if parent.name == "Zad-AI":
+    if (parent / "requirements.txt").exists() and (parent / "services").is_dir():
         project_root = parent
         break
+if project_root is None:
+    project_root = Path("/app")
 
 if project_root:
     env_path = project_root / "services" / "ai_rag_engine" / ".env"

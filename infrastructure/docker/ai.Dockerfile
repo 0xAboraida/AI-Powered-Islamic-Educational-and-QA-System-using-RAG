@@ -9,18 +9,13 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 # Set the working directory in the container
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
-
 # Copy the requirements file into the container
 # Assuming context is at the root of the project Zad-AI
 COPY requirements.txt .
 
-# Install python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Install python dependencies using Docker's smart caching
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
 
 # Copy the rest of the application
 COPY . .
