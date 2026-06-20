@@ -23,8 +23,12 @@ from services.ai_rag_engine.app.api.routes import api_router
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
-    format="%(levelname)s:%(name)s:%(message)s"
+    format="%(message)s"  # Removed the long module names for a cleaner terminal
 )
+
+# Silence noisy external libraries
+logging.getLogger("httpx").setLevel(logging.WARNING)
+logging.getLogger("google_genai").setLevel(logging.WARNING)
 
 logger = logging.getLogger(__name__)
 

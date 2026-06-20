@@ -27,7 +27,7 @@ Why an Orchestrator?
 
 import time
 import logging
-from typing import AsyncGenerator
+from typing import AsyncGenerator, Optional
 
 from services.ai_rag_engine.app.pipeline.preprocessing.question_preprocessing.query_preprocessor import (
     QueryPreprocessor,
@@ -48,7 +48,7 @@ class PipelineOrchestrator:
         self.llm_service = llm_service
 
     async def generate_chat_response(
-        self, query: str, domain: str, session_id: int = None
+        self, query: str, domain: str, session_id: Optional[int] = None
     ) -> dict:
         print("\n\n" + "="*60)
         logger.info(

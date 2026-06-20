@@ -102,7 +102,7 @@ class LLMService:
                 logger.error(f"❌ [GENERATION: LLM] Both Primary and Fallback LLMs failed! Error: {fallback_e}", exc_info=True)
                 return {
                     "answer": "عذراً، حدث خطأ في جميع خوادم التوليد. يرجى المحاولة لاحقاً.",
-                    "citations": []
+                    "citations": {}
                 }
 
         # ── 3b. Extract which citation IDs the model actually used ────────
@@ -135,24 +135,26 @@ class LLMService:
                 
             full_generated_text = _CITATION_PATTERN.sub(replace_citation, full_generated_text)
             
-            # Build the final citations dictionary with new sequential keys
+            # Build the final citations list with new sequential keys
             for old_id in used_ids:
                 old_key = f"cit_{old_id}"
-                new_key = f"cit_{id_mapping[old_id]}"
                 if old_key in all_citations:
-                    used_citations[new_key] = all_citations[old_key]
+                    cit_data = all_citations[old_key].copy()
+                    used_citations[f"cit_{id_mapping[old_id]}"] = cit_data
         else:
             if all_citations:
                 logger.warning(
                     "⚠️ [GENERATION: LLM] No citation markers found in generated text. "
                     "Falling back to sending all citations."
                 )
-                used_citations = all_citations
+                for idx, (key, cit_data) in enumerate(all_citations.items(), start=1):
+                    cit = cit_data.copy()
+                    used_citations[f"cit_{idx}"] = cit
 
         # ── 3d. Return final dictionary ───────────
         response_dict: dict[str, Any] = {
             "answer": full_generated_text,
-            "citations": used_citations if used_citations else {}
+            "citations": used_citations
         }
         
         if settings.RETURN_CONTEXT_CHUNKS:

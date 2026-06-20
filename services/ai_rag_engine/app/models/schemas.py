@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional, List, Literal
+from typing import Optional, List, Literal, Dict
 
 
 class ChatRequest(BaseModel):
@@ -22,7 +22,6 @@ class HierarchyInfo(BaseModel):
 
 class CitationDict(BaseModel):
     """Final citation structure."""
-
     book_title: Optional[str] = None
     madhhab: Optional[str] = None
     author: Optional[str] = None
@@ -38,4 +37,5 @@ class ChatResponse(BaseModel):
     """Final response structure."""
 
     answer: str
-    citations: Optional[dict[str, CitationDict]] = Field(default=None)
+    citations: Optional[Dict[str, CitationDict]] = Field(default=None)
+    context: Optional[List[dict]] = Field(default=None)

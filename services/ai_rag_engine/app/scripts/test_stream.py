@@ -33,8 +33,8 @@ with httpx.stream("POST", url, json=payload, timeout=60.0) as response:
             # If the event contains final citations used
             elif data["type"] == "citations":
                 print("\n\n📑 Citations used in the answer:")
-                for c in data["data"]:
-                    print(f"- Book: {c.get('book_title')} (Author: {c.get('author')})")
+                for cit_key, c in data["data"].items():
+                    print(f"- {cit_key} -> Book: {c.get('book_title')} (Author: {c.get('author')})")
                     print(f"  URL: {c.get('source_url')}")
 
         except json.JSONDecodeError:

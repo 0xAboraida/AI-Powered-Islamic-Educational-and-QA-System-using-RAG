@@ -31,7 +31,7 @@ from services.ai_rag_engine.app.config.settings import settings
 
 DOMAIN_MAPPING = settings.DOMAIN_MAPPING
 
-@router.post("/ask", response_model=ChatResponse, summary="Get a chat response based on RAG")
+@router.post("/ask", response_model=ChatResponse, response_model_exclude_none=True, summary="Get a chat response based on RAG")
 async def chat_endpoint(request: ChatRequest):
     try:
         domain_str = DOMAIN_MAPPING.get(request.domain)
