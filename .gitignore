@@ -25,7 +25,6 @@ venv/
 # ======================
 # Models & Embeddings
 # ======================
-models/
 embeddings/
 app/models/weights/
 *.bin
