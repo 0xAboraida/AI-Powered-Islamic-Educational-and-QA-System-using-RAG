@@ -69,7 +69,7 @@ class SparseRetriever(BaseRetriever):
         Returns:
             List of RetrievedChunk sorted by score descending.
         """
-        logger.info(f"🔎 [SPARSE RETRIEVER] Query: '{query[:60]}...'")
+        logger.info(f"  - 🔎 [SPARSE] Query: '{query[:60]}...'")
 
         # Step 1: Embed the query → get sparse lexical weights
         if embedding_result:
@@ -120,7 +120,7 @@ class SparseRetriever(BaseRetriever):
     ) -> List[RetrievedChunk]:
         import time
         import asyncio
-        logger.info(f"🔎 [SPARSE RETRIEVER] Async Query: '{query[:60]}...'")
+        logger.info(f"  - 🔎 [SPARSE] Async Query: '{query[:60]}...'")
 
         # Step 1: Embed the query async
         if embedding_result:

@@ -134,7 +134,7 @@ class RetrievalService:
         final_results = list(all_parents.values())
         final_results.sort(key=lambda p: p.best_child_score, reverse=True)
 
-        logger.info(f"[⏱️ TIMER] RetrievalService Parallel retrieve_multi execution took: {time.time() - start_t:.2f} seconds")
+        logger.info(f"  - ⏱️ [TIMER] RetrievalService Parallel retrieve_multi execution took: {time.time() - start_t:.2f} seconds")
         return final_results
 
 try:

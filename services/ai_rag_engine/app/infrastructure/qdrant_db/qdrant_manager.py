@@ -127,7 +127,7 @@ class QdrantManager:
             List of Qdrant ScoredPoint objects.
         """
         logger.info(
-            f"Dense search in '{collection_name}' — top_k={limit}, "
+            f"  - Dense search in '{collection_name}' — top_k={limit}, "
             f"filters={filters}"
         )
         qdrant_filter = self.build_filter(filters)
@@ -139,7 +139,7 @@ class QdrantManager:
             limit=limit,
             with_payload=True,
         ).points
-        logger.info(f"Dense search returned {len(results)} results.")
+        logger.info(f"  - Dense search returned {len(results)} results.")
         return results
 
     def search_sparse(
@@ -162,7 +162,7 @@ class QdrantManager:
             List of Qdrant ScoredPoint objects.
         """
         logger.info(
-            f"Sparse search in '{collection_name}' — top_k={limit}, "
+            f"  - Sparse search in '{collection_name}' — top_k={limit}, "
             f"filters={filters}"
         )
         qdrant_filter = self.build_filter(filters)
@@ -182,5 +182,5 @@ class QdrantManager:
             limit=limit,
             with_payload=True,
         ).points
-        logger.info(f"Sparse search returned {len(results)} results.")
+        logger.info(f"  - Sparse search returned {len(results)} results.")
         return results

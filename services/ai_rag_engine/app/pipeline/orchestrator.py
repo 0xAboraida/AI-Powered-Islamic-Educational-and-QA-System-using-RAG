@@ -60,13 +60,15 @@ class PipelineOrchestrator:
         global_start_time = time.time()
         try:
             # Step 1: Preprocessing & Memory
+            logger.info("")
             logger.info("🧠 [PREPROCESSING] Step 1: Fetching Memory and Preprocessing...")
             prep_start_time = time.time()
 
             # Fetch previous conversation from memory
+            # pyrefly: ignore [bad-argument-type]
             chat_history = await memory_service.get_history(session_id)
             if chat_history:
-                logger.info(f"📚 [MEMORY] Fetched chat history for session '{session_id}'")
+                logger.info(f"  - 📚 [MEMORY] Fetched chat history for session '{session_id}'")
 
             # Analyze the query and extract metadata asynchronously
             preprocessing_result = await self.preprocessor.process_query(
@@ -74,16 +76,16 @@ class PipelineOrchestrator:
             )
 
             prep_time = time.time() - prep_start_time
-            logger.info(f"⏱️ [TIMER] Preprocessing (LLM) took: {prep_time:.2f} seconds")
+            logger.info(f"  - ⏱️ [TIMER] Preprocessing (LLM) took: {prep_time:.2f} seconds")
             
             # Log the JSON output from the preprocessor
-            logger.info(f"⚙️ [PREPROCESSING] Total distinct questions detected: {preprocessing_result.total_questions}")
+            logger.info(f"  - ⚙️ [PREPROCESSING] Total distinct questions detected: {preprocessing_result.total_questions}")
             for i, q in enumerate(preprocessing_result.questions, 1):
-                logger.info(f"   ▶ Question {i}: {q.original_question}")
-                logger.info(f"      - Search Query: {q.search_query}")
-                logger.info(f"      - Is Safe: {q.is_safe} | Is Ambiguous: {q.is_ambiguous}")
+                logger.info(f"    ▶ Question {i}: {q.original_question}")
+                logger.info(f"       Search Query: {q.search_query}")
+                logger.info(f"       Is Safe: {q.is_safe} | Is Ambiguous: {q.is_ambiguous}")
                 if q.metadata:
-                    logger.info(f"      - Metadata: {q.metadata.model_dump(exclude_none=True)}")
+                    logger.info(f"       Metadata: {q.metadata.model_dump(exclude_none=True)}")
 
             # ── 🚨 Guardrail Check: Reject non-Islamic questions ──
             unsafe_questions = [q for q in preprocessing_result.questions if not q.is_safe]
@@ -128,6 +130,7 @@ class PipelineOrchestrator:
 
             print("-" * 60)
             # Step 2: Retrieval
+            logger.info("")
             logger.info("🔍 [RETRIEVAL] Step 2: Starting Concurrent Retrieval...")
             retrieval_start_time = time.time()
 
@@ -146,16 +149,17 @@ class PipelineOrchestrator:
                 queries=search_queries, domain=domain, madhhab=madhhab_filter
             )
 
-            logger.info(f"⏱️ [TIMER] Total Retrieval Pipeline took: {time.time() - retrieval_start_time:.2f} seconds")
-            logger.info(f"📦 [RETRIEVAL] Found {len(parents) if parents else 0} parent chunks.")
+            logger.info(f"  - ⏱️ [TIMER] Total Retrieval Pipeline took: {time.time() - retrieval_start_time:.2f} seconds")
+            logger.info(f"  - 📦 [RETRIEVAL] Found {len(parents) if parents else 0} parent chunks.")
 
             if not parents:
                 logger.warning(
-                    f"⚠️ [RETRIEVAL] No related texts were found for the query in the '{domain}' domain."
+                    f"  - ⚠️ [RETRIEVAL] No related texts were found for the query in the '{domain}' domain."
                 )
 
             print("-" * 60)
             # Step 3: Generation (Single Response)
+            logger.info("")
             logger.info("🤖 [GENERATION] Step 3: Starting Response Generation...")
             
             # Join the rewritten, explicit search queries to send to the Generation LLM
@@ -171,6 +175,7 @@ class PipelineOrchestrator:
                 answer_text = response_data.get("answer", "")
                 await memory_service.add_interaction(session_id, query, answer_text)
 
+            logger.info("")
             logger.info(f"✅ [SUCCESS] Total Request Processing took: {time.time() - global_start_time:.2f} seconds")
             print("============================================================\n\n")
             

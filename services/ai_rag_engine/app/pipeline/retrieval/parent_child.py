@@ -421,7 +421,7 @@ class ParentChildRetriever:
 
         fetched_docs = await asyncio.to_thread(fetch_all_mongo)
         
-        logger.info(f"[⏱️ TIMER] ParentChild Async MongoDB fetching took: {time.time() - mongo_t:.2f} seconds")
+        logger.info(f"  - ⏱️ [TIMER] ParentChild Async MongoDB fetching took: {time.time() - mongo_t:.2f} seconds")
 
         results: List[RetrievedParent] = []
 
