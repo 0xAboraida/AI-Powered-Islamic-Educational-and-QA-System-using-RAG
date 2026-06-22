@@ -22,3 +22,4 @@ redis==8.0.0
 requests
 langchain-groq
 transformers<5.0.0
+python-multipart==0.0.32

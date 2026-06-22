@@ -17,11 +17,12 @@ Why this file?
 """
 
 import logging
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, UploadFile, File
 from fastapi.responses import StreamingResponse
 
 from services.ai_rag_engine.app.models.schemas import ChatRequest, ChatResponse
 from services.ai_rag_engine.app.pipeline.orchestrator import orchestrator
+from services.ai_rag_engine.app.pipeline.audio.audio_service import audio_service
 
 logger = logging.getLogger(__name__)
 
@@ -49,3 +50,19 @@ async def chat_endpoint(request: ChatRequest):
     except Exception as e:
         logger.error(f"Error in chat endpoint: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
+
+@router.post("/transcribe", summary="Transcribe audio to text using Groq Whisper API")
+async def transcribe_endpoint(file: UploadFile = File(...)):
+    try:
+        # pyrefly: ignore [missing-attribute]
+        if not file.content_type.startswith("audio/"):
+            raise HTTPException(status_code=400, detail="File must be an audio format")
+            
+        transcription = await audio_service.transcribe_audio(file)
+        return {"text": transcription}
+        
+    except ValueError as ve:
+        raise HTTPException(status_code=500, detail=str(ve))
+    except Exception as e:
+        logger.error(f"Error in transcribe endpoint: {e}")
+        raise HTTPException(status_code=500, detail="Error processing audio transcription")
