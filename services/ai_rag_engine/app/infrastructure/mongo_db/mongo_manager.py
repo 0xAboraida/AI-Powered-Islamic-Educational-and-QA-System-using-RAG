@@ -23,6 +23,8 @@ class MongoManager:
                 serverSelectionTimeoutMS=20000,
                 connectTimeoutMS=20000,
                 socketTimeoutMS=30000,
+                maxIdleTimeMS=45000,
+                retryWrites=True,
                 tlsDisableOCSPEndpointCheck=True,
                 readPreference="secondaryPreferred"
             )
@@ -73,17 +75,24 @@ class MongoManager:
 
         # pyrefly: ignore [unsupported-operation]
         collection = self.db[collection_name]
-        try:
-            cursor = collection.find({"_id": {"$in": ids}})
-            results = list(cursor)
-            logger.info(
-                f"📦 Fetched {len(results)}/{len(ids)} parents "
-                f"from '{self.db_name}.{collection_name}'"
-            )
-            return results
-        except Exception as e:
-            logger.error(f"❌ MongoDB fetch error in '{collection_name}': {e}")
-            return []
+        
+        max_retries = 2
+        for attempt in range(max_retries):
+            try:
+                cursor = collection.find({"_id": {"$in": ids}})
+                results = list(cursor)
+                logger.info(
+                    f"📦 Fetched {len(results)}/{len(ids)} parents "
+                    f"from '{self.db_name}.{collection_name}'"
+                )
+                return results
+            except Exception as e:
+                logger.warning(f"⚠️ MongoDB fetch error in '{collection_name}' on attempt {attempt + 1}/{max_retries}: {e}")
+                if attempt == max_retries - 1:
+                    logger.error(f"❌ MongoDB fetch failed permanently in '{collection_name}' after {max_retries} attempts.")
+                    return []
+                import time
+                time.sleep(0.5) # Short backoff before retrying
 
     def close(self):
         if self.client:

@@ -156,6 +156,16 @@ class PipelineOrchestrator:
                 logger.warning(
                     f"  - ⚠️ [RETRIEVAL] No related texts were found for the query in the '{domain}' domain."
                 )
+                apology_msg = "عذراً، لم أتمكن من العثور على معلومات دقيقة في المصادر والكتب المعتمدة لدي للإجابة على هذا السؤال."
+                
+                # Save to memory
+                if session_id:
+                    await memory_service.add_interaction(session_id, query, apology_msg)
+                
+                return {
+                    "answer": apology_msg,
+                    "citations": {}
+                }
 
             print("-" * 60)
             # Step 3: Generation (Single Response)
