@@ -20,14 +20,11 @@ __pycache__/
 # ======================
 # Virtual Environment
 # ======================
-ZAD/
 venv/
 
 # ======================
 # Models & Embeddings
 # ======================
-embeddings/
-app/models/weights/
 *.bin
 *.pt
 *.pth
