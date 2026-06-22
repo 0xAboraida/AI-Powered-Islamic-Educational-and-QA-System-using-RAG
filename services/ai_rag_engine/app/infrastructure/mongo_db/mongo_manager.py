@@ -20,9 +20,9 @@ class MongoManager:
                 self.uri,
                 tls=True,
                 tlsCAFile=certifi.where(),
-                serverSelectionTimeoutMS=5000,
-                connectTimeoutMS=5000,
-                socketTimeoutMS=10000,
+                serverSelectionTimeoutMS=20000,
+                connectTimeoutMS=20000,
+                socketTimeoutMS=30000,
                 tlsDisableOCSPEndpointCheck=True,
                 readPreference="secondaryPreferred"
             )
@@ -38,6 +38,7 @@ class MongoManager:
         if not documents:
             return
 
+        # pyrefly: ignore [unsupported-operation]
         collection = self.db[collection_name]
 
         for doc in documents:
@@ -70,6 +71,7 @@ class MongoManager:
         if not ids:
             return []
 
+        # pyrefly: ignore [unsupported-operation]
         collection = self.db[collection_name]
         try:
             cursor = collection.find({"_id": {"$in": ids}})

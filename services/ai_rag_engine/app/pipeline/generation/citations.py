@@ -37,14 +37,20 @@ def prepare_citations_payloads(parents: List[RetrievedParent]) -> Tuple[Dict[str
         m = parent.metadata
         
         # Build hierarchy string
-        hierarchy_dict = m.get("hierarchy") or {}
-        kitab = hierarchy_dict.get("kitab") or ""
-        sections = hierarchy_dict.get("sections") or []
-        hierarchy_str = str(kitab) if kitab else ""
-        if sections:
-            if hierarchy_str:
-                hierarchy_str += " > "
-            hierarchy_str += " > ".join(str(s) for s in sections)
+        hierarchy_val = m.get("hierarchy")
+        hierarchy_str = ""
+        if isinstance(hierarchy_val, list):
+            hierarchy_str = " > ".join(str(s) for s in hierarchy_val if s)
+        elif isinstance(hierarchy_val, dict):
+            kitab = hierarchy_val.get("kitab") or ""
+            sections = hierarchy_val.get("sections") or []
+            hierarchy_str = str(kitab) if kitab else ""
+            if sections:
+                if hierarchy_str:
+                    hierarchy_str += " > "
+                hierarchy_str += " > ".join(str(s) for s in sections if s)
+        elif isinstance(hierarchy_val, str):
+            hierarchy_str = hierarchy_val
 
         # 1. Build full citations data for the UI based on citation_format.json
         citation = {

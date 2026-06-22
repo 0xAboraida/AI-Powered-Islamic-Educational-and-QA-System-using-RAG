@@ -2,14 +2,16 @@ version: "3.9"
 
 services:
   zad-ai-engine:
-    image: abourida/zad-ai-engine:latest
+    image: abourida/docker-zad-ai-engine:latest
     container_name: zad-ai-engine
     ports:
       - "8000:8000"
     env_file:
-      - .env
+      - ../../services/ai_rag_engine/.env
     environment:
       - REDIS_URL=redis://redis:6379/0
+    volumes:
+      - "C:/Users/Shahin Lap/.cache/huggingface:/root/.cache/huggingface"
     restart: unless-stopped
     depends_on:
       - redis

@@ -24,4 +24,4 @@ COPY . .
 EXPOSE 8000
 
 # Command to run the application
-CMD ["uvicorn", "services.ai_rag_engine.app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
+CMD ["uvicorn", "services.ai_rag_engine.app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]

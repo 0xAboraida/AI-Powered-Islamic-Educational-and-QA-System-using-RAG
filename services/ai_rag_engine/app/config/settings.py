@@ -10,8 +10,8 @@ Flow:
     4. Export: Exposes a singleton `settings` object that can be safely imported anywhere in the project.
 
 Why this file?
-    Scattering `os.getenv("API_KEY")` throughout the code leads to silent bugs and crashes if a key is missing. 
-    By using a centralized Settings class, we validate all crucial configuration at startup. If an environment 
+    Scattering `os.getenv("API_KEY")` throughout the code leads to silent bugs and crashes if a key is missing.
+    By using a centralized Settings class, we validate all crucial configuration at startup. If an environment
     variable is missing or wrongly typed, the app fails immediately and loudly, ensuring production stability.
 """
 
@@ -124,13 +124,23 @@ class Settings(BaseSettings):
     RAG_RRF_K: int = int(os.getenv("RAG_RRF_K", "60"))
 
     # ── Reranker Settings ────────────────────────────────────────────────────
-    USE_RERANKER: bool = os.getenv("USE_RERANKER", "True").lower() in ("true", "1", "yes")
-    RERANKER_MODEL_NAME: str = os.getenv("RERANKER_MODEL_NAME", "BAAI/bge-reranker-v2-m3")
+    USE_RERANKER: bool = os.getenv("USE_RERANKER", "True").lower() in (
+        "true",
+        "1",
+        "yes",
+    )
+    RERANKER_MODEL_NAME: str = os.getenv(
+        "RERANKER_MODEL_NAME", "BAAI/bge-reranker-v2-m3"
+    )
     RAG_RERANKER_TOP_K: int = int(os.getenv("RAG_RERANKER_TOP_K", "3"))
 
     # ── API Response Settings ────────────────────────────────────────────────
-    RETURN_CONTEXT_CHUNKS: bool = os.getenv("RETURN_CONTEXT_CHUNKS", "False").lower() in ("true", "1", "yes")
-    RETURN_CITATION_CONTENT: bool = os.getenv("RETURN_CITATION_CONTENT", "False").lower() in ("true", "1", "yes")
+    RETURN_CONTEXT_CHUNKS: bool = os.getenv(
+        "RETURN_CONTEXT_CHUNKS", "False"
+    ).lower() in ("true", "1", "yes")
+    RETURN_CITATION_CONTENT: bool = os.getenv(
+        "RETURN_CITATION_CONTENT", "False"
+    ).lower() in ("true", "1", "yes")
 
     # ── Fallback LLM Settings ────────────────────────────────────────────────
     FALLBACK_PROVIDER: str = os.getenv("FALLBACK_PROVIDER", "openai")
@@ -140,9 +150,16 @@ class Settings(BaseSettings):
 
     # ── Application Constants ────────────────────────────────────────────────
     SUPPORTED_DOMAINS: list[str] = [
-        "فقه", "العقيدة", "السيرة", "التفسير", "الحديث", "التاريخ", "علوم القران", "النحو والصرف"
+        "فقه",
+        "العقيدة",
+        "السيرة",
+        "التفسير",
+        "الحديث",
+        "التاريخ",
+        "علوم القران",
+        "النحو والصرف",
     ]
-    
+
     DOMAIN_MAPPING: dict[int, str] = {
         1: "فقه",
         2: "العقيدة",
@@ -151,12 +168,16 @@ class Settings(BaseSettings):
         5: "الحديث",
         6: "علوم القران",
         7: "التاريخ",
-        8: "علوم اللغه"
+        8: "علوم اللغه",
     }
 
     # Redis Chat Memory
-    REDIS_URL: str = Field("redis://localhost:6379/0", description="Redis connection URL")
-    CHAT_HISTORY_TTL: int = Field(7200, description="Time to live for chat history in seconds (2 hours default)")
+    REDIS_URL: str = Field(
+        "redis://localhost:6379/0", description="Redis connection URL"
+    )
+    CHAT_HISTORY_TTL: int = Field(
+        7200, description="Time to live for chat history in seconds (2 hours default)"
+    )
 
 
 settings = Settings()

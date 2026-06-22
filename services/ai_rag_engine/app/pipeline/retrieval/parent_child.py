@@ -73,17 +73,12 @@ class _MongoConnectionPool:
     Avoids creating a new TCP connection for every fetch call.
     """
 
-    def __init__(self, env_vars: Dict[str, str]):
-        """
-        Args:
-            env_vars: Dict of all resolved env vars (from os.environ).
-        """
-        self._env_vars = env_vars
+    def __init__(self):
         self._pool: Dict[Tuple[str, str], MongoManager] = {}
 
     def get(self, route: MongoRouteConfig) -> Optional[MongoManager]:
         """Get or create a MongoManager for the given route config."""
-        uri = self._env_vars.get(route.uri_env_key)
+        uri = os.environ.get(route.uri_env_key)
         if not uri:
             logger.error(
                 f"❌ Missing env var '{route.uri_env_key}'. "
@@ -93,12 +88,16 @@ class _MongoConnectionPool:
 
         # Resolve ${VAR} style references
         if uri.startswith("${") and uri.endswith("}"):
-            uri = self._env_vars.get(uri[2:-1], "")
+            uri = os.environ.get(uri[2:-1], "")
 
         key = (uri, route.db_name)
         if key not in self._pool:
             logger.info(f"🔌 Opening new MongoDB connection → db='{route.db_name}'")
-            self._pool[key] = MongoManager(uri=uri, db_name=route.db_name)
+            try:
+                self._pool[key] = MongoManager(uri=uri, db_name=route.db_name)
+            except Exception as e:
+                logger.error(f"❌ Failed to initialize MongoManager for '{route.db_name}': {e}")
+                return None
 
         return self._pool[key]
 
@@ -106,6 +105,9 @@ class _MongoConnectionPool:
         for manager in self._pool.values():
             manager.close()
         self._pool.clear()
+
+# Global Singleton Pool
+mongo_pool = _MongoConnectionPool()
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -145,7 +147,7 @@ class ParentChildRetriever:
         """
         self.hybrid_retriever = hybrid_retriever
         self.child_top_k = child_top_k
-        self._pool = _MongoConnectionPool(env_vars or dict(os.environ))
+        self._pool = mongo_pool
 
     def retrieve(
         self,
@@ -247,44 +249,41 @@ class ParentChildRetriever:
         )
 
         import time
+        import concurrent.futures
         mongo_t = time.time()
         # parent_id → raw MongoDB doc
         fetched_docs: Dict[str, Dict] = {}
 
-        for route_key, parent_ids in route_groups.items():
-            domain, madhhab = route_meta[route_key]
+        def fetch_route(manager: MongoManager, route: MongoRouteConfig, ids: List[str]) -> List[Dict]:
+            return manager.fetch_by_ids(collection_name=route.collection_name, ids=ids)
 
-            try:
-                routes: List[MongoRouteConfig] = get_routes(domain, madhhab)
-            except KeyError as e:
-                logger.error(f"  {e}")
-                continue
+        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+            future_to_route = {}
+            for route_key, parent_ids in route_groups.items():
+                domain, madhhab = route_meta[route_key]
 
-            remaining_ids = set(parent_ids)
-
-            for route in routes:
-                if not remaining_ids:
-                    break  # All parents found already
-
-                manager = self._pool.get(route)
-                if not manager:
+                try:
+                    routes: List[MongoRouteConfig] = get_routes(domain, madhhab)
+                except KeyError as e:
+                    logger.error(f"  {e}")
                     continue
 
-                docs = manager.fetch_by_ids(
-                    collection_name=route.collection_name,
-                    ids=list(remaining_ids),
-                )
+                ids_list = list(parent_ids)
+                for route in routes:
+                    manager = self._pool.get(route)
+                    if manager:
+                        future = executor.submit(fetch_route, manager, route, ids_list)
+                        future_to_route[future] = route
 
-                for doc in docs:
-                    doc_id = str(doc.get("_id", ""))
-                    fetched_docs[doc_id] = doc
-                    remaining_ids.discard(doc_id)
-
-            if remaining_ids:
-                logger.warning(
-                    f"  ⚠️  Could not find {len(remaining_ids)} parents "
-                    f"for domain='{domain}', madhhab='{madhhab}': {list(remaining_ids)[:3]}..."
-                )
+            for future in concurrent.futures.as_completed(future_to_route):
+                try:
+                    docs = future.result()
+                    for doc in docs:
+                        doc_id = str(doc.get("_id", ""))
+                        if doc_id not in fetched_docs:
+                            fetched_docs[doc_id] = doc
+                except Exception as exc:
+                    logger.error(f"Route generated an exception: {exc}")
 
         logger.info(
             f"📦 [RETRIEVAL: MONGO] Fetched {len(fetched_docs)} parent docs from MongoDB."
@@ -391,32 +390,39 @@ class ParentChildRetriever:
 
         import time
         import asyncio
+        import concurrent.futures
         mongo_t = time.time()
         
+        def fetch_route(manager: MongoManager, route: MongoRouteConfig, ids: List[str]) -> List[Dict]:
+            return manager.fetch_by_ids(collection_name=route.collection_name, ids=ids)
+
         def fetch_all_mongo():
             fetched_docs_local = {}
-            for route_key, parent_ids in route_groups.items():
-                domain, madhhab = route_meta[route_key]
-                try:
-                    routes = get_routes(domain, madhhab)
-                except KeyError:
-                    continue
-                
-                remaining_ids = set(parent_ids)
-                for route in routes:
-                    if not remaining_ids:
-                        break
-                    manager = self._pool.get(route)
-                    if not manager:
+            with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+                future_to_route = {}
+                for route_key, parent_ids in route_groups.items():
+                    domain, madhhab = route_meta[route_key]
+                    try:
+                        routes = get_routes(domain, madhhab)
+                    except KeyError:
                         continue
-                    docs = manager.fetch_by_ids(
-                        collection_name=route.collection_name,
-                        ids=list(remaining_ids),
-                    )
-                    for doc in docs:
-                        doc_id = str(doc.get("_id", ""))
-                        fetched_docs_local[doc_id] = doc
-                        remaining_ids.discard(doc_id)
+                    
+                    ids_list = list(parent_ids)
+                    for route in routes:
+                        manager = self._pool.get(route)
+                        if manager:
+                            future = executor.submit(fetch_route, manager, route, ids_list)
+                            future_to_route[future] = route
+
+                for future in concurrent.futures.as_completed(future_to_route):
+                    try:
+                        docs = future.result()
+                        for doc in docs:
+                            doc_id = str(doc.get("_id", ""))
+                            if doc_id not in fetched_docs_local:
+                                fetched_docs_local[doc_id] = doc
+                    except Exception as exc:
+                        logger.error(f"Route generated an exception: {exc}")
             return fetched_docs_local
 
         fetched_docs = await asyncio.to_thread(fetch_all_mongo)

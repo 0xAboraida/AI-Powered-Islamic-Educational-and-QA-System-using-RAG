@@ -331,7 +331,7 @@
                             </div>
                             <div style="font-size: 0.85rem; color: #555; line-height: 1.6;">
                                 <strong>المؤلف:</strong> ${cite.author || 'غير معروف'} (توفى: ${cite.author_death || '؟'})<br>
-                                <strong>العنوان التفصيلي:</strong> ${cite.hierarchy?.kitab || 'بدون قسم'} ${cite.hierarchy?.sections && cite.hierarchy.sections.length > 0 ? '> ' + cite.hierarchy.sections.join(' > ') : ''}<br>
+                                <strong>العنوان التفصيلي:</strong> ${cite.hierarchy ? cite.hierarchy : 'بدون قسم'}<br>
                                 <strong>المجلد:</strong> ${cite.part || '1'} من ${cite.total_parts || '1'} | <strong>الصفحة:</strong> ${cite.page_id || 'غير معروف'}
                             </div>
                             <div style="margin-top: 8px;">
