@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:zaad/core/services/shared_prefs_service.dart';
 import 'package:zaad/core/utils/app_strings.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../core/utils/app_assets.dart';
@@ -16,16 +17,27 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
+  late String? token;
   @override
   void initState() {
     super.initState();
     _goNext();
+    getToken();
+  }
+
+  getToken() async {
+    token= await SharedPrefsService.getToken()??"";
   }
 
   void _goNext() {
     Future<void>.delayed(const Duration(seconds: 7)).then((_) {
       if (!mounted) return;
-      Navigator.pushReplacementNamed(context, AppRoutes.login);
+      if(token?.isNotEmpty==true && token !=null){
+        Navigator.pushReplacementNamed(context, AppRoutes.chatbot);
+      }
+      else{
+        Navigator.pushReplacementNamed(context, AppRoutes.login);
+      }
     });
   }
 

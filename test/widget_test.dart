@@ -12,7 +12,7 @@ import 'package:zaad/core/utils/app_strings.dart';
 
 void main() {
   testWidgets('Splash navigates to login', (WidgetTester tester) async {
-    await tester.pumpWidget(const ZaadApp());
+    await tester.pumpWidget(const ZaadApp(isTokenSaved: false));
 
     expect(find.text(AppStrings.splashTitle), findsOneWidget);
 

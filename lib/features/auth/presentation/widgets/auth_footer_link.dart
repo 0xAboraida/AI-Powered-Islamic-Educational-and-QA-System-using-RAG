@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../../core/utils/app_colors/app_colors.dart';
+import '../../../../../core/utils/app_colors/app_colors.dart';
 
 class AuthFooterLink extends StatelessWidget {
   final String label;
   final String linkText;
   final VoidCallback onToggle;
+
   const AuthFooterLink({
     super.key,
     required this.label,
@@ -32,6 +33,7 @@ class AuthFooterLink extends StatelessWidget {
                 color: AppColors.primary,
                 fontWeight: FontWeight.w700,
                 fontSize: 14.sp,
+                fontFamily: 'Cairo',
               ),
             ),
           ),
@@ -42,6 +44,7 @@ class AuthFooterLink extends StatelessWidget {
               color: const Color(0xFF1C1B1F),
               fontSize: 13.sp,
               fontWeight: FontWeight.w500,
+              fontFamily: 'Cairo',
             ),
           ),
         ],

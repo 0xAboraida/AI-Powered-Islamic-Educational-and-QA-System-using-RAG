@@ -48,7 +48,7 @@ class ScreenRoutes {
         );
       default:
         return MaterialPageRoute(
-          builder: (_) => const SplashPage(),
+          builder: (_) => const Text("No Route"),
           settings: settings,
         );
     }

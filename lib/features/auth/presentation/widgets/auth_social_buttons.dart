@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../../../../core/utils/app_strings.dart';
 
 class AuthSocialButtons extends StatelessWidget {
   final String leftIconAsset;
@@ -26,7 +25,7 @@ class AuthSocialButtons extends StatelessWidget {
           child: _SocialIconButton(
             iconAsset: rightIconAsset,
             onPressed: onRightPressed,
-            label: AppStrings.google,
+            label: 'Google',
           ),
         ),
         SizedBox(width: 14.w),
@@ -34,7 +33,7 @@ class AuthSocialButtons extends StatelessWidget {
           child: _SocialIconButton(
             iconAsset: leftIconAsset,
             onPressed: onLeftPressed,
-            label: AppStrings.apple,
+            label: 'Apple',
           ),
         ),
       ],
@@ -79,6 +78,7 @@ class _SocialIconButton extends StatelessWidget {
                 color: const Color(0xFF1C1B1F),
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w600,
+                fontFamily: 'Cairo',
               ),
             ),
             SizedBox(width: 8.w),

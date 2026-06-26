@@ -45,6 +45,22 @@ dependencies:
   provider: ^6.1.5+1
   shared_preferences: ^2.5.3
   siri_wave:
+  font_awesome_flutter:
+  tutorial_coach_mark:
+  dio :
+  retrofit:
+  logger: 
+  json_annotation: 
+  injectable:
+  
+  get_it:
+  bloc:
+  equatable:
+  flutter_bloc:
+  pretty_dio_logger:
+  url_launcher: 
+  speech_to_text: ^7.4.0
+  
 
 dev_dependencies:
   flutter_test:
@@ -55,7 +71,11 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^4.0.0
+  flutter_lints: 
+  retrofit_generator: 
+  build_runner: 
+  json_serializable: 
+  injectable_generator:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

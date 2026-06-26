@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../../../../core/utils/app_colors/app_colors.dart';
+import '../../../../../core/utils/app_colors/app_colors.dart';
 
 class AuthTextField extends StatelessWidget {
   final TextEditingController controller;
@@ -10,6 +10,7 @@ class AuthTextField extends StatelessWidget {
   final TextInputType keyboardType;
   final bool obscureText;
   final Widget? suffix;
+  final String? Function(String?)? validator;
 
   const AuthTextField({
     super.key,
@@ -19,6 +20,7 @@ class AuthTextField extends StatelessWidget {
     required this.keyboardType,
     this.obscureText = false,
     this.suffix,
+    this.validator,
   });
 
   @override
@@ -36,11 +38,12 @@ class AuthTextField extends StatelessWidget {
         ),
         SizedBox(height: 5.h),
         TextFormField(
-          
           controller: controller,
           keyboardType: keyboardType,
           obscureText: obscureText,
           textAlign: TextAlign.right,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          validator: validator,
           style: TextStyle(
             color: const Color(0xFF1C1B1F),
             fontSize: 14.sp,
@@ -88,11 +91,13 @@ class AuthTextField extends StatelessWidget {
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.r),
-              borderSide: BorderSide(
-                color: Colors.red,
-                width: 1.w,
-              ),
+              borderSide: const BorderSide(color: Colors.red, width: 1),
             ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.r),
+              borderSide: const BorderSide(color: Colors.red, width: 1),
+            ),
+            errorStyle: TextStyle(fontSize: 11.sp, fontFamily: 'Cairo'),
           ),
         ),
       ],
