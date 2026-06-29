@@ -1,0 +1,14 @@
+  Future<void> connect() async {
+    room = Room();
+    
+    await room!.connect(
+      "wss://zad-voice-agent-p00p296x.livekit.cloud", // YOUR_LIVEKIT_URL
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6InphZC1yb29tIn0sImlzcyI6IkFQSVBidUFxVmFleUEyOCIsInN1YiI6ImZsdXR0ZXItdXNlciIsImV4cCI6MTgxNDI0MzMzNX0.WHllJCtiGshWY7xEzogXLm2EiWX6VYnCY0HDA5_g5P8", // YOUR_TOKEN
+    );
+
+    await room!.localParticipant!.setMicrophoneEnabled(true);
+
+    setState(() {
+      connected=true;
+    });
+  }
