@@ -1,0 +1,79 @@
+Future<void> connect() async {
+
+  final data = await getToken();
+
+  final url = data["url"];
+  final token = data["token"];
+
+  room = Room();
+
+  await room!.connect(url, token);
+
+  await room!.localParticipant!.setMicrophoneEnabled(true);
+
+  setState(() {
+    connected = true;
+  });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+class VoiceAgentButton extends StatefulWidget {
+
+  @override
+  State<VoiceAgentButton> createState()=>_VoiceAgentButtonState();
+
+}
+
+
+class _VoiceAgentButtonState extends State<VoiceAgentButton>{
+
+  Room? room;
+
+  bool connected=false;
+
+
+  Future<void> connect() async {
+
+
+    room = Room();
+
+
+    await room!.connect(
+      "wss://YOUR_LIVEKIT_URL",
+      "YOUR_TOKEN",
+    );
+
+
+    await room!.localParticipant!
+        .setMicrophoneEnabled(true);
+
+
+    setState(() {
+      connected=true;
+    });
+
+
+  }
+
+
+
+  Future<void> disconnect() async{
+
+    await room?.disconnect();
+
+    setState(() {
+      connected=false;
+    });
+
+  }
