@@ -6,8 +6,13 @@ import 'package:zaad/core/utils/app_strings.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../core/utils/app_assets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'package:flutter_animate/flutter_animate.dart';
+
+import 'package:dio/dio.dart';
+import 'package:zaad/core/di/injection.dart';
+import 'package:zaad/core/api/api_endpoints.dart';
+import 'package:zaad/core/services/shared_prefs.dart';
+import 'package:zaad/core/utils/app_colors/app_colors.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -17,29 +22,39 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
-  late String? token;
+  String? token;
+
   @override
   void initState() {
     super.initState();
-    _goNext();
-    getToken();
+    getToken().then((_) {
+      _goNext();
+    });
   }
 
-  getToken() async {
-    token= await SharedPrefsService.getToken()??"";
+  Future<void> getToken() async {
+    token = await SharedPrefsService.getToken() ?? "";
   }
 
   void _goNext() {
-    Future<void>.delayed(const Duration(seconds: 7)).then((_) {
+    Future<void>.delayed(const Duration(seconds: 5)).then((_) {
       if (!mounted) return;
-      if(token?.isNotEmpty==true && token !=null){
-        Navigator.pushReplacementNamed(context, AppRoutes.chatbot);
-      }
-      else{
-        Navigator.pushReplacementNamed(context, AppRoutes.login);
-      }
+      _checkIpAndProceed();
     });
   }
+
+  void _checkIpAndProceed() {
+    _navigateNext();
+  }
+
+  void _navigateNext() {
+    if (token?.isNotEmpty == true && token != null) {
+      Navigator.pushReplacementNamed(context, AppRoutes.chatbot);
+    } else {
+      Navigator.pushReplacementNamed(context, AppRoutes.login);
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {

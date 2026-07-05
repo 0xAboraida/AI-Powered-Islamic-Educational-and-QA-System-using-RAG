@@ -85,6 +85,7 @@ class _ChatInputFieldState extends State<ChatInputField> {
             ),
           );
         }
+
         _speech.listen(
           onResult: (val) {
             if (mounted) {
@@ -98,6 +99,14 @@ class _ChatInputFieldState extends State<ChatInputField> {
           },
           localeId: 'ar',
         );
+      }
+      if (!available) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Speech recognition is not available on this device'),
+          ),
+        );
+        return;
       }
     } else {
       setState(() => _isListening = false);

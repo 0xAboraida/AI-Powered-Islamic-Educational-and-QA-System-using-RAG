@@ -10,6 +10,7 @@ import 'package:zaad/core/services/shared_prefs_service.dart';
 import 'core/routes/app_routes.dart';
 import 'core/routes/screen_routes.dart';
 import 'core/theme/app_theme.dart';
+import 'core/api/api_endpoints.dart';
 
 import 'package:provider/provider.dart';
 import 'core/theme/theme_provider.dart';
@@ -20,7 +21,9 @@ void main() async {
   await SharedPrefs.init();
   final prefs = await SharedPreferences.getInstance();
   final isDarkMode = prefs.getBool('isDarkMode') ?? false;
- final savedToken=await SharedPrefsService.getToken();
+  final savedToken=await SharedPrefsService.getToken();
+  
+  // Local server IP configuration removed since we now use the remote backend.
   
   await configureDependencies();
   

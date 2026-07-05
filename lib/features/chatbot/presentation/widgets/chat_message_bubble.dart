@@ -38,13 +38,6 @@ class ChatMessageBubble extends StatelessWidget {
               bottomLeft: Radius.circular(20.r),
               bottomRight: Radius.zero,
             ),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF2ECC71).withOpacity(0.25),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
           ),
           child: Text(
             message.text,

@@ -6,6 +6,7 @@ import '../../features/splash/presentation/pages/splash_page.dart';
 import '../../features/welcome/presentation/welcome_page.dart';
 import '../../features/chatbot/presentation/chatbot_screen.dart';
 import '../../features/profile/presentation/profile_page.dart';
+import '../../features/profile/presentation/about_app_page.dart';
 import 'app_routes.dart';
 
 class ScreenRoutes {
@@ -44,6 +45,11 @@ class ScreenRoutes {
       case AppRoutes.childMode:
         return MaterialPageRoute(
           builder: (_) => const ChildModeScreen(),
+          settings: settings,
+        );
+      case AppRoutes.aboutApp:
+        return MaterialPageRoute(
+          builder: (_) => const AboutAppPage(),
           settings: settings,
         );
       default:

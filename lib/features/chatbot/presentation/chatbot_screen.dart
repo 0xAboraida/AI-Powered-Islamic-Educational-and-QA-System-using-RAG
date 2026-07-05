@@ -21,7 +21,6 @@ import 'widgets/selected_field_indicator.dart';
 import 'widgets/suggested_questions_list.dart';
 
 import '../domain/models/chat_domain.dart';
-import '../domain/models/chat_message.dart';
 import 'widgets/chat_message_bubble.dart';
 import 'package:zaad/core/services/shared_prefs.dart';
 
@@ -132,31 +131,40 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                         ],
                       ),
               ),
-              child: SafeArea(
-                child: Column(
-                  children: [
-                    SizedBox(height: 5.h),
-                    Expanded(
-                      child: messages.isEmpty
-                          ? const Center(
-                              child: SuggestedQuestionsList(),
-                            )
-                          : ListView.builder(
-                              controller: _scrollController,
-                              padding:
-                                  EdgeInsets.only(top: 10.h, bottom: 100.h),
-                              itemCount: messages.length + (isSending ? 1 : 0),
-                              itemBuilder: (context, index) {
-                                if (index == messages.length) {
-                                  return _buildTypingIndicator(context);
-                                }
-                                return ChatMessageBubble(
-                                    message: messages[index]);
-                              },
+              child: Column(
+                children: [
+                  SizedBox(height: 5.h),
+                  Expanded(
+                    child: state.isLoadingHistory
+                        ? const Center(
+                            child: CircularProgressIndicator(
+                              color: AppColors.primary,
                             ),
-                    ),
-                  ],
-                ),
+                          )
+                        : messages.isEmpty
+                            ? const Center(
+                                child: SuggestedQuestionsList(),
+                              )
+                            : ListView.builder(
+                                controller: _scrollController,
+                                padding: EdgeInsets.only(
+                                  top: MediaQuery.of(context).padding.top +
+                                      kToolbarHeight +
+                                      10.h,
+                                  bottom: 120.h,
+                                ),
+                                itemCount:
+                                    messages.length + (isSending ? 1 : 0),
+                                itemBuilder: (context, index) {
+                                  if (index == messages.length) {
+                                    return _buildTypingIndicator(context);
+                                  }
+                                  return ChatMessageBubble(
+                                      message: messages[index]);
+                                },
+                              ),
+                  ),
+                ],
               ),
             ),
             bottomNavigationBar: Padding(

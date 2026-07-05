@@ -34,7 +34,7 @@ class _AuthPageState extends State<AuthPage> {
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         backgroundColor: Colors.white,
         body: Stack(
           children: [
@@ -85,7 +85,10 @@ class _AuthPageState extends State<AuthPage> {
             SafeArea(
               top: false,
               child: Padding(
-                padding: EdgeInsets.only(top: 193.h),
+                padding: EdgeInsets.only(
+                    top: MediaQuery.of(context).viewInsets.bottom > 0
+                        ? 70.h
+                        : 193.h),
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20.w),
                   child: Container(
@@ -107,7 +110,6 @@ class _AuthPageState extends State<AuthPage> {
                         top: 10.h,
                       ),
                       child: Column(
-                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Container(
                             padding: EdgeInsets.all(4.w),

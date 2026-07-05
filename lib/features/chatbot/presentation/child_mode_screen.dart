@@ -4,12 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:siri_wave/siri_wave.dart';
+import 'package:zaad/core/api/secret_key.dart';
+import 'package:zaad/core/di/injection.dart';
+import 'package:zaad/core/services/shared_prefs_service.dart';
 import 'package:zaad/core/theme/theme_provider.dart';
 import 'package:zaad/core/utils/app_assets.dart';
 import 'package:zaad/core/utils/app_colors/app_colors.dart';
+import 'package:zaad/core/utils/app_strings.dart';
 import 'package:zaad/features/chatbot/presentation/widgets/chatbot_app_bar.dart';
-import 'package:zaad/features/chatbot/presentation/widgets/chatbot_drawer.dart';
+import 'package:zaad/core/services/shared_prefs.dart';
+import 'package:livekit_client/livekit_client.dart';
 
 class ChildModeScreen extends StatefulWidget {
   const ChildModeScreen({super.key});
@@ -22,18 +28,77 @@ class _ChildModeScreenState extends State<ChildModeScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _rotationController;
   bool isSpeaking = false;
+  late final Room _room;
+  EventsListener<RoomEvent>? _listener;
 
   @override
   void initState() {
     super.initState();
+    _room = Room();
     _rotationController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
-    )..repeat();
+    );
+  }
+
+  Future<void> _connectToLiveKit() async {
+    try {
+      const savedToken = SecretKey.liveKitApiKey;
+
+      // NOTE: You need a valid token to connect.
+      // Replace 'YOUR_TOKEN_HERE' with an actual token from your backend.
+      const url = SecretKey.liveKitHost;
+
+      await _room.connect(url, savedToken);
+
+      _listener = _room.createListener();
+      _listener!.on<RoomDisconnectedEvent>((event) {
+        if (mounted) {
+          setState(() {
+            isSpeaking = false;
+            _rotationController.stop();
+          });
+        }
+      });
+
+      // Enable microphone to speak to the voice agent
+      await _room.localParticipant?.setMicrophoneEnabled(true);
+
+      setState(() {
+        isSpeaking = true;
+        _rotationController.repeat();
+      });
+    } catch (e) {
+      debugPrint('LiveKit connection error: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('فشل الاتصال: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _disconnectLiveKit() async {
+    try {
+      await _room.localParticipant?.setMicrophoneEnabled(false);
+      await _room.disconnect();
+    } catch (e) {
+      debugPrint('Error disconnecting LiveKit: $e');
+    } finally {
+      if (mounted) {
+        setState(() {
+          isSpeaking = false;
+          _rotationController.stop();
+        });
+      }
+    }
   }
 
   @override
   void dispose() {
+    _listener?.dispose();
+    _room.disconnect();
+    _room.dispose();
     _rotationController.dispose();
     super.dispose();
   }
@@ -42,7 +107,6 @@ class _ChildModeScreenState extends State<ChildModeScreen>
   Widget build(BuildContext context) {
     bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      drawer: const ChatbotDrawer(),
       extendBodyBehindAppBar: true,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
@@ -192,13 +256,21 @@ class _ChildModeScreenState extends State<ChildModeScreen>
               ),
             ),
             const Spacer(),
-            isSpeaking ? SiriWave() : const SizedBox.shrink(),
+            Visibility(
+              visible: isSpeaking,
+              maintainSize: true,
+              maintainState: true,
+              maintainAnimation: true,
+              child: SiriWave(),
+            ),
             InkWell(
               overlayColor: WidgetStateProperty.all(Colors.transparent),
               onTap: () {
-                setState(() {
-                  isSpeaking = !isSpeaking;
-                });
+                if (isSpeaking) {
+                  _disconnectLiveKit();
+                } else {
+                  _connectToLiveKit();
+                }
               },
               child: Container(
                   width: 110.w,

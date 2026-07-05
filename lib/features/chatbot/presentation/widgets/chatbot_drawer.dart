@@ -1,29 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:zaad/core/utils/app_assets.dart';
 import 'package:zaad/core/utils/app_colors/app_colors.dart';
 import 'package:zaad/core/utils/app_strings.dart';
+import 'package:zaad/features/chatbot/domain/models/chat_session.dart';
+import 'package:zaad/features/chatbot/presentation/cubit/chatbot_cubit.dart';
+import 'package:zaad/features/chatbot/presentation/cubit/chatbot_state.dart';
 
 class ChatbotDrawer extends StatelessWidget {
   const ChatbotDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final Map<String, List<String>> chatHistory = {
-      AppStrings.now: ['محادثة جديدة', 'محادثة جديدة'],
-      AppStrings.today: [
-        'حكم ترك الصلاة تكسلاً',
-        'صحة حديث إنما الأعمال بالنيات'
-      ],
-      AppStrings.yesterday: [
-        'الفرق بين الفرض والواجب',
-        'التصريف اللغوي لكلمة كتب'
-      ],
-      AppStrings.twoDaysAgo: ['سيرة عبد الملك بن مروان', 'تفسير سورة الفاتحة'],
-    };
-
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cubit = context.read<ChatbotCubit>();
+
     return Drawer(
       width: 300.w,
       backgroundColor: isDark ? AppColors.darkPrimary : Colors.white,
@@ -36,45 +29,102 @@ class ChatbotDrawer extends StatelessWidget {
       child: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              _buildHeader(context),
-              SizedBox(height: 15.h),
-              _buildSearchBar(context),
-              SizedBox(height: 15.h),
-              _buildNewChatButton(context),
-              SizedBox(height: 25.h),
-              _buildConversationsTitle(context),
-              SizedBox(height: 10.h),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: chatHistory.keys.length,
-                  itemBuilder: (context, sectionIndex) {
-                    String sectionTitle =
-                        chatHistory.keys.elementAt(sectionIndex);
-                    List<String> items = chatHistory[sectionTitle]!;
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.symmetric(vertical: 8.h),
-                          child: Text(
-                            sectionTitle,
-                            style: TextStyle(
-                              fontSize: 13.sp,
-                              color: Colors.grey[400],
-                              fontWeight: FontWeight.bold,
+          child: BlocBuilder<ChatbotCubit, ChatbotState>(
+            builder: (context, state) {
+              // Grouping sessions by date
+              final now = DateTime.now();
+              final todayDate = DateTime(now.year, now.month, now.day);
+              final yesterdayDate = todayDate.subtract(const Duration(days: 1));
+              final twoDaysAgoDate =
+                  todayDate.subtract(const Duration(days: 2));
+
+              final Map<String, List<ChatSessionDTO>> grouped = {
+                AppStrings.today: [],
+                AppStrings.yesterday: [],
+                AppStrings.twoDaysAgo: [],
+                'محادثات سابقة': [],
+              };
+
+              for (final session in state.sessions) {
+                final sessionDate = DateTime(session.createdAt.year,
+                    session.createdAt.month, session.createdAt.day);
+                if (sessionDate == todayDate) {
+                  grouped[AppStrings.today]!.add(session);
+                } else if (sessionDate == yesterdayDate) {
+                  grouped[AppStrings.yesterday]!.add(session);
+                } else if (sessionDate == twoDaysAgoDate) {
+                  grouped[AppStrings.twoDaysAgo]!.add(session);
+                } else {
+                  grouped['محادثات سابقة']!.add(session);
+                }
+              }
+
+              final activeGroups =
+                  grouped.entries.where((e) => e.value.isNotEmpty).toList();
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  _buildHeader(context),
+                  SizedBox(height: 15.h),
+                  // _buildSearchBar(context),
+                  SizedBox(height: 15.h),
+                  _buildNewChatButton(context, cubit),
+                  SizedBox(height: 25.h),
+                  _buildConversationsTitle(context),
+                  SizedBox(height: 10.h),
+                  Expanded(
+                    child: state.isLoadingSessions
+                        ? const Center(
+                            child: CircularProgressIndicator(
+                              color: AppColors.primary,
                             ),
-                          ),
-                        ),
-                        ...items.map((item) => _buildChatItem(item, context)),
-                      ],
-                    );
-                  },
-                ),
-              ),
-            ],
+                          )
+                        : state.sessions.isEmpty
+                            ? Center(
+                                child: Text(
+                                  'لا توجد محادثات سابقة',
+                                  style: TextStyle(
+                                    fontFamily: 'Cairo',
+                                    fontSize: 14.sp,
+                                    color: Colors.grey[400],
+                                  ),
+                                ),
+                              )
+                            : ListView.builder(
+                                itemCount: activeGroups.length,
+                                itemBuilder: (context, sectionIndex) {
+                                  final entry = activeGroups[sectionIndex];
+                                  final sectionTitle = entry.key;
+                                  final items = entry.value;
+
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding:
+                                            EdgeInsets.symmetric(vertical: 8.h),
+                                        child: Text(
+                                          sectionTitle,
+                                          style: TextStyle(
+                                            fontFamily: 'Cairo',
+                                            fontSize: 13.sp,
+                                            color: Colors.grey[400],
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                      ...items.map((item) =>
+                                          _buildChatItem(item, context, cubit)),
+                                    ],
+                                  );
+                                },
+                              ),
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),
@@ -168,36 +218,42 @@ class ChatbotDrawer extends StatelessWidget {
     );
   }
 
-  Widget _buildNewChatButton(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      height: 50.h,
-      decoration: BoxDecoration(
-        gradient: AppColors.primaryGradient,
-        borderRadius: BorderRadius.circular(15.r),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withOpacity(0.3),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.add, color: Colors.white, size: 20.sp),
-            SizedBox(width: 8.w),
-            Text(
-              AppStrings.newChat,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 15.sp,
-                fontWeight: FontWeight.bold,
-              ),
+  Widget _buildNewChatButton(BuildContext context, ChatbotCubit cubit) {
+    return GestureDetector(
+      onTap: () {
+        cubit.startNewChat();
+        Navigator.pop(context);
+      },
+      child: Container(
+        width: double.infinity,
+        height: 50.h,
+        decoration: BoxDecoration(
+          gradient: AppColors.primaryGradient,
+          borderRadius: BorderRadius.circular(15.r),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primary.withOpacity(0.3),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
             ),
           ],
+        ),
+        child: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.add, color: Colors.white, size: 20.sp),
+              SizedBox(width: 8.w),
+              Text(
+                AppStrings.newChat,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 15.sp,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -218,41 +274,64 @@ class ChatbotDrawer extends StatelessWidget {
     );
   }
 
-  Widget _buildChatItem(String title, BuildContext context) {
+  Widget _buildChatItem(
+      ChatSessionDTO session, BuildContext context, ChatbotCubit cubit) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bool isSelected = session.id == cubit.state.currentSessionId;
+
     return Padding(
       padding: EdgeInsets.only(bottom: 14.h),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Container(
-            padding: EdgeInsets.all(8.w),
-            decoration: BoxDecoration(
-              color: isDark
-                  ? AppColors.darkSecondary.withOpacity(0.4)
-                  : AppColors.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12.r),
+      child: GestureDetector(
+        onTap: () {
+          cubit.selectSession(session.id);
+          Navigator.pop(context);
+        },
+        behavior: HitTestBehavior.opaque,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Container(
+              padding: EdgeInsets.all(8.w),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? const Color(0xFF2ECC71).withOpacity(0.15)
+                    : (isDark
+                        ? AppColors.darkSecondary.withOpacity(0.4)
+                        : AppColors.primary.withOpacity(0.1)),
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+              child: SvgPicture.asset(
+                AppAssets.message,
+                width: 18.w,
+                height: 18.w,
+                colorFilter: ColorFilter.mode(
+                    isSelected
+                        ? const Color(0xFF2ECC71)
+                        : (isDark
+                            ? AppColors.darkSecondary
+                            : AppColors.primary),
+                    BlendMode.srcIn),
+              ),
             ),
-            child: SvgPicture.asset(
-              AppAssets.message,
-              width: 18.w,
-              height: 18.w,
-              colorFilter: ColorFilter.mode(
-                  isDark ? AppColors.darkSecondary : AppColors.primary,
-                  BlendMode.srcIn),
+            SizedBox(width: 12.w),
+            Expanded(
+              child: Text(
+                session.name,
+                style: TextStyle(
+                  fontFamily: 'Cairo',
+                  fontSize: 14.sp,
+                  color: isSelected
+                      ? const Color(0xFF2ECC71)
+                      : (isDark ? Colors.white70 : Colors.grey[700]),
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.right,
+              ),
             ),
-          ),
-          SizedBox(width: 12.w),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 14.sp,
-              color: isDark ? Colors.white70 : Colors.grey[700],
-              fontWeight: FontWeight.w500,
-            ),
-            textAlign: TextAlign.right,
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
