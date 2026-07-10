@@ -10,63 +10,226 @@ KitabType = Literal[
     "كتاب القضاء", "كتاب الشهادات", "كتاب الإجارة", "كتاب الوصية", "كتاب الفرائض"
 ]
 
-class QuestionMetadata(BaseModel):
-    """Metadata extracted from a single user question."""
-    domain: Optional[str] = Field(
-        None, 
-        description="The Islamic domain of the question (e.g., Fiqh, Aqeedah). null if is_safe is false."
-    )
-    kitab: Optional[KitabType] = Field(
-        None, 
-        description="Mandatory ONLY if domain is 'Fiqh' or 'فقه'. Must be one of the precise 25 Kitab names. Otherwise, null."
-    )
-    author: Optional[str] = Field(
-        None, 
-        description="The name of the author or scholar mentioned in the query, if any."
-    )
-    source_book: Optional[str] = Field(
-        None, 
-        description="The name of the specific Islamic book mentioned in the query, if any."
-    )
-    madhhab: Optional[str] = Field(
-        None, 
-        description="The Islamic school of thought mentioned in the query, if any (e.g., Hanbali, Shafi'i)."
-    )
+DOMAIN_BOOKS = {
+    "فقه": [
+        "بلوغ المرام من أدلة الأحكام", "الهداية في شرح بداية المبتدي", "البحر الرائق شرح كنز الدقائق ومنحة الخال",
+        "الدر المختار وحاشية ابن عابدين رد المحت", "المبسوط للسرخسي", "بدائع الصنائع في ترتيب الشرائع",
+        "الفرج بعد الشدة لابن أبي الدنيا", "الفروع وتصحيح الفروع", "الروض المربع شرح زاد المستقنع",
+        "الإنصاف في معرفة الراجح من الخلاف ت التر offline", "كشاف القناع عن متن الإقناع", "الكافي في فقه الإمام أحمد",
+        "الجامع لعلوم الإمام أحمد الفقه", "الإقناع في فقه الإمام أحمد بن حنبل", "المغني لابن قدامة",
+        "عمدة الفقه", "مواهب الجليل في شرح مختصر خليل", "المدونة", "الذخيرة للقرافي", "البيان والتحصيل",
+        "مختصر خليل", "الأم للشافعي", "روضة الطالبين وعمدة المفتين", "المجموع شرح المهذب",
+        "تحفة المحتاج في شرح المنهاج وحواشي الشرو", "نهاية المطلب في دراية المذهب", "مغني المحتاج إلى معرفة معاني ألفاظ المنه"
+    ],
+    "العقيدة": [
+        "نظم العقيدة الطحاوية", "العقيدة الواسطية", "الشريعة للآجري", "الفتوى الحموية الكبرى",
+        "معارج القبول بشرح سلم الوصول", "منة الرحمن في نصيحة الأخوان", "سلسلة الإيمان والكفر المقدم",
+        "شرح العقيدة الطحاوية للبراك", "فتح المجيد شرح كتاب التوحيد", "متن العقيدة الطحاوية",
+        "أعلام السنة المنشورة لاعتقاد الطائفة الن", "أصول الإيمان في ضوء الكتاب والسنة", "عقيدة الولاء والبراء المقدم",
+        "شرح الطحاوية ط دار السلام", "عقيدة أهل السنة والجماعة للعثيمين", "الجوهرة الفريدة في تحقيق العقيدة لأحمد ا",
+        "العقيدة الصحيحة وما يضادها", "بدر التمام شرح لامية شيخ الإسلام", "شرح كشف الشبهات ويليه شرح الأصول الستة",
+        "التوحيد لابن عبد الوهاب"
+    ],
+    "السيرة": [
+        "الرحيق المختوم", "السيرة النبوية لابن كثير", "زاد المعاد في هدي خير العباد", "سيرة ابن هشام ت السقا",
+        "الشمائل المحمدية والخصائل المصطفوية", "مختصر الشمائل", "أخلاق النبي لأبي الشيخ الأصبهاني",
+        "الشفا بتعريف حقوق المصطفى وحاشية الشمن", "مغازي الواقدي", "سيرة ابن اسحاق السير والمغازي",
+        "دلائل النبوة للبيهقي محققا", "دلائل النبوة لأبي نعيم الأصبهاني", "أعلام النبوة للماوردي",
+        "الخصائص الكبرى", "غاية السول في خصائص الرسول", "جوامع السيرة ط العلمية", "الفصول في السيرة"
+    ],
+    "التفسير": [
+        "تفسير القرطبي", "تفسير عبد الرزاق الصنعاني", "تفسير سفيان الثوري", "تفسير السعدي تيسير الكريم الرحمن",
+        "تفسير الطبري جامع البيان ط هجر", "تفسير ابن كثير ت سلامة", "الدر المنثور في التفسير بالمأثور",
+        "المختصر في تفسير القرآن الكريم", "معالم التنزيل في تفسير القرآن الكريم للبغوي", "أيسر التفاسير لكلام العلي الكبير",
+        "المحرر الوجيز في تفسير الكتاب العزيز لابن عطية", "زاد المسير في علم التفسير لابن الجوزي", "البحر المحيط لأبي حيان الأندلسي",
+        "الجلالين للسيوطي", "فتح القدير للإمام الشوكاني", "بحر العلوم للسمرقندي"
+    ],
+    "علوم اللغة": [
+        "فتح الكريم اللطيف في شرح باكورة التعريف بالمهم من التصريف", "الشافية في علم التصريف",
+        "المنصف لابن جني، شرح كتاب التصريف لأبي عثمان المازني", "شرح شافية ابن الحاجب - الرضي الأستراباذي",
+        "ألفية ابن مالك", "أوضح المسالك إلي ألفية ابن مالك", "الآجرومية", "الإنتصار لسيبويه علي المبرد",
+        "الجمل في النحو", "العمدة في إعراب البردة قصيدة المبرد", "الخصائص", "الكتاب لسيبويه", "الكافية في علم النحو",
+        "المسائل النحوية في كتاب التوضيح لشرح الجامع الصحيح", "النحو الواضح في قواعد اللغة العربية", "النحو الوافي",
+        "جامع الدروس العربية", "شرح أبيات مغني اللبيب", "شرح ابن عقيل على ألفية ابن مالك", "شرح الأشمونى لألفية ابن مالك",
+        "شرح شذور الذهب لابن هشام", "شرح شذور الذهب للجوجري", "شرح قطر الندى وبل الصدى", "شرح كتاب سيبويه للسيرافي",
+        "فتح رب البرية في شرح نظم الآجرومية", "فوائت كتاب سيبويه", "متن شذور الذهب", "متن قطر الندى وبل الصدى", "مغني اللبيب عن كتب الأعاريب"
+    ],
+    "التاريخ": [
+        "تاريخ الطبري", "الكامل في التاريخ لابن الأثير", "البداية والنهاية ط الفكر", "تاريخ ابن خلدون",
+        "المنتظم في تاريخ الملوك والأمم", "مرآة الزمان في تواريخ الأعيان", "تاريخ الإسلام ت تدمري",
+        "أسد الغابة في معرفة الصحابة", "شذرات الذهب في أخبار من ذهب", "تاريخ عجائب الآثار في التراجم والأخبار",
+        "الطبقات الكبري لابن سعد", "تاريخ بغداد للخطيب البغدادي", "تاريخ دمشق لابن عساكر", "المواعظ والاعتبار",
+        "أخبار مكة للأزرقي", "جمهرة أنساب العرب لابن حزم", "الأنساب للسمعاني", "اللباب في تهذيب الأنساب لابن الأثير",
+        "تاريخ الخلفاء للسيوطي", "الفخري في الآداب السلطانية لابن الطقطقا", "إنباء الغمر بأبناء العمر",
+        "النجوم الزاهرة في ملوك مصر والقاهرة لابن تغري بردي", "السلوك لمعرفة دول الملوك للمقريزي", "رسالة في الطريق إلى ثقافتنا"
+    ],
+    "الحديث": [
+        "مسند الإمام أحمد بن حنبل", "مسند أبي بكر الحميدي", "مسند أبي يعلى الموصلي", "مسند البزار (البحر الزخار)",
+        "مسند إسحاق بن راهويه", "مسند الإمام الشافعي", "مسند أبي داود الطيالسي", "مسند القضاعي", "مسند عبد بن حميد",
+        "مسند أبي عوانة", "مسند عبد الله بن المبارك", "مسند ابن أبي شيبة", "مسند أبي حنيفة رواية أبي نعيم",
+        "المعجم الكبير", "المعجم الأوسط", "المعجم الصغير", "المعجم المصنف لمؤلفات الحديث الشريف",
+        "موطأ الإمام مالك", "مصنف عبد الرزاق", "مصنف ابن أبي شيبة", "صحيح البخاري", "صحيح مسلم", "صحيح ابن حبان",
+        "صحيح ابن خزيمة", "المختارة (الأحاديث المختارة) للضياء المقدسي", "سنن أبي داود", "سنن الترمذي", "سنن النسائي",
+        "سنن ابن ماجه", "سنن الدارمي", "سنن الدارقطني", "السنن الكبرى للبيهقي", "سنن سعيد بن منصور", "المستدرك على الصحيحين للحاكم",
+        "مستخرج أبي عوانة على صحيح مسلم", "مستخرج أبي نعيم على الصحيحين", "جامع الأصول من أحاديث الرسول لابن الأثير",
+        "كنز العمال في سنن الأقوال والأفعال للمتقي الهندي", "الجامع الكبير (جمع الجوامع) للسيوطي", "صحيح وضعيف الجامع الصغير",
+        "المقاصد الحسنة للسخاوي", "كشف الخفاء ومزيل الإلباس للعجلوني", "نصب الراية للزيلعي", "المغني عن حمل الأسفار للعراقي",
+        "التلخيص الحبير لابن حجر", "تحفة الأشراف بمعرفة الأطراف للمزي", "العلل لابن أبي حاتم", "العلل الواردة في الأحاديث النبوية للدارقطني",
+        "العلل لعلي بن المديني", "العلل ومعرفة الرجال للإمام أحمد", "علل الترمذي الكبير", "شرح علل الترمذي لابن رجب",
+        "المنتخب من العلل للخلال", "التمييز للإمام مسلم", "التاريخ الكبير للبخاري", "سلسلة الأحاديث الضعيفة والموضوعة للألباني",
+        "الضعفاء الصغير للبخاري", "الضعفاء والمتروكون للنسائي", "ضعيف الجامع الصغير", "الموضوعات لابن الجوزي", "اللآلئ المصنوعة للسيوطي",
+        "المنار المنيف لابن القيم", "النكت على البيقونية", "نخبة الفكر", "ألفية العراقي", "التقريب والتيسير للنووي",
+        "علوم الحديث (مقدمة ابن الصلاح)", "فتح المغيث للسخاوي", "معرفة علوم الحديث للحاكم", "فتح الباري", "عمدة القاري",
+        "أعلام الحديث", "إرشاد الساري", "شرح النووي على مسلم", "المفهم لما أشكل من تلخيص مسلم", "تحفة الأحوذي",
+        "إحكام الأحكام", "سبل السلام", "عمدة الأحكام", "بلوغ المرام", "منتقى الأخبار", "تقريب الأسانيد وترتيب المسانيد",
+        "المحرر في الحديث لابن عبد الهادي", "الترغيب والترهيب للمنذري", "صحيح الترغيب والترهيب", "ضعيف الترغيب والترهيب",
+        "رياض الصالحين", "التخويف من النار لابن رجب"
+    ]
+}
 
-class ProcessedQuestion(BaseModel):
-    """A single processed question resulting from query splitting and rewriting."""
-    original_question: str = Field(
-        ..., 
-        description="The exact text of the question as extracted from the user's input."
-    )
-    search_query: Optional[str] = Field(
-        None, 
-        description="A standalone, highly optimized version of the question rewritten in MSA. Must be null if is_safe is false."
-    )
-    is_safe: bool = Field(
-        ..., 
-        description="True ONLY if the question is related to Islamic sciences. False if out of scope or harmful."
-    )
-    is_ambiguous: bool = Field(
-        False, 
-        description="True if the question is too vague, incomplete, or lacks context (e.g., 'ما هي الشروط؟' without specifying for what). False if clear."
-    )
-    clarification_message: Optional[str] = Field(
-        None, 
-        description="If is_ambiguous is True, this contains a polite Arabic response asking the user to clarify their question."
-    )
-    metadata: Optional[QuestionMetadata] = Field(
-        None, 
-        description="The metadata parameters required to filter the RAG search. Must be null if is_safe is false."
-    )
+DOMAIN_AUTHORS = {
+    "فقه": [
+        "الشافعي", "مالك بن أنس أبو عبد الله الأصبحي", "ابن قدامة المقدسي", "ابن حجر الهيتمي",
+        "المرداوي", "النووي", "ابن نجيم", "القرافي", "علاء أبو بكر", "البُهُوتي", "السرخسي",
+        "ابن عابدين", "الرعيني، الحطاب", "ابن مفلح، شمس الدين", "خليل بن إسحاق الجندي المالكي",
+        "ابن رشد", "الحجاوي", "الخطيب الشربيني", "أحمد بن حنبل", "المَرْغِيناني"
+    ],
+    "العقيدة": [
+        "محمد بن الدناه الأجودي الشنقيطي", "ياسر برهامي", "أبو جعفر الطحاوي", "حافظ بن أحمد حكمي",
+        "ابن أبي العز الحنفي", "عبد الرحمن بن حسن آل الشيخ", "عبد الرحمن بن عبد العزيز العقل",
+        "ابن تيمية", "محمد أحمد إسماعيل المقدم", "ابن باز", "الآجري", "محمد بن صالح العثيمين",
+        "محمد بن عبد الوهاب"
+    ],
+    "التفسير": [
+        "الطبري، أبو جعفر", "المحلي، جلال الدين", "القرطبي، شمس الدين", "عبد الرحمن بن ناصر السعدي",
+        "أبو حيان الأندلسي", "ابن عطية", "البغوي", "الشوكاني", "عبد الرزاق الصنعاني",
+        "أبو بكر جابر الجزائري", "ابن كثير", "الجَلَال السُّيُوطي", "ابن الجوزي",
+        "أبو الليث السمرقندي", "سفيان الثوري"
+    ],
+    "السيرة": [
+        "ابن القيم", "القاضي عياض", "الواقدي", "الترمذي، محمد بن عيسى", "ابن الملقن",
+        "أبو الشيخ الأصبهاني", "الترمذي", "الماوردي", "أبو نعيم الأصبهاني", "صفي الرحمن المباركفوري",
+        "ابن كثير", "البيهقي، أبو بكر", "الجَلَال السُّيُوطي", "عبد الملك بن هشام",
+        "محمد بن إسحاق كندو", "ابن حزم"
+    ],
+    "التاريخ": [
+        "المقريزي", "ابن حزم", "ابن تغري بردي", "السمعاني، عبد الكريم", "الجَلَال السُّيُوطي",
+        "ابن الجوزي", "محمود محمد شاكر", "شمس الدين محمد بن أحمد بن عثمان الذهبي", "الجبرتي",
+        "ابن سعد", "ابن الطقطقي", "الأزرقي", "ابن حجر العسقلاني", "الطبري، أبو جعفر",
+        "الخطيب البغدادي", "سبط ابن الجوزي", "علي بن محمد بن عيسى بن يوسف الأشموني", "ابن كثير",
+        "ابن الأثير", "ابن خلدون", "ابن العِماد الحنبلي"
+    ],
+    "علوم اللغة": [
+        "ابن جني", "علي الجارم", "ابن مالك", "أحمد بن عمر الحازمي", "ابن آجُرُّوم",
+        "داود بن سليمان الهويمل", "الجوجري", "مصطفى الغلاييني", "ابن الحاجب", "عبد القادر البغدادي",
+        "جمال الدين ابن هشام", "ابن ولاد", "الأستراباذي، ركن الدين", "السيرافي، أبو سعيد",
+        "ابن عقيل", "سيبويه", "علي بن محمد بن عيسى بن يوسف الأشموني", "الخليل بن أحمد الفراهيدي",
+        "عباس فالح حسن"
+    ],
+    "الحديث": [
+        "الشافعي", "مالك بن أنس أبو عبد الله الأصبحي", "ابن قدامة المقدسي", "الترمذي، محمد بن عيسى",
+        "عبد العظيم المنذري", "الحُمَيْدي، أبو بكر", "بدر الدين العيني", "النسائي", "العجلوني",
+        "أبو العباس القرطبي", "ابن رجب الحنبلي", "مجد الدين بن تيمية", "القضاعي", "النووي",
+        "ناصر الدين الألباني", "محمد بن إسماعيل الأمير الصنعاني", "أبو بكر بن أبي شيبة",
+        "محمد بن إسماعيل البخاري", "الطبراني", "الحاكم، أبو عبد الله", "الجَلَال السُّيُوطي",
+        "عبد العزيز بن حميد الحميد", "الدارقطني", "ابن الجوزي", "الزيلعي ، جمال الدين",
+        "عبد الرحمن المباركفوري", "ابن الصلاح", "شمس الدين محمد بن أحمد بن عثمان الذهبي",
+        "ابن دقيق العيد", "أبو عوانة", "علي بن المديني", "عبدالله بن عبدالرحمن السعد",
+        "علاء الدين علي بن حسام الدين المتقي الهندي", "أبو يعلى الموصلي", "عبد الرزاق الصنعاني",
+        "ابن حجر العسقلاني", "البزار، أبو بكر", "زين الدين العراقي",
+        "سليمان بن الأشعث السجستاني أبو داود", "أبو نعيم الأصبهاني", "أحمد بن حنبل",
+        "محمد بن عبد الرحمن السخاوي", "ابن الأثير", "ابن المبارك", "المزي، جمال الدين",
+        "عبد الغني المقدسي"
+    ]
+}
 
-class QuestionProcessingResult(BaseModel):
-    """The final structured output from the LLM containing all processed questions."""
-    total_questions: int = Field(
-        ..., 
-        description="The total number of distinct questions extracted from the user input."
-    )
-    questions: List[ProcessedQuestion] = Field(
-        ..., 
-        description="The list of processed questions."
-    )
+import logging
+logger = logging.getLogger(__name__)
+
+def get_schema_for_domain(domain: str):
+    """
+    Dynamically generates the Pydantic schema for the LLM based on the user's selected domain.
+    This injects the exact list of books for that domain into an Enum (Literal),
+    ensuring 100% strict matching without blowing up the prompt with 200+ irrelevant books.
+    """
+    # Map raw domains to our dictionary keys
+    domain_key = domain
+    if domain == "علوم اللغة":
+        domain_key = "علوم اللغة"
+    elif domain == "علوم القرآن":
+        domain_key = "التفسير" # Fallback if not specifically mapped, or we can leave it empty
+    
+    books_list = DOMAIN_BOOKS.get(domain_key, [])
+    authors_list = DOMAIN_AUTHORS.get(domain_key, [])
+    
+    logger.info(f"[DYNAMIC SCHEMA] [+] Generating schema for domain '{domain_key}'. Injecting {len(books_list)} allowed books and {len(authors_list)} allowed authors.")
+    
+    if not books_list:
+        BooksEnum = str
+    else:
+        BooksEnum = Literal[tuple(books_list)]
+        
+    if not authors_list:
+        AuthorsEnum = str
+    else:
+        AuthorsEnum = Literal[tuple(authors_list)]
+
+    class QuestionMetadata(BaseModel):
+        domain: Optional[str] = Field(
+            None, 
+            description="The Islamic domain of the question (e.g., Fiqh, Aqeedah). null if is_safe is false."
+        )
+        kitab: Optional[KitabType] = Field(
+            None, 
+            description="Mandatory ONLY if domain is 'Fiqh' or 'فقه'. Must be one of the precise 25 Kitab names. Otherwise, null."
+        )
+        author: Optional[AuthorsEnum] = Field(
+            None, 
+            description=f"The name of the author or scholar mentioned in the query. MUST be strictly chosen from the provided enum list for the {domain} domain, or null."
+        )
+        source_book: Optional[BooksEnum] = Field(
+            None, 
+            description=f"The specific Islamic book mentioned. MUST be strictly chosen from the provided enum list for the {domain} domain, or null."
+        )
+        madhhab: Optional[str] = Field(
+            None, 
+            description="The Islamic school of thought mentioned in the query, if any (e.g., Hanbali, Shafi'i)."
+        )
+
+    class ProcessedQuestion(BaseModel):
+        original_question: str = Field(
+            ..., 
+            description="The exact text of the question as extracted from the user's input."
+        )
+        search_query: Optional[str] = Field(
+            None, 
+            description="A standalone, highly optimized version of the question rewritten in MSA. Must be null if is_safe is false."
+        )
+        is_safe: bool = Field(
+            ..., 
+            description="True ONLY if the question is related to Islamic sciences. False if out of scope or harmful."
+        )
+        is_ambiguous: bool = Field(
+            False, 
+            description="True if the question is too vague, incomplete, or lacks context. False if clear."
+        )
+        clarification_message: Optional[str] = Field(
+            None, 
+            description="If is_ambiguous is True, this contains a polite Arabic response asking the user to clarify their question."
+        )
+        metadata: Optional[QuestionMetadata] = Field(
+            None, 
+            description="The metadata parameters required to filter the RAG search. Must be null if is_safe is false."
+        )
+
+    class QuestionProcessingResult(BaseModel):
+        total_questions: int = Field(
+            ..., 
+            description="The total number of distinct questions extracted from the user input."
+        )
+        questions: List[ProcessedQuestion] = Field(
+            ..., 
+            description="The list of processed questions."
+        )
+
+    return QuestionProcessingResult

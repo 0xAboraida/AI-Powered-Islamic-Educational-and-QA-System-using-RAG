@@ -45,7 +45,7 @@ class DenseRetriever(BaseRetriever):
         Returns:
             List of RetrievedChunk sorted by score descending.
         """
-        logger.info(f"  - 🤖 [DENSE] Query: '{query[:60]}...'")
+        logger.info(f"[DenseRetriever] Sync query: '{query[:60]}...'")
 
         # Step 1: Embed the query
         if embedding_result:
@@ -76,7 +76,7 @@ class DenseRetriever(BaseRetriever):
                 )
             )
 
-        logger.info(f"  - 🤖 [DENSE] Returned {len(chunks)} chunks.")
+        logger.info(f"[DenseRetriever] Sync returned {len(chunks)} chunks")
         return chunks
 
     async def aretrieve(
@@ -89,7 +89,7 @@ class DenseRetriever(BaseRetriever):
     ) -> List[RetrievedChunk]:
         import time
         import asyncio
-        logger.info(f"  - 🤖 [DENSE] Async Query: '{query[:60]}...'")
+        logger.info(f"[DenseRetriever] [+] Async query: '{query[:60]}...'")
 
         # Step 1: Embed the query async
         if embedding_result:
@@ -98,7 +98,7 @@ class DenseRetriever(BaseRetriever):
             embed_start_t = time.time()
             embedding_result = await self.embedding_model.aembed_query(query)
             query_vector = embedding_result.dense
-            logger.info(f"  - ⏱️ [TIMER] DenseRetriever Embedding took: {time.time() - embed_start_t:.2f} seconds")
+            logger.info(f"[Timer] [+] Dense embedding took {time.time() - embed_start_t:.2f}s")
 
         # Step 2: Search Qdrant (wrap sync qdrant call in to_thread)
         qdrant_start_t = time.time()
@@ -109,7 +109,7 @@ class DenseRetriever(BaseRetriever):
             limit=top_k,
             filters=filters,
         )
-        logger.info(f"  - ⏱️ [TIMER] DenseRetriever Qdrant Search took: {time.time() - qdrant_start_t:.2f} seconds")
+        logger.info(f"[Timer] [+] Dense Qdrant search took {time.time() - qdrant_start_t:.2f}s")
 
         # Step 3: Map results
         chunks = []
@@ -125,5 +125,5 @@ class DenseRetriever(BaseRetriever):
                 )
             )
 
-        logger.info(f"  - 🤖 [DENSE] Async returned {len(chunks)} chunks.")
+        logger.info(f"[DenseRetriever] [+] Async returned {len(chunks)} chunks")
         return chunks

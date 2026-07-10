@@ -11,6 +11,9 @@ class LLMModel(ABC):
     specific LLM provider (LangChain, OpenAI SDK, etc.).
     """
 
+    def __init__(self):
+        self.usage_metadata: dict = {}
+
     @abstractmethod
     def get_client(self) -> Any:
         """

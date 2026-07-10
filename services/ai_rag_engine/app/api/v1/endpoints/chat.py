@@ -66,3 +66,32 @@ async def transcribe_endpoint(file: UploadFile = File(...)):
     except Exception as e:
         logger.error(f"Error in transcribe endpoint: {e}")
         raise HTTPException(status_code=500, detail="Error processing audio transcription")
+
+@router.post("/chunks", summary="Voice-optimized endpoint for retrieving raw chunks")
+async def chunks_endpoint(request: ChatRequest):
+    """
+    Voice-optimized endpoint: runs preprocessing + retrieval only.
+    Skips local LLM generation — the LiveKit voice agent's LLM synthesizes
+    the final answer from the returned source chunks.
+    Request body: same as /ask  →  { session_id, query, domain }
+    Response:
+    {
+        "guardrail": "ok" | "unsafe" | "ambiguous" | "error",
+        "message": "...",          # only when guardrail != "ok"
+        "search_queries": [...],   # rewritten queries used for retrieval
+        "chunks": [...]            # serialized RetrievedParent objects
+    }
+    """
+    try:
+        domain_str = DOMAIN_MAPPING.get(request.domain)
+        if not domain_str:
+            raise HTTPException(status_code=400, detail="Invalid domain ID")
+        result = await orchestrator.retrieve_chunks_for_voice(
+            query=request.query,
+            domain=domain_str,
+            session_id=request.session_id,
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error in chunks endpoint: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")

@@ -12,16 +12,16 @@ class QdrantManager:
             api_key=api_key,
             timeout=300
         )
-        logger.info("Connected to Qdrant Cloud.")
+        logger.info("[QdrantManager] Connected to Qdrant Cloud")
 
     def initialize_collection(self, collection_name: str, dense_dim: int = 1024):
         if self.client.collection_exists(collection_name):
-            logger.info(f"Collection '{collection_name}' already exists.")
+            logger.info(f"[QdrantManager] Collection '{collection_name}' already exists")
             # IMPORTANT: Ensure indices exist even if collection already exists
             self._setup_payload_indices(collection_name)
             return
 
-        logger.info(f"Creating collection '{collection_name}'...")
+        logger.info(f"[QdrantManager] Creating collection '{collection_name}'")
         self.client.create_collection(
             collection_name=collection_name,
             vectors_config={
@@ -41,19 +41,19 @@ class QdrantManager:
 
         # Create payload indices
         self._setup_payload_indices(collection_name)
-        logger.info(f"Collection '{collection_name}' created successfully.")
+        logger.info(f"[QdrantManager] Collection '{collection_name}' created successfully")
 
     def upsert_points(self, collection_name: str, points: List[models.PointStruct]):
-        logger.info(f"Uploading {len(points)} points to Qdrant...")
+        logger.info(f"[QdrantManager] Uploading {len(points)} points to collection '{collection_name}'")
         self.client.upsert(
             collection_name=collection_name,
             points=points
         )
-        logger.info(f"Successfully uploaded {len(points)} points.")
+        logger.info(f"[QdrantManager] Successfully uploaded {len(points)} points")
 
     def _setup_payload_indices(self, collection_name: str) -> None:
         """Sets up payload indexing for fast metadata filtering."""
-        logger.info(f"Setting up payload indices for '{collection_name}'...")
+        logger.info(f"[QdrantManager] Setting up payload indices for collection '{collection_name}'")
 
         indices_to_create = [
             # Core retrieval filters
@@ -78,9 +78,9 @@ class QdrantManager:
                     field_name=field_name,
                     field_schema=schema_type,
                 )
-                logger.info(f"Payload index created for '{field_name}'.")
+                logger.info(f"[QdrantManager] Payload index created for field '{field_name}'")
             except Exception as e:
-                logger.warning(f"Could not create payload index for '{field_name}': {e}")
+                logger.warning(f"[QdrantManager] Could not create payload index for '{field_name}': {e}")
 
     # =========================================================================
     # ========================= SEARCH / RETRIEVAL ============================
@@ -98,13 +98,22 @@ class QdrantManager:
         if not filters:
             return None
 
-        must_conditions = [
-            models.FieldCondition(
-                key=key,
-                match=models.MatchValue(value=value),
-            )
-            for key, value in filters.items()
-        ]
+        must_conditions = []
+        for key, value in filters.items():
+            if isinstance(value, list):
+                must_conditions.append(
+                    models.FieldCondition(
+                        key=key,
+                        match=models.MatchAny(any=value),
+                    )
+                )
+            else:
+                must_conditions.append(
+                    models.FieldCondition(
+                        key=key,
+                        match=models.MatchValue(value=value),
+                    )
+                )
         return models.Filter(must=must_conditions)
 
     def search_dense(
@@ -126,10 +135,7 @@ class QdrantManager:
         Returns:
             List of Qdrant ScoredPoint objects.
         """
-        logger.info(
-            f"  - Dense search in '{collection_name}' — top_k={limit}, "
-            f"filters={filters}"
-        )
+
         qdrant_filter = self.build_filter(filters)
         results = self.client.query_points(
             collection_name=collection_name,
@@ -139,7 +145,7 @@ class QdrantManager:
             limit=limit,
             with_payload=True,
         ).points
-        logger.info(f"  - Dense search returned {len(results)} results.")
+        logger.info(f"[QdrantManager] [+] Dense search returned {len(results)} results")
         return results
 
     def search_sparse(
@@ -161,10 +167,7 @@ class QdrantManager:
         Returns:
             List of Qdrant ScoredPoint objects.
         """
-        logger.info(
-            f"  - Sparse search in '{collection_name}' — top_k={limit}, "
-            f"filters={filters}"
-        )
+
         qdrant_filter = self.build_filter(filters)
 
         # Convert {token: weight} dict → Qdrant SparseVector format
@@ -182,5 +185,5 @@ class QdrantManager:
             limit=limit,
             with_payload=True,
         ).points
-        logger.info(f"  - Sparse search returned {len(results)} results.")
+        logger.info(f"[QdrantManager] [+] Sparse search returned {len(results)} results")
         return results

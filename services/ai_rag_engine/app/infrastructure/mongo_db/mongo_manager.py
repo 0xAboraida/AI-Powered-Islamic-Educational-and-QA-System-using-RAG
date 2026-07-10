@@ -30,10 +30,10 @@ class MongoManager:
             )
             self.client.admin.command("ping")
             self.db = self.client[self.db_name]
-            logger.info(f"✅ Connected to MongoDB DB: {self.db_name}")
+            logger.info(f"[MongoManager] Connected to MongoDB DB: {self.db_name}")
 
         except ConnectionFailure as e:
-            logger.error(f"❌ MongoDB connection failed: {e}")
+            logger.error(f"[MongoManager] MongoDB connection failed: {e}")
             raise
 
     def insert_documents(self, collection_name: str, documents: List[Dict[str, Any]]):
@@ -49,9 +49,9 @@ class MongoManager:
 
         try:
             collection.insert_many(documents, ordered=False)
-            logger.info(f"🟣 Inserted {len(documents)} parent chunks 🟢 into MongoDB.")
+            logger.info(f"[MongoManager] Inserted {len(documents)} parent chunks into MongoDB.")
         except Exception as e:
-            logger.warning(f"❌ MongoDB insert warning/error: {e}")
+            logger.warning(f"[MongoManager] MongoDB insert warning/error: {e}")
 
     def fetch_by_ids(
         self,
@@ -82,14 +82,14 @@ class MongoManager:
                 cursor = collection.find({"_id": {"$in": ids}})
                 results = list(cursor)
                 logger.info(
-                    f"📦 Fetched {len(results)}/{len(ids)} parents "
+                    f"[MongoManager] [+] Fetched {len(results)}/{len(ids)} parents "
                     f"from '{self.db_name}.{collection_name}'"
                 )
                 return results
             except Exception as e:
-                logger.warning(f"⚠️ MongoDB fetch error in '{collection_name}' on attempt {attempt + 1}/{max_retries}: {e}")
+                logger.warning(f"[MongoManager] MongoDB fetch error in '{collection_name}' on attempt {attempt + 1}/{max_retries}: {e}")
                 if attempt == max_retries - 1:
-                    logger.error(f"❌ MongoDB fetch failed permanently in '{collection_name}' after {max_retries} attempts.")
+                    logger.error(f"[MongoManager] MongoDB fetch failed permanently in '{collection_name}' after {max_retries} attempts.")
                     return []
                 import time
                 time.sleep(0.5) # Short backoff before retrying
@@ -97,4 +97,4 @@ class MongoManager:
     def close(self):
         if self.client:
             self.client.close()
-            logger.info("🟢 MongoDB connection closed.")
+            logger.info("[MongoManager] MongoDB connection closed.")

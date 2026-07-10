@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   zad-ai-engine:
-    image: abourida/zad-ai-engine:latest
+    image: abourida/docker-zad-ai-engine:latest
     container_name: zad-ai-engine
     ports:
       - "8000:8000"
@@ -24,6 +24,20 @@ services:
     volumes:
       - redis_data:/data
     restart: unless-stopped
+    networks:
+      - zad-network
+
+  voice-agent:
+    image: abduh38/livekit-voice-agent:latest
+    container_name: zad-voice-agent
+    env_file:
+      - .env
+    environment:
+      - RAG_API_URL=http://zad-ai-engine:8000/api/v1/chat/ask
+      - RAG_CHUNKS_URL=http://zad-ai-engine:8000/api/v1/chat/chunks
+    restart: unless-stopped
+    depends_on:
+      - zad-ai-engine
     networks:
       - zad-network
 

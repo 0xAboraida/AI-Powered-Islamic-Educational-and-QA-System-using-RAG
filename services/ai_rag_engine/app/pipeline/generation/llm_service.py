@@ -54,7 +54,12 @@ class LLMService:
 
         # 3. Build messages list: system → current query
         messages = [SystemMessage(content=system_prompt), HumanMessage(content=query)]
-        logger.info(f"🤖 [GENERATION: LLM] Starting generation for domain='{domain}' | query='{query[:60]}...'")
+        
+        def estimate_tokens(text: str) -> int:
+            return max(len(text) // 4, int(len(text.split()) * 1.5))
+            
+        input_tokens = estimate_tokens(system_prompt + query)
+        logger.info(f"[LLMService] [+] Starting generation for domain='{domain}' | estimated_input_tokens=~{input_tokens}")
 
         # 3. Generate the response with in-text citation tracking
         from services.ai_rag_engine.app.config.key_manager import gemini_key_manager
@@ -80,11 +85,11 @@ class LLMService:
                 break # If successfully completed, break out of rotation loop
                 
             except Exception as e:
-                logger.warning(f"⚠️ [GENERATION: LLM] Primary LLM (Gemini) failed on attempt {attempt+1}: {e}")
+                logger.warning(f"[LLMService] [-] Primary LLM failed on attempt {attempt+1}: {str(e)[:150]}...")
                 last_exception = e
 
         if not success:
-            logger.warning("🔄 [GENERATION: LLM] All Primary LLM attempts failed. Switching to Fallback LLM...")
+            logger.warning("[LLMService] [-] All Primary LLM attempts failed. Switching to Fallback LLM")
             
             try:
                 # Initialize Fallback Model based on settings
@@ -99,7 +104,7 @@ class LLMService:
                 full_generated_text = "\n\n*(عذراً، الخادم الأساسي مشغول. تم توليد الإجابة بالمولد الاحتياطي)*\n\n" + ai_message_content
                     
             except Exception as fallback_e:
-                logger.error(f"❌ [GENERATION: LLM] Both Primary and Fallback LLMs failed! Error: {fallback_e}", exc_info=True)
+                logger.error(f"[LLMService] [-] Both Primary and Fallback LLMs failed! Error: {fallback_e}", exc_info=True)
                 return {
                     "answer": "عذراً، حدث خطأ في جميع خوادم التوليد. يرجى المحاولة لاحقاً.",
                     "citations": {}
@@ -114,10 +119,17 @@ class LLMService:
         # Available IDs are extracted from the keys like "cit_1" -> 1
         available_ids = [int(k.split("_")[1]) for k in all_citations.keys()]
 
+        output_tokens = estimate_tokens(full_generated_text)
+        
+        # Override with exact counts if available
+        if hasattr(current_llm_model, "usage_metadata") and current_llm_model.usage_metadata:
+            exact_input = current_llm_model.usage_metadata.get("input_tokens")
+            exact_output = current_llm_model.usage_metadata.get("output_tokens")
+            if exact_input: input_tokens = exact_input
+            if exact_output: output_tokens = exact_output
+            
         logger.info(
-            f"✅ [GENERATION: LLM] Generation complete. "
-            f"Model cited IDs: {used_ids} / "
-            f"Available IDs: {sorted(available_ids)}"
+            f"[LLMService] [+] Generation complete | cited_ids={used_ids} available_ids={sorted(available_ids)} | actual_input_tokens={input_tokens} actual_output_tokens={output_tokens}"
         )
 
         # ── 3c. Filter and Renumber citations ───────
@@ -144,9 +156,8 @@ class LLMService:
         else:
             if all_citations:
                 logger.warning(
-                    "⚠️ [GENERATION: LLM] No citation markers found in generated text. "
-                    "Falling back to sending all citations."
-                )
+            "[LLMService] [-] No citation markers found in generated text. Falling back to sending all citations."
+        )
                 for idx, (key, cit_data) in enumerate(all_citations.items(), start=1):
                     cit = cit_data.copy()
                     used_citations[f"cit_{idx}"] = cit

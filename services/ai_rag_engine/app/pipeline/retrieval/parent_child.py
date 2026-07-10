@@ -81,8 +81,7 @@ class _MongoConnectionPool:
         uri = os.environ.get(route.uri_env_key)
         if not uri:
             logger.error(
-                f"❌ Missing env var '{route.uri_env_key}'. "
-                f"Cannot connect to MongoDB for route: {route}"
+                f"[ParentChild] Missing env var '{route.uri_env_key}'. Cannot connect to MongoDB for route: {route}"
             )
             return None
 
@@ -92,11 +91,11 @@ class _MongoConnectionPool:
 
         key = (uri, route.db_name)
         if key not in self._pool:
-            logger.info(f"🔌 Opening new MongoDB connection → db='{route.db_name}'")
+            logger.info(f"[ParentChild] Opening new MongoDB connection | db='{route.db_name}'")
             try:
                 self._pool[key] = MongoManager(uri=uri, db_name=route.db_name)
             except Exception as e:
-                logger.error(f"❌ Failed to initialize MongoManager for '{route.db_name}': {e}")
+                logger.error(f"[ParentChild] Failed to initialize MongoManager for '{route.db_name}': {e}")
                 return None
 
         return self._pool[key]
@@ -173,8 +172,7 @@ class ParentChildRetriever:
         """
         # ── Step 1: Retrieve child chunks from Qdrant via Hybrid Search ──────
         logger.info(
-            f"🔍 [RETRIEVAL: QDRANT] Step 1: Hybrid search "
-            f"(child_top_k={child_top_k})"
+            f"[ParentChild] Step 1: Sync Hybrid search | child_top_k={child_top_k}"
         )
         child_chunks: List[RetrievedChunk] = self.hybrid_retriever.retrieve(
             query=query,
@@ -184,18 +182,18 @@ class ParentChildRetriever:
         )
 
         if not child_chunks:
-            logger.warning("⚠️ [RETRIEVAL: QDRANT] No child chunks returned.")
+            logger.warning("[ParentChild] No child chunks returned from Qdrant.")
             return []
 
-        logger.info(f"🧠 [RETRIEVAL: RERANKER] Got {len(child_chunks)} child chunks. Passing to Reranker...")
+        logger.info(f"[ParentChild] Got {len(child_chunks)} child chunks. Passing to Reranker.")
         
         from services.ai_rag_engine.app.models.embedding_models.reranker import reranker_service
         child_chunks = reranker_service.rerank(query, child_chunks)
         
-        logger.info(f"✅ [RETRIEVAL: RERANKER] Reranker kept top {len(child_chunks)} child chunks.")
+        logger.info(f"[ParentChild] Reranker kept top {len(child_chunks)} child chunks")
 
         # ── Step 2: Group children by (domain, madhhab) for routing ──────────
-        logger.info("[ParentChildRetriever] Step 2: Grouping by domain/madhhab...")
+        logger.info("[ParentChild] Step 2: Grouping by domain/madhhab")
 
         # routing_key → list of (parent_id, best_score, child_id)
         # We use a dict to deduplicate parents (keep highest child score)
@@ -229,7 +227,7 @@ class ParentChildRetriever:
                 existing["child_ids"].append(chunk.chunk_id)
 
         logger.info(
-            f"📂 [RETRIEVAL: GROUPING] {len(parent_map)} unique parents identified."
+            f"[ParentChild] Grouping complete | {len(parent_map)} unique parents identified"
         )
 
         # ── Step 3: Group parents by routing key ──────────────────────────────
@@ -244,8 +242,7 @@ class ParentChildRetriever:
 
         # ── Step 4: Fetch parents from MongoDB ───────────────────────────────
         logger.info(
-            f"🚀 [RETRIEVAL: MONGO] Step 4: Fetching from MongoDB "
-            f"({len(route_groups)} route groups)..."
+            f"[ParentChild] Step 4: Fetching from MongoDB | {len(route_groups)} route groups"
         )
 
         import time
@@ -286,9 +283,9 @@ class ParentChildRetriever:
                     logger.error(f"Route generated an exception: {exc}")
 
         logger.info(
-            f"📦 [RETRIEVAL: MONGO] Fetched {len(fetched_docs)} parent docs from MongoDB."
+            f"[ParentChild] Fetched {len(fetched_docs)} parent docs from MongoDB"
         )
-        logger.info(f"⏱️ [TIMER] ParentChild MongoDB fetching took: {time.time() - mongo_t:.2f} seconds")
+        logger.info(f"[Timer] ParentChild MongoDB fetching took {time.time() - mongo_t:.2f}s")
 
         # ── Step 5: Build RetrievedParent list ────────────────────────────────
         results: List[RetrievedParent] = []
@@ -319,7 +316,7 @@ class ParentChildRetriever:
         results = results[:parent_top_k]
 
         logger.info(
-            f"✅ [RETRIEVAL: COMPLETE] Returning {len(results)} parent documents."
+            f"[ParentChild] Sync Retrieval Complete | Returning {len(results)} parent documents"
         )
         return results
 
@@ -332,8 +329,7 @@ class ParentChildRetriever:
         filters: Optional[Dict[str, Any]] = None,
     ) -> List[RetrievedParent]:
         logger.info(
-            f"🔍 [RETRIEVAL: QDRANT] Step 1: Async Hybrid search "
-            f"(child_top_k={child_top_k})"
+            f"[ParentChild] [+] Async Hybrid search | child_top_k={child_top_k}"
         )
         child_chunks: List[RetrievedChunk] = await self.hybrid_retriever.aretrieve(
             query=query,
@@ -343,17 +339,17 @@ class ParentChildRetriever:
         )
 
         if not child_chunks:
-            logger.warning("[ParentChildRetriever] No child chunks returned.")
+            logger.warning("[ParentChild] [-] No child chunks returned from Qdrant.")
             return []
 
-        logger.info(f"🧠 [RETRIEVAL: RERANKER] Got {len(child_chunks)} child chunks. Passing to Reranker...")
+        logger.info(f"[ParentChild] [+] Got {len(child_chunks)} child chunks. Passing to Reranker.")
         
         from services.ai_rag_engine.app.models.embedding_models.reranker import reranker_service
         child_chunks = await reranker_service.arerank(query, child_chunks)
         
-        logger.info(f"✅ [RETRIEVAL: RERANKER] Reranker kept top {len(child_chunks)} child chunks.")
+        logger.info(f"[ParentChild] [+] Reranker kept top {len(child_chunks)} child chunks")
 
-        logger.info("[ParentChildRetriever] Step 2: Grouping by domain/madhhab...")
+        logger.info("[ParentChild] [+] Grouping by domain/madhhab")
 
         RouteKey = Tuple[str, Optional[str]]
         parent_map: Dict[str, Dict] = {}
@@ -427,7 +423,7 @@ class ParentChildRetriever:
 
         fetched_docs = await asyncio.to_thread(fetch_all_mongo)
         
-        logger.info(f"  - ⏱️ [TIMER] ParentChild Async MongoDB fetching took: {time.time() - mongo_t:.2f} seconds")
+        logger.info(f"[Timer] [+] Async MongoDB fetching took {time.time() - mongo_t:.2f}s")
 
         results: List[RetrievedParent] = []
 
@@ -453,12 +449,12 @@ class ParentChildRetriever:
         results.sort(key=lambda p: p.best_child_score, reverse=True)
         results = results[:parent_top_k]
 
-        logger.info(f"✅ [RETRIEVAL: COMPLETE] Returning {len(results)} parent documents (async).")
+        logger.info(f"[ParentChild] [+] Async Retrieval Complete | Returning {len(results)} parent documents")
         return results
 
     def warm_up_mongo(self, domain: str):
         """Eagerly connect to MongoDB clusters for the given domain."""
-        logger.info(f"🔥 Warming up MongoDB connections for domain='{domain}'")
+        logger.info(f"[ParentChild] Warming up MongoDB connections for domain='{domain}'")
         from services.ai_rag_engine.app.infrastructure.mongo_db.mongo_router import _ROUTES, _normalize_domain
         
         norm_domain = _normalize_domain(domain)

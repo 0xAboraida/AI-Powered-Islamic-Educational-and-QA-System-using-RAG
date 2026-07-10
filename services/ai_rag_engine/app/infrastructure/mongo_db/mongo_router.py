@@ -51,9 +51,22 @@ _DOMAIN_MAP: dict[str, str] = {
     "نحو":         "nahw_sarf",
     "صرف":         "nahw_sarf",
     "النحو والصرف": "nahw_sarf",
+    "علوم اللغة": "nahw_sarf",
+    "علوم اللغه": "nahw_sarf",
+    "علوم لغة": "nahw_sarf",
+    "علوم لغه": "nahw_sarf",
     "آداب":        "adab",
     "الآداب":       "adab",
     "الآداب والأخلاق": "adab",
+    "علوم قرآن":    "quran_science",
+    "علوم القرآن":  "quran_science",
+    "علوم قران":    "quran_science",
+    "علوم القران":  "quran_science",
+    "بلاغة":        "balaghah",
+    "البلاغة":       "balaghah",
+    "شعر":          "balaghah",
+    "الشعر":         "balaghah",
+    "البلاغة والشعر": "balaghah",
     # English keywords (lowercase)
     "fiqh":       "fiqh",
     "aqeedah":    "aqeedah",
@@ -162,6 +175,12 @@ _ROUTES: dict[tuple, List[MongoRouteConfig]] = {
         MongoRouteConfig("MONGO_URI_HADITH_CLUSTER11", "zad_rag_db_hadith2", "parents_hadith2"),
         MongoRouteConfig("MONGO_URI_HADITH_CLUSTER12", "zad_rag_db_hadith3", "parents_hadith3"),
     ],
+
+    # ── Quran Science (Empty for now) ──────────────────────────────────────
+    ("quran_science", None): [],
+
+    # ── Balaghah (Empty for now) ───────────────────────────────────────────
+    ("balaghah", None): [],
 
     # # ── آداب وأخلاق ────────────────────────────────────────────────────────
     # # NOTE: Add MONGO_URI_ADAB_CLUSTER10 to .env when this cluster is provisioned

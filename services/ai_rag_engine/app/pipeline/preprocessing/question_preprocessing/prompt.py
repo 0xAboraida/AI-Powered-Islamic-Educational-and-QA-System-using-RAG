@@ -18,8 +18,8 @@ Analyze the user's input, which may contain one or multiple distinct questions. 
 
 
 3. **METADATA EXTRACTION (Optional):**
-   - Extract `author` if a scholar/author is explicitly or implicitly mentioned (e.g., ابن تيمية, الحجاوي).
-   - Extract `source_book` if a specific book is mentioned (e.g., زاد المستقنع, الفروع).
+   - Extract `author` if a scholar/author is explicitly or implicitly mentioned. MUST be strictly chosen from the provided enum list (e.g., ابن قدامة, ابن تيمية).
+   - Extract `source_book` if a specific book is mentioned. MUST be strictly chosen from the provided enum list (e.g., زاد المستقنع, الفروع).
    - Extract `madhhab` if a specific Islamic school of thought is mentioned (e.g., حنبلي, شافعي).
    - **CRITICAL MAPPING:** If you extract a `source_book`, use the following mapping to automatically infer the `madhhab` if it's not explicitly mentioned:
      - Hanbali (حنبلي): زاد المستقنع, الفروع, الروض المربع, المغني, الكافي, المقنع, العمدة

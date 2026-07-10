@@ -44,9 +44,9 @@ class RedisMemoryManager:
                 temp_redis = redis.from_url(self.redis_url, decode_responses=True)
                 await temp_redis.ping()
                 self._redis = temp_redis
-                logger.info("🟢 [MEMORY] Connected to Redis successfully. Using Real Redis for session storage.")
+                logger.info("[Memory] [+] Connected to Redis successfully. Using Real Redis for session storage.")
             except Exception as e:
-                logger.warning(f"🟡 [MEMORY] Redis connection failed: {e}. Falling back to Local Python Dictionary Memory.")
+                logger.warning(f"[Memory] [-] Redis connection failed: {str(e)[:100]}... Falling back to Local Python Dictionary Memory.")
                 self._redis_available = False
                 return None
                 
@@ -70,7 +70,7 @@ class RedisMemoryManager:
                 await client.rpush(key, ai_interaction)
                 await client.expire(key, self.ttl)
             except Exception as e:
-                logger.error(f"❌ [MEMORY] Failed to save interaction to Redis for session '{session_id}': {e}")
+                logger.error(f"[Memory] [-] Failed to save interaction to Redis for session '{session_id}': {e}")
         else:
             # Use Local Python Memory
             if session_id not in self._local_memory:
@@ -96,7 +96,7 @@ class RedisMemoryManager:
                 start_index = -limit if limit > 0 else 0
                 raw_history = await client.lrange(key, start_index, -1)
             except Exception as e:
-                logger.warning(f"⚠️ [MEMORY] Failed to get history from Redis for session '{session_id}': {e}")
+                logger.warning(f"[Memory] [-] Failed to get history from Redis for session '{session_id}': {e}")
         else:
             # Use Local Python Memory
             full_history = self._local_memory.get(session_id, [])
@@ -126,7 +126,7 @@ class RedisMemoryManager:
             try:
                 await client.delete(f"chat_history:{session_id}")
             except Exception as e:
-                logger.error(f"❌ [MEMORY] Failed to clear history for session '{session_id}': {e}")
+                logger.error(f"[Memory] [-] Failed to clear history for session '{session_id}': {e}")
         else:
             if session_id in self._local_memory:
                 del self._local_memory[session_id]

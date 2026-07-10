@@ -122,6 +122,9 @@ class Settings(BaseSettings):
 
     # RRF smoothing constant (original paper recommends 60)
     RAG_RRF_K: int = int(os.getenv("RAG_RRF_K", "60"))
+    
+    # Enable Fuzzy Matching for Book Titles extracted by the LLM
+    ENABLE_FUZZY_BOOK_MATCH: bool = os.getenv("ENABLE_FUZZY_BOOK_MATCH", "True").lower() in ("true", "1", "yes")
 
     # ── Reranker Settings ────────────────────────────────────────────────────
     USE_RERANKER: bool = os.getenv("USE_RERANKER", "True").lower() in (
@@ -155,9 +158,9 @@ class Settings(BaseSettings):
         "السيرة",
         "التفسير",
         "الحديث",
+        "علوم القرآن",
         "التاريخ",
-        "علوم القران",
-        "النحو والصرف",
+        "علوم اللغة",
     ]
 
     DOMAIN_MAPPING: dict[int, str] = {
@@ -166,9 +169,9 @@ class Settings(BaseSettings):
         3: "السيرة",
         4: "التفسير",
         5: "الحديث",
-        6: "علوم القران",
+        6: "علوم القرآن",
         7: "التاريخ",
-        8: "علوم اللغه",
+        8: "علوم اللغة",
     }
 
     # Redis Chat Memory

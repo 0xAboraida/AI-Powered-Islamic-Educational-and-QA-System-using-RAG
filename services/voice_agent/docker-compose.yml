@@ -1,0 +1,58 @@
+services:
+  livekit-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PYTHON_VERSION: '3.12'
+    container_name: livekit-voice-agent
+    env_file: .env
+    environment:
+      # Ensure Python outputs logs immediately (important for container logs)
+      PYTHONUNBUFFERED: '1'
+      # Keep build bytecode setting consistent
+      UV_COMPILE_BYTECODE: '1'
+    # Resource limits (adjust based on your deployment environment)
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
+    # Restart policy for production resilience
+    restart: unless-stopped
+    # Health check to detect when the agent stops responding
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "agent.py"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    # Logging configuration
+    logging:
+      driver: json-file
+      options:
+        max-size: '50m'
+        max-file: '10'
+    # Mount volumes for persistent cache (models, downloaded files)
+    volumes:
+      - agent-cache:/app/.cache
+      - agent-logs:/app/logs
+    # Network settings
+    networks:
+      - livekit-network
+    # Standard signal handling for graceful shutdown
+    stdin_open: true
+    tty: true
+
+volumes:
+  agent-cache:
+    driver: local
+  agent-logs:
+    driver: local
+
+networks:
+  livekit-network:
+    driver: bridge

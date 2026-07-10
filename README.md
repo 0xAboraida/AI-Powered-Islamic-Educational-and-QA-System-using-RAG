@@ -9,532 +9,375 @@
   ### The Intelligent Islamic Educational Assistant
   
   [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-  [![Python](https://img.shields.io/badge/Python-3.12+-blue.svg)](https://www.python.org/)
+  [![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/)
+  [![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-green.svg)](https://fastapi.tiangolo.com/)
   [![.NET](https://img.shields.io/badge/.NET-8.0+-purple.svg)](https://dotnet.microsoft.com/)
   [![Flutter](https://img.shields.io/badge/Flutter-3.10+-blue.svg)](https://flutter.dev/)
   [![Qdrant](https://img.shields.io/badge/Qdrant-Cloud-red.svg)](https://qdrant.tech/)
   [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-green.svg)](https://www.mongodb.com/atlas)
 
-  **Zad** is an intelligent Islamic AI assistant powered by a production-grade **Hybrid RAG** pipeline.
-  It provides accurate, context-aware answers to questions about Islamic sciences (Fiqh, Aqeedah, Tafseer, Seerah, Tarikh) using trusted classical texts.
+  **Zad** is an intelligent Islamic AI assistant powered by a production-grade **Hybrid RAG** (Retrieval-Augmented Generation) pipeline. It provides accurate, context-aware answers to questions about Islamic sciences—including Fiqh, Aqeedah, Tafseer, Seerah, Tarikh, Hadith, and Language Sciences—using trusted classical texts.
 </div>
 
 ---
 
-## ✨ Key Features
-
-- 📚 **Comprehensive Knowledge:** Answers extracted directly from trusted classical Islamic texts across multiple domains.
-- 🔍 **Hybrid Search:** Combines dense semantic search (BGE-M3) with sparse keyword search for high accuracy.
-- 🧩 **Parent-Child Chunking:** Retains deep context from MongoDB while keeping vector searches in Qdrant lightning fast.
-- 🧠 **Cross-Encoder Reranking:** Ensures the absolute most relevant paragraphs are sent to the AI for generation.
-- ⚡ **Multi-LLM Support:** Primary generation via Gemini with fast streaming, plus fallbacks to Groq and GitHub Models.
-- 📱 **Cross-Platform App:** Beautiful, responsive mobile application built with Flutter (iOS/Android/Web).
-
----
-
-## 📸 Screenshots
-
-*(Add Flutter app screenshots or GIFs here)*
-<p align="center">
-  <img src="https://via.placeholder.com/250x500.png?text=App+Screenshot+1" width="200" alt="screenshot">
-  &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="https://via.placeholder.com/250x500.png?text=App+Screenshot+2" width="200" alt="screenshot">
-</p>
+## 🟢 Table of Contents
+- [🟢 Overview](#-overview)
+- [🟢 Key Features](#-key-features)
+- [🟢 System Architecture](#️-system-architecture)
+- [🟢 Core RAG Pipeline](#-core-rag-pipeline)
+- [🟢 Database Architecture](#️-database-architecture)
+- [🟢 Tech Stack](#️-tech-stack)
+- [🟢 Quick Start & Deployment](#-quick-start--deployment)
+- [🟢 Data Ingestion Pipeline](#-data-ingestion-pipeline)
+- [🟢 Documentation](#-documentation)
+- [🟢 Contributing](#-contributing)
+- [🟢 License](#-license)
 
 ---
 
-## 🏗️ System Architecture Overview
+## 🟢 Overview
 
-```
-┌─────────────────────────────────────────────────────┐
-│                   Mobile App (Flutter)              │
-│              iOS / Android / Web Client             │
-└───────────────────────┬─────────────────────────────┘
-                        │  User Question + Domain
-                        ▼
-┌─────────────────────────────────────────────────────┐
-│                 API Server (.NET Core)              │
-│         Auth │ Rate Limiting │ REST Endpoints       │
-└───────────────────────┬─────────────────────────────┘
-                        │  HTTP Request
-                        ▼
-┌─────────────────────────────────────────────────────┐
-│              AI RAG Engine (Python / FastAPI)       │
-│                                                     │
-│  ┌──────────────────────────────────────────────┐   │
-│  │              RAG PIPELINE                    │   │
-│  └──────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────┘
-```
+**Zad-AI** is a comprehensive educational platform designed to bridge the gap between classical Islamic knowledge and modern AI technology. It delivers high-fidelity answers derived exclusively from verified, authentic Islamic sources. 
+
+The platform offers two primary interaction modes:
+1. **Text Chat (Deep Research):** A sophisticated interface for in-depth Islamic research. It leverages a Hybrid RAG pipeline—combining dense semantic search with sparse keyword matching—across a horizontally scaled database of classical texts, synthesizing precise, properly cited responses via Large Language Models (LLMs).
+2. **Voice Chat (Conversational AI):** An interactive, hands-free voice assistant powered by WebRTC (LiveKit) and a custom Model Context Protocol (MCP). It allows users to converse naturally while the RAG engine retrieves and synthesizes answers in real-time.
 
 ---
 
-## 🔄 Full RAG Pipeline — Step by Step
+## 🟢 Key Features
 
+- ✅ **Vast Knowledge Base:** Covers 8 major Islamic domains (Fiqh, Aqeedah, Tafseer, Seerah, Tarikh, Hadith, Quranic Sciences, and Arabic Language).
+- ✅ **Advanced Hybrid Search:** Combines **BGE-M3** dense semantic embeddings with sparse lexical search, fused using **Reciprocal Rank Fusion (RRF)** for maximum accuracy.
+- ✅ **Parent-Child Chunking Strategy:** Optimizes vector search speed by storing small child chunks in Qdrant, while retrieving rich, full-context parent documents from MongoDB for the LLM.
+- ✅ **Cross-Encoder Reranking:** Employs a cross-encoder model to rigorously rerank the retrieved contexts, ensuring only the most relevant paragraphs are sent for generation.
+- ✅ **Resilient LLM Generation:** Primary response generation via **Google Gemini** with automatic API key rotation and seamless fallback to alternative providers (Groq/OpenAI).
+- ✅ **Real-time Voice Agent:** Integrates LiveKit for low-latency, WebRTC-based voice interactions, enabling spoken questions and answers.
+- ✅ **Cross-Platform Access:** A beautiful, responsive mobile application built with Flutter, supported by a robust .NET API gateway.
+
+---
+
+## 🟣 System Architecture
+
+```mermaid
+graph TD
+    classDef client fill:#0984e3,stroke:#74b9ff,stroke-width:2px,color:#fff;
+    classDef gateway fill:#6c5ce7,stroke:#a29bfe,stroke-width:2px,color:#fff;
+    classDef rag fill:#00b894,stroke:#55efc4,stroke-width:2px,color:#fff;
+    classDef voice fill:#d63031,stroke:#ff7675,stroke-width:2px,color:#fff;
+    classDef db fill:#94071C,stroke:#b2bec3,stroke-width:2px,color:#fff;
+
+    style AIEngine fill:#00b894,stroke:#00b894,stroke-width:2px
+    style DataLayer fill:#00b894,stroke:#03731F,stroke-width:2px
+
+    Client[Flutter Application<br/>iOS / Android / Web] -->|REST HTTP / WSS| Gateway[.NET API Gateway<br/>Auth / Rate Limiting]
+    Client <-->|WebRTC| VoiceAgent[LiveKit Voice Agent<br/>Real-time Audio]
+    
+    Gateway -->|HTTP JSON| RAG[FastAPI RAG Engine]
+    VoiceAgent -->|HTTP /chunks| RAG
+    
+    subgraph AIEngine ["AI & RAG Pipeline"]
+        direction TB
+        PRE[Query Preprocessor] --> EMB[Hybrid Embedding<br/>BGE-M3]
+        EMB --> SEARCH[Qdrant Hybrid Search & RRF]
+        SEARCH --> DB_ROUTE[Dynamic DB Routing]
+        DB_ROUTE --> RERANK[Cross-Encoder Reranking]
+        RERANK --> GEN[LLM Generation<br/>Gemini / OpenAI]
+    end
+    
+    RAG --> AIEngine
+    
+    subgraph DataLayer ["Data Infrastructure"]
+        direction LR
+        Qdrant[(Qdrant Cloud<br/>Child Vectors)]
+        Mongo[(MongoDB Atlas<br/>Parent Documents)]
+    end
+    
+    DB_ROUTE --> DataLayer
+    
+    class Client client;
+    class Gateway gateway;
+    class RAG,AIEngine rag;
+    class VoiceAgent voice;
+    class DataLayer,Qdrant,Mongo db;
 ```
-╔══════════════════════════════════════════════════════════════════════════╗
-║                         USER INTERFACE LAYER                             ║
-╚══════════════════════════════════════╦═══════════════════════════════════╝
-                                       ║
-                    ┌──────────────────▼────────────────────────────┐
-                    │           User Input                          │
-                    │  Question: "ما حكم صلاة الجمعة للمسافر؟"     │
-                    │  Domain: 1 (الفقه)                            │
-                    │  Session ID: 12345 (Optional)                 │
-                    └──────────────────┬────────────────────────────┘
-                                       │
-╔══════════════════════════════════════▼═══════════════════════════════════╗
-║                    STEP 1 — QUESTION PREPROCESSING (LLM)                 ║
-╚══════════════════════════════════════╦═══════════════════════════════════╝
-                                       │
-                    ┌──────────────────▼───────────────────┐
-                    │        QueryPreprocessor             │
-                    │   Model: GPT-4o (via OpenAI API)     │
-                    │   or GitHub Models Inference         │
-                    │                                      │
-                    │  Tasks:                              │
-                    │  ✦ Multi-query splitting             │
-                    │  ✦ Safety check (is_safe)            │
-                    │  ✦ Rewrite in Modern Standard Arabic │
-                    │  ✦ Try to predict Kitab name         │
-                    │  ✦ Metadata extraction               │
-                    └──────────────────┬───────────────────┘
-                                       │
-                    ┌──────────────────▼────────────────────┐
-                    │     Structured JSON Output            │
-                    │  (Pydantic: QuestionProcessingResult) │
-                    │                                       │
-                    │  {                                    │
-                    │    "total_questions": 1,              │
-                    │    "questions": [{                    │
-                    │      "original_question": "...",      │
-                    │      "search_query": "...(MSA)...",   │
-                    │      "is_safe": true,                 │
-                    │      "metadata": {                    │
-                    │        "domain": "فقه",                │
-                    │        "kitab": "كتاب الصلاة",           │
-                    │        "madhhab": "حنبلي",             │
-                    │        "author": null,                │
-                    │        "source_book": null            │
-                    │      }                                │
-                    │    }]                                 │
-                    │  }                                    │
-                    └──────────────────┬────────────────────┘
-                                       │
-                    ┌──────────────────▼────────────────────┐
-                    │         Safety Gate                   │
-                    │   is_safe == false → REJECT           │
-                    │   is_safe == true  → CONTINUE         │
-                    └──────────────────┬────────────────────┘
-                                       │
-╔══════════════════════════════════════▼═══════════════════════════════════╗
-║                    STEP 2 — HYBRID EMBEDDING (BGE-M3)                    ║
-╚══════════════════════════════════════╦═══════════════════════════════════╝
-                                       │
-                    ┌──────────────────▼───────────────────┐
-                    │     BGE-M3 Embedding Model           │
-                    │  (Hosted Locally via FlagEmbedding)  │
-                    │                                      │
-                    │  Input: search_query (MSA)           │
-                    │                                      │
-                    │  Output:                             │
-                    │  ┌────────────────────────────────┐  │
-                    │  │  Dense Vector  [1024-dim]      │  │
-                    │  │  (Cosine Similarity Search)    │  │
-                    │  └────────────────────────────────┘  │
-                    │  ┌────────────────────────────────┐  │
-                    │  │  Sparse Vector (SPLADE-style)  │  │
-                    │  │  (Keyword / BM25-style Search) │  │
-                    │  └────────────────────────────────┘  │
-                    └──────────────────┬───────────────────┘
-                                       │
-╔══════════════════════════════════════▼═══════════════════════════════════╗
-║              STEP 3 — DOMAIN ROUTING → QDRANT COLLECTION                 ║
-╚══════════════════════════════════════╦═══════════════════════════════════╝
-                                       │
-                    ┌──────────────────▼─────────────────────────────────┐
-                    │        Domain Router Based on metadata.domain      │
-                    └──────────────────┬─────────────────────────────────┘
-                                       │
-                    ┌──────────────────▼─────────────────────────────────┐
-                    │ • فقه        ────────►  zad_seerah_collection      │
-                    │ • عقيده      ────────►  zad_aqeedah_collection     │
-                    │ • سيره       ────────►  zad_seerah_collection      │
-                    │ • تفسير      ────────►  zad_Tafseer_collection     │
-                    │ • تاريخ      ────────►  zad_tarikh_collection      │
-                    │ • نحو وصرف   ────────►  zad_nahwSarf_collection    │
-                    │ • حديث       ────────►  zad_hadith_collection      │
-                    │ • بلاغه وشعر ────────►  zad_rhetoricPoetry_collection│
-                    │ • علوم القران────────►  zad_quranScience_collection│
-                    └──────────────────┬─────────────────────────────────┘
-                                       │
-╔══════════════════════════════════════▼═══════════════════════════════════╗
-║              STEP 4 — HYBRID SEARCH ON QDRANT (Child Chunks)             ║
-╚══════════════════════════════════════╦═══════════════════════════════════╝
-                                       │
-                    ┌──────────────────▼──────────────────┐
-                    │     Hybrid Search with Filters       │
-                    │                                      │
-                    │  Pre-filter by:                      │
-                    │   • metadata.domain                  │
-                    │   • metadata.madhhab                 │
-                    │   • metadata.hierarchy.kitab         │
-                    │   • metadata.author (optional)       │
-                    │   • metadata.book_title (optional)   │
-                    │                                      │
-                    │  ┌─────────────────────────────┐    │
-                    │  │  Dense Search (COSINE)       │    │
-                    │  │  Top-K semantic matches      │    │
-                    │  └──────────────┬──────────────┘    │
-                    │                 │                    │
-                    │  ┌─────────────▼──────────────┐    │
-                    │  │  Sparse Search (BM25)       │    │
-                    │  │  Top-K keyword matches      │    │
-                    │  └──────────────┬──────────────┘    │
-                    └─────────────────┼──────────────────┘
-                                      │
-╔═════════════════════════════════════▼════════════════════════════════════╗
-║              STEP 5 — FUSION (Reciprocal Rank Fusion - RRF)             ║
-╚═════════════════════════════════════╦════════════════════════════════════╝
-                                       │
-                    ┌──────────────────▼──────────────────┐
-                    │     RRF Fusion                       │
-                    │                                      │
-                    │  Merge Dense + Sparse ranked lists   │
-                    │  Score(d) = Σ 1/(k + rank_i(d))     │
-                    │                                      │
-                    │  Output: Top 30 Child Chunks         │
-                    │  (sorted by unified RRF score)       │
-                    └──────────────────┬──────────────────┘
-                                       │
-╔══════════════════════════════════════▼═══════════════════════════════════╗
-║              STEP 6 — PARENT RETRIEVAL (MongoDB Atlas)                  ║
-╚══════════════════════════════════════╦═══════════════════════════════════╝
-                                       │
-                    ┌──────────────────▼──────────────────┐
-                    │   Parent-Child Retrieval             │
-                    │                                      │
-                    │  For each child chunk:               │
-                    │   child.parent_id → fetch Parent     │
-                    │                                      │
-                    │  Route to MongoDB by domain:         │
-                    └──────────┬───────────────────────────┘
-                               │
-    ┌──────────────────────────┼─────────────────────────────────────┐
-    │                          │                                     │
-    ▼                          ▼                                     ▼
-┌───────────────┐    ┌──────────────────┐    ┌──────────────────────────┐
-│ Project-1     │    │  Project-3       │    │  Project-4/5/6/7         │
-│ zad-rag-      │    │  zad-rag-        │    │  (Aqeedah/Tafseer/       │
-│ cluster       │    │  cluster3        │    │   Seerah/Tarikh)         │
-│               │    │                  │    │                          │
-│ zad_rag_db    │    │ zad_rag_db_      │    │  Each domain has its own │
-│ ├ parents_    │    │ aqeedah          │    │  dedicated cluster &     │
-│ │  hanafi     │    │  └ parents_      │    │  collection              │
-│ └ parents_    │    │    aqeedah       │    │                          │
-│    hanbali    │    │ zad_rag_db_      │    │                          │
-│               │    │ tafseer          │    │                          │
-│ Project-2     │    │  └ parents_      │    │                          │
-│ zad-rag-      │    │    tafseer       │    │                          │
-│ cluster2      │    │                  │    │                          │
-│               │    │                  │    │                          │
-│ zad_rag_db_   │    │                  │    │                          │
-│ shafii_maliki │    │                  │    │                          │
-│ ├ parents_    │    │                  │    │                          │
-│ │  maliki     │    │                  │    │                          │
-│ └ parents_    │    │                  │    │                          │
-│    shafii     │    │                  │    │                          │
-└───────────────┘    └──────────────────┘    └──────────────────────────┘
-                               │
-                    ┌──────────▼──────────────────┐
-                    │  30 Full Parent Chunks       │
-                    │  (rich, complete context)    │
-                    └──────────┬──────────────────┘
-                               │
-╔══════════════════════════════▼═══════════════════════════════════════════╗
-║                  STEP 7 — RERANKING (Cross-Encoder)                     ║
-╚══════════════════════════════╦══════════════════════════════════════════╝
-                               │
-                    ┌──────────▼──────────────────┐
-                    │  Cross-Encoder Reranker      │
-                    │                              │
-                    │  Input:                      │
-                    │   • Original Question        │
-                    │   • 30 Parent Chunks         │
-                    │                              │
-                    │  Scores each (Q, Chunk) pair │
-                    │  with deep semantic scoring  │
-                    │                              │
-                    │  Output: Top 10 Chunks       │
-                    │  (highest relevance score)   │
-                    └──────────┬──────────────────┘
-                               │
-╔══════════════════════════════▼═══════════════════════════════════════════╗
-║                  STEP 8 — RESPONSE GENERATION (LLM)                     ║
-╚══════════════════════════════╦══════════════════════════════════════════╝
-                               │
-                    ┌──────────▼──────────────────┐
-                    │     Prompt Builder           │
-                    │                              │
-                    │  [System Prompt]             │
-                    │  + [Top 10 Parent Chunks]    │
-                    │  + [User Question]           │
-                    │  + [Chat History]            │
-                    └──────────┬──────────────────┘
-                               │
-                    ┌──────────▼──────────────────┐
-                    │      LLM Generator           │
-                    │   (Primary: Gemini + Keys)   │
-                    │   (Fallback: Groq / GitHub)  │
-                    │  Generates grounded answer   │
-                    │  with source citations       │
-                    └──────────┬──────────────────┘
-                               │
-                    ┌──────────▼──────────────────┐
-                    │      Final Response          │
-                    │  • Answer (Arabic)           │
-                    │  • Sources / Citations       │
-                    │  • Referenced Books          │
-                    └─────────────────────────────┘
+---
+
+## Core RAG Pipeline
+
+Zad-AI executes a highly sophisticated, multi-stage Retrieval-Augmented Generation (RAG) pipeline to ensure maximum accuracy and relevance when answering Islamic questions. The pipeline consists of the following steps:
+
+1. **User Query & Preprocessing:** 
+   - When a user asks a question, the **Query Preprocessor** (powered by an LLM) analyzes the input. 
+   - It performs a **Safety Check** to ensure the question falls within Islamic bounds.
+   - It **resolves ambiguities** and rewrites the query for optimal search performance (e.g., resolving pronouns).
+   - It extracts crucial **metadata** such as the target domain and specific Madhhab (if applicable).
+
+2. **Shared Embedding Generation:** 
+   - The rewritten query is passed to the **BGE-M3** embedding model. 
+   - To save compute and avoid deadlocks, the query is embedded *once* to generate both a **Dense Vector** (1024-dimensional semantic meaning) and a **Sparse Vector** (lexical/keyword representation).
+
+3. **Hybrid Search Execution:** 
+   - The pipeline routes the search to the correct **Qdrant Cloud** cluster based on the extracted domain.
+   - It runs a concurrent **Hybrid Search**, launching both the Dense Retriever and Sparse Retriever in parallel.
+
+4. **Reciprocal Rank Fusion (RRF):** 
+   - The results from both the Dense and Sparse searches are mathematically merged using the **RRF algorithm**, balancing semantic understanding with exact Quranic/Hadith keyword matching.
+
+5. **Parent-Child Context Expansion:** 
+   - The vector search returns small `child_chunks` (optimized for precise matching). 
+   - The pipeline extracts the `parent_id` from these chunks and dynamically routes a request to the correct **MongoDB Atlas** cluster to fetch the full, rich context (the `Parent Document`).
+
+6. **Cross-Encoder Reranking:** 
+   - The retrieved Parent Documents are scored against the user's query using a **Cross-Encoder model** (`BAAI/bge-reranker-v2-m3`). This acts as a rigorous filter, ensuring only the absolute most relevant paragraphs survive.
+
+7. **Generation & Citation:** 
+   - The top-ranked Parent Documents are injected into a domain-specific prompt.
+   - The **Primary LLM (Google Gemini)** synthesizes a comprehensive Arabic answer. 
+   - The LLM cites its sources in-text (e.g., `[1]`, `[2]`), and the backend maps these back to the original source URLs and book metadata for the user interface. (If Gemini fails, the system automatically falls back to Groq or OpenAI).
+
+```mermaid
+graph TD
+    classDef step fill:#2d3436,stroke:#b2bec3,stroke-width:2px,color:#fff;
+    classDef qdrant fill:#d63031,stroke:#ff7675,stroke-width:2px,color:#fff;
+    classDef mongo fill:#00b894,stroke:#55efc4,stroke-width:2px,color:#fff;
+    classDef fusion fill:#6c5ce7,stroke:#a29bfe,stroke-width:2px,color:#fff;
+
+    INPUT([1. User Query + Domain + Session ID]) --> MEM
+    
+    subgraph Preprocessing ["<b style='font-size:18px;'>2. Query Preprocessor & Memory</b>"]
+        direction TB
+        MEM[Fetch Chat History from Redis] --> LLM_PRE[LLM Query Analyzer]
+        LLM_PRE --> SAFE{Safe & Islamic?}
+        SAFE -- No --> REJECT[Reject: Out of Domain]
+        SAFE -- Yes --> AMBIG{Ambiguous?}
+        AMBIG -- Yes --> CLARIFY[Reject: Ask Clarification]
+        AMBIG -- No --> EXTRACT[Extract Metadata:<br>Domain, Madhhab, Book]
+        EXTRACT --> REWRITE[Rewrite & Split Queries]
+    end
+    
+    REWRITE --> EMB
+    
+    EMB[3. BGE-M3 Embedding<br>Dense + Sparse Vectors] --> SEARCH_ROUTING
+    
+    SEARCH_ROUTING[4. Dynamic Domain Routing & Search] --> Acc1
+    SEARCH_ROUTING --> Acc2
+    
+    subgraph Qdrant_Cloud ["<b style='font-size:18px;'>Qdrant Cloud Child Vectors</b>"]
+        subgraph Acc1 [Account 1]
+            direction TB
+            Q_Sharia[(zad_sharia)]
+            Q_Aqeedah[(zad_aqeedah)]
+            Q_Tafseer[(zad_Tafseer)]
+            Q_Seerah[(zad_seerah)]
+        end
+        subgraph Acc2 [Account 2]
+            direction TB
+            Q_Tarikh[(zad_tarikh)]
+            Q_Nahw[(zad_nahwSarf)]
+            Q_Hadith[(zad_hadith)]
+        end
+    end
+    
+    Acc1 --> RRF[5. Reciprocal Rank Fusion - RRF<br>Merge Dense & Sparse Results]
+    Acc2 --> RRF
+    
+    RRF -.->|parent_ids| MongoDB_Atlas
+
+    subgraph MongoDB_Atlas ["<b style='font-size:18px;'>6. Fetch MongoDB Parent Documents</b>"]
+        subgraph Mongo1 [Fiqh, Aqeedah, Tafseer, Seerah]
+            direction TB
+            P1[(Cluster 1: Fiqh 1)]
+            P2[(Cluster 2: Fiqh 2)]
+            P3[(Cluster 3: Aqeedah / Tafseer)]
+            P4[(Cluster 4: Tafseer 2)]
+            P5[(Cluster 5: Seerah)]
+        end
+        
+        subgraph Mongo2 [Tarikh, Nahw & Hadith]
+            direction TB
+            P6[(Cluster 6: Tarikh 1)]
+            P7[(Cluster 7: Tarikh 2)]
+            P8[(Cluster 8: Nahw & Sarf)]
+            P9[(Cluster 9: Hadith 1)]
+            P11[(Cluster 11: Hadith 2)]
+            P12[(Cluster 12: Hadith 3)]
+        end
+    end
+    
+    MongoDB_Atlas --> RERANK[7. Cross-Encoder Reranking<br>Top Parent Chunks]
+    
+    RERANK --> GEN[8. Response Generation<br>Primary: Gemini, Fallback: Groq]
+    
+    GEN --> OUT([9. Final Output<br>Arabic Answer + Citations])
+    
+    class INPUT,PRE,EMB,SEARCH_ROUTING,RERANK,GEN,OUT step;
+    class RRF fusion;
+    class Q_Sharia,Q_Aqeedah,Q_Tafseer,Q_Seerah,Q_Tarikh,Q_Nahw,Q_Hadith qdrant;
+    class P1,P2,P3,P4,P5,P6,P7,P8,P9,P11,P12 mongo;
 ```
 
 ---
 
-## 🗄️ Database Architecture
+## 🟢 Database Architecture
 
-### Qdrant Cloud — Vector Collections (Child Chunks)
+To handle the massive scale of classical Islamic texts while keeping infrastructure costs manageable, Zad-AI shards its data across multiple free-tier cloud clusters.
 
-| Collection Name | Domain | Notes |
-|---|---|---|
-| `zad_fiqh_collection`  | الفقه (general, hanafi, hanbali, maliki, shafii) | First collection, legacy name |
-| `zad_aqeedah_collection` | العقيدة | — |
-| `zad_Tafseer_collection` | التفسير (jami, mathur, ray) | — |
-| `zad_tarikh_collection` | التاريخ (ansab, cities, culture, general, khulafa, states, tarajim) | — |
-| `zad_seerah_collection` | السيرة النبوية (comprehensive, dalail, jawami, khasais, maghazi, shamail) | — |
-| `zad_nahw_sarf_collection` | النحو والصرف (nahw, sarf) | — |
-| `zad_hadith_collection` | الحديث (ahkam, atraf, daif, ilal, maajim, majami, masanid, mawduat, mustadrakat, mustakhrajat, mustalah, muwatta_musannafat, shuruh, sihah, sunan, takhrij, targhib) | — |
+<details>
+<summary><b>🟣 MongoDB Atlas — Parent Chunks (Full Text)</b></summary>
+<br>
 
-**Each point stores:**
-```json
-{
-  "chunk_id": "uuid",
-  "parent_id": "uuid",
-  "content": "child chunk text",
-  "embeddings": {
-    "dense":  [1024-dim float array],
-    "sparse": { "indices": [...], "values": [...] }
-  },
-  "metadata": {
-    "domain":     "فقه",
-    "madhhab":    "حنبلي",
-    "book_title": "زاد المستقنع",
-    "author":     "الحجاوي",
-    "hierarchy": {
-      "kitab":    "كتاب الصلاة",
-      "sections": ["باب صلاة الجمعة"]
-    }
-  }
-}
-```
+| Domain (المجال) | Madhhab / Scope | Cluster Name | Database Name | Collection Name |
+|:---|:---|:---|:---|:---|
+| **Fiqh (الفقه)** | Hanafi & Hanbali | `zad-rag-cluster` | `zad_rag_db` | `parents_hanafi` / `hanbali` |
+| **Fiqh (الفقه)** | Shafi'i & Maliki | `zad-rag-cluster2` | `zad_rag_db_shafii_maliki` | `parents_shafii` / `maliki` |
+| **Aqeedah (العقيدة)** | All | `zad-rag-cluster3` | `zad_rag_db_aqeedah` | `parents_aqeedah` |
+| **Tafseer (التفسير)** | Part 1 | `zad-rag-cluster3` | `zad_rag_db_tafseer` | `parents_tafseer` |
+| **Tafseer (التفسير)** | Part 2 | `zad-rag-cluster4` | `zad_rag_db_tafseer` | `parents_tafseer` |
+| **Seerah (السيرة)** | All | `zad-rag-cluster5` | `zad_rag_db_seerah` | `parents_seerah` |
+| **Tarikh (التاريخ)** | Part 1 | `zad-rag-cluster6` | `zad_rag_db_tarikh` | `parents_tarikh` |
+| **Tarikh (التاريخ)** | Part 2 | `zad-rag-cluster7` | `zad_rag_db_tarikh2` | `parents_tarikh2` |
+| **Nahw & Sarf** | All | `zad-rag-cluster8` | `zad_rag_db_nahwSarf` | `parents_nahwSarf` |
+| **Hadith (الحديث)** | Part 1 | `zad-rag-cluster9` | `zad_rag_db_hadith` | `parents_hadith` |
+| **Hadith (الحديث)** | Part 2 | `zad-rag-cluster11`| `zad_rag_db_hadith2` | `parents_hadith2` |
+| **Hadith (الحديث)** | Part 3 | `zad-rag-cluster12`| `zad_rag_db_hadith3` | `parents_hadith3` |
 
-**Payload Indices:** `metadata.domain`, `metadata.madhhab`, `metadata.book_title`, `metadata.author`, `metadata.hierarchy.kitab`, `parent_id`, `chunk_id`
+</details>
 
----
+<details>
+<summary><b>🟣 Qdrant Cloud — Vector Collections (Child Embeddings)</b></summary>
+<br>
 
-### MongoDB Atlas — Parent Chunks Storage
+| Domain (المجال) | Qdrant Account | Client Instance | Collection Name |
+|:---|:---|:---|:---|
+| **Fiqh** | Account 1 | `client_1` | `zad_sharia_collection_childs` |
+| **Aqeedah** | Account 1 | `client_1` | `zad_aqeedah_collection` |
+| **Seerah** | Account 1 | `client_1` | `zad_seerah_collection` |
+| **Tafseer** | Account 1 | `client_1` | `zad_Tafseer_collection` |
+| **Hadith** | Account 2 | `client_2` | `zad_hadith_collection` |
+| **Quran Science** | Account 2 | `client_2` | `zad_quranScience_collection` |
+| **Tarikh** | Account 2 | `client_2` | `zad_tarikh_collection` |
+| **Nahw & Sarf** | Account 2 | `client_2` | `zad_nahwSarf_collection` |
 
-| Project | Cluster | Database | Collections |
-|---|---|---|---|
-| zad-rag-project-1 | zad-rag-cluster | zad_rag_db | `parents_hanafi`, `parents_hanbali` |
-| zad-rag-project-2 | zad-rag-cluster2 | zad_rag_db_shafii_maliki | `parents_maliki`, `parents_shafii` |
-| zad-rag-project-3 | zad-rag-cluster3 | zad_rag_db_aqeedah | `parents_aqeedah` |
-| zad-rag-project-3 | zad-rag-cluster3 | zad_rag_db_tafseer | `parents_tafseer` |
-| zad-rag-project-4 | zad-rag-cluster4 | zad_rag_db_tafseer | `parents_tafseer` |
-| zad-rag-project-5 | zad-rag-cluster5 | zad_rag_db_seerah | `parents_seerah` |
-| zad-rag-project-6 | zad-rag-cluster6 | zad_rag_db_tarikh | `parents_tarikh` |
-| zad-rag-project-7 | zad-rag-cluster7 | zad_rag_db_tarikh2 | `parents_tarikh` |
-
-> Multiple projects for Tafseer and Tarikh due to MongoDB Atlas free-tier storage limits.
+</details>
 
 ---
 
-## ⚙️ Tech Stack
+## 🟢 Tech Stack
 
-| Layer | Technology |
-|---|---|
-| **Mobile App** | Flutter (Dart) — iOS / Android / Web |
-| **API Server** | ASP.NET Core (.NET 8+) |
-| **AI Engine** | Python 3.12+, FastAPI |
-| **Session Memory** | Redis |
-| **LLM (Preprocessing + Generation)** | Gemini (Primary w/ Rotation) / Groq / GitHub Models |
-| **Embedding Model** | BGE-M3 (Dense 1024-dim + Sparse) — Local Execution |
-| **Vector Database** | Qdrant Cloud |
-| **Document Database** | MongoDB Atlas |
-| **Reranker** | Cross-Encoder (sentence-transformers) |
-| **Orchestration** | LangChain + Pydantic |
-| **Deployment** | Docker / Docker Compose |
+- **AI Engine (RAG):** Python 3.11+, FastAPI, LangChain, Pydantic, SentenceTransformers (BGE-M3).
+- **LLM Providers:** Google Gemini (Primary), Groq, OpenAI (Fallback).
+- **Databases:** Qdrant Cloud (Vector), MongoDB Atlas (Document), Redis (Session Memory).
+- **API Gateway:** ASP.NET Core (.NET 8.0).
+- **Mobile Frontend:** Flutter (Dart).
+- **Voice Agent:** LiveKit, WebRTC.
+- **Infrastructure:** Docker, Docker Compose.
 
 ---
 
-## 📂 Project Structure
-
-For a detailed breakdown of the Zad-AI engine directory, see the [AI Project Structure](docs/ai_project_structure.md) documentation.
-
----
-
-## 🚀 Covered Islamic Domains
-
-| Domain | Arabic | Qdrant Collection | MongoDB |
-|---|---|---|---|
-| Fiqh — Hanafi | الفقه الحنفي | `zad_fiqh_collection` | `parents_hanafi` |
-| Fiqh — Hanbali | الفقه الحنبلي | `zad_fiqh_collection` | `parents_hanbali` |
-| Fiqh — Shafi'i | الفقه الشافعي | `zad_fiqh_collection` | `parents_shafii` |
-| Fiqh — Maliki | الفقه المالكي | `zad_fiqh_collection` | `parents_maliki` |
-| Aqeedah | العقيدة | `zad_aqeedah_collection` | `parents_aqeedah` |
-| Tafseer | التفسير | `zad_Tafseer_collection` | `parents_tafseer` |
-| Seerah | السيرة النبوية | `zad_seerah_collection` | `parents_seerah` |
-| Tarikh | التاريخ الإسلامي | `zad_tarikh_collection` | `parents_tarikh` |
-
----
-
-## 🚀 Quick Start
+## 🟢 Quick Start & Deployment
 
 ### Prerequisites
-
 - Docker & Docker Compose
-- .NET 8.0 SDK
-- Python 3.12+
-- Flutter SDK (for mobile)
+- Python 3.11+ (for local AI engine development)
+- .NET 8.0 SDK (for API Gateway)
+- Flutter SDK (for Mobile App)
 
 ### 1. Clone the Repository
-
 ```bash
 git clone https://github.com/your-org/zad-islamic-ai.git
 cd zad-islamic-ai
 ```
 
-### 2. Configure Environment
-
+### 2. Configure Environment Variables
+You must provide the necessary API keys and database URIs.
 ```bash
 cp services/ai_rag_engine/.env.example services/ai_rag_engine/.env
-# Fill in: OPEN_AI_KEY, QDRANT_URL, QDRANT_API_KEY, MONGO_URI_*
+# Edit .env and fill in: QDRANT_URLs, MONGO_URIs, GOOGLE_API_KEYS, etc.
 ```
 
-### 3. Launch with Docker
-
+### 3. Deploy via Docker Compose (Recommended)
+To launch the entire backend stack (AI Engine, Redis, Voice Agent):
 ```bash
+# Development
 docker-compose -f infrastructure/docker/docker-compose.yml up -d
+
+# Production
+docker-compose -f infrastructure/docker/docker-compose.prod.yml up -d
 ```
 
-### 4. Run AI Engine Locally
-
-You can run the engine manually or use the provided helper script for Windows.
-
-**Option A: Quick Start (Windows)**
-If you are on Windows, you can simply run the provided PowerShell script which will handle activating the environment and starting the server for you:
-```powershell
-.\start_api.ps1
-```
-
-**Option B: Manual Start (All Platforms)**
+### 4. Run AI Engine Locally (Without Docker)
 ```bash
-# 1. Navigate to the engine directory
 cd services/ai_rag_engine
-
-# 2. Create and activate a virtual environment
 python -m venv .venv
-# On Windows:
-.venv\Scripts\activate
-# On Linux/Mac:
-source .venv/bin/activate
 
-# 3. Install the package locally (uses setup.py to resolve imports)
+# Activate venv
+# Windows: .venv\Scripts\activate
+# Linux/Mac: source .venv/bin/activate
+
+pip install -r ../../requirements.txt
 pip install -e .
 
-# 4. Install requirements
-pip install -r requirements.txt
-
-# 5. Run the server
 uvicorn services.ai_rag_engine.app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
+*(On Windows, you can alternatively use `.\start_api.ps1`)*
 
-### 5. Run Mobile App
+---
 
-```bash
-cd apps/mobile_app
-flutter pub get
-flutter run
+## 🟢 Data Ingestion Pipeline
+
+How classical books become AI-searchable data:
+
+```mermaid
+graph TD
+    classDef process fill:#0984e3,stroke:#74b9ff,stroke-width:2px,color:#fff;
+    classDef storage fill:#00b894,stroke:#55efc4,stroke-width:2px,color:#fff;
+    
+    PDF[📚 Classical Islamic Books] --> EXTRACT
+    
+    EXTRACT[Text Extraction<br>ketabonline / shamela API] --> CLEAN
+    
+    CLEAN[Data Cleaning<br>Normalization, Diacritics stripping] --> CHUNK
+    
+    CHUNK[Hierarchical Chunking<br>Split into Parent & Child blocks] --> META
+    
+    META[Metadata Injection<br>Domain, Madhhab, Kitab, Book Title] --> EMBED
+    META --> PARENT_STORE
+    
+    EMBED[Embedding Generation<br>BGE-M3 Dense + Sparse vectors] --> CHILD_STORE
+    
+    CHILD_STORE[(Child Chunks<br>Qdrant Cloud)]
+    PARENT_STORE[(Parent Documents<br>MongoDB Atlas)]
+    
+    class EXTRACT,CLEAN,CHUNK,META,EMBED process;
+    class CHILD_STORE,PARENT_STORE storage;
 ```
 
 ---
 
-## 📊 Offline Data Ingestion Pipeline
+## 🟢 Documentation
 
-```
-Islamic Books (PDFs)
-        │
-        ▼
-  Text Extraction
-  (ketabonline API)
-        │
-        ▼
-  Cleaning & Normalization
-  (Arabic text, diacritics, noise)
-        │
-        ▼
-  Hierarchical Chunking
-  Parent Chunks (large context)
-  └── Child Chunks (small, indexed)
-        │
-        ▼
-  Metadata Injection
-  (domain, madhhab, kitab, author,
-   book_title, hierarchy, parent_id)
-        │
-        ├──────────────────────────┐
-        ▼                          ▼
-  BGE-M3 Embedding         Store Parent Chunks
-  (Dense + Sparse)         → MongoDB Atlas
-        │
-        ▼
-  Store Child Chunks
-  → Qdrant Cloud
-  (with payload indices)
-```
+Detailed documentation is available in the `docs/` directory:
+- [AI Project Structure & Codebase Analysis](./docs/ai_project_structure.md)
+- [RAG Chunking Strategy](./docs/chunking_strategy.md)
+- [Data Preprocessing Guide](./docs/preprocessing_guide.md)
+- [Retrieval Optimization (Parent-Child & Hybrid)](./docs/retrieval_optimization.md)
+- [LLM Fallback Architecture](./docs/llm_fallback_architecture.md)
 
 ---
 
-## 🧪 Testing
+## 🟢 Contributing
 
-```bash
-# AI Engine tests
-cd services/ai_rag_engine
-pytest
-
-# API tests
-cd apps/api-sever
-dotnet test
-
-# Mobile app tests
-cd apps/mobile_app
-flutter test
-```
+Please read our [CONTRIBUTING.md](./docs/CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
 ---
 
-## 📚 Documentation
+## 🟢 License
 
-- [Architecture Diagrams](./docs/architecture-diagrams/)
-- [AI Design](./docs/ai-design.md)
-- [API Documentation](./docs/api-documentation/)
-- [Deployment Guide](./docs/deployment-guide.md)
+This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENSE) file for details.
 
 ---
-
-## 📄 License
-
-This project is licensed under the MIT License — see the [LICENSE](./LICENSE) file for details.
-
----
-
-*Built with ❤️ for the Muslim community*
+<div align="center">
+  <i>Built with ❤️ for the Muslim community.</i>
+</div>

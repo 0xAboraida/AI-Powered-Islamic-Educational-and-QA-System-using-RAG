@@ -59,7 +59,7 @@ class BGEM3EmbeddingModel(EmbeddingModel):
         start_t = time.time()
         
         results = await asyncio.to_thread(self.embed_documents, texts)
-        logger.info(f"  - ⏱️ [TIMER] Local BGE-M3 (aembed_documents) took: {time.time() - start_t:.2f} seconds")
+        logger.debug(f"[Timer] [+] Local BGE-M3 (aembed_documents) took: {time.time() - start_t:.2f} seconds")
         return results
 
     async def aembed_query(self, query: str) -> EmbeddingResult:
@@ -67,5 +67,5 @@ class BGEM3EmbeddingModel(EmbeddingModel):
         start_t = time.time()
         
         result = await asyncio.to_thread(self.embed_query, query)
-        logger.info(f"  - ⏱️ [TIMER] Local BGE-M3 (aembed_query) took: {time.time() - start_t:.2f} seconds")
+        logger.debug(f"[Timer] [+] Local BGE-M3 (aembed_query) took: {time.time() - start_t:.2f} seconds")
         return result

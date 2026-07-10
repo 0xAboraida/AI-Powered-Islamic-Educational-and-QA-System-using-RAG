@@ -12,6 +12,7 @@ services:
       - REDIS_URL=redis://redis:6379/0
     volumes:
       - "C:/Users/Shahin Lap/.cache/huggingface:/root/.cache/huggingface"
+      - "../../services:/app/services"
     restart: unless-stopped
     depends_on:
       - redis
@@ -26,6 +27,21 @@ services:
     volumes:
       - redis_data:/data
     restart: unless-stopped
+    networks:
+      - zad-network
+
+  voice-agent:
+    image: abduh38/livekit-voice-agent:latest
+    container_name: zad-voice-agent
+    env_file:
+      - ../../services/ai_rag_engine/.env
+    environment:
+      - RAG_API_URL=http://zad-ai-engine:8000/api/v1/chat/ask
+      - RAG_CHUNKS_URL=http://zad-ai-engine:8000/api/v1/chat/chunks
+      - HF_HOME=/tmp/huggingface
+    restart: unless-stopped
+    depends_on:
+      - zad-ai-engine
     networks:
       - zad-network
 

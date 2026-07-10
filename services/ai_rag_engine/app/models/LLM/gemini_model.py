@@ -8,6 +8,7 @@ class GeminiLLMModel(LLMModel):
     Implementation of LLMModel for Google Gemini using Langchain.
     """
     def __init__(self, api_key: str):
+        super().__init__()
         self._client = ChatGoogleGenerativeAI(
             model=settings.LLM_MODEL_NAME,
             google_api_key=api_key,
@@ -31,6 +32,8 @@ class GeminiLLMModel(LLMModel):
         def run_stream():
             try:
                 for chunk in self._client.stream(messages):
+                    if hasattr(chunk, "usage_metadata") and chunk.usage_metadata:
+                        self.usage_metadata = chunk.usage_metadata
                     if chunk.content:
                         q.put(chunk.content)
             except Exception as e:

@@ -66,11 +66,12 @@ except ImportError:
 from langchain_core.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
 from langchain_groq import ChatGroq
+from langchain_google_genai import HarmCategory, HarmBlockThreshold
 from services.ai_rag_engine.app.config.settings import settings
 
 # Import the precise Pydantic schemas we built using absolute path
 from services.ai_rag_engine.app.pipeline.preprocessing.question_preprocessing.models import (
-    QuestionProcessingResult,
+    get_schema_for_domain,
 )
 
 # Import the structured system prompt
@@ -99,14 +100,12 @@ class QueryPreprocessor:
         )
 
     async def process_query(
-        self, user_input: str, chat_history: Optional[str] = None
-    ) -> QuestionProcessingResult:
+        self, user_input: str, domain: str, chat_history: Optional[str] = None
+    ):
         """
         Takes the user's natural language input, runs it through the LLM asynchronously,
         and returns a strongly-typed structured result containing the questions and metadata.
         """
-        logger.info(f"Processing user query: '{user_input}'")
-
         # Handle empty chat history
         history_str = chat_history if chat_history else "No previous conversation."
 
@@ -114,7 +113,7 @@ class QueryPreprocessor:
         formatted_prompt = self.prompt_template.format(
             chat_history=history_str, user_input=user_input
         )
-
+        
         from services.ai_rag_engine.app.config.key_manager import gemini_key_manager
 
         all_keys = gemini_key_manager.get_all_keys()
@@ -134,6 +133,12 @@ class QueryPreprocessor:
                         temperature=self.temperature,
                         google_api_key=key,
                         max_retries=0,
+                        safety_settings={
+                            HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
+                            HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
+                            HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
+                            HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
+                        }
                     )
                 else:
                     api_key = os.getenv("OPENAI_API_KEY", "")
@@ -148,31 +153,39 @@ class QueryPreprocessor:
                         base_url=base_url,
                     )
 
-                structured_llm = llm.with_structured_output(QuestionProcessingResult)
+                # Get dynamic schema based on domain
+                DynamicSchema = get_schema_for_domain(domain)
+                structured_llm = llm.with_structured_output(DynamicSchema)
 
-                logger.info(
-                    f"Calling LLM (Attempt {attempt+1}/{len(all_keys)}) for query preprocessing..."
-                )
-                result: QuestionProcessingResult = await structured_llm.ainvoke(
+                logger.info(f"[Preprocessor] [+] Calling LLM (Attempt {attempt+1}/{len(all_keys)})")
+                result = await structured_llm.ainvoke(
                     formatted_prompt
                 )
 
-                logger.info(
-                    f"Successfully processed {result.total_questions} question(s) via Primary LLM."
-                )
+                try:
+                    exact_input = llm.get_num_tokens(formatted_prompt)
+                    exact_output = llm.get_num_tokens(result.model_dump_json())
+                    token_str = f"| actual_input_tokens={exact_input} actual_output_tokens={exact_output}"
+                except Exception:
+                    token_str = ""
+
+                logger.info(f"[Preprocessor] [+] Successfully processed {result.total_questions} question(s) via Primary LLM {token_str}")
                 return result
 
             except Exception as e:
-                logger.warning(f"⚠️ Primary LLM failed on attempt {attempt+1}: {e}")
+                err_str = str(e)
+                if "RESOURCE_EXHAUSTED" in err_str or "429" in err_str:
+                    logger.warning(f"[Preprocessor] [-] Primary LLM Attempt {attempt+1} Failed: Rate Limit 429 (Quota Exceeded). Retrying...")
+                else:
+                    logger.warning(f"[Preprocessor] [-] Primary LLM failed on attempt {attempt+1}: {err_str[:150]}...")
+                
                 last_exception = e
                 # If it's not Gemini, no need to loop through Gemini keys
                 if "gemini" not in self.actual_model_name.lower():
                     break
 
         # If we exhausted all keys or non-Gemini failed
-        logger.warning(
-            f"⚠️ All Primary LLM attempts failed. Switching to Fallback LLM..."
-        )
+        logger.warning("[Preprocessor] [-] All Primary LLM attempts failed. Switching to Fallback LLM")
         try:
             # Initialize Fallback Model based on Settings
             provider_str = settings.FALLBACK_PROVIDER.lower()
@@ -197,21 +210,26 @@ class QueryPreprocessor:
                     api_key=api_key, model_name=fallback_model_name, temperature=0.0
                 )
 
+            DynamicSchema = get_schema_for_domain(domain)
             fallback_structured_llm = fallback_llm.with_structured_output(
-                QuestionProcessingResult
+                DynamicSchema
             )
 
-            result: QuestionProcessingResult = await fallback_structured_llm.ainvoke(
+            result = await fallback_structured_llm.ainvoke(
                 formatted_prompt
             )
-            logger.info(
-                f"Successfully processed {result.total_questions} question(s) via Fallback LLM."
-            )
+            
+            try:
+                exact_input = fallback_llm.get_num_tokens(formatted_prompt)
+                exact_output = fallback_llm.get_num_tokens(result.model_dump_json())
+                token_str = f"| actual_input_tokens={exact_input} actual_output_tokens={exact_output}"
+            except Exception:
+                token_str = ""
+                
+            logger.info(f"[Preprocessor] [+] Successfully processed {result.total_questions} question(s) via Fallback LLM {token_str}")
             return result
         except Exception as fallback_e:
-            logger.error(
-                f"Both Primary and Fallback LLMs failed during preprocessing! Error: {fallback_e}"
-            )
+            logger.error(f"[Preprocessor] [-] Both Primary and Fallback LLMs failed! Error: {fallback_e}")
             raise
 
 
@@ -229,7 +247,7 @@ if __name__ == "__main__":
 
     async def run_test():
         try:
-            result = await preprocessor.process_query(sample_input, sample_history)
+            result = await preprocessor.process_query(sample_input, "فقه", sample_history)
             print(result.model_dump_json(indent=2))
         except Exception as e:
             print(f"Failed to process: {e}")

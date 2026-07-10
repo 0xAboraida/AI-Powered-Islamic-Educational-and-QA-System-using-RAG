@@ -4,7 +4,7 @@ echo   Zad-AI Docker Build and Push Script
 echo ==============================================
 
 set /p DOCKER_USERNAME="Enter your Docker Hub username: "
-set IMAGE_NAME=%DOCKER_USERNAME%/zad-ai-engine:latest
+set IMAGE_NAME=%DOCKER_USERNAME%/docker-zad-ai-engine:latest
 
 echo.
 echo Step 1: Logging into Docker Hub

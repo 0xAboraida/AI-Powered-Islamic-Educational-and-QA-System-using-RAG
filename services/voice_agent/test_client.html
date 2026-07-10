@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>رفيقك زاد</title>
+
+    <!-- Google Fonts: Outfit & Readex Pro for beautiful Arabic & English typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Readex+Pro:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- LiveKit Client SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/livekit-client/dist/livekit-client.umd.min.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: rgba(22, 28, 45, 0.4);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --primary: #10b981;
+            /* Emerald green for Islamic theme */
+            --primary-glow: rgba(16, 185, 129, 0.15);
+            --accent: #d97706;
+            /* Amber gold */
+            --text-color: #f3f4f6;
+            --text-muted: #9ca3af;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Readex Pro', 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            background-image:
+                radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.1) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(217, 119, 6, 0.08) 0px, transparent 50%);
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 520px;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            transition: all 0.4s ease;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #ffffff 30%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            text-align: right;
+            margin-bottom: 1.2rem;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .input-group input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 0.8rem 1rem;
+            font-family: inherit;
+            color: #ffffff;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            text-align: right;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 12px var(--primary-glow);
+        }
+
+        /* Status Banner */
+        .status-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 16px;
+            padding: 0.8rem;
+            margin: 1.5rem 0;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background-color: var(--text-muted);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .status-dot.active {
+            background-color: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+            animation: pulse 1.5s infinite alternate;
+        }
+
+        .status-dot.connecting {
+            background-color: var(--accent);
+            box-shadow: 0 0 10px var(--accent);
+            animation: pulse 0.8s infinite alternate;
+        }
+
+        .status-text {
+            font-size: 0.9rem;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        /* Visualizer Animation */
+        .visualizer-box {
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            margin: 2rem 0;
+        }
+
+        .wave-bar {
+            width: 4px;
+            height: 8px;
+            background-color: var(--text-muted);
+            border-radius: 2px;
+            transition: all 0.2s ease;
+        }
+
+        .visualizer-box.active .wave-bar {
+            background-color: var(--primary);
+            animation: wave 1.2s infinite ease-in-out;
+        }
+
+        /* Delays for waving effect */
+        .visualizer-box.active .wave-bar:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .visualizer-box.active .wave-bar:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .visualizer-box.active .wave-bar:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .visualizer-box.active .wave-bar:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+
+        .visualizer-box.active .wave-bar:nth-child(5) {
+            animation-delay: 0.5s;
+        }
+
+        .visualizer-box.active .wave-bar:nth-child(6) {
+            animation-delay: 0.4s;
+        }
+
+        .visualizer-box.active .wave-bar:nth-child(7) {
+            animation-delay: 0.3s;
+        }
+
+        .visualizer-box.active .wave-bar:nth-child(8) {
+            animation-delay: 0.2s;
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
+            border-radius: 14px;
+            padding: 1rem;
+            color: #ffffff;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn.disconnect {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn.disconnect:hover {
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+        }
+
+        footer {
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.6;
+            }
+
+            100% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+
+        @keyframes wave {
+
+            0%,
+            100% {
+                height: 8px;
+            }
+
+            50% {
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>رفيقك زاد</h1>
+        <p class="subtitle">تجربة صوتية تفاعلية مدعومة بـ LiveKit RAG</p>
+
+        <!-- Inputs -->
+        <div class="input-group">
+            <label for="userId">معرّف الطالب (User ID)</label>
+            <input type="text" id="userId" value="student_demo_1">
+        </div>
+
+        <div class="input-group">
+            <label for="roomName">اسم الغرفة (اختياري للتوصيل المتكرر)</label>
+            <input type="text" id="roomName" placeholder="اتركه فارغاً لإنشاء غرفة عشوائية">
+        </div>
+
+        <!-- Status Panel -->
+        <div class="status-container">
+            <div class="status-dot" id="statusDot"></div>
+            <span class="status-text" id="statusText">غير متصل</span>
+        </div>
+
+        <!-- Audio Wave Visualizer -->
+        <div class="visualizer-box" id="visualizer">
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+        </div>
+
+        <!-- Control Action -->
+        <button class="btn" id="actionBtn" onclick="toggleConnection()">ابدأ المحادثة الصوتية</button>
+    </div>
+
+    <footer>مشروع التخرج - نظام المحادثة الإسلامي الصوتي</footer>
+
+    <script>
+        let currentRoom = null;
+        let isConnected = false;
+
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+        const actionBtn = document.getElementById('actionBtn');
+        const visualizer = document.getElementById('visualizer');
+
+        async function toggleConnection() {
+            if (isConnected) {
+                await disconnectAgent();
+            } else {
+                await connectAgent();
+            }
+        }
+
+        async function connectAgent() {
+            const userId = document.getElementById('userId').value.trim() || 'student_demo_1';
+            const roomName = document.getElementById('roomName').value.trim();
+
+            if (!userId) {
+                alert('الرجاء إدخال معرف المستخدم أولاً');
+                return;
+            }
+
+            // Update status to connecting
+            statusDot.className = 'status-dot connecting';
+            statusText.innerText = 'جاري الاتصال بخادم الجلسات...';
+            actionBtn.disabled = true;
+
+            try {
+                // 1. Fetch token from our local FastAPI server
+                let url = `http://localhost:8000/create-session?user_id=${encodeURIComponent(userId)}`;
+                if (roomName) {
+                    url += `&room_name=${encodeURIComponent(roomName)}`;
+                }
+
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error('فشل تحميل رمز الجلسة من الخادم المحلي. تأكد من تشغيل FastAPI.');
+                }
+
+                const sessionData = await response.json();
+                const { server_url, room: activeRoomName, token } = sessionData;
+
+                statusText.innerText = 'جاري تشغيل مكبر الصوت والميكروفون...';
+
+                // 2. Connect to LiveKit Room
+                currentRoom = new LivekitClient.Room({
+                    adaptiveStream: true,
+                    dynacast: true,
+                });
+
+                // Listen for tracks subscribed (the agent's output speech)
+                currentRoom.on(LivekitClient.RoomEvent.TrackSubscribed, (track, publication, participant) => {
+                    if (track.kind === 'audio') {
+                        track.attach(); // Play speech directly
+                        visualizer.classList.add('active'); // Animate wave
+                    }
+                });
+
+                currentRoom.on(LivekitClient.RoomEvent.TrackUnsubscribed, (track, publication, participant) => {
+                    if (track.kind === 'audio') {
+                        visualizer.classList.remove('active');
+                    }
+                });
+
+                // Connect WebRTC room
+                await currentRoom.connect(server_url, token);
+
+                // Enable mic so the agent can hear the user
+                await currentRoom.localParticipant.setMicrophoneEnabled(true);
+
+                // Update UI state to connected
+                isConnected = true;
+                statusDot.className = 'status-dot active';
+                statusText.innerText = `متصل بالغرفة: ${activeRoomName}`;
+                actionBtn.innerText = 'إنهاء المحادثة';
+                actionBtn.className = 'btn disconnect';
+                actionBtn.disabled = false;
+                visualizer.classList.add('active');
+
+            } catch (err) {
+                console.error(err);
+                alert(`خطأ أثناء الاتصال: ${err.message}`);
+                await disconnectAgent();
+            }
+        }
+
+        async function disconnectAgent() {
+            if (currentRoom) {
+                try {
+                    await currentRoom.disconnect();
+                } catch (e) {
+                    console.error(e);
+                }
+                currentRoom = null;
+            }
+
+            // Reset UI
+            isConnected = false;
+            statusDot.className = 'status-dot';
+            statusText.innerText = 'غير متصل';
+            actionBtn.innerText = 'ابدأ المحادثة الصوتية';
+            actionBtn.className = 'btn';
+            actionBtn.disabled = false;
+            visualizer.classList.remove('active');
+        }
+    </script>
+</body>
+
+</html>

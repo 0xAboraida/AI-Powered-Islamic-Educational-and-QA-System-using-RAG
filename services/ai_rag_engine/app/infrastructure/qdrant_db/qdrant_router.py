@@ -27,15 +27,14 @@ class QdrantRouter:
 
         # Map domain to (client, collection_name)
         self.domain_mapping = {
-            "السيرة":          (self.client_1, "zad_seerah_collection"),
             "فقه":             (self.client_1, "zad_sharia_collection_childs"),
             "العقيدة":         (self.client_1, "zad_aqeedah_collection"),
+            "السيرة":          (self.client_1, "zad_seerah_collection"),
             "التفسير":         (self.client_1, "zad_Tafseer_collection"),
             "الحديث":          (self.client_2, "zad_hadith_collection"),
-            "النحو والصرف":    (self.client_2, "zad_nahwSarf_collection"),
+            "علوم القرآن":     (self.client_2, "zad_quranScience_collection"),
             "التاريخ":         (self.client_2, "zad_tarikh_collection"),
-            "علوم القران":     (self.client_2, "zad_quranScience_collection"),
-            "الآداب والأخلاق": (self.client_2, "zad_adab_collection"),  # NOTE: requires collection creation
+            "علوم اللغة":      (self.client_2, "zad_nahwSarf_collection"),
         }
 
     def get_client_and_collection(self, domain: str) -> Tuple[QdrantManager, str]:
