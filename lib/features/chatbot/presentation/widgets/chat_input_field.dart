@@ -35,6 +35,8 @@ class _ChatInputFieldState extends State<ChatInputField> {
   final stt.SpeechToText _speech = stt.SpeechToText();
   bool _isListening = false;
 
+  bool _isFocused = false;
+
   @override
   void initState() {
     super.initState();
@@ -44,11 +46,19 @@ class _ChatInputFieldState extends State<ChatInputField> {
     };
 
     widget.controller?.addListener(_listener);
+    widget.focusNode.addListener(_focusListener);
+  }
+
+  void _focusListener() {
+    setState(() {
+      _isFocused = widget.focusNode.hasFocus;
+    });
   }
 
   @override
   void dispose() {
     widget.controller?.removeListener(_listener);
+    widget.focusNode.removeListener(_focusListener);
     _speech.stop();
     super.dispose();
   }
@@ -119,10 +129,20 @@ class _ChatInputFieldState extends State<ChatInputField> {
     bool isDark = Theme.of(context).brightness == Brightness.dark;
     final showVoice = widget.controller?.text.trim().isEmpty ?? true;
     return Padding(
-      padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 30.h),
+      padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 10.h),
       child: Container(
-        decoration: const BoxDecoration(
-          boxShadow: [
+        decoration: BoxDecoration(
+          color: isDark ? AppColors.darkPrimary : Colors.white,
+          borderRadius: BorderRadius.circular(30.r),
+          border: Border.all(
+            color: _isFocused
+                ? AppColors.primary
+                : (isDark
+                    ? const Color(0xFFC54EEC).withOpacity(0.2)
+                    : const Color(0xFFC54EEC).withOpacity(0.4)),
+            width: 2,
+          ),
+          boxShadow: const [
             BoxShadow(
                 color: Color(0xFFC54EEC),
                 blurRadius: 20,
@@ -136,164 +156,162 @@ class _ChatInputFieldState extends State<ChatInputField> {
             ),
           ],
         ),
-        child: Directionality(
-          textDirection: TextDirection.ltr,
-          child: TextField(
-            readOnly: widget.isLoading ?? false,
-            focusNode: widget.focusNode,
-            controller: widget.controller,
-            onSubmitted: (_) =>
-                widget.controller!.text.isEmpty ? null : widget.onSend?.call(),
-            textAlign: TextAlign.right,
-            style: TextStyle(
-              color: isDark ? Colors.white : Colors.black87,
-              fontSize: 15.sp,
-              fontWeight: FontWeight.w600,
-            ),
-            decoration: InputDecoration(
-              hintText: AppStrings.writeQuestion,
-              hintStyle: TextStyle(
-                color:
-                    isDark ? Colors.white.withOpacity(0.4) : Colors.grey[400],
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w500,
-              ),
-              filled: true,
-              fillColor: isDark ? AppColors.darkPrimary : Colors.white,
-              isDense: true,
-              contentPadding:
-                  EdgeInsets.symmetric(horizontal: 17.w, vertical: 20.h),
-              prefixIcon: Padding(
-                padding: EdgeInsets.only(left: 12.w, right: 12.w),
-                child: InkWell(
-                  onTap: widget.isLoading == true
-                      ? widget.onCancel
-                      : widget.onSend,
-                  child: Container(
-                    width: 35.w,
-                    height: 35.w,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: AppColors.textGradient,
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF3B82F6).withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
+        padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            // Right Side: Icons
+            Padding(
+              padding: EdgeInsets.only(right: 12.w, left: 8.w, bottom: 12.h),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  InkWell(
+                    onTap: widget.onGridTap,
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        SvgPicture.asset(
+                          AppAssets.grid,
+                          width: 20.w,
+                          height: 20.w,
+                          colorFilter: const ColorFilter.mode(
+                              Color(0xFFBA68C8), BlendMode.srcIn),
+                        ),
+                        Positioned(
+                          top: -2,
+                          right: -2,
+                          child: Container(
+                            width: 6.w,
+                            height: 6.w,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFBA68C8),
+                              shape: BoxShape.circle,
+                            ),
+                          ),
                         ),
                       ],
                     ),
-                    child: widget.isLoading == true
-                        ? const Center(
-                            child: Icon(
-                              Icons.stop_circle_rounded,
-                              color: Colors.white,
-                              size: 24,
-                            ),
-                          )
-                        : showVoice
-                            ? Center(
-                                key: widget.voiceKey,
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    _bar(10),
-                                    const SizedBox(width: 3),
-                                    _bar(18),
-                                    const SizedBox(width: 3),
-                                    _bar(15),
-                                    const SizedBox(width: 3),
-                                    _bar(10),
-                                  ],
-                                ),
-                              )
-                            : Padding(
-                                padding: EdgeInsets.all(10.w),
-                                child: SvgPicture.asset(
-                                  AppAssets.send,
-                                  colorFilter: const ColorFilter.mode(
-                                      Colors.white, BlendMode.srcIn),
-                                ),
-                              ),
                   ),
-                ),
-              ),
-              prefixIconConstraints: BoxConstraints(
-                minWidth: 64.w,
-                minHeight: 48.w,
-              ),
-              suffixIcon: Padding(
-                padding: EdgeInsets.only(right: 12.w, left: 8.w),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    InkWell(
-                      onTap: widget.onGridTap,
-                      child: Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          SvgPicture.asset(
-                            AppAssets.grid,
+                  SizedBox(width: 16.w),
+                  InkWell(
+                    onTap: widget.isLoading == true ? null : _listen,
+                    child: _isListening
+                        ? const Icon(
+                            Icons.mic,
+                            color: Colors.red,
+                            size: 20,
+                          )
+                        : SvgPicture.asset(
+                            AppAssets.mic,
                             width: 20.w,
                             height: 20.w,
                             colorFilter: const ColorFilter.mode(
                                 Color(0xFFBA68C8), BlendMode.srcIn),
                           ),
-                          Positioned(
-                            top: -2,
-                            right: -2,
-                            child: Container(
-                              width: 6.w,
-                              height: 6.w,
-                              decoration: const BoxDecoration(
-                                color: Color(0xFFBA68C8),
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(width: 16.w),
-                    InkWell(
-                      onTap: widget.isLoading == true ? null : _listen,
-                      child: _isListening
-                          ? const Icon(
-                              Icons.mic,
-                              color: Colors.red,
-                              size: 20,
-                            )
-                          : SvgPicture.asset(
-                              AppAssets.mic,
-                              width: 20.w,
-                              height: 20.w,
-                              colorFilter: const ColorFilter.mode(
-                                  Color(0xFFBA68C8), BlendMode.srcIn),
-                            ),
-                    ),
-                    SizedBox(width: 8.w),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(30.r),
-                borderSide: BorderSide(
-                  color: isDark
-                      ? const Color(0xFFC54EEC).withOpacity(0.2)
-                      : const Color(0xFFC54EEC).withOpacity(0.4),
-                  width: 2,
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(30.r),
-                borderSide: BorderSide(
-                  color: isDark ? AppColors.primary : AppColors.primary,
-                  width: 2,
+            ),
+
+            // Middle: TextField
+            Expanded(
+              child: Directionality(
+                textDirection: TextDirection.rtl,
+                child: TextField(
+                  readOnly: widget.isLoading ?? false,
+                  focusNode: widget.focusNode,
+                  controller: widget.controller,
+                  minLines: 1,
+                  maxLines: 5,
+                  keyboardType: TextInputType.multiline,
+                  onSubmitted: (_) => widget.controller!.text.isEmpty
+                      ? null
+                      : widget.onSend?.call(),
+                  textAlign: TextAlign.right,
+                  style: TextStyle(
+                    color: isDark ? Colors.white : Colors.black87,
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  decoration: InputDecoration(
+                    focusedBorder: const UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.transparent)),
+                    fillColor: Colors.transparent,
+                    filled: true,
+                    hintText: AppStrings.writeQuestion,
+                    hintStyle: TextStyle(
+                      color: isDark
+                          ? Colors.white.withOpacity(0.4)
+                          : Colors.grey[400],
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    border: InputBorder.none,
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 8.w, vertical: 10.h),
+                  ),
                 ),
               ),
             ),
-          ),
+
+            // Left Side: Send / Voice Wave
+            Padding(
+              padding: EdgeInsets.only(left: 8.w, right: 4.w, bottom: 4.h),
+              child: InkWell(
+                onTap:
+                    widget.isLoading == true ? widget.onCancel : widget.onSend,
+                child: Container(
+                  width: 35.w,
+                  height: 35.w,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: AppColors.textGradient,
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF3B82F6).withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: widget.isLoading == true
+                      ? const Center(
+                          child: Icon(
+                            Icons.stop_circle_rounded,
+                            color: Colors.white,
+                            size: 24,
+                          ),
+                        )
+                      : showVoice
+                          ? Center(
+                              key: widget.voiceKey,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  _bar(10),
+                                  const SizedBox(width: 3),
+                                  _bar(18),
+                                  const SizedBox(width: 3),
+                                  _bar(15),
+                                  const SizedBox(width: 3),
+                                  _bar(10),
+                                ],
+                              ),
+                            )
+                          : Padding(
+                              padding: EdgeInsets.all(10.w),
+                              child: SvgPicture.asset(
+                                AppAssets.send,
+                                colorFilter: const ColorFilter.mode(
+                                    Colors.white, BlendMode.srcIn),
+                              ),
+                            ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -56,6 +56,7 @@ class AnswerParser {
 
         final bulletMatch = RegExp(r'^[\*\-\+]\s+(.+)$').firstMatch(cleanLine);
         final numberedMatch = RegExp(r'^\d+\.\s*(.+)$').firstMatch(cleanLine);
+        final quoteMatch = RegExp(r'^>\s*(.+)$').firstMatch(cleanLine);
 
         if (bulletMatch != null) {
           current?.items.add(AnswerItem(
@@ -66,6 +67,11 @@ class AnswerParser {
           current?.items.add(AnswerItem(
             type: AnswerItemType.listItem,
             text: cleanLine, // Keep the number prefix
+          ));
+        } else if (quoteMatch != null) {
+          current?.items.add(AnswerItem(
+            type: AnswerItemType.quote,
+            text: quoteMatch.group(1)!.trim(),
           ));
         } else {
           current?.items.add(AnswerItem(
@@ -99,30 +105,50 @@ class AnswerParser {
   static String stripCitationRefs(String text) =>
       text.replaceAll(RegExp(r'\s*\[[^\]]+\]'), '').trim();
 
-  /// Parses inline markdown `**bold**` formatting into a List of TextSpans.
   static List<TextSpan> parseRichText(String text, TextStyle baseStyle) {
-    final cleanText = stripCitationRefs(text);
     final List<TextSpan> spans = [];
-    final regex = RegExp(r'\*\*(.*?)\*\*');
+    final regex = RegExp(r'\*\*(.*?)\*\*|\[(.*?)\]');
     int start = 0;
 
-    for (final match in regex.allMatches(cleanText)) {
+    for (final match in regex.allMatches(text)) {
       if (match.start > start) {
         spans.add(TextSpan(
-          text: cleanText.substring(start, match.start),
+          text: text.substring(start, match.start),
           style: baseStyle,
         ));
       }
-      spans.add(TextSpan(
-        text: match.group(1),
-        style: baseStyle.copyWith(fontWeight: FontWeight.bold),
-      ));
+      
+      final boldText = match.group(1);
+      final citeText = match.group(2);
+
+      if (boldText != null) {
+        spans.add(TextSpan(
+          text: boldText,
+          style: baseStyle.copyWith(fontWeight: FontWeight.bold),
+        ));
+      } else if (citeText != null) {
+        if (RegExp(r'^(cit_\d+|\d+)(,\s*(cit_\d+|\d+))*$').hasMatch(citeText)) {
+          final displayNum = citeText.replaceAll('cit_', '');
+          spans.add(TextSpan(
+            text: ' [$displayNum] ',
+            style: baseStyle.copyWith(
+              color: const Color(0xFFBA68C8),
+              fontWeight: FontWeight.bold,
+            ),
+          ));
+        } else {
+           spans.add(TextSpan(
+             text: '[$citeText]',
+             style: baseStyle,
+           ));
+        }
+      }
       start = match.end;
     }
 
-    if (start < cleanText.length) {
+    if (start < text.length) {
       spans.add(TextSpan(
-        text: cleanText.substring(start),
+        text: text.substring(start),
         style: baseStyle,
       ));
     }
@@ -152,4 +178,4 @@ class AnswerItem {
   const AnswerItem({required this.type, required this.text});
 }
 
-enum AnswerItemType { paragraph, listItem }
+enum AnswerItemType { paragraph, listItem, quote }

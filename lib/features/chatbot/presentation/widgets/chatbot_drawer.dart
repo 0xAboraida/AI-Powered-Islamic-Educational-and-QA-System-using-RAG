@@ -46,12 +46,12 @@ class ChatbotDrawer extends StatelessWidget {
               };
 
               for (final session in state.sessions) {
-                final sessionDate = DateTime(session.createdAt.year,
-                    session.createdAt.month, session.createdAt.day);
+                final sessionDate = DateTime(session.createdAt!.year,
+                    session.createdAt!.month, session.createdAt!.day);
                 if (sessionDate == todayDate) {
                   grouped[AppStrings.today]!.add(session);
                 } else if (sessionDate == yesterdayDate) {
-                  grouped[AppStrings.yesterday]!.add(session);
+                  grouped[AppStrings.today]!.add(session);
                 } else if (sessionDate == twoDaysAgoDate) {
                   grouped[AppStrings.twoDaysAgo]!.add(session);
                 } else {
@@ -283,7 +283,7 @@ class ChatbotDrawer extends StatelessWidget {
       padding: EdgeInsets.only(bottom: 14.h),
       child: GestureDetector(
         onTap: () {
-          cubit.selectSession(session.id);
+          cubit.selectSession(session.id??0);
           Navigator.pop(context);
         },
         behavior: HitTestBehavior.opaque,
@@ -316,7 +316,7 @@ class ChatbotDrawer extends StatelessWidget {
             SizedBox(width: 12.w),
             Expanded(
               child: Text(
-                session.name,
+                session.name??"",
                 style: TextStyle(
                   fontFamily: 'Cairo',
                   fontSize: 14.sp,

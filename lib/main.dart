@@ -68,7 +68,7 @@ class ZaadApp extends StatelessWidget {
               darkTheme: AppTheme.darkThemeData,
               themeMode:
                   themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-              initialRoute: isTokenSaved ? AppRoutes.chatbot : AppRoutes.splash,
+              initialRoute:  AppRoutes.splash,
               onGenerateInitialRoutes: (String initialRoute) {
                 return [
                   ScreenRoutes.onGenerateRoute(

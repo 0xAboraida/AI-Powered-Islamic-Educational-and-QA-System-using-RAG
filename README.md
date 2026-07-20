@@ -11,21 +11,37 @@
 
 ---
 
+## 📸 لقطات الشاشة (Screenshots)
+<div align="center">
+  <img src="assets/screenshots/screen1.png" width="200" alt="لقطة الشاشة 1"/>
+  <img src="assets/screenshots/screen2.png" width="200" alt="لقطة الشاشة 2"/>
+  <img src="assets/screenshots/screen3.png" width="200" alt="لقطة الشاشة 3"/>
+  <img src="assets/screenshots/screen4.png" width="200" alt="لقطة الشاشة 4"/>
+</div>
+
+*(يرجى إنشاء مجلد `assets/screenshots/` في المشروع ووضع الصور داخله بالأسماء `screen1.png`, `screen2.png` الخ.. ليتم عرضها هنا)*
+
+---
+
 ## 🚀 التقنيات المستخدمة (Technology Stack)
 تم بناء التطبيق باستخدام أحدث التقنيات لضمان أداء سلس وتجربة مستخدم متميزة:
-- **Flutter:** الإطار البرمجي الأساسي لبناء واجهة المستخدم.
-- **Dart:** لغة البرمجة المستخدمة في التطوير.
+- **Flutter & Dart:** الإطار البرمجي الأساسي ولغة البرمجة المستخدمة لبناء واجهة التطبيق.
+- **LiveKit Client:** لتمكين التواصل الصوتي المباشر والفعال في الوقت الفعلي داخل التطبيق.
+- **Speech to Text:** لتحويل الصوت إلى نص مما يسهل على المستخدمين التحدث مع الشات بوت.
+- **Bloc/Cubit & Provider:** لإدارة حالة التطبيق (State Management) بطريقة منظمة وقابلة للتوسع.
+- **Dio & Retrofit:** للتعامل مع طلبات الشبكة والـ APIs بكفاءة واحترافية.
+- **GetIt & Injectable:** لإدارة وحقن الاعتماديات (Dependency Injection).
 - **Flutter ScreenUtil:** لضمان استجابة الواجهات (Responsiveness) على مختلف أحجام الشاشات.
-- **Device Preview:** لاختبار مظهر التطبيق على أجهزة متنوعة أثناء التطوير.
-- **Flutter Svg:** لدعم الرسومات المتجهة بسلاسة.
+- **Shared Preferences:** لحفظ بيانات المستخدم والتفضيلات محلياً.
+- **Siri Wave & Flutter Animate:** لتقديم تجربة بصرية جذابة وتأثيرات حركية تفاعلية للواجهات.
 
 ---
 
 ## 🏗️ التصميم المعماري (Architecture)
 يتبع المشروع نمط **Clean Architecture** مع تقسيم برمجي قائم على الميزات (**Feature-based structure**):
 - **Core:** يحتوي على الأدوات المشتركة، الثيمات (Themes)، والمسارات (Routes).
-- **Features:** ينقسم إلى ميزات مستقلة (مثل Auth و Welcome و Splash) لسهولة الصيانة والتطوير المستقبلي.
-  - **Presentation Layer:** يحتوي على الصفحات (Pages) والودجت (Widgets).
+- **Features:** ينقسم إلى ميزات مستقلة (مثل Auth و Chatbot) لسهولة الصيانة والتطوير المستقبلي.
+  - **Presentation Layer:** يحتوي على الصفحات (Pages) والودجت (Widgets) وإدارة الحالة.
   - **Logic Separation:** فصل منطق العمل عن واجهات المستخدم لضمان قابلية الاختبار (Testability).
 
 ---

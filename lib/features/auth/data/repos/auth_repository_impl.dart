@@ -24,6 +24,8 @@ class AuthRepositoryImpl implements AuthRepository {
     await SharedPrefsService.saveToken(response.token);
     await SharedPrefs.setString('user_name', response.user.name);
     await SharedPrefs.setString('user_email', response.user.email);
+    await SharedPrefs.setString('last_login_email', email);
+    await SharedPrefs.setString('last_login_password', password);
     return response;
   }
 
@@ -45,6 +47,8 @@ class AuthRepositoryImpl implements AuthRepository {
     await SharedPrefsService.saveToken(response.token);
     await SharedPrefs.setString('user_name', response.user.name);
     await SharedPrefs.setString('user_email', response.user.email);
+    await SharedPrefs.setString('last_login_email', email);
+    await SharedPrefs.setString('last_login_password', password);
     return response;
   }
 }

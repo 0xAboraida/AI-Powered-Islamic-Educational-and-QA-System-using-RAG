@@ -205,29 +205,37 @@ class _ResponseHeader extends StatelessWidget {
               shaderCallback: (bounds) =>
                   AppColors.textGradient.createShader(bounds),
               child: Text(
-                'Zad AI',
+                'زاد',
                 style: TextStyle(
                   fontFamily: 'Cairo',
-                  fontSize: 12.sp,
+                  fontSize: 15.sp,
                   fontWeight: FontWeight.w700,
                 ),
               ),
             ),
             SizedBox(width: 6.w),
             Container(
-              padding: const EdgeInsets.all(2.0),
-              width: 28.w,
-              height: 28.w,
-              decoration: BoxDecoration(
-                color: isDark ? Colors.black : Colors.white,
+              width: 35.w,
+              height: 35.h,
+              padding: EdgeInsets.all(2.w),
+              decoration: const BoxDecoration(
                 shape: BoxShape.circle,
+                gradient: AppColors.textGradient,
               ),
-              child: SvgPicture.asset(
-                AppAssets.zaadLogo,
-                width: 14.w,
-                height: 14.w,
-                colorFilter: const ColorFilter.mode(
-                    Color.fromARGB(255, 130, 35, 190), BlendMode.srcIn),
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isDark ? const Color(0xFF0E0F14) : Colors.white,
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(3.sp),
+                  child: SvgPicture.asset(
+                    AppAssets.zaadLogo,
+                    colorFilter: ColorFilter.mode(
+                        isDark ? Colors.white : AppColors.primary,
+                        BlendMode.srcIn),
+                  ),
+                ),
               ),
             ),
           ],

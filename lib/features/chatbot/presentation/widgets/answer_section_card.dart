@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:zaad/core/utils/app_colors/app_colors.dart';
 import '../utils/answer_parser.dart';
 
 class AnswerSectionCard extends StatelessWidget {
@@ -10,6 +11,10 @@ class AnswerSectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final validItems = section.items
+        .where((item) => item.text.trim().isNotEmpty)
+        .toList();
 
     return Container(
       margin: EdgeInsets.only(bottom: 10.h),
@@ -27,25 +32,34 @@ class AnswerSectionCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _SectionHeader(title: section.title, isDark: isDark),
-          if (section.items.isNotEmpty)
+          _SectionHeader(
+            title: section.title,
+            isDark: isDark,
+            hasContent: validItems.isNotEmpty,
+          ),
+          if (validItems.isNotEmpty)
             Padding(
               padding: EdgeInsets.fromLTRB(14.w, 4.h, 14.w, 14.h),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: section.items.asMap().entries.map((e) {
+                children: validItems.asMap().entries.map((e) {
                   final idx = e.key;
                   final item = e.value;
                   return item.type == AnswerItemType.listItem
                       ? _ListItemRow(
                           index: idx,
-                          text: AnswerParser.stripCitationRefs(item.text),
+                          text: item.text,
                           isDark: isDark,
                         )
-                      : _ParagraphRow(
-                          text: AnswerParser.stripCitationRefs(item.text),
-                          isDark: isDark,
-                        );
+                      : item.type == AnswerItemType.quote
+                          ? _QuoteRow(
+                              text: item.text,
+                              isDark: isDark,
+                            )
+                          : _ParagraphRow(
+                              text: item.text,
+                              isDark: isDark,
+                            );
                 }).toList(),
               ),
             ),
@@ -58,7 +72,12 @@ class AnswerSectionCard extends StatelessWidget {
 class _SectionHeader extends StatelessWidget {
   final String title;
   final bool isDark;
-  const _SectionHeader({required this.title, required this.isDark});
+  final bool hasContent;
+  const _SectionHeader({
+    required this.title,
+    required this.isDark,
+    this.hasContent = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -71,14 +90,18 @@ class _SectionHeader extends StatelessWidget {
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(14.r),
           topRight: Radius.circular(14.r),
+          bottomLeft: hasContent ? Radius.zero : Radius.circular(14.r),
+          bottomRight: hasContent ? Radius.zero : Radius.circular(14.r),
         ),
-        border: Border(
-          bottom: BorderSide(
-            color: isDark
-                ? Colors.white.withOpacity(0.06)
-                : const Color(0xFFE2E8F0),
-          ),
-        ),
+        border: hasContent
+            ? Border(
+                bottom: BorderSide(
+                  color: isDark
+                      ? Colors.white.withOpacity(0.06)
+                      : const Color(0xFFE2E8F0),
+                ),
+              )
+            : null,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -87,11 +110,7 @@ class _SectionHeader extends StatelessWidget {
             width: 3.w,
             height: 18.h,
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xFF2ECC71), Color(0xFF1ABC9C)],
-              ),
+              gradient: AppColors.textGradient,
               borderRadius: BorderRadius.circular(4.r),
             ),
           ),
@@ -138,9 +157,7 @@ class _ListItemRow extends StatelessWidget {
             height: 7.w,
             margin: EdgeInsets.only(top: 8.h, left: 6.w, right: 6.w),
             decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFF2ECC71), Color(0xFF1ABC9C)],
-              ),
+              color: Color.fromARGB(255, 121, 31, 177),
               shape: BoxShape.circle,
             ),
           ),
@@ -190,6 +207,53 @@ class _ParagraphRow extends StatelessWidget {
               fontWeight: FontWeight.w500,
               color: isDark ? Colors.white70 : const Color(0xFF374151),
               height: 1.6,
+            ),
+          ),
+        ),
+        textAlign: TextAlign.right,
+      ),
+    );
+  }
+}
+
+class _QuoteRow extends StatelessWidget {
+  final String text;
+  final bool isDark;
+  const _QuoteRow({required this.text, required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    if (text.isEmpty) {
+      return SizedBox(height: 12.h);
+    }
+    return Container(
+      margin: EdgeInsets.only(top: 8.h),
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+      decoration: BoxDecoration(
+        color:
+            isDark ? Colors.white.withOpacity(0.03) : const Color(0xFFF3F4F6),
+        border: Border(
+          right: BorderSide(
+            color: const Color(0xFFBA68C8),
+            width: 4.w,
+          ),
+        ),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(8.r),
+          bottomLeft: Radius.circular(8.r),
+        ),
+      ),
+      child: Text.rich(
+        TextSpan(
+          children: AnswerParser.parseRichText(
+            text,
+            TextStyle(
+              fontFamily: 'Cairo',
+              fontSize: 13.sp,
+              fontWeight: FontWeight.w500,
+              color: isDark ? Colors.white70 : const Color(0xFF4B5563),
+              height: 1.6,
+              fontStyle: FontStyle.italic,
             ),
           ),
         ),

@@ -72,7 +72,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildUserInfo() {
     final String name = SharedPrefs.getString('user_name') ?? 'محمد قنديل';
-    final String email = SharedPrefs.getString('user_email') ?? 'mohamedqandill912@gmail.com';
+    final String email =
+        SharedPrefs.getString('user_email') ?? 'mohamedqandill912@gmail.com';
     return Column(
       children: [
         Stack(
@@ -408,7 +409,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        _buildSectionHeader('الدعم', context),
+        // _buildSectionHeader('الدعم', context),
         Container(
           decoration: BoxDecoration(
             color: isDark ? AppColors.fieldDarkColor : Colors.white,

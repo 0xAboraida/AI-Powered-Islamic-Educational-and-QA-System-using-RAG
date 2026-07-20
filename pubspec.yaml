@@ -83,6 +83,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: 
+  flutter_native_splash: ^2.4.0
   retrofit_generator: 
   build_runner: 
   json_serializable: 
@@ -104,6 +105,7 @@ flutter:
     - assets/icons/
     - assets/images/
     - assets/icon/
+    - assets/screenshots/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -130,3 +132,10 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_native_splash:
+  color: "#ffffff"
+  image: "assets/images/splashLogo.png"
+  android_12:
+    color: "#ffffff"
+    image: "assets/images/splashLogo.png"

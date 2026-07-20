@@ -4,10 +4,10 @@ part 'chat_session.g.dart';
 
 @JsonSerializable()
 class ChatSessionDTO {
-  final int id;
-  final String name;
-  final DateTime createdAt;
-  final int messageCount;
+  final int? id;
+  final String? name;
+  final DateTime? createdAt;
+  final int? messageCount;
 
   const ChatSessionDTO({
     required this.id,

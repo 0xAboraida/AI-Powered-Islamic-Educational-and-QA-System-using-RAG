@@ -6,6 +6,8 @@ import '../../domain/models/chat_message.dart';
 import '../../domain/models/chat_response.dart';
 import '../../domain/models/chat_session.dart';
 import '../../../../core/services/shared_prefs.dart';
+import '../../../../core/di/injection.dart';
+import '../../../auth/data/repos/auth_repository.dart';
 import 'chatbot_state.dart';
 
 @injectable
@@ -38,6 +40,18 @@ class ChatbotCubit extends Cubit<ChatbotState> {
       isLoadingSessions: true,
       isLoadingHistory: state.isLoadingHistory,
     ));
+
+    try {
+      final email = SharedPrefs.getString('last_login_email');
+      final password = SharedPrefs.getString('last_login_password');
+      if (email != null && password != null && email.isNotEmpty && password.isNotEmpty) {
+        final authRepo = getIt<AuthRepository>();
+        await authRepo.login(email: email, password: password);
+      }
+    } catch (e) {
+      // Ignore auto-login errors and proceed
+    }
+
     try {
       final fetchedSessions = await _chatRepository.getSessions();
       emit(ChatbotInitial(
@@ -239,7 +253,7 @@ class ChatbotCubit extends Cubit<ChatbotState> {
 
     try {
       final historyMsg = await _chatRepository.sendSessionMessage(
-        sessionId: sessionId,
+        sessionId: sessionId??0,
         query: query,
         domain: domain,
         cancelToken: _cancelToken,

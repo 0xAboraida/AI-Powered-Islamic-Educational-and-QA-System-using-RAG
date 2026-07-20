@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/utils/app_assets.dart';
 import '../../../../core/utils/app_colors/app_colors.dart';
 
@@ -64,7 +65,7 @@ class AboutAppPage extends StatelessWidget {
 
               // App Name & Version Badge
               Text(
-                'زاد الذكي (Zaad AI)',
+                'زاد الذكي (Zad AI)',
                 style: TextStyle(
                   fontSize: 24.sp,
                   fontWeight: FontWeight.bold,
@@ -189,11 +190,117 @@ class AboutAppPage extends StatelessWidget {
                 ),
               ).animate().fade(delay: 550.ms).slideY(begin: 0.2, end: 0),
 
+              SizedBox(height: 20.h),
+
+              // Developer Info Section
+              _buildSectionCard(
+                context: context,
+                isDark: isDark,
+                title: 'فريق العمل',
+                icon: Icons.groups_rounded,
+                child: Column(
+                  children: [
+                    _buildDeveloperRow(
+                      name: 'Mohamed Mostafa Qandil',
+                      role: 'Mobile App Developer',
+                      isDark: isDark,
+                    ),
+                    SizedBox(height: 12.h),
+                    _buildDeveloperRow(
+                      name: 'Ahmed Ahmed Abourida',
+                      role: 'AI Engineer',
+                      isDark: isDark,
+                    ),
+                    SizedBox(height: 12.h),
+                    _buildDeveloperRow(
+                      name: 'Abdulrahman Mohamed Salah',
+                      role: 'AI Engineer',
+                      isDark: isDark,
+                    ),
+                    SizedBox(height: 12.h),
+                    _buildDeveloperRow(
+                      name: 'Mahmoud Abd-El Maksoud',
+                      role: 'Backend Dev .NET',
+                      isDark: isDark,
+                    ),
+                    SizedBox(height: 20.h),
+                    Divider(
+                      color: isDark
+                          ? Colors.white.withOpacity(0.1)
+                          : Colors.grey.shade200,
+                      height: 1,
+                    ),
+                    SizedBox(height: 16.h),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'للتواصل والدعم الفني',
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.bold,
+                                color: isDark ? Colors.white : Colors.black87,
+                              ),
+                            ),
+                            SizedBox(height: 4.h),
+                            Text(
+                              '+201552191457',
+                              style: TextStyle(
+                                fontSize: 12.sp,
+                                color: isDark
+                                    ? Colors.white.withOpacity(0.6)
+                                    : Colors.grey.shade600,
+                              ),
+                            ),
+                          ],
+                        ),
+                        InkWell(
+                          onTap: () async {
+                            final Uri whatsappUri =
+                                Uri.parse('https://wa.me/201552191457');
+                            if (await canLaunchUrl(whatsappUri)) {
+                              await launchUrl(whatsappUri,
+                                  mode: LaunchMode.externalApplication);
+                            } else {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('تعذر فتح واتساب',
+                                        textAlign: TextAlign.right),
+                                    behavior: SnackBarBehavior.floating,
+                                  ),
+                                );
+                              }
+                            }
+                          },
+                          borderRadius: BorderRadius.circular(50.r),
+                          child: Container(
+                            padding: EdgeInsets.all(12.r),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF25D366).withOpacity(0.1),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.phone,
+                              color: const Color(0xFF25D366),
+                              size: 24.sp,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ).animate().fade(delay: 600.ms).slideY(begin: 0.2, end: 0),
+
               SizedBox(height: 40.h),
 
               // Footer message
               Text(
-                'صُنع بكل حب لخدمة أمة الإسلام ونشر العلم النافع.',
+                'صُنع بكل حب ❤️ لخدمة أمة الإسلام ونشر العلم النافع.',
                 style: TextStyle(
                   fontSize: 12.sp,
                   color: isDark ? Colors.white.withOpacity(0.5) : Colors.grey,
@@ -370,6 +477,54 @@ class AboutAppPage extends StatelessWidget {
                   color: isDark
                       ? Colors.white.withOpacity(0.6)
                       : Colors.grey.shade600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDeveloperRow({
+    required String name,
+    required String role,
+    required bool isDark,
+  }) {
+    return Row(
+      children: [
+        Container(
+          padding: EdgeInsets.all(10.r),
+          decoration: BoxDecoration(
+            color: AppColors.primary.withOpacity(0.1),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            Icons.person_rounded,
+            color: AppColors.primary,
+            size: 20.sp,
+          ),
+        ),
+        SizedBox(width: 12.w),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                name,
+                style: TextStyle(
+                  fontSize: 15.sp,
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
+              ),
+              SizedBox(height: 2.h),
+              Text(
+                role,
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  color: const Color.fromARGB(255, 129, 16, 201),
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],

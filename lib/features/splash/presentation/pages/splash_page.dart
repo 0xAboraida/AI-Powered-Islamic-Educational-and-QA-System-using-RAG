@@ -58,6 +58,10 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
+    final double screenHeight = MediaQuery.of(context).size.height;
+    final double logoFinalCenterY = 69.h + 110.h;
+    final double slideRatio = (screenHeight / 2 - logoFinalCenterY) / 220.h;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -69,7 +73,7 @@ class _SplashPageState extends State<SplashPage> {
             width: double.infinity,
             height: double.infinity,
             fit: BoxFit.fill,
-          ),
+          ).animate().fade(duration: 800.ms, delay: 200.ms),
           Positioned(
             right: 0,
             left: 0,
@@ -84,14 +88,13 @@ class _SplashPageState extends State<SplashPage> {
                   width: 220.w,
                   fit: BoxFit.contain,
                 )
-                    .animate()
-                    .fade(duration: 700.ms)
-                    .scale(
-                      begin: const Offset(0.7, 0.7),
-                      end: const Offset(1, 1),
-                      curve: Curves.easeOutBack,
-                    )
-                    .slideY(begin: 0.2, end: 0, curve: Curves.easeOut),
+                    .animate(delay: 400.ms)
+                    .slideY(
+                      begin: slideRatio,
+                      end: 0,
+                      duration: 800.ms,
+                      curve: Curves.easeInOut,
+                    ),
                 SizedBox(
                   height: 15.h,
                 ),
@@ -104,7 +107,7 @@ class _SplashPageState extends State<SplashPage> {
                     letterSpacing: 1.2,
                   ),
                 )
-                    .animate(delay: 600.ms)
+                    .animate(delay: 800.ms)
                     .fade(duration: 700.ms)
                     .slideY(begin: 0.3, end: 0, curve: Curves.easeOut),
               ],
@@ -119,11 +122,11 @@ class _SplashPageState extends State<SplashPage> {
               height: 200.h,
               width: double.infinity,
               fit: BoxFit.cover,
-            ).animate().slideY(
+            ).animate(delay: 400.ms).slideY(
                 begin: 0.5,
                 end: 0,
                 curve: Curves.easeOut,
-                duration: 700.milliseconds),
+                duration: 700.ms).fade(duration: 500.ms),
           ),
         ],
       ),
