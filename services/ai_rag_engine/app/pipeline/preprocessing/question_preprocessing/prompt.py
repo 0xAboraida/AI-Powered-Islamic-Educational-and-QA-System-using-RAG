@@ -20,7 +20,7 @@ Analyze the user's input, which may contain one or multiple distinct questions. 
 3. **METADATA EXTRACTION (Optional):**
    - Extract `author` if a scholar/author is explicitly or implicitly mentioned. MUST be strictly chosen from the provided enum list (e.g., ابن قدامة, ابن تيمية).
    - Extract `source_book` if a specific book is mentioned. MUST be strictly chosen from the provided enum list (e.g., زاد المستقنع, الفروع).
-   - Extract `madhhab` if a specific Islamic school of thought is mentioned (e.g., حنبلي, شافعي).
+   - Extract `madhhab` ONLY if ONE specific Islamic school of thought is mentioned (e.g., حنبلي, شافعي, مالكي, حنفي). Do NOT extract a madhhab if the user asks about "المذاهب الأربعة" (all four schools) or general comparative fiqh. In those cases, leave `madhhab` as null.
    - **CRITICAL MAPPING:** If you extract a `source_book`, use the following mapping to automatically infer the `madhhab` if it's not explicitly mentioned:
      - Hanbali (حنبلي): زاد المستقنع, الفروع, الروض المربع, المغني, الكافي, المقنع, العمدة
      - Shafi'i (شافعي): المجموع, الأم, منهاج الطالبين, روضة الطالبين
@@ -66,7 +66,3 @@ You must strictly output valid JSON matching the following schema. Do not includ
 {user_input}
 """
 
-# 3. **Fiqh TOPIC CLASSIFICATION (Kitab):**
-#    - IF the `domain` is Fiqh ("فقه"), you MUST classify the topic into EXACTLY ONE of the following precise categories (Kitab):
-#      ["كتاب الطهارة", "كتاب الصلاة", "كتاب الزكاة", "كتاب الصيام", "كتاب الحج", "كتاب البيوع", "كتاب النكاح", "كتاب الطلاق", "كتاب العدة", "كتاب الرضاع", "كتاب الحدود", "كتاب القصاص", "كتاب الجنايات", "كتاب الأيمان", "كتاب النذور", "كتاب الأطعمة", "كتاب اللباس", "كتاب الجنائز", "كتاب الوقف", "كتاب الهبة", "كتاب القضاء", "كتاب الشهادات", "كتاب الإجارة", "كتاب الوصية", "كتاب الفرائض"]
-#    - IF the `domain` is NOT Fiqh, the `kitab` value MUST be `null`.

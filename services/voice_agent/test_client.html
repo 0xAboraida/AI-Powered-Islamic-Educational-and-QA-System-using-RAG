@@ -348,8 +348,8 @@
             actionBtn.disabled = true;
 
             try {
-                // 1. Fetch token from our local FastAPI server
-                let url = `http://localhost:8000/create-session?user_id=${encodeURIComponent(userId)}`;
+                // 1. Fetch token from our local FastAPI server (Token Server on port 8080)
+                let url = `http://localhost:8080/create-session?user_id=${encodeURIComponent(userId)}`;
                 if (roomName) {
                     url += `&room_name=${encodeURIComponent(roomName)}`;
                 }

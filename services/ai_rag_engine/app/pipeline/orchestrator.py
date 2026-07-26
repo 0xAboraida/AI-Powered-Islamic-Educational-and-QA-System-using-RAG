@@ -6,7 +6,7 @@ The Central Brain of the Zad-AI RAG Pipeline.
 Flow:
     1. Preprocessing & Memory: 
        - Fetch conversation history.
-       - Use LLM to analyze user query, extract metadata (domain/madhhab), detect ambiguity, and evaluate safety.
+       - Use LLM to analyze user query, extract metadata (domain/madhhab/source_book/author), detect ambiguity, and evaluate safety.
     
     2. Guardrail Checks: 
        - Reject unsafe questions.
@@ -75,48 +75,48 @@ class PipelineOrchestrator:
     async def generate_chat_response(
         self, query: str, domain: str, session_id: Optional[int] = None
     ) -> dict:
-        print(f"\n{'=' * 70}")
-        print(f"{ORCH_TAG} NEW CHAT REQUEST")
-        print(f"      [+] Session ID : {session_id}")
-        print(f"      [+] Domain     : {domain}")
-        print(f"      [+] Query      : {query}")
-        print("-" * 70)
+        logger.info(f"\n{'=' * 70}")
+        logger.info(f"{ORCH_TAG} NEW CHAT REQUEST")
+        logger.info(f"      [+] Session ID : {session_id}")
+        logger.info(f"      [+] Domain     : {domain}")
+        logger.info(f"      [+] Query      : {query}")
+        logger.info("-" * 70)
 
         global_start_time = time.time()
         try:
             # Step 1: Memory
-            print(f"{ORCH_TAG} [STEP 1] MEMORY RETRIEVAL")
+            logger.info(f"{ORCH_TAG} [STEP 1] MEMORY RETRIEVAL")
             mem_start = time.time()
 
             # Fetch previous conversation from memory
             # pyrefly: ignore [bad-argument-type]
             chat_history = await memory_service.get_history(session_id)
             if chat_history:
-                print(f"      {MEM_TAG} [+] Fetched history for session_id={session_id}")
+                logger.info(f"      {MEM_TAG} [+] Fetched history for session_id={session_id}")
             else:
-                print(f"      {MEM_TAG} [+] No prior history found.")
+                logger.info(f"      {MEM_TAG} [+] No prior history found.")
             
-            print(f"      {TIMER_TAG} [+] Memory Retrieval took {time.time() - mem_start:.2f}s")
-            print("-" * 70)
+            logger.info(f"      {TIMER_TAG} [+] Memory Retrieval took {time.time() - mem_start:.2f}s")
+            logger.info("-" * 70)
 
             # Step 2: Query Preprocessing
-            print(f"{ORCH_TAG} [STEP 2] QUERY PREPROCESSING")
+            logger.info(f"{ORCH_TAG} [STEP 2] QUERY PREPROCESSING")
             prep_start_time = time.time()
-            print(f"      {PREP_TAG} [+] Analyzing user query: '{query}'")
+            logger.info(f"      {PREP_TAG} [+] Analyzing user query: '{query}'")
             
             preprocessing_result = await self.preprocessor.process_query(
                 user_input=query, chat_history=chat_history, domain=domain
             )
 
             prep_time = time.time() - prep_start_time
-            print(f"      {PREP_TAG} [+] Total distinct questions detected: {preprocessing_result.total_questions}")
+            logger.info(f"      {PREP_TAG} [+] Total distinct questions detected: {preprocessing_result.total_questions}")
             for i, q in enumerate(preprocessing_result.questions, 1):
-                print(f"      {PREP_TAG} [+] Q{i} -> '{q.search_query}'")
-                print(f"      {PREP_TAG}          -> Safe: {q.is_safe} | Ambiguous: {q.is_ambiguous}")
-                print(f"      {PREP_TAG}          -> Ambiguous: {q.is_ambiguous}")
+                logger.info(f"      {PREP_TAG} [+] Q{i} -> '{q.search_query}'")
+                logger.info(f"      {PREP_TAG}          -> Safe: {q.is_safe} | Ambiguous: {q.is_ambiguous}")
+                logger.info(f"      {PREP_TAG}          -> Ambiguous: {q.is_ambiguous}")
                 
-            print(f"      {TIMER_TAG} [+] Query Preprocessing Phase took {prep_time:.2f}s")
-            print("-" * 70)
+            logger.info(f"      {TIMER_TAG} [+] Query Preprocessing Phase took {prep_time:.2f}s")
+            logger.info("-" * 70)
 
             # ── 🚨 Guardrail Check: Reject non-Islamic questions ──
             unsafe_questions = [q for q in preprocessing_result.questions if not q.is_safe]
@@ -160,51 +160,51 @@ class PipelineOrchestrator:
                 }
 
             # Step 3: Retrieval
-            print(f"{ORCH_TAG} [STEP 3] RETRIEVAL PIPELINE")
+            logger.info(f"{ORCH_TAG} [STEP 3] RETRIEVAL PIPELINE")
             retrieval_start_time = time.time()
 
             # Use the multiple queries extracted by the Preprocessor
-            search_queries = [q.search_query for q in preprocessing_result.questions if q.search_query]
-            if not search_queries:
-                search_queries = [query]
-
-            madhhab_filter = None
-            source_book_filter = None
-            author_filter = None
+            search_queries = []
+            multi_filters = []
+            
+            global_madhhab = None
             
             for q in preprocessing_result.questions:
+                sq = q.search_query if q.search_query else query
+                search_queries.append(sq)
+                
+                q_filters = {}
                 if q.metadata:
-                    if q.metadata.madhhab and not madhhab_filter:
-                        madhhab_filter = q.metadata.madhhab
-                    if q.metadata.source_book and not source_book_filter:
-                        source_book_filter = q.metadata.source_book
-                    if q.metadata.author and not author_filter:
-                        author_filter = q.metadata.author
+                    if q.metadata.madhhab and not global_madhhab:
+                        global_madhhab = q.metadata.madhhab
+                    if q.metadata.author:
+                        q_filters["metadata.author"] = q.metadata.author
+                    if q.metadata.source_book:
+                        q_filters["metadata.book_title"] = q.metadata.source_book
+                multi_filters.append(q_filters)
 
-            custom_filters = {}
-            if author_filter:
-                custom_filters["metadata.author"] = author_filter
-            if source_book_filter:
-                custom_filters["metadata.book_title"] = source_book_filter
+            if not search_queries:
+                search_queries = [query]
+                multi_filters = [{}]
 
-            print(f"      {RET_TAG} [+] Applying strict filters:")
-            if source_book_filter:
-                print(f"      {RET_TAG}      -> book_title='{source_book_filter}'")
-            if author_filter:
-                print(f"      {RET_TAG}      -> author='{author_filter}'")
+            logger.info(f"      {RET_TAG} [+] Applying distinct filters per query:")
+            for idx, mf in enumerate(multi_filters):
+                if mf:
+                    logger.info(f"      {RET_TAG}      -> Q{idx+1} Filters: {mf}")
 
             parents = await self.retrieval_service.retrieve_multi(
                 queries=search_queries, 
                 domain=domain, 
-                madhhab=madhhab_filter,
-                custom_filters=custom_filters if custom_filters else None
+                madhhab=global_madhhab,
+                custom_filters=None,
+                multi_filters=multi_filters
             )
 
-            print(f"      {TIMER_TAG} [+] Total Retrieval Pipeline took {time.time() - retrieval_start_time:.2f}s")
-            print(f"      {RET_TAG} [+] Found {len(parents) if parents else 0} parent context chunks.")
+            logger.info(f"      {TIMER_TAG} [+] Total Retrieval Pipeline took {time.time() - retrieval_start_time:.2f}s")
+            logger.info(f"      {RET_TAG} [+] Found {len(parents) if parents else 0} parent context chunks.")
             
             if parents:
-                print(f"      {RET_TAG} [+] Extracted Sources:")
+                logger.info(f"      {RET_TAG} [+] Extracted Sources:")
                 for i, p in enumerate(parents, 1):
                     meta = p.metadata
                     hierarchy = meta.get("hierarchy", "N/A")
@@ -219,7 +219,7 @@ class PipelineOrchestrator:
                     if len(hierarchy_str) > 60:
                         hierarchy_str = hierarchy_str[:57] + "..."
                         
-                    print(f"      {RET_TAG}      {i}. {book_title} ({author}) | {hierarchy_str}")
+                    logger.info(f"      {RET_TAG}      {i}. {book_title} ({author}) | {hierarchy_str}")
 
             if not parents:
                 logger.warning(
@@ -236,9 +236,9 @@ class PipelineOrchestrator:
                     "citations": {}
                 }
 
-            print("-" * 70)
+            logger.info("-" * 70)
             # Step 4: Generation
-            print(f"{ORCH_TAG} [STEP 4] RESPONSE GENERATION")
+            logger.info(f"{ORCH_TAG} [STEP 4] RESPONSE GENERATION")
             gen_start_time = time.time()
             
             # Join the rewritten, explicit search queries to send to the Generation LLM
@@ -247,16 +247,16 @@ class PipelineOrchestrator:
             response_data = await self.llm_service.generate_response(
                 query=explicit_queries_for_llm, domain=domain, parents=parents
             )
-            print(f"      {TIMER_TAG} [+] Generation Phase took {time.time() - gen_start_time:.2f}s")
+            logger.info(f"      {TIMER_TAG} [+] Generation Phase took {time.time() - gen_start_time:.2f}s")
 
             # Step 5: Save Interaction to Memory
             if session_id:
                 answer_text = response_data.get("answer", "")
                 await memory_service.add_interaction(session_id, query, answer_text)
 
-            print("-" * 70)
-            print(f"{ORCH_TAG} [TOTAL TIME] Pipeline completed successfully in {time.time() - global_start_time:.2f}s")
-            print("=" * 70 + "\n")
+            logger.info("-" * 70)
+            logger.info(f"{ORCH_TAG} [TOTAL TIME] Pipeline completed successfully in {time.time() - global_start_time:.2f}s")
+            logger.info("=" * 70 + "\n")
             
             return response_data
 
@@ -276,13 +276,13 @@ class PipelineOrchestrator:
         The LiveKit agent's LLM (GPT-4.1-mini / Gemini) will synthesize the final
         voice-optimized Arabic answer directly from the returned source chunks.
         """
-        print("\n" + "=" * 60)
+        logger.info("\n" + "=" * 60)
         logger.info(
             f"[Voice-Orchestrator] New Voice Request | session_id={session_id} domain='{domain}' query='{query}'"
         )
         global_start = time.time()
         try:
-            print("-" * 50)
+            logger.info("-" * 50)
             # ── Step 1: Memory + Preprocessing ─────────────────────────────
             logger.info("[Voice-Orchestrator] Step 1: Fetching memory and preprocessing")
             prep_start = time.time()
@@ -309,7 +309,7 @@ class PipelineOrchestrator:
                     or "عذراً، سؤالك غير واضح. هل يمكنك تحديد ما تقصده بدقة؟"
                 )
                 return {"guardrail": "ambiguous", "message": clarification, "chunks": []}
-            print("-" * 50)
+            logger.info("-" * 50)
             # ── Step 2: Retrieval ───────────────────────────────────────────
             logger.info("[Voice-Orchestrator] Step 2: Starting retrieval")
             retrieval_start = time.time()
@@ -400,7 +400,7 @@ class PipelineOrchestrator:
                 f"[Voice-Orchestrator] Request completed in {time.time() - global_start:.2f}s | "
                 f"Returned {len(serialized_chunks)} chunks."
             )
-            print("=" * 60 + "\n")
+            logger.info("=" * 60 + "\n")
             return {
                 "guardrail": "ok",
                 "search_queries": search_queries,

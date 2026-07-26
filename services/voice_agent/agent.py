@@ -3,12 +3,19 @@ import asyncio
 import logging
 import httpx
 from dotenv import load_dotenv
-from livekit import agents  
+from livekit import agents
 from livekit.agents import llm, stt, tts, inference
 from livekit.agents import Agent, AgentServer, AgentSession, JobContext, room_io
 from livekit.agents import AgentStateChangedEvent, MetricsCollectedEvent, metrics
-from livekit.plugins import noise_cancellation, silero
-from livekit.plugins.turn_detector.multilingual import MultilingualModel
+from livekit.plugins import (
+    noise_cancellation,
+    silero,
+    openai,
+    deepgram,
+    cartesia,
+    elevenlabs,
+    google,
+)
 from duckduckgo_search import DDGS
 
 load_dotenv()
@@ -21,26 +28,36 @@ class Assistant(Agent):
         super().__init__(
             instructions="""
 أنت مساعد علمي إسلامي متخصص، اسمك "نور"، تساعد طلاب العلم الشرعي.
-تتحدث بالعربية الفصحى الواضحة دائمًا، ولا تنتقل إلى الإنجليزية إلا إذا طلب المستخدم ذلك صراحةً.
 
-## شخصيتك:
+[قواعد صارمة جداً للنطق والصوت]:
+1. تتحدث باللغة العربية الفصحى أو العامية الراقية فقط. يُمنع منعاً باتاً نطق أي كلمة إنجليزية.
+2. **بدون تنسيق نصي (Markdown)**: ممنوع منعاً باتاً استخدام علامات التنسيق مثل النجوم (**) أو الهاشتاج (#) أو القوائم المنقطة (-). نظام الصوت (TTS) سيقرأ هذه العلامات كنص وتفسد التجربة! استخدم الفواصل والنقاط فقط لتقسيم الجمل.
+3. يُمنع منعاً باتاً أن تنطق أسماء دوال البرمجة أو الأدوات (مثل search_web). تصرف كطبيعي وأجب مباشرة أو قل "لحظات أراجع مصادري".
+4. إجابتك يجب أن تكون موجهة للمستمع كأنك تتحدث معه وجهًا لوجه (كلام منطوق وليس مكتوب).
+5. **التشكيل للضرورة فقط**: قم بتشكيل الكلمات التي يختلف نطقها بدون تشكيل فقط (مثل: الأفعال المبنية للمجهول كنُقِرَ، والكلمات الملتبسة كالصُّورِ). **يُمنع منعاً باتاً تشكيل لفظ الجلالة (الله) أو الكلمات الشائعة جداً** لأن الإفراط في التشكيل يجعل المولد الصوتي ينطقها بطريقة غريبة ومكسرة.
+
+## شخصيتك وطريقة الإجابة:
 - أسلوبك دافئ، علمي، ومحترم — كأنك شيخ متواضع يحدّث طالبًا.
 - ابدأ إجاباتك بمقدمة قصيرة تُرحّب بالسؤال أو تُقدّر اهتمام الطالب.
-- قسّم الإجابة بوضوح: الحكم الشرعي أولًا، ثم الدليل، ثم التوضيح إن لزم.
 - اختم بجملة تشجيعية أو دعاء مختصر.
-- إذا كان السؤال يحتمل خلافًا بين المذاهب، اذكر الأقوال الرئيسية باختصار.
+- إذا كان السؤال يحتمل خلافًا بين المذاهب، اذكر الأقوال الرئيسية باختصار وبأسلوب سهل.
 
 ## أدواتك:
-1. `search_islamic_rag`: استخدمها لأي سؤال عن كتب إسلامية محددة أو فقه أو حديث أو تفسير مخزّن في قاعدة البيانات.
-2. `search_web`: استخدمها للبحث السريع في المواقع الإسلامية الموثوقة.
+1. `search_islamic_rag`: للبحث في الموسوعة الإسلامية.
+2. `search_web`: للبحث في المواقع الإسلامية الموثوقة عبر الإنترنت.
 
-## قواعد الإجابة:
-- **دائمًا** استخدم الأدوات قبل الإجابة على أسئلة دينية — لا تجتهد من عندك.
-- اذكر المصدر الذي استقيت منه المعلومة بشكل طبيعي في الكلام، مثل: "كما جاء في الدرر السنية..." أو "وفقًا لما ذكره ابن باز رحمه الله...".
-- إذا لم تجد إجابة واضحة، قل ذلك بصدق وأرشد الطالب لمن يسأل.
-- لا تطوّل الإجابة الصوتية — كن وافيًا لكن مختصرًا، فالمستمع لا يقرأ.
+## قواعد الإجابة والبحث:
+1. الأسئلة العامة (ترحيب، سؤال عن الحال، إلخ): أجب بلطف مباشرة **دون استخدام أي أداة بحث**.
+2. الأسئلة الدينية والعلمية (فقه، عقيدة، حديث، إلخ):
+   - **ممنوع منعاً باتاً** أن تجيب من معلوماتك الخاصة (من دماغك) مهما كان السؤال بسيطاً.
+   - يجب أن تستخدم أداة `search_islamic_rag` **أولاً ودائماً**.
+   - إذا لم تجد الإجابة الكافية، استخدم **ثانياً** أداة `search_web`.
+3. اذكر المصدر الذي استقيت منه المعلومة بشكل طبيعي في الكلام.
+4. اشرح الإجابة بتفصيل علمي وافٍ وممتع. اجعل إجابتك غنية ومريحة للأذن.
 """
         )
+
+
 server = AgentServer()
 vad = silero.VAD.load()
 
@@ -48,6 +65,8 @@ vad = silero.VAD.load()
 # The entrypoint function runs when a participant joins the room
 @server.rtc_session()
 async def entrypoint(ctx: JobContext):
+    logger.info(f"Connecting to room {ctx.room.name}")
+    await ctx.connect()
 
     # Aggregate data across all conversation turns
     usage_collector = metrics.UsageCollector()
@@ -69,36 +88,32 @@ async def entrypoint(ctx: JobContext):
 
     @llm.function_tool
     async def search_islamic_rag(query: str, domain: int = 1) -> str:
-        """Search the Qdrant & MongoDB Islamic books database (RAG) for source texts.
-
-        Returns raw retrieved passages from Islamic books so you can synthesize
-        an accurate, voice-optimized Arabic answer from primary sources.
-
-        Choose the domain that best matches the question:
-          1 = فقه       (Islamic jurisprudence — rulings, halal/haram, worship, transactions)
-          2 = العقيدة   (Creed & theology — beliefs, tawhid, attributes of Allah)
-          3 = السيرة    (Biography of the Prophet ﷺ and his companions)
-          4 = التفسير   (Quranic exegesis — meaning and explanation of Quran verses)
-          5 = الحديث    (Hadith sciences — narrations, chains, authenticity)
-          6 = علوم القران (Quranic sciences — revelation, recitation, preservation)
-          7 = التاريخ   (Islamic history — events, civilisations, dynasties)
-          8 = علوم اللغه (Arabic language sciences — grammar, morphology, rhetoric)
+        """أداة البحث الأساسية والإجبارية في قاعدة البيانات الإسلامية لاستخراج النصوص والفتاوى والمصادر.
+        **إجباري جداً**: استخدم هذه الأداة أولاً ودائماً لأي سؤال شرعي أو ديني قبل أن تجيب من معلوماتك الخاصة.
+        اختر المجال (domain) الأقرب للسؤال:
+          1 = فقه
+          2 = العقيدة
+          3 = السيرة
+          4 = التفسير
+          5 = الحديث
+          6 = علوم القران
+          7 = التاريخ
+          8 = علوم اللغه
 
         Args:
-            query: The question or search term to look up in the Islamic books.
-            domain: Domain integer (1–8) that best fits the topic of the query.
+            query: السؤال باللغة العربية للبحث عنه.
+            domain: رقم المجال من 1 إلى 8.
         """
         domain_name = DOMAIN_MAPPING.get(domain, "غير معروف")
-        logger.info("RAG /chunks triggered — query: %s | domain: %s (%s)",
-                    query, domain, domain_name)
-        session.say("جاري البحث قي قواعد زاد للعلم الشرعي .... يرجي الانتظار")
+        print(f"\n🔍 [RAG Search] Query: '{query}' | Domain: {domain_name}...")
+        session.say("جاري البحث في المصادر الشرعية، لحظات من فضلك.")
 
         chunks_url = os.getenv("RAG_CHUNKS_URL")
         if not chunks_url:
             return "خطأ: لم يتم إعداد رابط RAG_CHUNKS_URL في ملف .env."
 
         try:
-            async with httpx.AsyncClient(timeout=45.0) as client:
+            async with httpx.AsyncClient(timeout=120.0) as client:
                 response = await client.post(
                     chunks_url,
                     json={"session_id": 0, "query": query, "domain": domain},
@@ -123,8 +138,8 @@ async def entrypoint(ctx: JobContext):
             if not chunks:
                 logger.warning("RAG returned 0 chunks for query: %s", query)
                 return (
-                    "لم أجد نصوصًا مباشرة في قاعدة البيانات لهذا السؤال. "
-                    "أجب بناءً على علمك العام في المجال الشرعي مع الإشارة إلى ذلك."
+                    "لم أجد نصوصًا مباشرة في قاعدة البيانات (RAG) لهذا السؤال. "
+                    "يجب عليك الآن فوراً استخدام أداة `search_web` للبحث عن الإجابة في المواقع الإسلامية الموثوقة."
                 )
 
             # ── Citation logging ─────────────────────────────────────────────
@@ -132,11 +147,11 @@ async def entrypoint(ctx: JobContext):
             log_lines = [f"\n{sep}", f"📚  RAG CHUNKS  ({len(chunks)} retrieved)", sep]
             for i, chunk in enumerate(chunks, 1):
                 meta = chunk.get("metadata") or {}
-                title  = meta.get("book_title") or meta.get("title") or "مصدر غير معروف"
+                title = meta.get("book_title") or meta.get("title") or "مصدر غير معروف"
                 author = meta.get("author") or ""
-                page   = meta.get("page") or meta.get("page_number") or ""
-                score  = chunk.get("best_child_score") or chunk.get("score") or ""
-                page_info  = f" ص.{page}" if page else ""
+                page = meta.get("page") or meta.get("page_number") or ""
+                score = chunk.get("best_child_score") or chunk.get("score") or ""
+                page_info = f" ص.{page}" if page else ""
                 score_info = f" | score={score:.3f}" if isinstance(score, float) else ""
                 log_lines.append(f"  [{i}] {title}{page_info}{score_info}  — {author}")
             log_lines.append(sep)
@@ -151,20 +166,23 @@ async def entrypoint(ctx: JobContext):
             ]
 
             for i, chunk in enumerate(chunks, 1):
-                meta   = chunk.get("metadata") or {}
-                title  = meta.get("book_title") or meta.get("title") or "مصدر غير معروف"
+                meta = chunk.get("metadata") or {}
+                title = meta.get("book_title") or meta.get("title") or "مصدر غير معروف"
                 author = meta.get("author") or ""
-                page   = meta.get("page") or meta.get("page_number") or ""
-                text   = (
+                page = meta.get("page") or meta.get("page_number") or ""
+                text = (
                     chunk.get("text")
                     or chunk.get("page_content")
                     or chunk.get("content")
                     or ""
                 )
                 header = f"📖 المصدر {i}"
-                if title:  header += f" — {title}"
-                if author: header += f" | {author}"
-                if page:   header += f" (ص. {page})"
+                if title:
+                    header += f" — {title}"
+                if author:
+                    header += f" | {author}"
+                if page:
+                    header += f" (ص. {page})"
 
                 context_parts.append(header)
                 context_parts.append("─" * 40)
@@ -172,8 +190,8 @@ async def entrypoint(ctx: JobContext):
                 context_parts.append("")
 
             context_parts.append(
-                "[تعليمات: اعتمد على هذه النصوص في إجابتك، واذكر المرجع بشكل طبيعي "
-                "في الكلام. الإجابة للصوت: اجعلها واضحة ومختصرة دون تنسيق مرئي.]"
+                "[تعليمات هامة: اعتمد على هذه النصوص في إجابتك، واذكر المرجع بشكل طبيعي في الكلام. "
+                "اشرح المسألة بتفصيل وافٍ ولا تختصر، قدم إجابة علمية غنية وكاملة ومريحة للمستمع.]"
             )
 
             return "\n".join(context_parts)
@@ -182,34 +200,31 @@ async def entrypoint(ctx: JobContext):
             logger.error("Error calling RAG /chunks: %s", str(e))
             return f"حدث خطأ أثناء الاتصال بقاعدة البيانات: {str(e)}"
 
-
     # ── Trusted Islamic websites ──────────────────────────────────────────────
     # Add or remove sites from this list to control where the agent searches.
     TRUSTED_SITES = [
-        "islamweb.net",       # فتاوى وبحوث إسلامية شاملة
-        "dorar.net",          # الدرر السنية - موسوعة الحديث والفقه
-        "islamqa.info",       # إسلام سؤال وجواب (ابن عثيمين وغيره)
-        "binbaz.org.sa",      # موقع الشيخ ابن باز
-        "binothaimeen.net",   # موقع الشيخ ابن عثيمين
-        "sunnah.com",         # كتب الحديث النبوي
-        "quran.com",          # القرآن الكريم
-        "alukah.net",         # الألوكة - ملتقى أهل العلم
-        "islamhouse.com",     # بيت الإسلام
-        "ketabonline.com",    # جامع الكتب الإسلامية - آلاف الكتب الشرعية
+        "islamweb.net",  # فتاوى وبحوث إسلامية شاملة
+        "dorar.net",  # الدرر السنية - موسوعة الحديث والفقه
+        "islamqa.info",  # إسلام سؤال وجواب (ابن عثيمين وغيره)
+        "binbaz.org.sa",  # موقع الشيخ ابن باز
+        "binothaimeen.net",  # موقع الشيخ ابن عثيمين
+        "sunnah.com",  # كتب الحديث النبوي
+        "quran.com",  # القرآن الكريم
+        "alukah.net",  # الألوكة - ملتقى أهل العلم
+        "islamhouse.com",  # بيت الإسلام
+        "ketabonline.com",  # جامع الكتب الإسلامية - آلاف الكتب الشرعية
     ]
 
     @llm.function_tool
     async def search_web(query: str, trusted_only: bool = True) -> str:
-        """Search trusted Islamic websites for reliable answers about Islamic topics.
-        Always prefer this over open-web search for religious questions.
-        
+        """تبحث هذه الأداة في المواقع الإسلامية الموثوقة عبر الإنترنت.
+
         Args:
-            query: The search query in Arabic or English.
-            trusted_only: If True (default), only searches curated Islamic sites.
-                          Set to False to search the open web if no results found.
+            query: السؤال للبحث عنه بالعربية.
+            trusted_only: هل تبحث في المواقع الموثوقة فقط (True).
         """
-        logger.info("Web search triggered for query: %s (trusted_only=%s)", query, trusted_only)
-        session.say("جاري البحث في مواقع إسلامية موثوقة...")
+        print(f"\n🌐 [Web Search (Trusted)] Query: '{query}'...")
+        session.say("أقوم الآن بالبحث في المواقع الإسلامية الموثوقة، ثوانٍ معدودة.")
 
         def sync_search(search_query: str, max_results: int = 5):
             with DDGS() as ddgs:
@@ -235,12 +250,16 @@ async def entrypoint(ctx: JobContext):
 
             # ── Citation logging ───────────────────────────────────────────
             sep = "─" * 60
-            lines = [f"\n{sep}", f"🌐  WEB SEARCH CITATIONS  ({len(results)} results)", sep]
+            lines = [
+                f"\n{sep}",
+                f"🌐  WEB SEARCH CITATIONS  ({len(results)} results)",
+                sep,
+            ]
             for i, r in enumerate(results, 1):
-                url        = r.get("href", "")
-                title      = r.get("title", "بدون عنوان")
+                url = r.get("href", "")
+                title = r.get("title", "بدون عنوان")
                 is_trusted = any(site in url for site in TRUSTED_SITES)
-                tag        = "✅ trusted" if is_trusted else "⚠️  external"
+                tag = "✅ trusted" if is_trusted else "⚠️  external"
                 lines.append(f"  [{i}] {tag}  |  {title}")
                 lines.append(f"       🔗 {url}")
             lines.append(sep)
@@ -250,11 +269,11 @@ async def entrypoint(ctx: JobContext):
             # Format results for the LLM with clear citations
             formatted_results = []
             for i, r in enumerate(results, 1):
-                title   = r.get("title", "بدون عنوان")
-                body    = r.get("body", "")
-                url     = r.get("href", "")
+                title = r.get("title", "بدون عنوان")
+                body = r.get("body", "")
+                url = r.get("href", "")
                 is_trusted = any(site in url for site in TRUSTED_SITES)
-                trust_tag  = "✅ موقع موثوق" if is_trusted else "⚠️ مصدر خارجي"
+                trust_tag = "✅ موقع موثوق" if is_trusted else "⚠️ مصدر خارجي"
                 formatted_results.append(
                     f"[{i}] {trust_tag}\n"
                     f"العنوان: {title}\n"
@@ -271,37 +290,29 @@ async def entrypoint(ctx: JobContext):
 
     # Create session FIRST
     session = AgentSession(
-        preemptive_generation=True,
+        preemptive_generation=False,
         vad=vad,
-        turn_detection=MultilingualModel(),
-        
-        llm=llm.FallbackAdapter(
-            [
-                inference.LLM(model="openai/gpt-4.1-mini"),
-                inference.LLM(model="google/gemini-2.5-flash"),
-            ]
-        ),
-
+        # turn_detection=MultilingualModel(),
+        llm=inference.LLM(model="openai/gpt-4o"),
         stt=stt.FallbackAdapter(
-            [  
-                inference.STT.from_model_string("deepgram/nova-3:ar"),   
-                inference.STT.from_model_string("deepgram/flux-general-multi"),
-            ]
-        ),
-
-
-        tts=tts.FallbackAdapter(
             [
-                # Jameson (Masculine)
-                inference.TTS.from_model_string("cartesia/sonic-3:a5136bf9-224c-4d76-b823-52bd5efcffcc"),
-                # Liam (Masculine)
-                inference.TTS.from_model_string("elevenlabs/eleven_multilingual_v2:TX3293t2o4lhLdbCgKwD"),
+                deepgram.STT(model="nova-3", language="ar"),
+                deepgram.STT(model="nova-2-general"),
             ]
         ),
-
-        
+        tts=inference.TTS(
+            model="elevenlabs/eleven_multilingual_v2",
+        ),
         tools=[search_islamic_rag, search_web],
     )
+
+    @session.on("user_speech_committed")
+    def on_user_speech(msg):
+        print(f"\n🗣️ User: {msg.content}")
+
+    @session.on("agent_speech_committed")
+    def on_agent_speech(msg):
+        print(f"🎙️ Agent (Nour): {msg.content}\n")
 
     # Register event handlers AFTER session exists
     @session.on("metrics_collected")
@@ -333,5 +344,10 @@ async def entrypoint(ctx: JobContext):
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
+    # Suppress verbose LiveKit logs and only show warnings/errors to keep terminal clean
+    logging.basicConfig(level=logging.WARNING, format="[%(levelname)s] %(message)s")
+    print("\n" + "=" * 50)
+    print("🚀 Voice Agent (Nour) Started Successfully!")
+    print("Waiting for browser client to connect...")
+    print("=" * 50 + "\n")
     agents.cli.run_app(server)

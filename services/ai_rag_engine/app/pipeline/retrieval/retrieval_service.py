@@ -84,7 +84,7 @@ class RetrievalService:
 
 
 
-    async def retrieve_multi(self, queries: List[str], domain: str, madhhab: Optional[str] = None, custom_filters: Optional[Dict[str, Any]] = None) -> List[RetrievedParent]:
+    async def retrieve_multi(self, queries: List[str], domain: str, madhhab: Optional[str] = None, custom_filters: Optional[Dict[str, Any]] = None, multi_filters: Optional[List[Dict[str, Any]]] = None) -> List[RetrievedParent]:
         import time
         import asyncio
         logger.info(f"[RetrievalService] [+] Parallel retrieval started: queries={len(queries)} domain='{domain}'")
@@ -100,25 +100,28 @@ class RetrievalService:
             parent_top_k = getattr(settings, "RAG_MULTI_QUERY_PARENT_TOP_K", 3)
             child_top_k = settings.RAG_CHILD_TOP_K
 
-        filters = {}
-        if madhhab:
-            filters["metadata.madhhab"] = madhhab
+        base_filters = {}
         if custom_filters:
-            filters.update(custom_filters)
+            base_filters.update(custom_filters)
 
         parent_retriever = self._get_or_create_retriever(domain)
         _, collection_name = qdrant_router.get_client_and_collection(domain)
 
-        tasks = [
-            parent_retriever.aretrieve(
-                query=q,
-                collection_name=collection_name,
-                child_top_k=child_top_k,
-                parent_top_k=parent_top_k,
-                filters=filters
+        tasks = []
+        for i, q in enumerate(queries):
+            q_filters = base_filters.copy()
+            if multi_filters and i < len(multi_filters) and multi_filters[i]:
+                q_filters.update(multi_filters[i])
+                
+            tasks.append(
+                parent_retriever.aretrieve(
+                    query=q,
+                    collection_name=collection_name,
+                    child_top_k=child_top_k,
+                    parent_top_k=parent_top_k,
+                    filters=q_filters
+                )
             )
-            for q in queries
-        ]
 
         results_lists = await asyncio.gather(*tasks)
 

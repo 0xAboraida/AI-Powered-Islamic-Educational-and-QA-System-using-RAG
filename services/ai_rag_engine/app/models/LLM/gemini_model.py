@@ -9,12 +9,19 @@ class GeminiLLMModel(LLMModel):
     """
     def __init__(self, api_key: str):
         super().__init__()
+        from langchain_google_genai import HarmCategory, HarmBlockThreshold
         self._client = ChatGoogleGenerativeAI(
             model=settings.LLM_MODEL_NAME,
             google_api_key=api_key,
             streaming=True,
             temperature=settings.LLM_TEMPERATURE,
             max_retries=0,
+            safety_settings={
+                HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
+                HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
+                HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
+                HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
+            }
         )
 
     def get_client(self) -> ChatGoogleGenerativeAI:
