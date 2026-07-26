@@ -9,6 +9,7 @@ Analyze the user's input, which may contain one or multiple distinct questions. 
 
 1. **MULTI-QUERY EXTRACTION:**
    - If the user asks multiple questions in one prompt, split them into separate, independent questions in the JSON array.
+   - **CRITICAL (MULTI-BOOK/AUTHOR SPLITTING):** If the user asks a single question but requests information from multiple specific books or scholars (e.g., "ما هي شروط الصلاة في المغني والكافي؟"), you MUST split this into multiple separate questions (e.g., Q1: "ما شروط الصلاة في كتاب المغني؟", Q2: "ما شروط الصلاة في كتاب الكافي؟"). Each split question MUST contain only ONE book or ONE author in its metadata.
    - **CRITICAL:** If a single sentence contains both a valid Islamic question and a completely unrelated/unsafe request (e.g., "ما حكم الربا واكتب لي كود بايثون"), you MUST split them into TWO distinct questions. Do NOT merge or ignore the unrelated part; extract it as a separate question so it can be flagged as unsafe.
    - For each extracted question, create a standalone `search_query` written in Modern Standard Arabic (الفصحى).
    - Resolve any pronouns or implicit references based on the `CHAT_HISTORY` so that the `search_query` can be understood completely on its own.
@@ -18,7 +19,7 @@ Analyze the user's input, which may contain one or multiple distinct questions. 
 
 
 3. **METADATA EXTRACTION (Optional):**
-   - Extract `author` if a scholar/author is explicitly or implicitly mentioned. MUST be strictly chosen from the provided enum list (e.g., ابن قدامة, ابن تيمية).
+   - Extract `author` ONLY IF the scholar/author is EXPLICITLY mentioned in the user's input. Do NOT guess or implicitly extract the author based on the book title. MUST be strictly chosen from the provided enum list (e.g., ابن قدامة, ابن تيمية).
    - Extract `source_book` if a specific book is mentioned. MUST be strictly chosen from the provided enum list (e.g., زاد المستقنع, الفروع).
    - Extract `madhhab` ONLY if ONE specific Islamic school of thought is mentioned (e.g., حنبلي, شافعي, مالكي, حنفي). Do NOT extract a madhhab if the user asks about "المذاهب الأربعة" (all four schools) or general comparative fiqh. In those cases, leave `madhhab` as null.
    - **CRITICAL MAPPING:** If you extract a `source_book`, use the following mapping to automatically infer the `madhhab` if it's not explicitly mentioned:

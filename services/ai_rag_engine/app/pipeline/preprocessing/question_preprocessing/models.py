@@ -183,13 +183,13 @@ def get_schema_for_domain(domain: str):
             None, 
             description="Mandatory ONLY if domain is 'Fiqh' or 'فقه'. Must be one of the precise 25 Kitab names. Otherwise, null."
         )
-        author: Optional[AuthorsEnum] = Field(
+        author: Optional[List[AuthorsEnum]] = Field(
             None, 
-            description=f"The name of the author or scholar mentioned in the query. MUST be strictly chosen from the provided enum list for the {domain} domain, or null."
+            description=f"A list of author names or scholars mentioned in the query. MUST be strictly chosen from the provided enum list for the {domain} domain. Return null if none mentioned."
         )
-        source_book: Optional[BooksEnum] = Field(
+        source_book: Optional[List[BooksEnum]] = Field(
             None, 
-            description=f"The specific Islamic book mentioned. MUST be strictly chosen from the provided enum list for the {domain} domain, or null."
+            description=f"A list of specific Islamic books mentioned in the query. MUST be strictly chosen from the provided enum list for the {domain} domain. Return null if none mentioned."
         )
         madhhab: Optional[str] = Field(
             None, 
