@@ -145,7 +145,7 @@ class QdrantManager:
             limit=limit,
             with_payload=True,
         ).points
-        logger.info(f"[QdrantManager] [+] Dense search returned {len(results)} results")
+        logger.info(f"[QdrantManager] Dense search returned {len(results)} results")
         return results
 
     def search_sparse(
@@ -185,5 +185,5 @@ class QdrantManager:
             limit=limit,
             with_payload=True,
         ).points
-        logger.info(f"[QdrantManager] [+] Sparse search returned {len(results)} results")
+        logger.info(f"[QdrantManager] Sparse search returned {len(results)} results")
         return results

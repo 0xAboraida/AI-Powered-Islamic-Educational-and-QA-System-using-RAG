@@ -15,7 +15,7 @@ COPY requirements.txt .
 
 # Install python dependencies using Docker's smart caching
 RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
+    pip install --default-timeout=1000 -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
 
 # Copy the rest of the application
 COPY . .

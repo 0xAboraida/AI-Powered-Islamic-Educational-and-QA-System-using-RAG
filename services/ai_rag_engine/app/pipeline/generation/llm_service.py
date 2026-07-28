@@ -59,7 +59,7 @@ class LLMService:
             return max(len(text) // 4, int(len(text.split()) * 1.5))
             
         input_tokens = estimate_tokens(system_prompt + query)
-        logger.info(f"[LLMService] [+] Starting generation for domain='{domain}' | estimated_input_tokens=~{input_tokens}")
+        logger.info(f"[LLMService] Starting generation for domain='{domain}' | estimated_input_tokens=~{input_tokens}")
 
         # 3. Generate the response with in-text citation tracking
         from services.ai_rag_engine.app.config.key_manager import gemini_key_manager
@@ -85,11 +85,11 @@ class LLMService:
                 break # If successfully completed, break out of rotation loop
                 
             except Exception as e:
-                logger.warning(f"[LLMService] [-] Primary LLM failed on attempt {attempt+1}: {str(e)[:150]}...")
+                logger.warning(f"[LLMService] Primary LLM failed on attempt {attempt+1}: {str(e)[:150]}...")
                 last_exception = e
 
         if not success:
-            logger.warning("[LLMService] [-] All Primary LLM attempts failed. Switching to Fallback LLM")
+            logger.warning("[LLMService] All Primary LLM attempts failed. Switching to Fallback LLM")
             
             try:
                 # Initialize Fallback Model based on settings
@@ -104,7 +104,7 @@ class LLMService:
                 full_generated_text = "\n\n*(عذراً، الخادم الأساسي مشغول. تم توليد الإجابة بالمولد الاحتياطي)*\n\n" + ai_message_content
                     
             except Exception as fallback_e:
-                logger.error(f"[LLMService] [-] Both Primary and Fallback LLMs failed! Error: {fallback_e}", exc_info=True)
+                logger.error(f"[LLMService] Both Primary and Fallback LLMs failed! Error: {fallback_e}", exc_info=True)
                 return {
                     "answer": "عذراً، حدث خطأ في جميع خوادم التوليد. يرجى المحاولة لاحقاً.",
                     "citations": {}
@@ -129,8 +129,9 @@ class LLMService:
             if exact_output: output_tokens = exact_output
             
         logger.info(
-            f"[LLMService] [+] Generation complete | cited_ids={used_ids} available_ids={sorted(available_ids)} | actual_input_tokens={input_tokens} actual_output_tokens={output_tokens}"
+            f"      [LLMService] Generation complete | cited_ids={used_ids} available_ids={sorted(available_ids)} | actual_input_tokens={input_tokens} actual_output_tokens={output_tokens}"
         )
+
 
         # ── 3c. Filter and Renumber citations ───────
         used_citations = {}
@@ -156,7 +157,7 @@ class LLMService:
         else:
             if all_citations:
                 logger.warning(
-            "[LLMService] [-] No citation markers found in generated text. Falling back to sending all citations."
+            "[LLMService] No citation markers found in generated text. Falling back to sending all citations."
         )
                 for idx, (key, cit_data) in enumerate(all_citations.items(), start=1):
                     cit = cit_data.copy()

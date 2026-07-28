@@ -19,7 +19,8 @@ Why a Reranker?
 import logging
 import time
 import asyncio
-from typing import List, Tuple
+import threading
+from typing import List, Tuple, Any
 from services.ai_rag_engine.app.config.settings import settings
 from services.ai_rag_engine.app.pipeline.retrieval.base_retriever import RetrievedChunk
 
@@ -31,6 +32,7 @@ class RerankerService:
         self.model_name = settings.RERANKER_MODEL_NAME
         self.top_k = settings.RAG_RERANKER_TOP_K
         self.reranker = None
+        self._lock = threading.Lock()
 
         if self.enabled:
             try:
@@ -49,18 +51,19 @@ class RerankerService:
         else:
             logger.info("Reranker is disabled in settings.")
 
-    def rerank(self, query: str, chunks: List[RetrievedChunk]) -> List[RetrievedChunk]:
+    def rerank(self, query: str, chunks: List[Any], score_threshold: float = None) -> List[Any]:
         """Synchronous reranking"""
         if not self.enabled or not self.reranker or not chunks:
             return chunks[:self.top_k]
 
-        start_t = time.time()
-        
-        # Prepare pairs for the reranker: [ [query, chunk1], [query, chunk2], ... ]
-        sentence_pairs = [[query, chunk.content] for chunk in chunks]
-        
-        # Compute scores
-        scores = self.reranker.compute_score(sentence_pairs)
+        with self._lock:
+            start_t = time.time()
+            
+            # Prepare pairs for the reranker: [ [query, chunk1], [query, chunk2], ... ]
+            sentence_pairs = [[query, getattr(chunk, "content", "")] for chunk in chunks]
+            
+            # Compute scores
+            scores = self.reranker.compute_score(sentence_pairs)
         
         # FlagReranker might return a single float if there's only 1 pair
         if isinstance(scores, float):
@@ -68,25 +71,38 @@ class RerankerService:
             
         # Assign scores to chunks and sort
         for chunk, score in zip(chunks, scores):
-            chunk.score = score # Overwrite the fusion score with the highly accurate Reranker score
+            if hasattr(chunk, 'best_child_score'):
+                chunk.best_child_score = float(score)
+            else:
+                chunk.score = float(score) # Overwrite the fusion score with the highly accurate Reranker score
             
         # Sort chunks by the new score in descending order
-        reranked_chunks = sorted(chunks, key=lambda x: x.score, reverse=True)
+        reranked_chunks = sorted(chunks, key=lambda x: getattr(x, 'best_child_score', getattr(x, 'score', 0)), reverse=True)
         
-        # Take the top K
-        final_chunks = reranked_chunks[:self.top_k]
+        # Apply score threshold if provided
+        if score_threshold is not None:
+            filtered_chunks = [
+                c for c in reranked_chunks 
+                if getattr(c, 'best_child_score', getattr(c, 'score', 0)) >= score_threshold
+            ]
+            # Always ensure at least 2 chunks are returned to avoid empty context
+            if not filtered_chunks and reranked_chunks:
+                filtered_chunks = reranked_chunks[:2]
+            final_chunks = filtered_chunks[:self.top_k]
+        else:
+            final_chunks = reranked_chunks[:self.top_k]
         
-        logger.info(f"[Reranker] Scored {len(chunks)} chunks and selected top {self.top_k} in {time.time() - start_t:.2f} seconds.")
+        logger.info(f"[Reranker] Scored {len(chunks)} chunks and selected top {len(final_chunks)} in {time.time() - start_t:.2f} seconds.")
         return final_chunks
 
-    async def arerank(self, query: str, chunks: List[RetrievedChunk]) -> List[RetrievedChunk]:
+    async def arerank(self, query: str, chunks: List[Any], score_threshold: float = None) -> List[Any]:
         """Asynchronous wrapper for reranking"""
         if not self.enabled or not self.reranker or not chunks:
             # If disabled or no chunks, just return the original top_k slice
             return chunks[:self.top_k]
             
         # Run the CPU-heavy reranking in a thread pool to avoid blocking the event loop
-        return await asyncio.to_thread(self.rerank, query, chunks)
+        return await asyncio.to_thread(self.rerank, query, chunks, score_threshold)
 
 # Singleton instance
 reranker_service = RerankerService()

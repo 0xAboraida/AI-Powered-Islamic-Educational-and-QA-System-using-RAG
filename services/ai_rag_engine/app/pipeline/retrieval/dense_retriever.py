@@ -89,7 +89,7 @@ class DenseRetriever(BaseRetriever):
     ) -> List[RetrievedChunk]:
         import time
         import asyncio
-        logger.info(f"[DenseRetriever] [+] Async query: '{query[:60]}...'")
+        logger.info(f"[DenseRetriever] Async query: '{query[:60]}...'")
 
         # Step 1: Embed the query async
         if embedding_result:
@@ -98,7 +98,7 @@ class DenseRetriever(BaseRetriever):
             embed_start_t = time.time()
             embedding_result = await self.embedding_model.aembed_query(query)
             query_vector = embedding_result.dense
-            logger.info(f"[Timer] [+] Dense embedding took {time.time() - embed_start_t:.2f}s")
+            logger.info(f"[Timer] Dense embedding took {time.time() - embed_start_t:.2f}s")
 
         # Step 2: Search Qdrant (wrap sync qdrant call in to_thread)
         qdrant_start_t = time.time()
@@ -109,7 +109,7 @@ class DenseRetriever(BaseRetriever):
             limit=top_k,
             filters=filters,
         )
-        logger.info(f"[Timer] [+] Dense Qdrant search took {time.time() - qdrant_start_t:.2f}s")
+        logger.info(f"[Timer] Dense Qdrant search took {time.time() - qdrant_start_t:.2f}s")
 
         # Step 3: Map results
         chunks = []
@@ -125,5 +125,5 @@ class DenseRetriever(BaseRetriever):
                 )
             )
 
-        logger.info(f"[DenseRetriever] [+] Async returned {len(chunks)} chunks")
+        logger.info(f"[DenseRetriever] Async returned {len(chunks)} chunks")
         return chunks

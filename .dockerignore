@@ -32,3 +32,7 @@ docs/
 docker-release/
 notebooks/
 tests/
+
+# Unrelated Services (to save Docker image size for RAG Engine)
+services/voice_agent/
+infrastructure/

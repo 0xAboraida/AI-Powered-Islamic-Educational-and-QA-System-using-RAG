@@ -83,9 +83,12 @@ async def lifespan(app: FastAPI):
     # Eagerly initialize MongoDB connections so first user request doesn't suffer 30s delay
     await retrieval_service.warm_up_all()
     
+    logger.info("\n✅ Zad-AI RAG Backend Engine Startup Complete! Ready to serve requests.\n")
     yield
     
     logger.info("🛑 Shutting down.")
+    from services.ai_rag_engine.app.pipeline.retrieval.parent_child import mongo_pool
+    mongo_pool.close_all()
 
 app = FastAPI(title="Zad-AI RAG API", version="1.0.0", lifespan=lifespan)
 

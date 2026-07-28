@@ -37,7 +37,13 @@ async def chat_endpoint(request: ChatRequest):
     try:
         domain_str = DOMAIN_MAPPING.get(request.domain)
         if not domain_str:
+            logger.warning(f"Invalid domain ID received: {request.domain}")
             raise HTTPException(status_code=400, detail="Invalid domain ID")
+            
+        import datetime
+        logger.info(f"\n{'=' * 70}")
+        current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        logger.info(f"🚀 [{current_time}] Received API request for /ask | Session ID: {request.session_id} | Domain: {domain_str}")
 
         response_data = await orchestrator.generate_chat_response(
             query=request.query,

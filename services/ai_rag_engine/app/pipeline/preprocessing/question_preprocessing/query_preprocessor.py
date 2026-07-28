@@ -157,7 +157,7 @@ class QueryPreprocessor:
                 DynamicSchema = get_schema_for_domain(domain)
                 structured_llm = llm.with_structured_output(DynamicSchema)
 
-                logger.info(f"[Preprocessor] [+] Calling LLM (Attempt {attempt+1}/{len(all_keys)})")
+                logger.info(f"[Preprocessor] Calling LLM (Attempt {attempt+1}/{len(all_keys)})")
                 result = await structured_llm.ainvoke(
                     formatted_prompt
                 )
@@ -169,15 +169,15 @@ class QueryPreprocessor:
                 except Exception:
                     token_str = ""
 
-                logger.info(f"[Preprocessor] [+] Successfully processed {result.total_questions} question(s) via Primary LLM {token_str}")
+                logger.info(f"[Preprocessor] Successfully processed {result.total_questions} question(s) via Primary LLM {token_str}")
                 return result
 
             except Exception as e:
                 err_str = str(e)
                 if "RESOURCE_EXHAUSTED" in err_str or "429" in err_str:
-                    logger.warning(f"[Preprocessor] [-] Primary LLM Attempt {attempt+1} Failed: Rate Limit 429 (Quota Exceeded). Retrying...")
+                    logger.warning(f"[Preprocessor] Primary LLM Attempt {attempt+1} Failed: Rate Limit 429 (Quota Exceeded). Retrying...")
                 else:
-                    logger.warning(f"[Preprocessor] [-] Primary LLM failed on attempt {attempt+1}: {err_str[:150]}...")
+                    logger.warning(f"[Preprocessor] Primary LLM failed on attempt {attempt+1}: {err_str[:150]}...")
                 
                 last_exception = e
                 # If it's not Gemini, no need to loop through Gemini keys
@@ -185,7 +185,7 @@ class QueryPreprocessor:
                     break
 
         # If we exhausted all keys or non-Gemini failed
-        logger.warning("[Preprocessor] [-] All Primary LLM attempts failed. Switching to Fallback LLM")
+        logger.warning("[Preprocessor] All Primary LLM attempts failed. Switching to Fallback LLM")
         try:
             # Initialize Fallback Model based on Settings
             provider_str = settings.FALLBACK_PROVIDER.lower()
@@ -226,10 +226,10 @@ class QueryPreprocessor:
             except Exception:
                 token_str = ""
                 
-            logger.info(f"[Preprocessor] [+] Successfully processed {result.total_questions} question(s) via Fallback LLM {token_str}")
+            logger.info(f"[Preprocessor] Successfully processed {result.total_questions} question(s) via Fallback LLM {token_str}")
             return result
         except Exception as fallback_e:
-            logger.error(f"[Preprocessor] [-] Both Primary and Fallback LLMs failed! Error: {fallback_e}")
+            logger.error(f"[Preprocessor] Both Primary and Fallback LLMs failed! Error: {fallback_e}")
             raise
 
 

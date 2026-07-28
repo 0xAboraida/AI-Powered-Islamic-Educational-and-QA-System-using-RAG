@@ -141,7 +141,7 @@ class HybridRetriever(BaseRetriever):
         import time
         import asyncio
         logger.info(
-            f"[HybridSearch] [+] Async search: collection='{collection_name}' top_k={top_k} filters={filters}"
+            f"[HybridSearch] Async search: collection='{collection_name}' top_k={top_k} filters={filters}"
         )
 
         candidate_k = top_k * self.dense_top_k_multiplier
@@ -150,7 +150,7 @@ class HybridRetriever(BaseRetriever):
         # But first, embed the query ONCE to prevent Tokenizer thread-deadlock on CPU and save 2x compute
         embed_t = time.time()
         shared_embedding = await self.dense_retriever.embedding_model.aembed_query(query)
-        logger.info(f"[Timer] [+] Shared embedding took {time.time() - embed_t:.2f}s")
+        logger.info(f"[Timer] Shared embedding took {time.time() - embed_t:.2f}s")
 
         start_t = time.time()
         dense_task = self.dense_retriever.aretrieve(
@@ -162,7 +162,7 @@ class HybridRetriever(BaseRetriever):
         
         dense_results, sparse_results = await asyncio.gather(dense_task, sparse_task)
         
-        logger.info(f"[Timer] [+] Async dense+sparse parallel execution took {time.time() - start_t:.2f}s")
+        logger.info(f"[Timer] Async dense+sparse parallel execution took {time.time() - start_t:.2f}s")
 
         # Fuse with RRF
         fuse_t = time.time()
@@ -172,9 +172,9 @@ class HybridRetriever(BaseRetriever):
             k=self.rrf_k,
             top_k=top_k,
         )
-        logger.info(f"[Timer] [+] Async RRF fusion took {time.time() - fuse_t:.2f}s")
+        logger.info(f"[Timer] Async RRF fusion took {time.time() - fuse_t:.2f}s")
 
         logger.info(
-            f"[HybridSearch] [+] Async fusion complete: dense={len(dense_results)} sparse={len(sparse_results)} final={len(fused_results)}"
+            f"[HybridSearch] Async fusion complete: dense={len(dense_results)} sparse={len(sparse_results)} final={len(fused_results)}"
         )
         return fused_results

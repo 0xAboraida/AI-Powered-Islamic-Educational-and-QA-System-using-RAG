@@ -117,7 +117,7 @@ class SparseRetriever(BaseRetriever):
     ) -> List[RetrievedChunk]:
         import time
         import asyncio
-        logger.info(f"[SparseRetriever] [+] Async query: '{query[:60]}...'")
+        logger.info(f"[SparseRetriever] Async query: '{query[:60]}...'")
 
         # Step 1: Embed the query async
         if embedding_result:
@@ -126,7 +126,7 @@ class SparseRetriever(BaseRetriever):
             embed_start_t = time.time()
             embedding_result = await self.embedding_model.aembed_query(query)
             query_sparse_vector: Dict[str, float] = embedding_result.sparse
-            logger.info(f"[Timer] [+] Sparse embedding took {time.time() - embed_start_t:.2f}s")
+            logger.info(f"[Timer] Sparse embedding took {time.time() - embed_start_t:.2f}s")
 
         if not query_sparse_vector:
             logger.warning("[SparseRetriever] Embedding model returned empty sparse vector. Returning no results.")
@@ -141,7 +141,7 @@ class SparseRetriever(BaseRetriever):
             limit=top_k,
             filters=filters,
         )
-        logger.info(f"[Timer] [+] Sparse Qdrant search took {time.time() - qdrant_start_t:.2f}s")
+        logger.info(f"[Timer] Sparse Qdrant search took {time.time() - qdrant_start_t:.2f}s")
 
         # Step 3: Map results
         chunks = []
@@ -157,5 +157,5 @@ class SparseRetriever(BaseRetriever):
                 )
             )
 
-        logger.info(f"[SparseRetriever] [+] Async returned {len(chunks)} chunks")
+        logger.info(f"[SparseRetriever] Async returned {len(chunks)} chunks")
         return chunks

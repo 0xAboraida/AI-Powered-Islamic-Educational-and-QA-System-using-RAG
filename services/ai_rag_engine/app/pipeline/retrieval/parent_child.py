@@ -63,6 +63,31 @@ class RetrievedParent:
         )
 
 
+def _log_chunks_metadata(stage_name: str, items: List[Any], limit: int = None):
+    """Helper to cleanly print chunks/parents metadata without content."""
+    items_to_log = items[:limit] if limit else items
+    logger.info(f"      [RetrievalService] [Log - {stage_name}] Total: {len(items)}")
+    for i, item in enumerate(items_to_log, 1):
+        if hasattr(item, "best_child_score"):
+            score = item.best_child_score
+        else:
+            score = getattr(item, "score", 0.0)
+            
+        meta = getattr(item, "metadata", {})
+        book = meta.get("book_title", "N/A")
+        hierarchy = meta.get("hierarchy", "N/A")
+        
+        if isinstance(hierarchy, list):
+            hierarchy_str = " > ".join([str(h) for h in hierarchy])
+        else:
+            hierarchy_str = str(hierarchy)
+            
+        if len(hierarchy_str) > 60:
+            hierarchy_str = hierarchy_str[:] + "..."
+            
+        logger.info(f"      [RetrievalService]      {i}. [Score: {score:.4f}] Book: {book} | {hierarchy_str}")
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Connection pool (lazy, one MongoManager per cluster URI)
 # ─────────────────────────────────────────────────────────────────────────────
@@ -185,12 +210,13 @@ class ParentChildRetriever:
             logger.warning("[ParentChild] No child chunks returned from Qdrant.")
             return []
 
-        logger.info(f"[ParentChild] Got {len(child_chunks)} child chunks. Passing to Reranker.")
-        
+        _log_chunks_metadata("Stage 1 - Raw Child Chunks (Hybrid Search)", child_chunks)
+
         from services.ai_rag_engine.app.models.embedding_models.reranker import reranker_service
-        child_chunks = reranker_service.rerank(query, child_chunks)
-        
-        logger.info(f"[ParentChild] Reranker kept top {len(child_chunks)} child chunks")
+        if reranker_service.enabled:
+            logger.info(f"[ParentChild] Reranking {len(child_chunks)} child chunks...")
+            child_chunks = reranker_service.rerank(query, child_chunks, score_threshold=-1.5)
+            _log_chunks_metadata("Stage 1.5 - Reranked Child Chunks", child_chunks)
 
         # ── Step 2: Group children by (domain, madhhab) for routing ──────────
         logger.info("[ParentChild] Step 2: Grouping by domain/madhhab")
@@ -311,9 +337,15 @@ class ParentChildRetriever:
                 )
             )
 
-        # Sort by best child score descending, then slice to top_k
+        _log_chunks_metadata("Stage 2 - Raw Parents (Pre-Rerank)", results)
+
+        # We just sort the fetched parents by the highest child score that triggered them
         results.sort(key=lambda p: p.best_child_score, reverse=True)
+        
+        # We enforce the maximum parent limit to protect LLM context length
         results = results[:parent_top_k]
+
+        _log_chunks_metadata(f"Stage 3 - Final Parents (Top {len(results)})", results)
 
         logger.info(
             f"[ParentChild] Sync Retrieval Complete | Returning {len(results)} parent documents"
@@ -329,7 +361,7 @@ class ParentChildRetriever:
         filters: Optional[Dict[str, Any]] = None,
     ) -> List[RetrievedParent]:
         logger.info(
-            f"[ParentChild] [+] Async Hybrid search | child_top_k={child_top_k}"
+            f"[ParentChild] Async Hybrid search | child_top_k={child_top_k}"
         )
         child_chunks: List[RetrievedChunk] = await self.hybrid_retriever.aretrieve(
             query=query,
@@ -339,17 +371,18 @@ class ParentChildRetriever:
         )
 
         if not child_chunks:
-            logger.warning("[ParentChild] [-] No child chunks returned from Qdrant.")
+            logger.warning("[ParentChild] No child chunks returned from Qdrant.")
             return []
 
-        logger.info(f"[ParentChild] [+] Got {len(child_chunks)} child chunks. Passing to Reranker.")
-        
-        from services.ai_rag_engine.app.models.embedding_models.reranker import reranker_service
-        child_chunks = await reranker_service.arerank(query, child_chunks)
-        
-        logger.info(f"[ParentChild] [+] Reranker kept top {len(child_chunks)} child chunks")
+        _log_chunks_metadata("Stage 1 - Raw Child Chunks (Hybrid Search)", child_chunks)
 
-        logger.info("[ParentChild] [+] Grouping by domain/madhhab")
+        from services.ai_rag_engine.app.models.embedding_models.reranker import reranker_service
+        if reranker_service.enabled:
+            logger.info(f"[ParentChild] Reranking {len(child_chunks)} child chunks...")
+            child_chunks = await reranker_service.arerank(query, child_chunks, score_threshold=-1.5)
+            _log_chunks_metadata("Stage 1.5 - Reranked Child Chunks", child_chunks)
+
+        logger.info("[ParentChild] Grouping by domain/madhhab")
 
         RouteKey = Tuple[str, Optional[str]]
         parent_map: Dict[str, Dict] = {}
@@ -423,7 +456,7 @@ class ParentChildRetriever:
 
         fetched_docs = await asyncio.to_thread(fetch_all_mongo)
         
-        logger.info(f"[Timer] [+] Async MongoDB fetching took {time.time() - mongo_t:.2f}s")
+        logger.info(f"[Timer] Async MongoDB fetching took {time.time() - mongo_t:.2f}s")
 
         results: List[RetrievedParent] = []
 
@@ -446,10 +479,14 @@ class ParentChildRetriever:
                 )
             )
 
+        _log_chunks_metadata("Stage 2 - Raw Parents (Pre-Rerank)", results)
+
         results.sort(key=lambda p: p.best_child_score, reverse=True)
         results = results[:parent_top_k]
 
-        logger.info(f"[ParentChild] [+] Async Retrieval Complete | Returning {len(results)} parent documents")
+        _log_chunks_metadata(f"Stage 3 - Final Parents (Top {len(results)})", results)
+
+        logger.info(f"[ParentChild] Async Retrieval Complete | Returning {len(results)} parent documents")
         return results
 
     def warm_up_mongo(self, domain: str):

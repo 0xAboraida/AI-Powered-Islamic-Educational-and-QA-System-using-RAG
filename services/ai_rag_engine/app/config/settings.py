@@ -101,21 +101,22 @@ class Settings(BaseSettings):
     # ── LLM ──────────────────────────────────────────────────────────────────
     GOOGLE_API_KEYS: str = os.getenv("GOOGLE_API_KEYS", "")
     LLM_MODEL_NAME: str = os.getenv("LLM_MODEL_NAME", "gemini-2.0-flash")
-    LLM_TEMPERATURE: float = float(os.getenv("LLM_TEMPERATURE", "0.0"))
+    LLM_TEMPERATURE: float = float(os.getenv("LLM_TEMPERATURE", "0.3"))
 
     # ── RAG Pipeline Tuning ──────────────────────────────────────────────────
     # Number of final parent documents sent to the LLM when there is a single query
     RAG_SINGLE_QUERY_PARENT_TOP_K: int = int(
-        os.getenv("RAG_SINGLE_QUERY_PARENT_TOP_K", "5")
+        os.getenv("RAG_SINGLE_QUERY_PARENT_TOP_K", "7")
     )
 
     # Number of final parent documents per sub-query when there are multiple queries
     RAG_MULTI_QUERY_PARENT_TOP_K: int = int(
-        os.getenv("RAG_MULTI_QUERY_PARENT_TOP_K", "3")
+        os.getenv("RAG_MULTI_QUERY_PARENT_TOP_K", "5")
     )
 
     # Number of child chunks fetched from Qdrant before parent expansion
-    RAG_CHILD_TOP_K: int = int(os.getenv("RAG_CHILD_TOP_K", "25"))
+    RAG_SINGLE_QUERY_CHILD_TOP_K: int = int(os.getenv("RAG_SINGLE_QUERY_CHILD_TOP_K", "20"))
+    RAG_MULTI_QUERY_CHILD_TOP_K: int = int(os.getenv("RAG_MULTI_QUERY_CHILD_TOP_K", "15"))
 
     # Dense/Sparse candidate multiplier before fusion
     RAG_DENSE_MULTIPLIER: int = int(os.getenv("RAG_DENSE_MULTIPLIER", "1"))
@@ -127,7 +128,7 @@ class Settings(BaseSettings):
     ENABLE_FUZZY_BOOK_MATCH: bool = os.getenv("ENABLE_FUZZY_BOOK_MATCH", "True").lower() in ("true", "1", "yes")
 
     # ── Reranker Settings ────────────────────────────────────────────────────
-    USE_RERANKER: bool = os.getenv("USE_RERANKER", "True").lower() in (
+    USE_RERANKER: bool = os.getenv("USE_RERANKER", "False").lower() in (
         "true",
         "1",
         "yes",
@@ -135,7 +136,7 @@ class Settings(BaseSettings):
     RERANKER_MODEL_NAME: str = os.getenv(
         "RERANKER_MODEL_NAME", "BAAI/bge-reranker-v2-m3"
     )
-    RAG_RERANKER_TOP_K: int = int(os.getenv("RAG_RERANKER_TOP_K", "3"))
+    RAG_RERANKER_TOP_K: int = int(os.getenv("RAG_RERANKER_TOP_K", "15"))
 
     # ── API Response Settings ────────────────────────────────────────────────
     RETURN_CONTEXT_CHUNKS: bool = os.getenv(
@@ -164,6 +165,7 @@ class Settings(BaseSettings):
     ]
 
     DOMAIN_MAPPING: dict[int, str] = {
+        0: "auto",
         1: "فقه",
         2: "العقيدة",
         3: "السيرة",
@@ -173,6 +175,10 @@ class Settings(BaseSettings):
         7: "التاريخ",
         8: "علوم اللغة",
     }
+    
+    FORCE_DOMAIN_DETECTION: bool = os.getenv(
+        "FORCE_DOMAIN_DETECTION", "False"
+    ).lower() in ("true", "1", "yes")
 
     # Redis Chat Memory
     REDIS_URL: str = Field(
@@ -184,3 +190,12 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+import os
+# Dynamic Reranker Path Resolution:
+# If the path from .env is a local absolute path (e.g., C:/Users/...) and it doesn't exist
+# (which happens inside the Linux Docker container), fallback to the Hugging Face repo ID
+# so it downloads directly from the internet.
+if not os.path.exists(settings.RERANKER_MODEL_NAME):
+    if os.path.isabs(settings.RERANKER_MODEL_NAME) or "\\" in settings.RERANKER_MODEL_NAME or " " in settings.RERANKER_MODEL_NAME:
+        settings.RERANKER_MODEL_NAME = "BAAI/bge-reranker-v2-m3"

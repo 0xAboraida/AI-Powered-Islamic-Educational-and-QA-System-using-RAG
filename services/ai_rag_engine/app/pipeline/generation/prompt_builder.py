@@ -61,7 +61,27 @@ def build_prompt(query: str, domain: str, parents: List[RetrievedParent]) -> str
         The final formatted prompt string ready to be sent to the LLM.
     """
     # 1. Format the retrieved parents into a string
-    full_context = build_context_string(parents)
+    if not parents:
+        # If there are no parents, this is likely a meta-query that bypassed retrieval.
+        # We inject the system's available library (books and authors) into the context.
+        from services.ai_rag_engine.app.pipeline.preprocessing.question_preprocessing.models import DOMAIN_BOOKS, DOMAIN_AUTHORS
+        
+        meta_context = (
+            "أنت مساعد ذكي ومتخصص في العلوم الشرعية اسمك (زاد). "
+            "تم برمجتك وتطويرك كجزء من مشروع تخرج بواسطه 4 مهندسين تخرجوا من قسم علوم الحاسب من المعهد التكنولوجي العالي بالعاشر من رمضان بتقديرات تتراوح بين امتياز وجيد جدا , وحصل هذا المشروع علي تقدير امتياز , واسمائهم كالأتي: أحمد أحمد أبوريده (مهندس ذكاء اصطناعي) وعبدالرحمن صلاح(مهندس ذكاء اصطناعي) ومحمود عبدالمقصود بانك اند المهندس محمد مصطفي مهندس فلاتر) (Graduation Project). "
+            "مهمتك هي مساعدة المستخدمين في الوصول للمعلومات الشرعية الموثوقة. "
+            "هذا هو فهرس المكتبة المتاحة لديك حالياً في قاعدة البيانات:\n\n"
+        )
+        for dom, books in DOMAIN_BOOKS.items():
+            meta_context += f"### {dom}:\n"
+            meta_context += f"- الكتب: {', '.join(books)}\n"
+            if dom in DOMAIN_AUTHORS:
+                meta_context += f"- المؤلفون: {', '.join(DOMAIN_AUTHORS[dom])}\n"
+            meta_context += "\n"
+        
+        full_context = meta_context
+    else:
+        full_context = build_context_string(parents)
     
     # 2. Get the prompt template for the specific domain
     system_prompt_template = get_prompt_for_domain(domain)

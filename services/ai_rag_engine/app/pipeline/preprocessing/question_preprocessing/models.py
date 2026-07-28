@@ -162,7 +162,7 @@ def get_schema_for_domain(domain: str):
     books_list = DOMAIN_BOOKS.get(domain_key, [])
     authors_list = DOMAIN_AUTHORS.get(domain_key, [])
     
-    logger.info(f"[DYNAMIC SCHEMA] [+] Generating schema for domain '{domain_key}'. Injecting {len(books_list)} allowed books and {len(authors_list)} allowed authors.")
+    logger.info(f"[DYNAMIC SCHEMA] Generating schema for domain '{domain_key}'. Injecting {len(books_list)} allowed books and {len(authors_list)} allowed authors.")
     
     if not books_list:
         BooksEnum = str
@@ -207,7 +207,15 @@ def get_schema_for_domain(domain: str):
         )
         is_safe: bool = Field(
             ..., 
-            description="True ONLY if the question is related to Islamic sciences. False if out of scope or harmful."
+            description="True if the question is related to Islamic sciences or is a greeting/meta-question. False if out of scope or harmful."
+        )
+        rejection_message: Optional[str] = Field(
+            None,
+            description="If is_safe is False, write a polite, dynamic Arabic response apologizing and explaining that you specialize only in Islamic sciences and cannot answer this specific question."
+        )
+        is_meta: bool = Field(
+            False,
+            description="True ONLY if the user is greeting, asking who you are, asking about your capabilities, or asking what books/authors/domains you have available in your database."
         )
         is_ambiguous: bool = Field(
             False, 

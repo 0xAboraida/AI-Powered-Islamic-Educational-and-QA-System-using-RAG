@@ -15,7 +15,7 @@ class GeminiLLMModel(LLMModel):
             google_api_key=api_key,
             streaming=True,
             temperature=settings.LLM_TEMPERATURE,
-            max_output_tokens=4096,
+            max_output_tokens=8192,
             max_retries=0,
             safety_settings={
                 HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,

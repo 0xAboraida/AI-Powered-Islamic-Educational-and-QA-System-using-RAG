@@ -82,7 +82,7 @@ class MongoManager:
                 cursor = collection.find({"_id": {"$in": ids}})
                 results = list(cursor)
                 logger.info(
-                    f"[MongoManager] [+] Fetched {len(results)}/{len(ids)} parents "
+                    f"[MongoManager] Fetched {len(results)}/{len(ids)} parents "
                     f"from '{self.db_name}.{collection_name}'"
                 )
                 return results

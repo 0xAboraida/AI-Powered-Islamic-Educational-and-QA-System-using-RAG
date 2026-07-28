@@ -9,9 +9,9 @@ class ChatRequest(BaseModel):
     query: str = Field(..., description="The user's current question.")
     domain: int = Field(
         ...,
-        ge=1,
+        ge=0,
         le=8,
-        description="1: فقه | 2: العقيدة | 3: السيرة | 4: التفسير | 5: الحديث | 6: علوم القران | 7: التاريخ | 8: علوم اللغه",
+        description="0: Auto | 1: فقه | 2: العقيدة | 3: السيرة | 4: التفسير | 5: الحديث | 6: علوم القران | 7: التاريخ | 8: علوم اللغه",
     )
 
 
