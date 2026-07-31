@@ -105,52 +105,39 @@ class Settings(BaseSettings):
 
     # ── RAG Pipeline Tuning ──────────────────────────────────────────────────
     # Number of final parent documents sent to the LLM when there is a single query
-    RAG_SINGLE_QUERY_PARENT_TOP_K: int = int(
-        os.getenv("RAG_SINGLE_QUERY_PARENT_TOP_K", "7")
-    )
+    RAG_SINGLE_QUERY_PARENT_TOP_K: int = Field(7)
 
     # Number of final parent documents per sub-query when there are multiple queries
-    RAG_MULTI_QUERY_PARENT_TOP_K: int = int(
-        os.getenv("RAG_MULTI_QUERY_PARENT_TOP_K", "5")
-    )
+    RAG_MULTI_QUERY_PARENT_TOP_K: int = Field(5)
 
     # Number of child chunks fetched from Qdrant before parent expansion
-    RAG_SINGLE_QUERY_CHILD_TOP_K: int = int(os.getenv("RAG_SINGLE_QUERY_CHILD_TOP_K", "20"))
-    RAG_MULTI_QUERY_CHILD_TOP_K: int = int(os.getenv("RAG_MULTI_QUERY_CHILD_TOP_K", "15"))
+    RAG_SINGLE_QUERY_CHILD_TOP_K: int = Field(20)
+    RAG_MULTI_QUERY_CHILD_TOP_K: int = Field(15)
 
     # Dense/Sparse candidate multiplier before fusion
-    RAG_DENSE_MULTIPLIER: int = int(os.getenv("RAG_DENSE_MULTIPLIER", "1"))
+    RAG_DENSE_MULTIPLIER: int = Field(1)
 
     # RRF smoothing constant (original paper recommends 60)
-    RAG_RRF_K: int = int(os.getenv("RAG_RRF_K", "60"))
+    RAG_RRF_K: int = Field(60)
     
     # Enable Fuzzy Matching for Book Titles extracted by the LLM
-    ENABLE_FUZZY_BOOK_MATCH: bool = os.getenv("ENABLE_FUZZY_BOOK_MATCH", "True").lower() in ("true", "1", "yes")
+    ENABLE_FUZZY_BOOK_MATCH: bool = Field(True)
 
     # ── Reranker Settings ────────────────────────────────────────────────────
-    USE_RERANKER: bool = os.getenv("USE_RERANKER", "False").lower() in (
-        "true",
-        "1",
-        "yes",
-    )
-    RERANKER_MODEL_NAME: str = os.getenv(
-        "RERANKER_MODEL_NAME", "BAAI/bge-reranker-v2-m3"
-    )
-    RAG_RERANKER_TOP_K: int = int(os.getenv("RAG_RERANKER_TOP_K", "15"))
+    USE_RERANKER: bool = Field(False)
+    RERANKER_MODEL_NAME: str = Field("BAAI/bge-reranker-v2-m3")
+    RAG_RERANKER_TOP_K: int = Field(15)
 
     # ── API Response Settings ────────────────────────────────────────────────
-    RETURN_CONTEXT_CHUNKS: bool = os.getenv(
-        "RETURN_CONTEXT_CHUNKS", "False"
-    ).lower() in ("true", "1", "yes")
-    RETURN_CITATION_CONTENT: bool = os.getenv(
-        "RETURN_CITATION_CONTENT", "False"
-    ).lower() in ("true", "1", "yes")
+    RETURN_CONTEXT_CHUNKS: bool = Field(False)
+    RETURN_CITATION_CONTENT: bool = Field(False)
+    VERBOSE_RETRIEVAL_LOGS: bool = Field(False)
 
     # ── Fallback LLM Settings ────────────────────────────────────────────────
-    FALLBACK_PROVIDER: str = os.getenv("FALLBACK_PROVIDER", "openai")
+    FALLBACK_PROVIDER: str = os.getenv("FALLBACK_PROVIDER", "groq")
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
     GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
-    FALLBACK_MODEL_NAME: str = os.getenv("FALLBACK_MODEL_NAME", "gpt-4o-mini")
+    FALLBACK_MODEL_NAME: str = os.getenv("FALLBACK_MODEL_NAME", "llama-3.3-70b-versatile")
 
     # ── Application Constants ────────────────────────────────────────────────
     SUPPORTED_DOMAINS: list[str] = [
@@ -191,7 +178,6 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-import os
 # Dynamic Reranker Path Resolution:
 # If the path from .env is a local absolute path (e.g., C:/Users/...) and it doesn't exist
 # (which happens inside the Linux Docker container), fallback to the Hugging Face repo ID

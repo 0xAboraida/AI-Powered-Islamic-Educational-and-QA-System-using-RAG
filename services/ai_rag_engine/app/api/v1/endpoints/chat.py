@@ -57,6 +57,7 @@ async def chat_endpoint(request: ChatRequest):
         logger.error(f"Error in chat endpoint: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
+
 @router.post("/transcribe", summary="Transcribe audio to text using Groq Whisper API")
 async def transcribe_endpoint(file: UploadFile = File(...)):
     try:

@@ -18,6 +18,8 @@ Why a Retrieval Service?
 
 import os
 import logging
+import time
+import asyncio
 from typing import List, Dict, Any, Optional
 
 from services.ai_rag_engine.app.config.settings import settings
@@ -62,7 +64,6 @@ class RetrievalService:
 
     async def warm_up_all(self):
         """Eagerly load and connect all Qdrant and MongoDB clients asynchronously."""
-        import asyncio
         logger.info("[RetrievalService] Starting eager warmup for all databases")
         
         # Limit concurrent warmups to avoid DNS/Network timeouts when connecting to 8 clusters at once
@@ -85,8 +86,6 @@ class RetrievalService:
 
 
     async def retrieve_multi(self, queries: List[str], domain: str, madhhab: Optional[str] = None, custom_filters: Optional[Dict[str, Any]] = None, multi_filters: Optional[List[Dict[str, Any]]] = None) -> List[RetrievedParent]:
-        import time
-        import asyncio
         logger.info(f"[RetrievalService] Parallel retrieval started: queries={len(queries)} domain='{domain}'")
         start_t = time.time()
         

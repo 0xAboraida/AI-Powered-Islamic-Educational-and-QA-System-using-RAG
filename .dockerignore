@@ -36,3 +36,4 @@ tests/
 # Unrelated Services (to save Docker image size for RAG Engine)
 services/voice_agent/
 infrastructure/
+services/ai_rag_engine/app/agentic_pipeline/

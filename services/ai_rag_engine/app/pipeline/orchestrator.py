@@ -53,10 +53,12 @@ HYB_TAG = f"{MAGENTA}[HybridSearch]{RESET}"
 EMB_TAG = f"{CYAN}[Embedding]{RESET}"
 
 from typing import AsyncGenerator, Optional
+import datetime
 
 from services.ai_rag_engine.app.pipeline.preprocessing.question_preprocessing.query_preprocessor import (
     QueryPreprocessor,
 )
+from services.ai_rag_engine.app.pipeline.preprocessing.domain_classifier import DomainClassifier
 from services.ai_rag_engine.app.pipeline.retrieval.retrieval_service import (
     retrieval_service,
 )
@@ -100,12 +102,9 @@ class PipelineOrchestrator:
             logger.info("-" * 70)
 
             # Step 1.5: Domain Detection
-            from services.ai_rag_engine.app.config.settings import settings
-            
             # If FORCE_DOMAIN_DETECTION is True, or domain is auto, we run the classifier
             if settings.FORCE_DOMAIN_DETECTION or domain == "auto":
                 logger.info(f"{ORCH_TAG} [STEP 1.5] DOMAIN CLASSIFICATION")
-                from services.ai_rag_engine.app.pipeline.preprocessing.domain_classifier import DomainClassifier
                 
                 clf_start = time.time()
                 classifier = DomainClassifier()
@@ -294,7 +293,6 @@ class PipelineOrchestrator:
                 await memory_service.add_interaction(session_id, query, answer_text)
 
             logger.info("-" * 70)
-            import datetime
             end_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             logger.info(f"{ORCH_TAG} [TOTAL TIME] Pipeline completed successfully in {time.time() - global_start_time:.2f}s at [{end_time}]")
             logger.info("=" * 70 + "\n")

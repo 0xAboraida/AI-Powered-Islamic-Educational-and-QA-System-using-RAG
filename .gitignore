@@ -39,3 +39,5 @@ venv/
 .pytest_cache/
 AppDataLocalPackages*
 infrastructure/docker/Zad_Space
+services/ai_rag_engine/app/agentic_pipeline/
+docs/LangGraph_Tutorials/

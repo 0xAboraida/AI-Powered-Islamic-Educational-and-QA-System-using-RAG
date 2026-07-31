@@ -34,6 +34,7 @@ from services.ai_rag_engine.app.infrastructure.mongo_db.mongo_router import (
     MongoRouteConfig,
     get_routes,
 )
+from services.ai_rag_engine.app.config.settings import settings
 
 logger = logging.getLogger(__name__)
 
@@ -65,6 +66,18 @@ class RetrievedParent:
 
 def _log_chunks_metadata(stage_name: str, items: List[Any], limit: int = None):
     """Helper to cleanly print chunks/parents metadata without content."""
+    if not items:
+        return
+
+    # If verbose is disabled, only print a clean 1-line summary for Final Parents stage
+    if not settings.VERBOSE_RETRIEVAL_LOGS:
+        if "Final Parents" in stage_name:
+            books_gen = (getattr(item, "metadata", {}).get("book_title") for item in items)
+            unique_books = list(dict.fromkeys(b for b in books_gen if b))
+            books_str = ", ".join(unique_books) if unique_books else "N/A"
+            logger.info(f"      🟢 [Retrieval] {stage_name}: {len(items)} docs from ({books_str})")
+        return
+
     items_to_log = items[:limit] if limit else items
     logger.info(f"      [RetrievalService] [Log - {stage_name}] Total: {len(items)}")
     for i, item in enumerate(items_to_log, 1):
@@ -83,7 +96,7 @@ def _log_chunks_metadata(stage_name: str, items: List[Any], limit: int = None):
             hierarchy_str = str(hierarchy)
             
         if len(hierarchy_str) > 60:
-            hierarchy_str = hierarchy_str[:] + "..."
+            hierarchy_str = hierarchy_str[:60] + "..."
             
         logger.info(f"      [RetrievalService]      {i}. [Score: {score:.4f}] Book: {book} | {hierarchy_str}")
 

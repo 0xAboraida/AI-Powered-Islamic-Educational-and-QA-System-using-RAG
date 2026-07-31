@@ -16,10 +16,17 @@ Why this file?
 
 import logging
 import re
+import os
+import asyncio
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
 
 from services.ai_rag_engine.app.api.routes import api_router
+from services.ai_rag_engine.app.pipeline.retrieval.retrieval_service import retrieval_service
+from services.ai_rag_engine.app.pipeline.retrieval.parent_child import mongo_pool
 
 class TerminalColorsFormatter(logging.Formatter):
     COLORS = {
@@ -72,12 +79,6 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 logging.getLogger("google_genai").setLevel(logging.WARNING)
 
 logger = logging.getLogger(__name__)
-
-import asyncio
-from contextlib import asynccontextmanager
-
-from services.ai_rag_engine.app.pipeline.retrieval.retrieval_service import retrieval_service
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Eagerly initialize MongoDB connections so first user request doesn't suffer 30s delay
@@ -87,7 +88,6 @@ async def lifespan(app: FastAPI):
     yield
     
     logger.info("🛑 Shutting down.")
-    from services.ai_rag_engine.app.pipeline.retrieval.parent_child import mongo_pool
     mongo_pool.close_all()
 
 app = FastAPI(title="Zad-AI RAG API", version="1.0.0", lifespan=lifespan)
@@ -107,9 +107,6 @@ app.include_router(api_router, prefix="/api")
 @app.get("/", tags=["health"])
 def health_check():
     return {"status": "Zad-AI Engine is running"}
-
-from fastapi.responses import HTMLResponse
-import os
 
 @app.get("/test", tags=["dev"], response_class=HTMLResponse)
 def test_ui():
