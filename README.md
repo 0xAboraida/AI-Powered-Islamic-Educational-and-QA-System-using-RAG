@@ -1,15 +1,26 @@
-# زاد (Zaad) - المساعد الرقمي للعلوم الشرعية 🕋
+# Zaad Mobile App
 
-**زاد** هو تطبيق مبتكر يعتمد على تقنيات الذكاء الاصطناعي لتقديم إجابات موثوقة وشاملة في مختلف مجالات العلوم الإسلامية، بما في ذلك الفقه، الشريعة، العقيدة، السيرة النبوية، وغيرها. يهدف التطبيق إلى تيسير الوصول إلى المعرفة الدينية بأسلوب عصري وتفاعلي يناسب جميع الفئات العمرية.
+The official Flutter application for **Zaad**, an AI-powered Islamic assistant designed to provide a modern and intuitive experience for interacting with Islamic knowledge.
 
----
-
-## 🌟 فكرة المشروع (Project Idea)
-تطبيق "زاد" يعمل كشات بوت (Chatbot) متخصص، مصمم للإجابة على تساؤلات المستخدمين حول الأمور الدينية استناداً إلى مصادر موثوقة. 
+The mobile app offers text and voice conversations with the AI assistant through a clean, responsive, and user-friendly interface.
 
 ---
 
-## 📸 لقطات الشاشة (Screenshots)
+## Features
+
+- Modern and intuitive UI
+- AI-powered chat experience
+- Voice conversations
+- Speech-to-Text support
+- Responsive design
+- Dark & Light theme support
+- Secure authentication
+- Smooth animations
+
+---
+
+## Screenshots
+
 <div align="center">
   <img src="assets/screenshots/screen1.png" width="200" alt="لقطة الشاشة 1"/>
   <img src="assets/screenshots/screen2.png" width="200" alt="لقطة الشاشة 2"/>
@@ -17,39 +28,95 @@
   <img src="assets/screenshots/screen4.png" width="200" alt="لقطة الشاشة 4"/>
 </div>
 
+---
 
+# Tech Stack
 
-## 🚀 التقنيات المستخدمة (Technology Stack)
-تم بناء التطبيق باستخدام أحدث التقنيات لضمان أداء سلس وتجربة مستخدم متميزة:
-- **Flutter & Dart:** الإطار البرمجي الأساسي ولغة البرمجة المستخدمة لبناء واجهة التطبيق.
-- **LiveKit Client:** لتمكين التواصل الصوتي المباشر والفعال في الوقت الفعلي داخل التطبيق.
-- **Speech to Text:** لتحويل الصوت إلى نص مما يسهل على المستخدمين التحدث مع الشات بوت.
-- **Bloc/Cubit & Provider:** لإدارة حالة التطبيق (State Management) بطريقة منظمة وقابلة للتوسع.
-- **Dio & Retrofit:** للتعامل مع طلبات الشبكة والـ APIs بكفاءة واحترافية.
-- **GetIt & Injectable:** لإدارة وحقن الاعتماديات (Dependency Injection).
-- **Flutter ScreenUtil:** لضمان استجابة الواجهات (Responsiveness) على مختلف أحجام الشاشات.
-- **Shared Preferences:** لحفظ بيانات المستخدم والتفضيلات محلياً.
-- **Siri Wave & Flutter Animate:** لتقديم تجربة بصرية جذابة وتأثيرات حركية تفاعلية للواجهات.
+### Framework
+
+- Flutter
+- Dart
+
+### State Management
+
+- Bloc / Cubit
+- Provider
+
+### Networking
+
+- Dio
+- Retrofit
+
+### Dependency Injection
+
+- GetIt
+- Injectable
+
+### Voice
+
+- LiveKit
+- Speech-to-Text
+
+### Local Storage
+
+- Shared Preferences
+
+### UI
+
+- Flutter ScreenUtil
+- Flutter Animate
+- Siri Wave
 
 ---
 
-## 🏗️ التصميم المعماري (Architecture)
-يتبع المشروع نمط **Clean Architecture** مع تقسيم برمجي قائم على الميزات (**Feature-based structure**):
-- **Core:** يحتوي على الأدوات المشتركة، الثيمات (Themes)، والمسارات (Routes).
-- **Features:** ينقسم إلى ميزات مستقلة (مثل Auth و Chatbot) لسهولة الصيانة والتطوير المستقبلي.
-  - **Presentation Layer:** يحتوي على الصفحات (Pages) والودجت (Widgets) وإدارة الحالة.
-  - **Logic Separation:** فصل منطق العمل عن واجهات المستخدم لضمان قابلية الاختبار (Testability).
+# Project Structure
+
+```
+lib/
+├── core/
+├── features/
+│   ├── auth/
+│   ├── chatbot/
+│   ├── onboarding/
+│   └── settings/
+├── shared/
+└── main.dart
+```
 
 ---
 
+# Getting Started
 
-## 🛠️ تشغيل المشروع
-تأكد من تثبيت Flutter SDK على جهازك، ثم قم بتنفيذ الأوامر التالية:
+## Prerequisites
+
+- Flutter SDK
+- Dart SDK
+
+## Installation
 
 ```bash
-# تحميل المكتبات المطلوبة
+git clone <repository-url>
+
+cd mobile
+
 flutter pub get
 
-# تشغيل التطبيق في وضع التطوير
 flutter run
 ```
+
+---
+
+# Architecture
+
+The project follows **Clean Architecture** with a feature-based structure.
+
+- Core layer for shared utilities.
+- Feature modules for better scalability.
+- Separation between UI, business logic, and data layers.
+- Dependency Injection using GetIt & Injectable.
+
+---
+
+# License
+
+Apache License 2.0
