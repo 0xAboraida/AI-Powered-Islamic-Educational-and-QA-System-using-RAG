@@ -28,6 +28,7 @@
 - [🟣 System Architecture](#-system-architecture)
 - [🟢 Core RAG Pipeline](#core-rag-pipeline)
 - [🟢 Database Architecture](#-database-architecture)
+- [🟢 Islamic Knowledge Base](#-islamic-knowledge-base)
 - [🟢 Tech Stack](#-tech-stack)
 - [🟢 Quick Start & Deployment](#-quick-start--deployment)
 - [🟢 Data Ingestion Pipeline](#-data-ingestion-pipeline)
@@ -285,7 +286,7 @@ To handle the massive scale of classical Islamic texts while keeping infrastruct
 
 ---
 
-## 🟢 Open Datasets
+## 🟢 Islamic Knowledge Base
 
 One of Zad's core strengths is its curated collection of classical Islamic datasets, all of which are publicly available on Kaggle. These datasets were carefully prepared for Islamic AI, semantic search, Retrieval-Augmented Generation (RAG), and NLP research.
 
