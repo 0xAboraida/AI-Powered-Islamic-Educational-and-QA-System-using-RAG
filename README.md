@@ -23,6 +23,7 @@
 
 ## 🟢 Table of Contents
 - [🟢 Overview](#-overview)
+- [🟢 App Screenshots](#-app-screenshots)
 - [🟢 Key Features](#-key-features)
 - [🟣 System Architecture](#-system-architecture)
 - [🟢 Core RAG Pipeline](#core-rag-pipeline)
@@ -43,6 +44,24 @@
 The platform offers two primary interaction modes:
 1. **Text Chat (Deep Research):** A sophisticated interface for in-depth Islamic research. It leverages a Hybrid RAG pipeline—combining dense semantic search with sparse keyword matching—across a horizontally scaled database of classical texts, synthesizing precise, properly cited responses via Large Language Models (LLMs).
 2. **Voice Chat (Conversational AI):** An interactive, hands-free voice assistant powered by WebRTC (LiveKit) and a custom Model Context Protocol (MCP). It allows users to converse naturally while the RAG engine retrieves and synthesizes answers in real-time.
+
+---
+
+## 🟢 App Screenshots
+<div align="center">
+<img width="160" alt="photo_16_2026-08-02_07-43-16" src="https://github.com/user-attachments/assets/02f56665-aa5d-4b30-9005-dc197d323113" />
+<img width="160" alt="photo_18_2026-08-02_07-43-16" src="https://github.com/user-attachments/assets/ba4f3b91-ba0d-4869-b103-7b9ae4a1c286" />
+<img width="160" alt="photo_13_2026-08-02_07-43-16" src="https://github.com/user-attachments/assets/fe841648-512d-422d-ad24-936740352bb9" />
+<img width="160" alt="photo_1_2026-08-02_08-57-37" src="https://github.com/user-attachments/assets/5331d8a5-f5e5-490e-bb05-f2208b89bf6f" />
+<img width="160" alt="photo_2_2026-08-02_08-59-23" src="https://github.com/user-attachments/assets/9ab812d9-65c3-4d95-9f12-4448accca1d2" />
+<img width="160" alt="image" src="https://github.com/user-attachments/assets/300ff7c1-a56e-4385-b83f-80bd66cf8ce4" />
+<img width="160" alt="photo_1_2026-08-02_08-59-23" src="https://github.com/user-attachments/assets/19f51810-1d73-4e47-b130-d79472acf21f" />
+<img width="160" alt="photo_5_2026-08-02_08-57-37" src="https://github.com/user-attachments/assets/fdf1507f-1519-456b-a35d-020e64ca73b4" />
+<img width="160" alt="photo_11_2026-08-02_07-43-16" src="https://github.com/user-attachments/assets/1238079a-5393-4534-9c3f-60f3b84172dd" />
+<img width="160" alt="photo_10_2026-08-02_07-43-16" src="https://github.com/user-attachments/assets/49326e20-448d-47f8-87f8-a26ff30ce187" />
+<img width="160" alt="photo_8_2026-08-02_07-43-16" src="https://github.com/user-attachments/assets/0698b888-63f6-4236-af98-9cd07a0664fb" />
+<img width="160" alt="photo_5_2026-08-02_07-43-16" src="https://github.com/user-attachments/assets/23ddbd75-1b05-4b2d-ba23-8526d8299a8f" />
+</div>
 
 ---
 
