@@ -1,7 +1,7 @@
 <div align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/WhiteLogo.png">
-    <source media="(prefers-color-scheme: light)" srcset="docs/assets/DarkLogo.png">
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/Logos/WhiteLogo.png">
+    <source media="(prefers-color-scheme: light)" srcset="docs/assets/Logos/ZadDarkLogo.png">
     <img alt="Zad AI Logo" src="docs/assets/DarkLogo.png" width="400" height="450">
   </picture>
   
