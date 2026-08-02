@@ -22,17 +22,17 @@
 ---
 
 ## 🟢 Table of Contents
-- [🟢 Overview](#overview)
-- [🟢 Key Features](#key-features)
-- [🟣 System Architecture](#system-architecture)
+- [🟢 Overview](#-overview)
+- [🟢 Key Features](#-key-features)
+- [🟣 System Architecture](#-system-architecture)
 - [🟢 Core RAG Pipeline](#core-rag-pipeline)
-- [🟢 Database Architecture](#database-architecture)
-- [🟢 Tech Stack](#tech-stack)
-- [🟢 Quick Start & Deployment](#quick-start--deployment)
-- [🟢 Data Ingestion Pipeline](#data-ingestion-pipeline)
-- [🟢 Documentation](#documentation)
-- [🟢 Contributing](#contributing)
-- [🟢 License](#license)
+- [🟢 Database Architecture](#-database-architecture)
+- [🟢 Tech Stack](#-tech-stack)
+- [🟢 Quick Start & Deployment](#-quick-start--deployment)
+- [🟢 Data Ingestion Pipeline](#-data-ingestion-pipeline)
+- [🟢 Documentation](#-documentation)
+- [🟢 Contributing](#-contributing)
+- [🟢 License](#-license)
 
 ---
 
