@@ -283,6 +283,29 @@ To handle the massive scale of classical Islamic texts while keeping infrastruct
 
 ---
 
+---
+
+## 🟢 Open Datasets
+
+One of Zad's core strengths is its curated collection of classical Islamic datasets, all of which are publicly available on Kaggle. These datasets were carefully prepared for Islamic AI, semantic search, Retrieval-Augmented Generation (RAG), and NLP research.
+
+| Dataset | Kaggle |
+|---------|---------|
+| Arabic Tafsir Books Corpus | https://www.kaggle.com/datasets/ahmedaboraida/tafseer-dataset |
+| Arabic Aqeedah Books Corpus | https://www.kaggle.com/datasets/ahmedaboraida/aqeedah |
+| Arabic Hanbali Fiqh Books Corpus | https://www.kaggle.com/datasets/ahmedaboraida/fiqh-hanbali |
+| Arabic Hanafi Fiqh Books Corpus | https://www.kaggle.com/datasets/ahmedaboraida/fiqh-hanafi |
+| Arabic Maliki Fiqh Books Corpus | https://www.kaggle.com/datasets/ahmedaboraida/fiqh-maliki |
+| Arabic Shafi'i Fiqh Books Corpus | https://www.kaggle.com/datasets/ahmedaboraida/fiqh-shafii |
+| Arabic Hadith Books Corpus | https://www.kaggle.com/datasets/ahmedaboraida/islamic-hadith-corpus |
+| Arabic Islamic History Books Corpus | https://www.kaggle.com/datasets/ahmedaboraida/tarikh-islam-dataset |
+| Arabic Nahw & Sarf Books Corpus | https://www.kaggle.com/datasets/ahmedaboraida/nahwsarf-dataset |
+| Arabic Seerah Books Corpus | https://www.kaggle.com/datasets/ahmedaboraida/seerah-dataset |
+
+> More datasets will be added over time as the project continues to grow.
+
+---
+
 ## 🟢 Tech Stack
 
 - **AI Engine (RAG):** Python 3.11+, FastAPI, LangChain, Pydantic, SentenceTransformers (BGE-M3).
