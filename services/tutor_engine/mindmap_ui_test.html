@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مُختبر الخرائط الذهنية - Zad AI</title>
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        p {
+            color: #94a3b8;
+            margin-bottom: 2rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid #334155;
+        }
+
+        .panel h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        textarea {
+            width: 100%;
+            height: 300px;
+            background-color: #0f172a;
+            color: #10b981;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: monospace;
+            font-size: 14px;
+            resize: vertical;
+            direction: ltr;
+        }
+
+        button {
+            width: 100%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 1rem;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* Tree Styles */
+        .tree-container {
+            overflow: auto;
+            max-height: 500px;
+        }
+
+        details {
+            margin-bottom: 0.5rem;
+            padding-right: 1.5rem; /* RTL Indent */
+        }
+
+        summary {
+            cursor: pointer;
+            font-weight: 600;
+            padding: 0.5rem;
+            background-color: #334155;
+            border-radius: 6px;
+            margin-bottom: 0.25rem;
+            user-select: none;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+        }
+
+        summary:hover {
+            background-color: #475569;
+        }
+
+        /* Hide default arrow and add custom one */
+        details > summary {
+            list-style: none;
+        }
+        details > summary::-webkit-details-marker {
+            display: none;
+        }
+
+        details > summary::before {
+            content: '▶';
+            display: inline-block;
+            margin-left: 0.5rem; /* Arabic spacing */
+            color: var(--primary);
+            font-size: 0.8em;
+            transition: transform 0.2s ease;
+        }
+
+        details[open] > summary::before {
+            transform: rotate(90deg);
+        }
+
+        .leaf-node {
+            padding: 0.5rem 2.5rem 0.5rem 0.5rem;
+            color: #cbd5e1;
+            position: relative;
+        }
+
+        .leaf-node::before {
+            content: '•';
+            position: absolute;
+            right: 1.25rem;
+            color: var(--primary);
+        }
+
+        .error {
+            color: #ef4444;
+            background-color: #7f1d1d20;
+            padding: 1rem;
+            border-radius: 8px;
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>🧠 مُختبر الخرائط الذهنية</h1>
+    <p>قم بوضع أي نص فقهي هنا، وسيقوم الذكاء الاصطناعي ببناء خريطته الذهنية ورسمها لك فوراً</p>
+
+    <div class="container">
+        <!-- Input Panel -->
+        <div class="panel">
+            <h2>النص الفقهي (الدرس)</h2>
+            <textarea id="textInput" placeholder='اكتب أو الصق نص الدرس هنا...'></textarea>
+            <button id="generateBtn" onclick="generateMindmap()">توليد الخريطة الذهنية بالذكاء الاصطناعي 🧠</button>
+            <div id="errorMsg" class="error"></div>
+        </div>
+
+        <!-- Output Panel -->
+        <div class="panel">
+            <h2>الخريطة الذهنية (العرض الهرمي)</h2>
+            <div id="treeOutput" class="tree-container">
+                <div style="color: #64748b; text-align: center; margin-top: 2rem;">
+                    في انتظار إدخال النص...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Recursive function to build HTML elements for the tree
+        function createTreeNode(node) {
+            // Determine the text to show based on the type
+            const isContent = node.type === 'content';
+            const displayText = isContent ? (node.content || 'بدون محتوى') : (node.label || 'بدون عنوان');
+            
+            if (node.children && node.children.length > 0) {
+                const details = document.createElement('details');
+                details.open = true; // Open by default
+                
+                const summary = document.createElement('summary');
+                summary.innerHTML = isContent 
+                    ? `<span style="color: #cbd5e1; font-weight: normal;">${displayText}</span>` 
+                    : `<strong>${displayText}</strong>`;
+                details.appendChild(summary);
+                
+                node.children.forEach(child => {
+                    details.appendChild(createTreeNode(child));
+                });
+                
+                return details;
+            } else {
+                const leaf = document.createElement('div');
+                leaf.className = 'leaf-node';
+                leaf.style.color = isContent ? '#94a3b8' : '#e2e8f0';
+                leaf.innerHTML = isContent 
+                    ? `<em>${displayText}</em>` 
+                    : `<strong>${displayText}</strong>`;
+                return leaf;
+            }
+        }
+
+        async function generateMindmap() {
+            const input = document.getElementById('textInput').value;
+            const treeOutput = document.getElementById('treeOutput');
+            const errorMsg = document.getElementById('errorMsg');
+            const generateBtn = document.getElementById('generateBtn');
+            
+            errorMsg.style.display = 'none';
+            
+            if (!input.trim()) {
+                errorMsg.textContent = "❌ يرجى إدخال نص الدرس أولاً!";
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            // UI Loading state
+            treeOutput.innerHTML = '<div style="color: #10b981; text-align: center; margin-top: 2rem; font-weight: bold; animation: pulse 1.5s infinite;">⏳ جاري التفكير وبناء الخريطة...<br><span style="font-size: 0.8em; color: #94a3b8;">قد يستغرق هذا بضع ثوانٍ</span></div>';
+            generateBtn.disabled = true;
+            generateBtn.style.opacity = '0.5';
+
+            try {
+                const response = await fetch('http://localhost:8002/api/v1/tutor/mindmap/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ text: input })
+                });
+
+                const data = await response.json();
+                
+                if (!response.ok || !data.success) {
+                    throw new Error(data.detail || "حدث خطأ غير معروف في السيرفر");
+                }
+
+                treeOutput.innerHTML = '';
+                
+                const nodesToRender = Array.isArray(data.tree) ? data.tree : [data.tree];
+                
+                if (nodesToRender.length === 0 || Object.keys(nodesToRender[0]).length === 0) {
+                    throw new Error("عذراً، الشجرة المستخرجة فارغة!");
+                }
+
+                nodesToRender.forEach(rootNode => {
+                    treeOutput.appendChild(createTreeNode(rootNode));
+                });
+
+            } catch (e) {
+                treeOutput.innerHTML = '<div style="color: #ef4444; text-align: center; margin-top: 2rem;">فشلت العملية</div>';
+                errorMsg.textContent = "❌ " + e.message;
+                errorMsg.style.display = 'block';
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.style.opacity = '1';
+            }
+        }
+
+        // Example default data
+        const exampleText = `أركان الصلاة أربعة عشر: القيام مع القدرة، وتكبيرة الإحرام، وقراءة الفاتحة، والركوع، والرفع منه، والاعتدال قائما، والسجود على الأعضاء السبعة، والرفع منه، والجلوس بين السجدتين، والطمأنينة في جميع الأفعال، والترتيب، والتشهد الأخير، والجلوس له، والتسليمتان.`;
+        
+        document.getElementById('textInput').value = exampleText;
+    </script>
+    <style>
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+    </style>
+</body>
+</html>

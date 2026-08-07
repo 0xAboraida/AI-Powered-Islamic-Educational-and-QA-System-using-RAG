@@ -1,0 +1,4703 @@
+[
+  {
+    "title": "بدائع الصنائع في ترتيب الشرائع",
+    "chunk_id": null,
+    "children": [
+      {
+        "title": "خطبة الكتاب للمصنف",
+        "chunk_id": "parent_5903_1__1",
+        "children": []
+      },
+      {
+        "title": "كتاب الطهارة",
+        "chunk_id": null,
+        "children": [
+          {
+            "title": "تفسير الطهارة",
+            "chunk_id": "parent_5903_1__2",
+            "children": []
+          },
+          {
+            "title": "فصل بيان أنواع الطهارة",
+            "chunk_id": "parent_5903_1__3",
+            "children": []
+          },
+          {
+            "title": "بيان أركان الوضوء",
+            "chunk_id": "parent_5903_1__4",
+            "children": []
+          },
+          {
+            "title": "فصل المسح على الخفين",
+            "chunk_id": "parent_5903_5__5",
+            "children": [
+              {
+                "title": "بيان مدة المسح",
+                "chunk_id": "parent_5903_6__6",
+                "children": []
+              },
+              {
+                "title": "المسح على الجورب",
+                "chunk_id": "parent_5903_8__7",
+                "children": []
+              },
+              {
+                "title": "فصل مقدار المسح",
+                "chunk_id": "parent_5903_10__8",
+                "children": []
+              },
+              {
+                "title": "فصل بيان ما ينقض المسح",
+                "chunk_id": "parent_5903_10__9",
+                "children": []
+              },
+              {
+                "title": "شرط جواز المسح",
+                "chunk_id": "parent_5903_11__10",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "فصل شرائط أركان الوضوء",
+            "chunk_id": "parent_5903_13__12",
+            "children": []
+          },
+          {
+            "title": "فصل سنن الوضوء",
+            "chunk_id": "parent_5903_16__13",
+            "children": [
+              {
+                "title": "التسمية في الوضوء",
+                "chunk_id": "parent_5903_18__14",
+                "children": []
+              },
+              {
+                "title": "الترتيب في الوضوء",
+                "chunk_id": "parent_5903_19__15",
+                "children": []
+              },
+              {
+                "title": "الموالاة في الوضوء",
+                "chunk_id": "parent_5903_20__16",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "فصل آداب الوضوء",
+            "chunk_id": "parent_5903_21__17",
+            "children": []
+          },
+          {
+            "title": "فصل بيان ما ينقض الوضوء",
+            "chunk_id": "parent_5903_22__18",
+            "children": [
+              {
+                "title": "القهقهة في الصلاة",
+                "chunk_id": "parent_5903_30__19",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "فصل الغسل",
+            "chunk_id": "parent_5903_32__21",
+            "children": []
+          },
+          {
+            "title": "فصل الحيض وأحكامه",
+            "chunk_id": "parent_5903_37__22",
+            "children": []
+          },
+          {
+            "title": "النفاس وأحكامه",
+            "chunk_id": "parent_5903_39__23",
+            "children": []
+          },
+          {
+            "title": "الاستحاضة وأحكامها",
+            "chunk_id": "parent_5903_39__24",
+            "children": []
+          },
+          {
+            "title": "فصل في التيمم",
+            "chunk_id": "parent_5903_42__25",
+            "children": []
+          },
+          {
+            "title": "فصل أركان التيمم",
+            "chunk_id": "parent_5903_43__26",
+            "children": []
+          },
+          {
+            "title": "فصل في كيفية التيمم",
+            "chunk_id": "parent_5903_44__27",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط ركن التيمم",
+            "chunk_id": "parent_5903_44__28",
+            "children": []
+          },
+          {
+            "title": "فصل بيان ما يتيمم به",
+            "chunk_id": "parent_5903_51__29",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يتيمم منه",
+            "chunk_id": "parent_5903_52__30",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان وقت التيمم",
+            "chunk_id": "parent_5903_52__31",
+            "children": []
+          },
+          {
+            "title": "فصل في صفة التيمم",
+            "chunk_id": "parent_5903_53__32",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما ينقض التيمم",
+            "chunk_id": "parent_5903_54__33",
+            "children": []
+          },
+          {
+            "title": "فصل في الطهارة الحقيقية",
+            "chunk_id": "parent_5903_58__34",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان المقدار الذي يصير به المحل نجسا",
+            "chunk_id": "parent_5903_69__35",
+            "children": []
+          },
+          {
+            "title": "فصل بيان ما يقع به التطهير",
+            "chunk_id": "parent_5903_81__36",
+            "children": []
+          },
+          {
+            "title": "فصل طريق التطهير بالغسل",
+            "chunk_id": "parent_5903_85__37",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط التطهير بالماء",
+            "chunk_id": "parent_5903_85__38",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الصلاة",
+        "chunk_id": "parent_5903_87__39",
+        "children": [
+          {
+            "title": "فصل عدد فروض الصلاة",
+            "chunk_id": "parent_5903_89__40",
+            "children": []
+          },
+          {
+            "title": "فصل عدد ركعات هذه الصلوات",
+            "chunk_id": "parent_5903_89__41",
+            "children": []
+          },
+          {
+            "title": "فصل في صلاة المسافر",
+            "chunk_id": "parent_5903_89__42",
+            "children": []
+          },
+          {
+            "title": "فصل بيان ما يصير به المقيم مسافرا",
+            "chunk_id": "parent_5903_91__43",
+            "children": []
+          },
+          {
+            "title": "فصل بيان ما يصير المسافر به مقيما",
+            "chunk_id": "parent_5903_95__44",
+            "children": []
+          },
+          {
+            "title": "فصل أركان الصلاة",
+            "chunk_id": "parent_5903_103__45",
+            "children": []
+          },
+          {
+            "title": "فصل شرائط أركان الصلاة",
+            "chunk_id": "parent_5903_112__46",
+            "children": []
+          },
+          {
+            "title": "فصل واجبات الصلاة",
+            "chunk_id": "parent_5903_144__47",
+            "children": []
+          },
+          {
+            "title": "فصل بيان كيفية الأذان",
+            "chunk_id": "parent_5903_145__48",
+            "children": [
+              {
+                "title": "فصل بيان سنن الأذان",
+                "chunk_id": "parent_5903_147__49",
+                "children": []
+              },
+              {
+                "title": "فصل بيان محل وجوب الأذان",
+                "chunk_id": "parent_5903_150__50",
+                "children": []
+              },
+              {
+                "title": "فصل بيان وقت الأذان والإقامة",
+                "chunk_id": "parent_5903_152__51",
+                "children": []
+              },
+              {
+                "title": "فصل بيان ما يجب على السامعين عند الأذان",
+                "chunk_id": "parent_5903_153__52",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "فصل بيان من تجب عليه الجماعة",
+            "chunk_id": "parent_5903_153__53",
+            "children": []
+          },
+          {
+            "title": "فصل بيان من تنعقد به الجماعة",
+            "chunk_id": "parent_5903_154__54",
+            "children": []
+          },
+          {
+            "title": "فصل بيان ما يفعل بعد فوات الجماعة",
+            "chunk_id": "parent_5903_154__55",
+            "children": []
+          },
+          {
+            "title": "فصل بيان من يصلح للإمامة في الجملة",
+            "chunk_id": "parent_5903_154__56",
+            "children": []
+          },
+          {
+            "title": "فصل بيان من يصلح للإمامة على التفصيل",
+            "chunk_id": "parent_5903_155__57",
+            "children": []
+          },
+          {
+            "title": "فصل بيان من هو أحق بالإمامة وأولى بها",
+            "chunk_id": "parent_5903_155__58",
+            "children": []
+          },
+          {
+            "title": "فصل بيان مقام الإمام والمأموم",
+            "chunk_id": "parent_5903_156__59",
+            "children": []
+          },
+          {
+            "title": "فصل بيان ما يستحب للإمام أن يفعله عقيب الفراغ من الصلاة",
+            "chunk_id": "parent_5903_157__60",
+            "children": []
+          },
+          {
+            "title": "فصل الواجبات الأصلية في الصلاة",
+            "chunk_id": "parent_5903_158__61",
+            "children": []
+          },
+          {
+            "title": "فصل بيان سبب وجوب سجود السهو",
+            "chunk_id": "parent_5903_162__62",
+            "children": [
+              {
+                "title": "فصل بيان المتروك ساهيا هل يقضى أم لا",
+                "chunk_id": "parent_5903_165__63",
+                "children": []
+              },
+              {
+                "title": "فصل بيان محل السجود للسهو",
+                "chunk_id": "parent_5903_170__64",
+                "children": []
+              },
+              {
+                "title": "فصل قدر سلام السهو وصفته",
+                "chunk_id": "parent_5903_172__65",
+                "children": []
+              },
+              {
+                "title": "فصل عمل سلام السهو هل يبطل التحريمة أم لا",
+                "chunk_id": "parent_5903_172__66",
+                "children": []
+              },
+              {
+                "title": "فصل بيان من يجب عليه سجود السهو ومن لا يجب عليه سجود السهو",
+                "chunk_id": "parent_5903_173__67",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "فصل سجدة التلاوة",
+            "chunk_id": "parent_5903_177__68",
+            "children": [
+              {
+                "title": "فصل بيان كيفية وجوب سجدة التلاوة",
+                "chunk_id": "parent_5903_178__69",
+                "children": []
+              },
+              {
+                "title": "فصل في سبب وجوب السجدة",
+                "chunk_id": "parent_5903_178__70",
+                "children": []
+              },
+              {
+                "title": "فصل بيان من تجب عليه سجدة التلاوة",
+                "chunk_id": "parent_5903_184__71",
+                "children": []
+              },
+              {
+                "title": "فصل شرائط جواز السجدة",
+                "chunk_id": "parent_5903_184__72",
+                "children": []
+              },
+              {
+                "title": "فصل في بيان محل أداء سجدة التلاوة",
+                "chunk_id": "parent_5903_185__73",
+                "children": []
+              },
+              {
+                "title": "فصل في كيفية أداء سجدة التلاوة",
+                "chunk_id": "parent_5903_186__74",
+                "children": []
+              },
+              {
+                "title": "فصل في بيان وقت أداء سجدة التلاوة",
+                "chunk_id": "parent_5903_189__75",
+                "children": []
+              },
+              {
+                "title": "فصل في سنن السجود",
+                "chunk_id": "parent_5903_190__76",
+                "children": []
+              },
+              {
+                "title": "فصل بيان مواضع السجدة في القرآن",
+                "chunk_id": "parent_5903_191__77",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "فصل لفظ الخروج من الصلاة",
+            "chunk_id": "parent_5903_192__78",
+            "children": []
+          },
+          {
+            "title": "فصل حكم التكبير في أيام التشريق",
+            "chunk_id": "parent_5903_193__79",
+            "children": [
+              {
+                "title": "فصل بيان وجوب تكبير التشريق",
+                "chunk_id": "parent_5903_193__80",
+                "children": []
+              },
+              {
+                "title": "فصل وقت تكبير التشريق",
+                "chunk_id": "parent_5903_193__81",
+                "children": []
+              },
+              {
+                "title": "فصل محل أداء تكبير التشريق",
+                "chunk_id": "parent_5903_194__82",
+                "children": []
+              },
+              {
+                "title": "فصل بيان من يجب عليه تكبير التشريق",
+                "chunk_id": "parent_5903_195__83",
+                "children": []
+              },
+              {
+                "title": "فصل بيان حكم التكبير أيام التشريق",
+                "chunk_id": "parent_5903_196__84",
+                "children": []
+              },
+              {
+                "title": "فصل في سنن حكم التكبير أيام التشريق",
+                "chunk_id": "parent_5903_196__85",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "فصل بيان ما يستحب في الصلاة وما يكره",
+            "chunk_id": "parent_5903_213__86",
+            "children": []
+          },
+          {
+            "title": "فصل بيان ما يفسد الصلاة",
+            "chunk_id": "parent_5903_218__87",
+            "children": []
+          },
+          {
+            "title": "فصل شرائط جواز البناء في الصلاة",
+            "chunk_id": "parent_5903_218__88",
+            "children": [
+              {
+                "title": "فصل الكلام في محل البناء وكيفيته في الصلاة",
+                "chunk_id": "parent_5903_221__89",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "فصل الكلام في الاستخلاف في الصلاة",
+            "chunk_id": "parent_5903_222__90",
+            "children": [
+              {
+                "title": "فصل شرائط جواز الاستخلاف",
+                "chunk_id": "parent_5903_224__91",
+                "children": []
+              },
+              {
+                "title": "فصل بيان حكم الاستخلاف",
+                "chunk_id": "parent_5903_230__92",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "فصل الكلام في صلاة الخوف",
+            "chunk_id": "parent_5903_240__93",
+            "children": [
+              {
+                "title": "فصل مقدارها صلاة الخوف",
+                "chunk_id": "parent_5903_241__94",
+                "children": []
+              },
+              {
+                "title": "فصل كيفية صلاة الخوف",
+                "chunk_id": "parent_5903_241__95",
+                "children": []
+              },
+              {
+                "title": "فصل شرائط جواز صلاة الخوف",
+                "chunk_id": "parent_5903_242__96",
+                "children": []
+              },
+              {
+                "title": "فصل حكم صلوات الخوف إذا فسدت أو فاتت عن أوقاتها",
+                "chunk_id": "parent_5903_243__97",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "فصل الكلام في مسائل السجدات يدور على أصول",
+            "chunk_id": "parent_5903_247__98",
+            "children": []
+          },
+          {
+            "title": "فصل صلاة الجمعة",
+            "chunk_id": "parent_5903_254__99",
+            "children": [
+              {
+                "title": "فصل كيفية فرضية صلاة الجمعة",
+                "chunk_id": "parent_5903_254__100",
+                "children": []
+              },
+              {
+                "title": "فصل بيان شرائط الجمعة",
+                "chunk_id": "parent_5903_256__101",
+                "children": []
+              },
+              {
+                "title": "حكم الخطبة",
+                "chunk_id": "parent_5903_260__102",
+                "children": []
+              },
+              {
+                "title": "مقدار الجماعة في صلاة الجمعة",
+                "chunk_id": "parent_5903_266__103",
+                "children": []
+              },
+              {
+                "title": "وقت صلاة الجمعة",
+                "chunk_id": "parent_5903_266__104",
+                "children": []
+              },
+              {
+                "title": "فصل بيان مقدار صلاة الجمعة",
+                "chunk_id": "parent_5903_267__105",
+                "children": []
+              },
+              {
+                "title": "فصل بيان ما يفسد صلاة الجمعة",
+                "chunk_id": "parent_5903_267__106",
+                "children": []
+              },
+              {
+                "title": "فصل بيان ما يستحب في يوم الجمعة وما يكره فيه",
+                "chunk_id": "parent_5903_267__107",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "فصل في أنواع الصلاة الواجبة ومنها صلاة الوتر",
+            "chunk_id": "parent_5903_268__108",
+            "children": [
+              {
+                "title": "فصل بيان من تجب عليه صلاة الوتر",
+                "chunk_id": "parent_5903_269__109",
+                "children": []
+              },
+              {
+                "title": "فصل الكلام في مقدار صلاة الوتر",
+                "chunk_id": "parent_5903_269__110",
+                "children": []
+              },
+              {
+                "title": "فصل بيان وقت الوتر",
+                "chunk_id": "parent_5903_270__111",
+                "children": []
+              },
+              {
+                "title": "فصل صفة القراءة في صلاة الوتر",
+                "chunk_id": "parent_5903_270__112",
+                "children": []
+              },
+              {
+                "title": "فصل في القنوت",
+                "chunk_id": "parent_5903_271__113",
+                "children": []
+              },
+              {
+                "title": "فصل بيان ما يفسد الوتر وبيان حكمه إذا فسد",
+                "chunk_id": "parent_5903_272__114",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "فصل صلاة العيدين",
+            "chunk_id": "parent_5903_272__115",
+            "children": [
+              {
+                "title": "فصل شرائط وجوب وجواز صلاة العيدين",
+                "chunk_id": "parent_5903_273__116",
+                "children": []
+              },
+              {
+                "title": "فصل بيان وقت أداء صلاة العيدين",
+                "chunk_id": "parent_5903_274__117",
+                "children": []
+              },
+              {
+                "title": "فصل بيان قدر صلاة العيدين وكيفية أدائها",
+                "chunk_id": "parent_5903_275__118",
+                "children": []
+              },
+              {
+                "title": "فصل بيان ما يفسد صلاة العيدين وبيان حكمها إذا فسدت",
+                "chunk_id": "parent_5903_277__119",
+                "children": []
+              },
+              {
+                "title": "فصل بيان ما يستحب في يوم العيد",
+                "chunk_id": "parent_5903_277__120",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "فصل صلاة الكسوف والخسوف",
+            "chunk_id": "parent_5903_278__121",
+            "children": [
+              {
+                "title": "فصل قدر وكيفية صلاة الكسوف",
+                "chunk_id": "parent_5903_278__122",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "فصل صلاة الاستسقاء",
+            "chunk_id": "parent_5903_280__123",
+            "children": []
+          },
+          {
+            "title": "فصل الصلاة المسنونة",
+            "chunk_id": "parent_5903_282__124",
+            "children": [
+              {
+                "title": "فصل صفة القراءة في سنن الصلاة",
+                "chunk_id": "parent_5903_283__125",
+                "children": []
+              },
+              {
+                "title": "فصل بيان ما يكره من سنن الصلاة",
+                "chunk_id": "parent_5903_283__126",
+                "children": []
+              },
+              {
+                "title": "فصل السنة إذا فاتت عن وقتها هل تقضى أم لا",
+                "chunk_id": "parent_5903_285__127",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "فصل في قدر صلاة التراويح",
+            "chunk_id": "parent_5903_286__128",
+            "children": [
+              {
+                "title": "فصل في سنن صلاة التراويح",
+                "chunk_id": "parent_5903_286__129",
+                "children": []
+              },
+              {
+                "title": "فصل صلاة التراويح إذا فاتت عن وقتها هل تقضى أم لا",
+                "chunk_id": "parent_5903_288__130",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "فصل صلاة التطوع",
+            "chunk_id": "parent_5903_288__131",
+            "children": [
+              {
+                "title": "فصل في بيان مقدار ما يلزم منه بالشروع في صلاة التطوع",
+                "chunk_id": "parent_5903_289__132",
+                "children": []
+              },
+              {
+                "title": "فصل بيان أفضل التطوع",
+                "chunk_id": "parent_5903_292__133",
+                "children": []
+              },
+              {
+                "title": "فصل بيان ما يكره من التطوع",
+                "chunk_id": "parent_5903_293__134",
+                "children": []
+              },
+              {
+                "title": "فصل بيان ما يفارق التطوع الفرض فيه",
+                "chunk_id": "parent_5903_295__135",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "فصل صلاة الجنازة",
+            "chunk_id": "parent_5903_297__136",
+            "children": []
+          },
+          {
+            "title": "فصل الغسل",
+            "chunk_id": "parent_5903_297__137",
+            "children": [
+              {
+                "title": "فصل بيان كيفية وجوب غسل الميت",
+                "chunk_id": "parent_5903_298__138",
+                "children": []
+              },
+              {
+                "title": "فصل بيان كيفية الغسل للميت",
+                "chunk_id": "parent_5903_298__139",
+                "children": []
+              },
+              {
+                "title": "فصل شرائط وجوب الغسل",
+                "chunk_id": "parent_5903_300__140",
+                "children": []
+              },
+              {
+                "title": "فصل بيان الكلام فيمن يغسل",
+                "chunk_id": "parent_5903_302__141",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "فصل بيان وجوب التكفين",
+            "chunk_id": "parent_5903_304__142",
+            "children": [
+              {
+                "title": "فصل كيفية وجوب التكفين",
+                "chunk_id": "parent_5903_304__143",
+                "children": []
+              },
+              {
+                "title": "فصل في صفة الكفن",
+                "chunk_id": "parent_5903_305__144",
+                "children": []
+              },
+              {
+                "title": "فصل كيفية التكفين",
+                "chunk_id": "parent_5903_305__145",
+                "children": []
+              },
+              {
+                "title": "فصل بيان من يجب عليه الكفن",
+                "chunk_id": "parent_5903_306__146",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "فصل بيان عدد من يحمل الجنازة وكيفية حملها",
+            "chunk_id": "parent_5903_307__147",
+            "children": []
+          },
+          {
+            "title": "فصل بيان فريضة صلاة الجنازة وكيفية فرضيتها",
+            "chunk_id": "parent_5903_308__148",
+            "children": [
+              {
+                "title": "فصل بيان كيفية الصلاة على الجنازة",
+                "chunk_id": "parent_5903_310__149",
+                "children": []
+              },
+              {
+                "title": "فصل بيان ما تصح به صلاة الجنازة",
+                "chunk_id": "parent_5903_313__150",
+                "children": []
+              },
+              {
+                "title": "فصل بيان ما تفسد به صلاة الجنازة",
+                "chunk_id": "parent_5903_314__151",
+                "children": []
+              },
+              {
+                "title": "فصل بيان ما يكره في صلاة الجنازة",
+                "chunk_id": "parent_5903_314__152",
+                "children": []
+              },
+              {
+                "title": "فصل بيان من له ولاية الصلاة على الميت",
+                "chunk_id": "parent_5903_315__153",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "فصل بيان وجوب الدفن",
+            "chunk_id": "parent_5903_316__154",
+            "children": [
+              {
+                "title": "فصل سنة الحفر لدفن الميت",
+                "chunk_id": "parent_5903_316__155",
+                "children": []
+              },
+              {
+                "title": "فصل في سنة الدفن",
+                "chunk_id": "parent_5903_316__156",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "فصل أحكام الشهيد",
+            "chunk_id": "parent_5903_318__157",
+            "children": [
+              {
+                "title": "فصل حكم الشهادة في الدنيا",
+                "chunk_id": "parent_5903_322__158",
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "كتاب الزكاة",
+        "chunk_id": "parent_5903_324__159",
+        "children": [
+          {
+            "title": "فصل كيفية فرضية الزكاة",
+            "chunk_id": "parent_5903_325__160",
+            "children": []
+          },
+          {
+            "title": "فصل سبب فرضية الزكاة",
+            "chunk_id": "parent_5903_326__161",
+            "children": []
+          },
+          {
+            "title": "فصل شرائط فرضية الزكاة",
+            "chunk_id": null,
+            "children": [
+              {
+                "title": "الشرائط التي ترجع على من عليه المال",
+                "chunk_id": "parent_5903_326__162",
+                "children": []
+              },
+              {
+                "title": "فصل الشرائط التي ترجع إلى المال",
+                "chunk_id": "parent_5903_331__163",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "فصل الأثمان المطلقة وهي الذهب والفضة",
+            "chunk_id": "parent_5903_338__164",
+            "children": [
+              {
+                "title": "فصل صفة نصاب الزكاة في الفضة",
+                "chunk_id": "parent_5903_338__165",
+                "children": []
+              },
+              {
+                "title": "فصل مقدار الواجب في زكاة الفضة",
+                "chunk_id": "parent_5903_340__166",
+                "children": []
+              },
+              {
+                "title": "فصل كان له ذهب مفرد",
+                "chunk_id": "parent_5903_340__167",
+                "children": []
+              },
+              {
+                "title": "فصل صفة نصاب الذهب",
+                "chunk_id": "parent_5903_340__168",
+                "children": []
+              },
+              {
+                "title": "فصل مقدار الواجب في زكاة الذهب",
+                "chunk_id": "parent_5903_340__169",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "فصل أموال التجارة",
+            "chunk_id": "parent_5903_342__170",
+            "children": [
+              {
+                "title": "فصل صفة نصاب التجارة",
+                "chunk_id": "parent_5903_343__171",
+                "children": []
+              },
+              {
+                "title": "فصل مقدار الواجب من نصاب التجارة",
+                "chunk_id": "parent_5903_343__172",
+                "children": []
+              },
+              {
+                "title": "فصل صفة الواجب في أموال التجارة",
+                "chunk_id": "parent_5903_343__173",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "زكاة السوائم",
+            "chunk_id": "parent_5903_348__174",
+            "children": [
+              {
+                "title": "فصل نصاب البقر",
+                "chunk_id": "parent_5903_350__175",
+                "children": []
+              },
+              {
+                "title": "فصل نصاب الغنم",
+                "chunk_id": "parent_5903_350__176",
+                "children": []
+              },
+              {
+                "title": "فصل صفة نصاب السائمة",
+                "chunk_id": "parent_5903_352__177",
+                "children": []
+              },
+              {
+                "title": "فصل مقدار الواجب في السوائم",
+                "chunk_id": "parent_5903_354__178",
+                "children": []
+              },
+              {
+                "title": "فصل صفة الواجب في السوائم",
+                "chunk_id": "parent_5903_355__179",
+                "children": []
+              },
+              {
+                "title": "فصل حكم الخيل",
+                "chunk_id": "parent_5903_356__180",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "فصل بيان من له المطالبة بأداء الواجب في السوائم والأموال الظاهرة",
+            "chunk_id": "parent_5903_357__181",
+            "children": []
+          },
+          {
+            "title": "فصل شرط ولاية الآخذ مال الزكاة",
+            "chunk_id": "parent_5903_358__182",
+            "children": []
+          },
+          {
+            "title": "فصل القدر المأخوذ مما يمر به التاجر على العاشر",
+            "chunk_id": "parent_5903_360__183",
+            "children": []
+          },
+          {
+            "title": "فصل ركن الزكاة",
+            "chunk_id": "parent_5903_361__184",
+            "children": [
+              {
+                "title": "فصل شرائط ركن الزكاة",
+                "chunk_id": null,
+                "children": [
+                  {
+                    "title": "الذي يرجع إلى المؤدي",
+                    "chunk_id": "parent_5903_362__185",
+                    "children": []
+                  },
+                  {
+                    "title": "فصل الذي يرجع إلى المؤدى إليه",
+                    "chunk_id": "parent_5903_365__188",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "فصل حولان الحول هل هو من شرائط أداء الزكاة",
+            "chunk_id": "parent_5903_372__189",
+            "children": []
+          },
+          {
+            "title": "فصل شرائط جواز النصاب",
+            "chunk_id": "parent_5903_373__190",
+            "children": [
+              {
+                "title": "فصل حكم المعجل إذا لم يقع زكاة",
+                "chunk_id": "parent_5903_374__191",
+                "children": []
+              },
+              {
+                "title": "فصل بيان ما يسقط وجوب النصاب",
+                "chunk_id": "parent_5903_374__192",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "فصل زكاة الزروع والثمار",
+            "chunk_id": "parent_5903_375__193",
+            "children": [
+              {
+                "title": "فصل كيفية فرضية زكاة الزروع والثمار",
+                "chunk_id": "parent_5903_376__194",
+                "children": []
+              },
+              {
+                "title": "فصل سبب فرضيته زكاة الزروع والثمار",
+                "chunk_id": "parent_5903_376__195",
+                "children": []
+              },
+              {
+                "title": "فصل شرائط فرضية زكاة الزروع",
+                "chunk_id": null,
+                "children": [
+                  {
+                    "title": "الشرائط الأهلية",
+                    "chunk_id": "parent_5903_376__196",
+                    "children": []
+                  },
+                  {
+                    "title": "فصل الشرائط المحلية",
+                    "chunk_id": "parent_5903_379__197",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "title": "فصل بيان مقدار الواجب من العشر",
+                "chunk_id": "parent_5903_384__198",
+                "children": []
+              },
+              {
+                "title": "بيان المقدار الواجب من الخراج",
+                "chunk_id": "parent_5903_384__199",
+                "children": []
+              },
+              {
+                "title": "فصل صفة الواجب",
+                "chunk_id": "parent_5903_385__200",
+                "children": []
+              },
+              {
+                "title": "فصل وقت الوجوب",
+                "chunk_id": "parent_5903_385__201",
+                "children": []
+              },
+              {
+                "title": "فصل بيان ركن إخراج العشر وشرائط الركن",
+                "chunk_id": "parent_5903_387__202",
+                "children": []
+              },
+              {
+                "title": "فصل بيان ما يسقط بعد الوجوب",
+                "chunk_id": "parent_5903_387__203",
+                "children": []
+              },
+              {
+                "title": "فصل حكم المستخرج من الأرض",
+                "chunk_id": "parent_5903_387__204",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "فصل أما بيان ما يوضع في بيت المال من الأموال وبيان مصارفها",
+            "chunk_id": "parent_5903_390__205",
+            "children": []
+          },
+          {
+            "title": "فصل الزكاة الواجبة",
+            "chunk_id": "parent_5903_391__206",
+            "children": [
+              {
+                "title": "فصل كيفية وجوب صدقة الفطر",
+                "chunk_id": "parent_5903_391__207",
+                "children": []
+              },
+              {
+                "title": "فصل شرائط وجوب صدقة الفطر",
+                "chunk_id": "parent_5903_391__208",
+                "children": []
+              },
+              {
+                "title": "فصل بيان من تجب عليه صدقة الفطر",
+                "chunk_id": "parent_5903_392__209",
+                "children": []
+              },
+              {
+                "title": "فصل بيان جنس الواجب وقدره وصفة في صدقة الفطر",
+                "chunk_id": "parent_5903_394__210",
+                "children": []
+              },
+              {
+                "title": "فصل وقت وجوب صدقة الفطر",
+                "chunk_id": "parent_5903_396__211",
+                "children": []
+              },
+              {
+                "title": "فصل وقت أداء صدقة الفطر",
+                "chunk_id": "parent_5903_396__212",
+                "children": []
+              },
+              {
+                "title": "فصل ركن صدقة الفطر",
+                "chunk_id": "parent_5903_396__213",
+                "children": []
+              },
+              {
+                "title": "فصل مكان أداء صدقة الفطر",
+                "chunk_id": "parent_5903_397__214",
+                "children": []
+              },
+              {
+                "title": "فصل بيان ما يسقط صدقة الفطر بعد الوجوب",
+                "chunk_id": "parent_5903_397__215",
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "كتاب الصوم",
+        "chunk_id": "parent_5903_397__216",
+        "children": [
+          {
+            "title": "فصل أنواع الصيام",
+            "chunk_id": null,
+            "children": [
+              {
+                "title": "فصل شرائط أنواع الصيام",
+                "chunk_id": "parent_5903_399__217",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "فصل أركان الصيام",
+            "chunk_id": "parent_5903_412__218",
+            "children": []
+          },
+          {
+            "title": "فصل حكم فساد الصوم",
+            "chunk_id": "parent_5903_416__219",
+            "children": []
+          },
+          {
+            "title": "فصل حكم الصوم المؤقت إذا فات عن وقته",
+            "chunk_id": "parent_5903_424__220",
+            "children": []
+          },
+          {
+            "title": "فصل بيان ما يسن وما يستحب للصائم وما يكره له أن يفعله",
+            "chunk_id": "parent_5903_427__221",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الاعتكاف",
+        "chunk_id": "parent_5903_430__222",
+        "children": [
+          {
+            "title": "فصل شرائط صحة الاعتكاف",
+            "chunk_id": "parent_5903_430__223",
+            "children": []
+          },
+          {
+            "title": "فصل ركن الاعتكاف",
+            "chunk_id": "parent_5903_435__224",
+            "children": []
+          },
+          {
+            "title": "فصل بيان حكم الاعتكاف إذا فسد",
+            "chunk_id": "parent_5903_439__225",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الحج",
+        "chunk_id": "parent_5903_440__226",
+        "children": [
+          {
+            "title": "فصل كيفية فرض الحج",
+            "chunk_id": "parent_5903_441__227",
+            "children": []
+          },
+          {
+            "title": "فصل شرائط فرضية الحج",
+            "chunk_id": "parent_5903_442__228",
+            "children": []
+          },
+          {
+            "title": "فصل ركن الحج",
+            "chunk_id": "parent_5903_447__229",
+            "children": []
+          },
+          {
+            "title": "فصل طواف الزيارة",
+            "chunk_id": "parent_5903_449__230",
+            "children": [
+              {
+                "title": "فصل ركن طواف الزيارة",
+                "chunk_id": "parent_5903_450__231",
+                "children": []
+              },
+              {
+                "title": "فصل شرط وواجبات طواف الزيارة",
+                "chunk_id": "parent_5903_450__232",
+                "children": []
+              },
+              {
+                "title": "فصل مكان الطواف",
+                "chunk_id": "parent_5903_453__233",
+                "children": []
+              },
+              {
+                "title": "فصل زمان طواف الزيارة",
+                "chunk_id": "parent_5903_454__234",
+                "children": []
+              },
+              {
+                "title": "فصل مقدار الطواف",
+                "chunk_id": "parent_5903_454__235",
+                "children": []
+              },
+              {
+                "title": "فصل حكم الطواف إذا فات عن أيام النحر",
+                "chunk_id": "parent_5903_455__236",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "فصل واجبات الحج",
+            "chunk_id": null,
+            "children": [
+              {
+                "title": "السعي بين الصفا والمروة",
+                "chunk_id": "parent_5903_455__237",
+                "children": [
+                  {
+                    "title": "فصل قدر السعي",
+                    "chunk_id": "parent_5903_456__238",
+                    "children": []
+                  },
+                  {
+                    "title": "فصل ركن السعي",
+                    "chunk_id": "parent_5903_456__239",
+                    "children": []
+                  },
+                  {
+                    "title": "فصل شرائط جواز السعي",
+                    "chunk_id": "parent_5903_456__240",
+                    "children": []
+                  },
+                  {
+                    "title": "فصل سنن السعي",
+                    "chunk_id": "parent_5903_457__241",
+                    "children": []
+                  },
+                  {
+                    "title": "فصل وقت السعي",
+                    "chunk_id": "parent_5903_457__242",
+                    "children": []
+                  },
+                  {
+                    "title": "فصل بيان حكم السعي إذا تأخر عن وقته",
+                    "chunk_id": "parent_5903_457__243",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "title": "فصل الوقوف بمزدلفة",
+                "chunk_id": "parent_5903_457__244",
+                "children": [
+                  {
+                    "title": "فصل ركن الوقوف بمزدلفة",
+                    "chunk_id": "parent_5903_458__245",
+                    "children": []
+                  },
+                  {
+                    "title": "فصل مكان الوقوف بمزدلفة",
+                    "chunk_id": "parent_5903_458__246",
+                    "children": []
+                  },
+                  {
+                    "title": "فصل زمان الوقوف بمزدلفة",
+                    "chunk_id": "parent_5903_458__247",
+                    "children": []
+                  },
+                  {
+                    "title": "فصل حكم فوات وقت الوقوف بمزدلفة",
+                    "chunk_id": "parent_5903_458__248",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "title": "فصل رمي الجمار",
+                "chunk_id": "parent_5903_458__249",
+                "children": [
+                  {
+                    "title": "فصل تفسير رمي الجمار",
+                    "chunk_id": "parent_5903_459__250",
+                    "children": []
+                  },
+                  {
+                    "title": "فصل وقت رمي الجمار",
+                    "chunk_id": "parent_5903_459__251",
+                    "children": []
+                  },
+                  {
+                    "title": "فصل مكان رمي الجمار",
+                    "chunk_id": "parent_5903_460__252",
+                    "children": []
+                  },
+                  {
+                    "title": "فصل عدد الجمار",
+                    "chunk_id": "parent_5903_460__253",
+                    "children": []
+                  },
+                  {
+                    "title": "فصل بيان حكم رمي الجمار إذا تأخر عن وقته",
+                    "chunk_id": "parent_5903_460__254",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "title": "فصل الحلق أو التقصير",
+                "chunk_id": "parent_5903_462__255",
+                "children": [
+                  {
+                    "title": "فصل مقدار واجب الحلق والتقصير",
+                    "chunk_id": "parent_5903_463__256",
+                    "children": []
+                  },
+                  {
+                    "title": "فصل بيان زمان ومكان الحلق والتقصير",
+                    "chunk_id": "parent_5903_463__257",
+                    "children": []
+                  },
+                  {
+                    "title": "فصل حكم الحلق",
+                    "chunk_id": "parent_5903_464__258",
+                    "children": []
+                  },
+                  {
+                    "title": "فصل حكم تأخير الحلق والتقصير عن زمانه ومكانه",
+                    "chunk_id": "parent_5903_464__259",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "title": "فصل طواف الصدر",
+                "chunk_id": "parent_5903_464__260",
+                "children": [
+                  {
+                    "title": "فصل شرائط وجوب طواف الصدر",
+                    "chunk_id": "parent_5903_464__261",
+                    "children": []
+                  },
+                  {
+                    "title": "فصل شرائط جواز طواف الصدر",
+                    "chunk_id": "parent_5903_465__262",
+                    "children": []
+                  },
+                  {
+                    "title": "فصل قدر وكيفية طواف الصدر",
+                    "chunk_id": "parent_5903_465__263",
+                    "children": []
+                  },
+                  {
+                    "title": "فصل وقت طواف الصدر",
+                    "chunk_id": "parent_5903_465__264",
+                    "children": []
+                  },
+                  {
+                    "title": "فصل مكان طواف الصدر",
+                    "chunk_id": "parent_5903_465__265",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "فصل بيان سنن الحج وبيان الترتيب في أفعاله",
+            "chunk_id": "parent_5903_465__266",
+            "children": []
+          },
+          {
+            "title": "فصل شرائط أركان الحج",
+            "chunk_id": "parent_5903_482__267",
+            "children": []
+          },
+          {
+            "title": "فصل بيان ما يصير به محرما",
+            "chunk_id": "parent_5903_483__268",
+            "children": []
+          },
+          {
+            "title": "فصل بيان مكان الإحرام",
+            "chunk_id": "parent_5903_485__269",
+            "children": []
+          },
+          {
+            "title": "فصل بيان ما يحرم به المحرمون",
+            "chunk_id": "parent_5903_489__270",
+            "children": []
+          },
+          {
+            "title": "فصل بيان ما يجب على المتمتع والقارن بسبب التمتع والقران",
+            "chunk_id": "parent_5903_494__271",
+            "children": []
+          },
+          {
+            "title": "فصل بيان حكم المحرم إذا منع عن المضي في الإحرام",
+            "chunk_id": "parent_5903_497__272",
+            "children": []
+          },
+          {
+            "title": "فصل حكم الإحصار",
+            "chunk_id": "parent_5903_499__273",
+            "children": []
+          },
+          {
+            "title": "فصل محظورات الإحرام",
+            "chunk_id": "parent_5903_505__274",
+            "children": []
+          },
+          {
+            "title": "فصل تطيب المحرم",
+            "chunk_id": "parent_5903_511__275",
+            "children": []
+          },
+          {
+            "title": "فصل ما يجوز للمحرم أن يفعله في إحرامه",
+            "chunk_id": "parent_5903_514__276",
+            "children": []
+          },
+          {
+            "title": "فصل من محظورات الإحرام ما يرجع إلى توابع الجماع",
+            "chunk_id": "parent_5903_517__277",
+            "children": []
+          },
+          {
+            "title": "فصل من محظورات الإحرام ما يرجع إلى الصيد",
+            "chunk_id": "parent_5903_517__278",
+            "children": []
+          },
+          {
+            "title": "فصل بيان أنواع الصيد",
+            "chunk_id": "parent_5903_518__279",
+            "children": []
+          },
+          {
+            "title": "فصل بيان حكم ما يحرم على المحرم",
+            "chunk_id": "parent_5903_520__280",
+            "children": []
+          },
+          {
+            "title": "فصل محظورات الحرم منها الصيد",
+            "chunk_id": "parent_5903_529__281",
+            "children": []
+          },
+          {
+            "title": "فصل نبات الحرم",
+            "chunk_id": "parent_5903_532__282",
+            "children": []
+          },
+          {
+            "title": "فصل بيان ما يفسد الحج",
+            "chunk_id": "parent_5903_538__283",
+            "children": []
+          },
+          {
+            "title": "فصل ما يفوت الحج بعد الشروع فيه بفواته",
+            "chunk_id": "parent_5903_542__284",
+            "children": []
+          },
+          {
+            "title": "فصل بيان حكم فوات الحج عن العمرة",
+            "chunk_id": "parent_5903_543__285",
+            "children": []
+          },
+          {
+            "title": "فصل سبب وجوب الحج",
+            "chunk_id": "parent_5903_545__286",
+            "children": []
+          },
+          {
+            "title": "العمرة",
+            "chunk_id": "parent_5903_548__287",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب النكاح",
+        "chunk_id": null,
+        "children": [
+          {
+            "title": "صفة النكاح المشروع",
+            "chunk_id": "parent_5903_550__303",
+            "children": []
+          },
+          {
+            "title": "فصل ركن النكاح",
+            "chunk_id": "parent_5903_551__304",
+            "children": []
+          },
+          {
+            "title": "فصل شرائط الركن أنواع منها شرط الانعقاد",
+            "chunk_id": "parent_5903_554__305",
+            "children": []
+          },
+          {
+            "title": "فصل بيان شرائط الجواز والنفاذ",
+            "chunk_id": "parent_5903_555__306",
+            "children": []
+          },
+          {
+            "title": "فصل الذي يرجع إلى المولى عليه في ولاية النكاح",
+            "chunk_id": "parent_5903_563__307",
+            "children": []
+          },
+          {
+            "title": "فصل الذي يرجع إلى نفس التصرف في ولاية النكاح",
+            "chunk_id": "parent_5903_567__308",
+            "children": []
+          },
+          {
+            "title": "فصل ولاية الندب والاستحباب في النكاح",
+            "chunk_id": "parent_5903_569__309",
+            "children": []
+          },
+          {
+            "title": "فصل شرط التقدم الولاية في النكاح",
+            "chunk_id": "parent_5903_571__310",
+            "children": []
+          },
+          {
+            "title": "فصل ولاية الولاء في النكاح",
+            "chunk_id": "parent_5903_574__311",
+            "children": []
+          },
+          {
+            "title": "فصل ولاية الإمامة النكاح",
+            "chunk_id": "parent_5903_574__312",
+            "children": []
+          },
+          {
+            "title": "فصل الشهادة في النكاح",
+            "chunk_id": "parent_5903_574__313",
+            "children": []
+          },
+          {
+            "title": "فصل صفات الشاهد الذي ينعقد به النكاح",
+            "chunk_id": "parent_5903_575__314",
+            "children": []
+          },
+          {
+            "title": "فصل في نكاح المسلم المسلمة",
+            "chunk_id": "parent_5903_575__315",
+            "children": []
+          },
+          {
+            "title": "فصل سماع الشاهدين كلام المتعاقدين",
+            "chunk_id": "parent_5903_577__316",
+            "children": []
+          },
+          {
+            "title": "فصل النكاح بشاهد واحد",
+            "chunk_id": "parent_5903_577__317",
+            "children": []
+          },
+          {
+            "title": "فصل بيان وقت هذه الشهادة في النكاح",
+            "chunk_id": "parent_5903_578__318",
+            "children": []
+          },
+          {
+            "title": "فصل أن تكون المرأة محللة",
+            "chunk_id": "parent_5903_578__319",
+            "children": []
+          },
+          {
+            "title": "فصل المحرمات بالمصاهرة",
+            "chunk_id": "parent_5903_580__320",
+            "children": []
+          },
+          {
+            "title": "فصل المحرمات بالمصاهرة بنت الزوجة وبناتها وإن سفلن",
+            "chunk_id": "parent_5903_581__321",
+            "children": []
+          },
+          {
+            "title": "فصل المحرمات بالمصاهرة فحليلة الابن من الصلب وإن سفل",
+            "chunk_id": "parent_5903_582__322",
+            "children": []
+          },
+          {
+            "title": "فصل المحرمات بالمصاهرة فمنكوحة الأب وأجداده وإن علوا",
+            "chunk_id": "parent_5903_582__323",
+            "children": []
+          },
+          {
+            "title": "فصل أنواع الجمع بين ذوات الأرحام منه جمع في النكاح",
+            "chunk_id": "parent_5903_584__324",
+            "children": []
+          },
+          {
+            "title": "فصل الجمع في الوطء بملك اليمين",
+            "chunk_id": "parent_5903_586__325",
+            "children": []
+          },
+          {
+            "title": "فصل أنواع الجمع بين الأجنبيات منه جمع في النكاح",
+            "chunk_id": "parent_5903_587__326",
+            "children": []
+          },
+          {
+            "title": "فصل الجمع في الوطء ودواعيه بملك اليمين",
+            "chunk_id": "parent_5903_588__327",
+            "children": []
+          },
+          {
+            "title": "فصل أن لا يكون تحته حرة",
+            "chunk_id": "parent_5903_588__328",
+            "children": []
+          },
+          {
+            "title": "فصل أن لا تكون منكوحة الغير",
+            "chunk_id": "parent_5903_590__329",
+            "children": []
+          },
+          {
+            "title": "فصل أن لا تكون معتدة الغير",
+            "chunk_id": "parent_5903_590__330",
+            "children": []
+          },
+          {
+            "title": "فصل أن لا يكون بها حمل ثابت النسب من الغير",
+            "chunk_id": "parent_5903_591__331",
+            "children": []
+          },
+          {
+            "title": "فصل أن يكون للزوجين ملة يقران عليها",
+            "chunk_id": "parent_5903_592__332",
+            "children": []
+          },
+          {
+            "title": "فصل أن لا تكون المرأة مشركة إذا كان الرجل مسلما",
+            "chunk_id": "parent_5903_592__333",
+            "children": []
+          },
+          {
+            "title": "فصل إسلام الرجل إذا كانت المرأة مسلمة",
+            "chunk_id": "parent_5903_593__334",
+            "children": []
+          },
+          {
+            "title": "فصل أن لا يكون أحد الزوجين ملك صاحبه",
+            "chunk_id": "parent_5903_594__335",
+            "children": []
+          },
+          {
+            "title": "فصل التأبيد",
+            "chunk_id": "parent_5903_594__336",
+            "children": []
+          },
+          {
+            "title": "فصل المهر",
+            "chunk_id": "parent_5903_596__337",
+            "children": []
+          },
+          {
+            "title": "فصل بيان أدنى المقدار الذي يصلح مهرا",
+            "chunk_id": "parent_5903_597__338",
+            "children": []
+          },
+          {
+            "title": "فصل بيان ما يصح تسميته مهرا وما لا يصح",
+            "chunk_id": "parent_5903_599__339",
+            "children": []
+          },
+          {
+            "title": "فصل أن لا يكون مجهولا جهالة تزيد على جهالة مهر المثل",
+            "chunk_id": "parent_5903_604__340",
+            "children": []
+          },
+          {
+            "title": "فصل أن يكون النكاح صحيحا",
+            "chunk_id": "parent_5903_609__341",
+            "children": []
+          },
+          {
+            "title": "فصل بيان ما يجب به المهر",
+            "chunk_id": "parent_5903_609__342",
+            "children": []
+          },
+          {
+            "title": "فصل بيان ما يتأكد به المهر",
+            "chunk_id": "parent_5903_613__343",
+            "children": []
+          },
+          {
+            "title": "فصل بيان ما يسقط به كل المهر",
+            "chunk_id": "parent_5903_617__344",
+            "children": []
+          },
+          {
+            "title": "فصل بيان ما يسقط به نصف المهر",
+            "chunk_id": "parent_5903_618__345",
+            "children": []
+          },
+          {
+            "title": "فصل حكم اختلاف الزوجين في المهر",
+            "chunk_id": "parent_5903_626__346",
+            "children": []
+          },
+          {
+            "title": "فصل اختلاف الزوجين في متاع البيت",
+            "chunk_id": "parent_5903_630__347",
+            "children": []
+          },
+          {
+            "title": "فصل الكفاءة في إنكاح غير الأب",
+            "chunk_id": "parent_5903_632__348",
+            "children": []
+          },
+          {
+            "title": "فصل جواز وإفساد نكاح أهل الذمة",
+            "chunk_id": "parent_5903_632__349",
+            "children": []
+          },
+          {
+            "title": "فصل حكم عقد الذمي والحربي",
+            "chunk_id": "parent_5903_636__350",
+            "children": []
+          },
+          {
+            "title": "فصل شرائط اللزوم",
+            "chunk_id": "parent_5903_637__351",
+            "children": []
+          },
+          {
+            "title": "فصل شرط كفاءة الزوج في إنكاح المرأة الحرة",
+            "chunk_id": "parent_5903_639__352",
+            "children": []
+          },
+          {
+            "title": "فصل إنكاح المرأة نفسها من غير رضا الأولياء",
+            "chunk_id": "parent_5903_639__353",
+            "children": []
+          },
+          {
+            "title": "فصل بيان ما تعتبر فيه الكفاءة",
+            "chunk_id": "parent_5903_640__354",
+            "children": []
+          },
+          {
+            "title": "فصل في ما تعتبر فيه الكفاءة ومنها الحرية",
+            "chunk_id": "parent_5903_641__355",
+            "children": []
+          },
+          {
+            "title": "فصل في كفاءة الفقير للغنية في النكاح",
+            "chunk_id": "parent_5903_641__356",
+            "children": []
+          },
+          {
+            "title": "فصل الكفاءة في الدين",
+            "chunk_id": "parent_5903_642__357",
+            "children": []
+          },
+          {
+            "title": "فصل الكفاءة في الحرف والصناعات",
+            "chunk_id": "parent_5903_642__358",
+            "children": []
+          },
+          {
+            "title": "فصل بيان من تعتبر له الكفاءة",
+            "chunk_id": "parent_5903_642__359",
+            "children": []
+          },
+          {
+            "title": "فصل كمال مهر المثل في إنكاح الحرة العاقلة البالغة",
+            "chunk_id": "parent_5903_644__360",
+            "children": []
+          },
+          {
+            "title": "فصل خلو الزوج عن عيب الجب والعنة عند عدم الرضا من الزوجة",
+            "chunk_id": "parent_5903_644__361",
+            "children": []
+          },
+          {
+            "title": "فصل شرائط الخيار",
+            "chunk_id": "parent_5903_647__362",
+            "children": []
+          },
+          {
+            "title": "فصل حكم الخيار",
+            "chunk_id": "parent_5903_647__363",
+            "children": []
+          },
+          {
+            "title": "فصل بيان ما يبطل به الخيار",
+            "chunk_id": "parent_5903_648__364",
+            "children": []
+          },
+          {
+            "title": "فصل شروط لزوم النكاح",
+            "chunk_id": "parent_5903_649__365",
+            "children": []
+          },
+          {
+            "title": "فصل شروط بقاء النكاح",
+            "chunk_id": "parent_5903_650__366",
+            "children": []
+          },
+          {
+            "title": "فصل وقت ثبوت الخيار في النكاح",
+            "chunk_id": "parent_5903_651__367",
+            "children": []
+          },
+          {
+            "title": "فصل ما يبطل به الخيار",
+            "chunk_id": "parent_5903_652__368",
+            "children": []
+          },
+          {
+            "title": "فصل بيان حكم النكاح",
+            "chunk_id": "parent_5903_652__369",
+            "children": []
+          },
+          {
+            "title": "فصل حل النظر والمس",
+            "chunk_id": "parent_5903_653__370",
+            "children": []
+          },
+          {
+            "title": "فصل ملك المتعة",
+            "chunk_id": "parent_5903_653__371",
+            "children": []
+          },
+          {
+            "title": "فصل ملك الحبس والقيد",
+            "chunk_id": "parent_5903_653__372",
+            "children": []
+          },
+          {
+            "title": "فصل وجوب المهر على الزوج",
+            "chunk_id": "parent_5903_653__373",
+            "children": []
+          },
+          {
+            "title": "فصل ثبوت النسب",
+            "chunk_id": "parent_5903_653__374",
+            "children": []
+          },
+          {
+            "title": "فصل وجوب النفقة والسكنى",
+            "chunk_id": "parent_5903_654__375",
+            "children": []
+          },
+          {
+            "title": "فصل حرمة المصاهرة",
+            "chunk_id": "parent_5903_654__376",
+            "children": []
+          },
+          {
+            "title": "فصل الإرث من الجانبين جميعا",
+            "chunk_id": "parent_5903_654__377",
+            "children": []
+          },
+          {
+            "title": "فصل وجوب العدل بين النساء في حقوقهن",
+            "chunk_id": "parent_5903_654__378",
+            "children": []
+          },
+          {
+            "title": "فصل وجوب طاعة الزوج على الزوجة إذا دعاها إلى الفراش",
+            "chunk_id": "parent_5903_656__379",
+            "children": []
+          },
+          {
+            "title": "فصل ولاية التأديب للزوج إذا لم تطعه",
+            "chunk_id": "parent_5903_656__380",
+            "children": []
+          },
+          {
+            "title": "فصل المعاشرة بالمعروف",
+            "chunk_id": "parent_5903_656__381",
+            "children": []
+          },
+          {
+            "title": "فصل حكم النكاح الفاسد",
+            "chunk_id": "parent_5903_657__382",
+            "children": []
+          },
+          {
+            "title": "فصل بيان ما يرفع حكم النكاح",
+            "chunk_id": "parent_5903_658__383",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الأيمان",
+        "chunk_id": "parent_5903_664__385",
+        "children": [
+          {
+            "title": "في أنواع اليمين",
+            "chunk_id": "parent_5903_663__384",
+            "children": []
+          },
+          {
+            "title": "فصل في ركن اليمين بالله تعالى",
+            "chunk_id": "parent_5903_666__386",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط ركن اليمين بالله تعالى",
+            "chunk_id": "parent_5903_671__387",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم اليمين بالله تعالى",
+            "chunk_id": "parent_5903_676__388",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان أن اليمين بالله عز وجل على نية الحالف أو المستحلف",
+            "chunk_id": "parent_5903_681__389",
+            "children": []
+          },
+          {
+            "title": "فصل في اليمين بغير الله عز وجل",
+            "chunk_id": "parent_5903_682__390",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط ركن اليمين وبعضها يرجع إلى المحلوف عليه",
+            "chunk_id": "parent_5903_687__391",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم اليمين التي تعلق بها الطلاق والعتاق عند وجود الشرط",
+            "chunk_id": "parent_5903_691__392",
+            "children": []
+          },
+          {
+            "title": "فصل في الحلف على الدخول",
+            "chunk_id": "parent_5903_697__393",
+            "children": []
+          },
+          {
+            "title": "فصل في الحلف على الخروج من إقامته",
+            "chunk_id": "parent_5903_703__394",
+            "children": []
+          },
+          {
+            "title": "فصل في الحلف على الكلام",
+            "chunk_id": "parent_5903_708__395",
+            "children": []
+          },
+          {
+            "title": "فصل في الحلف على الإظهار والإفشاء والإعلان ونحوها",
+            "chunk_id": "parent_5903_714__396",
+            "children": []
+          },
+          {
+            "title": "فصل في الحلف على الأكل والشرب ونحوهما",
+            "chunk_id": "parent_5903_717__397",
+            "children": []
+          },
+          {
+            "title": "فصل في الحلف على اللبس والكسوة",
+            "chunk_id": "parent_5903_730__398",
+            "children": []
+          },
+          {
+            "title": "فصل في الحلف على الركوب",
+            "chunk_id": "parent_5903_732__399",
+            "children": []
+          },
+          {
+            "title": "فصل في الحلف على الجلوس",
+            "chunk_id": "parent_5903_732__400",
+            "children": []
+          },
+          {
+            "title": "فصل في الحلف على السكنى والمساكنة والإيواء والبيتوتة",
+            "chunk_id": "parent_5903_733__401",
+            "children": []
+          },
+          {
+            "title": "فصل في الحلف على الاستخدام",
+            "chunk_id": "parent_5903_736__402",
+            "children": []
+          },
+          {
+            "title": "فصل في الحلف على المعرفة",
+            "chunk_id": "parent_5903_736__403",
+            "children": []
+          },
+          {
+            "title": "فصل في الحلف على أخذ الحق وقبضه وقضائه واقتضائه",
+            "chunk_id": "parent_5903_736__404",
+            "children": []
+          },
+          {
+            "title": "فصل في الحالف على الهدم",
+            "chunk_id": "parent_5903_737__405",
+            "children": []
+          },
+          {
+            "title": "فصل في الحلف على الضرب والقتل",
+            "chunk_id": "parent_5903_737__406",
+            "children": []
+          },
+          {
+            "title": "فصل في الحلف على المفارقة والوزن وما أشبه ذلك",
+            "chunk_id": "parent_5903_739__407",
+            "children": []
+          },
+          {
+            "title": "فصل في الحلف على ما يضاف إلى غير الحالف بملك أو غيره",
+            "chunk_id": "parent_5903_739__408",
+            "children": []
+          },
+          {
+            "title": "فصل في الحلف على ما يخرج منه الحالف أو لا يخرج",
+            "chunk_id": "parent_5903_741__409",
+            "children": []
+          },
+          {
+            "title": "فصل في الحلف على أمور شرعية",
+            "chunk_id": "parent_5903_742__410",
+            "children": []
+          },
+          {
+            "title": "فصل في الحلف على أمور متفرقة",
+            "chunk_id": "parent_5903_748__411",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الطلاق",
+        "chunk_id": "parent_5903_749__412",
+        "children": [
+          {
+            "title": "فصل في بيان الألفاظ التي يقع بها طلاق السنة",
+            "chunk_id": "parent_5903_752__413",
+            "children": []
+          },
+          {
+            "title": "فصل في طلاق البدعة",
+            "chunk_id": "parent_5903_754__414",
+            "children": []
+          },
+          {
+            "title": "فصل في الألفاظ التي يقع بها طلاق البدعة",
+            "chunk_id": "parent_5903_757__415",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم طلاق البدعة",
+            "chunk_id": "parent_5903_757__416",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان قدر الطلاق وعدده",
+            "chunk_id": "parent_5903_758__417",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ركن الطلاق",
+            "chunk_id": "parent_5903_759__418",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط ركن الطلاق وبعضها يرجع إلى الزوج",
+            "chunk_id": "parent_5903_760__419",
+            "children": []
+          },
+          {
+            "title": "فصل في النية في أحد نوعي الطلاق وهو الكناية",
+            "chunk_id": "parent_5903_762__420",
+            "children": []
+          },
+          {
+            "title": "فصل في الكناية في الطلاق",
+            "chunk_id": "parent_5903_766__421",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان صفة الواقع بكل واحد من نوعي الطلاق",
+            "chunk_id": "parent_5903_770__422",
+            "children": []
+          },
+          {
+            "title": "فصل في ألفاظ الكناية في الطلاق",
+            "chunk_id": "parent_5903_772__423",
+            "children": []
+          },
+          {
+            "title": "فصل في قوله أمرك بيدك",
+            "chunk_id": "parent_5903_774__424",
+            "children": []
+          },
+          {
+            "title": "فصل في قوله اختاري",
+            "chunk_id": "parent_5903_779__425",
+            "children": []
+          },
+          {
+            "title": "فصل في قوله أنت طالق إن شئت",
+            "chunk_id": "parent_5903_782__426",
+            "children": []
+          },
+          {
+            "title": "فصل في قوله طلقي نفسك",
+            "chunk_id": "parent_5903_783__427",
+            "children": []
+          },
+          {
+            "title": "فصل في الرسالة في الطلاق",
+            "chunk_id": "parent_5903_787__428",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط ركن الطلاق وبعضها يرجع إلى المرأة",
+            "chunk_id": "parent_5903_787__429",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم الخلع",
+            "chunk_id": "parent_5903_812__430",
+            "children": []
+          },
+          {
+            "title": "فصل في الطلاق على مال",
+            "chunk_id": "parent_5903_813__431",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط ركن الطلاق وبعضها يرجع إلى نفس الركن",
+            "chunk_id": "parent_5903_814__432",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط ركن الطلاق وبعضها يرجع إلى الوقت وهو مضي مدة الإيلاء",
+            "chunk_id": "parent_5903_822__433",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط ركن الإيلاء",
+            "chunk_id": "parent_5903_831__434",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم الإيلاء",
+            "chunk_id": "parent_5903_836__435",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يبطل به الإيلاء",
+            "chunk_id": "parent_5903_839__436",
+            "children": []
+          },
+          {
+            "title": "الرجعة",
+            "chunk_id": "parent_5903_841__437",
+            "children": [
+              {
+                "title": "ركن الرجعة",
+                "chunk_id": "parent_5903_844__457",
+                "children": []
+              },
+              {
+                "title": "فصل في شرائط جواز الرجعة",
+                "chunk_id": "parent_5903_844__458",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "فصل في حكم الطلاق البائن",
+            "chunk_id": "parent_5903_848__459",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط رجوع المبتوتة لزوجها",
+            "chunk_id": "parent_5903_848__460",
+            "children": []
+          },
+          {
+            "title": "فصل في توابع الطلاق",
+            "chunk_id": "parent_5903_851__461",
+            "children": []
+          },
+          {
+            "title": "فصل في عدة الأشهر",
+            "chunk_id": "parent_5903_853__462",
+            "children": []
+          },
+          {
+            "title": "فصل في عدة الحبل",
+            "chunk_id": "parent_5903_853__463",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان مقادير العدة وما تنقضي به",
+            "chunk_id": "parent_5903_854__464",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يعرف به انقضاء العدة",
+            "chunk_id": "parent_5903_859__465",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان انتقال العدة",
+            "chunk_id": "parent_5903_861__466",
+            "children": []
+          },
+          {
+            "title": "فصل في تغيير العدة",
+            "chunk_id": "parent_5903_862__467",
+            "children": []
+          },
+          {
+            "title": "فصل في أحكام العدة",
+            "chunk_id": "parent_5903_865__468",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الظهار",
+        "chunk_id": null,
+        "children": [
+          {
+            "title": "ركن الظهار",
+            "chunk_id": "parent_5903_890__469",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان الشرائط التي ترجع إلى المظاهر منه",
+            "chunk_id": "parent_5903_893__472",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان الشرائط التي ترجع إلى المظاهر به",
+            "chunk_id": "parent_5903_894__473",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم الظهار",
+            "chunk_id": "parent_5903_895__474",
+            "children": []
+          },
+          {
+            "title": "فصل في ما ينتهي به حكم الظهار أو يبطل",
+            "chunk_id": "parent_5903_896__475",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان كفارة الظهار",
+            "chunk_id": "parent_5903_896__476",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب اللعان",
+        "chunk_id": null,
+        "children": [
+          {
+            "title": "بيان صورة اللعان وكيفيته",
+            "chunk_id": "parent_5903_898__477",
+            "children": []
+          },
+          {
+            "title": "فصل في صفة اللعان",
+            "chunk_id": "parent_5903_899__478",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان سبب وجوب اللعان",
+            "chunk_id": "parent_5903_900__479",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط وجوب اللعان وجوازه",
+            "chunk_id": "parent_5903_901__480",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يظهر به سبب وجوب اللعان",
+            "chunk_id": "parent_5903_904__481",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يسقط اللعان بعد وجوبه",
+            "chunk_id": "parent_5903_904__482",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم اللعان",
+            "chunk_id": "parent_5903_905__483",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يبطل به حكم اللعان",
+            "chunk_id": "parent_5903_909__484",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الرضاع",
+        "chunk_id": null,
+        "children": [
+          {
+            "title": "فصل في المحرمات بالرضاع",
+            "chunk_id": "parent_5903_911__485",
+            "children": []
+          },
+          {
+            "title": "فصل في صفة الرضاع المحرم",
+            "chunk_id": "parent_5903_914__486",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يثبت به الرضاع",
+            "chunk_id": "parent_5903_923__487",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب النفقة",
+        "chunk_id": "parent_5903_924__488",
+        "children": [
+          {
+            "title": "فصل في سبب وجوب هذه النفقة",
+            "chunk_id": "parent_5903_925__489",
+            "children": []
+          },
+          {
+            "title": "فصل في شرط وجوب هذه النفقة",
+            "chunk_id": "parent_5903_927__490",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان مقدار الواجب من النفقة",
+            "chunk_id": "parent_5903_932__491",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان كيفية وجوب هذه النفقة",
+            "chunk_id": "parent_5903_934__492",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يسقط نفقة الزوجة بعد وجوبها وصيرورتها دينا في ذمة الزوج",
+            "chunk_id": "parent_5903_938__493",
+            "children": []
+          },
+          {
+            "title": "فصل في نفقة الأقارب",
+            "chunk_id": "parent_5903_939__494",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط وجوب هذه النفقة",
+            "chunk_id": "parent_5903_943__496",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان مقدار الواجب من هذه النفقة",
+            "chunk_id": "parent_5903_947__497",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان كيفية وجوب نفقة الأقارب",
+            "chunk_id": "parent_5903_947__498",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان المسقط لنفقة الأقارب بعد الوجوب",
+            "chunk_id": "parent_5903_947__499",
+            "children": []
+          },
+          {
+            "title": "فصل في نفقة الرقيق",
+            "chunk_id": "parent_5903_947__500",
+            "children": []
+          },
+          {
+            "title": "فصل في سبب وجوب نفقة الرقيق",
+            "chunk_id": "parent_5903_948__501",
+            "children": []
+          },
+          {
+            "title": "فصل في شرط وجوب نفقة الرقيق",
+            "chunk_id": "parent_5903_948__502",
+            "children": []
+          },
+          {
+            "title": "فصل في مقدار الواجب من نفقة الرقيق",
+            "chunk_id": "parent_5903_949__503",
+            "children": []
+          },
+          {
+            "title": "فصل في كيفية وجوب نفقة الرقيق",
+            "chunk_id": "parent_5903_949__504",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الحضانة",
+        "chunk_id": null,
+        "children": [
+          {
+            "title": "تفسير الحضانة",
+            "chunk_id": "parent_5903_949__505",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان من له الحضانة",
+            "chunk_id": "parent_5903_950__506",
+            "children": []
+          },
+          {
+            "title": "فصل في وقت الحضانة",
+            "chunk_id": "parent_5903_951__507",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان مكان الحضانة",
+            "chunk_id": "parent_5903_953__508",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الإعتاق",
+        "chunk_id": null,
+        "children": [
+          {
+            "title": "أنواع الإعتاق",
+            "chunk_id": "parent_5903_954__509",
+            "children": []
+          },
+          {
+            "title": "فصل في ركن الإعتاق",
+            "chunk_id": "parent_5903_955__510",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط ركن الإعتاق",
+            "chunk_id": "parent_5903_964__511",
+            "children": []
+          },
+          {
+            "title": "فصل في صفة الإعتاق",
+            "chunk_id": "parent_5903_995__512",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان حكم الإعتاق وبيان وقت ثبوت حكمه",
+            "chunk_id": "parent_5903_1007__513",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يظهر به حكم الإعتاق",
+            "chunk_id": "parent_5903_1019__514",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب التدبير",
+        "chunk_id": "parent_5903_1021__515",
+        "children": [
+          {
+            "title": "فصل في شرائط ركن التدبير",
+            "chunk_id": "parent_5903_1024__516",
+            "children": []
+          },
+          {
+            "title": "فصل في صفة التدبير",
+            "chunk_id": "parent_5903_1025__517",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم التدبير",
+            "chunk_id": "parent_5903_1029__518",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يظهر به التدبير",
+            "chunk_id": "parent_5903_1032__519",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الاستيلاد",
+        "chunk_id": null,
+        "children": [
+          {
+            "title": "تفسير الاستيلاد",
+            "chunk_id": "parent_5903_1032__520",
+            "children": []
+          },
+          {
+            "title": "فصل في سبب الاستيلاد",
+            "chunk_id": "parent_5903_1033__521",
+            "children": []
+          },
+          {
+            "title": "فصل في شرط الاستيلاد",
+            "chunk_id": "parent_5903_1034__522",
+            "children": []
+          },
+          {
+            "title": "فصل في صفة الاستيلاد",
+            "chunk_id": "parent_5903_1038__523",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم الاستيلاد",
+            "chunk_id": "parent_5903_1038__524",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يظهر به الاستيلاد",
+            "chunk_id": "parent_5903_1042__525",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب المكاتب",
+        "chunk_id": null,
+        "children": [
+          {
+            "title": "بيان جواز المكاتبة",
+            "chunk_id": "parent_5903_1042__526",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ركن المكاتبة",
+            "chunk_id": "parent_5903_1043__527",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط ركن المكاتبة وبعضها يرجع إلى المولى",
+            "chunk_id": "parent_5903_1043__528",
+            "children": []
+          },
+          {
+            "title": "فصل في الشرائط التي ترجع إلى المكاتبة",
+            "chunk_id": "parent_5903_1045__529",
+            "children": []
+          },
+          {
+            "title": "فصل في الشرائط التي ترجع إلى بدل الكتابة",
+            "chunk_id": "parent_5903_1046__530",
+            "children": []
+          },
+          {
+            "title": "فصل في الشرائط التي ترجع إلى نفس الركن",
+            "chunk_id": "parent_5903_1050__531",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يملك المكاتب من التصرفات وما لا يملكه",
+            "chunk_id": "parent_5903_1052__532",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يملك المولى من التصرف في المكاتب وما لا يملكه",
+            "chunk_id": "parent_5903_1056__533",
+            "children": []
+          },
+          {
+            "title": "فصل في صفة المكاتبة",
+            "chunk_id": "parent_5903_1056__534",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم المكاتبة",
+            "chunk_id": "parent_5903_1059__535",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما تنفسخ به الكتابة",
+            "chunk_id": "parent_5903_1068__536",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الولاء",
+        "chunk_id": "parent_5903_1068__537",
+        "children": [
+          {
+            "title": "ولاء العتاقة",
+            "chunk_id": "parent_5903_1068__538",
+            "children": []
+          },
+          {
+            "title": "فصل في ولاء الموالاة وثبوت حكمها",
+            "chunk_id": "parent_5903_1079__539",
+            "children": []
+          },
+          {
+            "title": "فصل في صفة حكم ولاء الموالاة",
+            "chunk_id": "parent_5903_1082__540",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يظهر به ولاء الموالاة",
+            "chunk_id": "parent_5903_1082__541",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الإجارة",
+        "chunk_id": null,
+        "children": [
+          {
+            "title": "جواز الإجارة",
+            "chunk_id": "parent_5903_1082__542",
+            "children": []
+          },
+          {
+            "title": "فصل في ركن الإجارة ومعناها",
+            "chunk_id": "parent_5903_1083__545",
+            "children": []
+          },
+          {
+            "title": "فصل في أنواع شرائط ركن الإجارة",
+            "chunk_id": "parent_5903_1085__546",
+            "children": []
+          },
+          {
+            "title": "فصل في صفة الإجارة",
+            "chunk_id": "parent_5903_1110__547",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم الإجارة",
+            "chunk_id": "parent_5903_1110__548",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم اختلاف العاقدين في عقد الإجارة",
+            "chunk_id": "parent_5903_1127__549",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما ينتهي به عقد الإجارة",
+            "chunk_id": "parent_5903_1131__550",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الاستصناع",
+        "chunk_id": null,
+        "children": [
+          {
+            "title": "فصل في صورة الاستصناع ومعناه",
+            "chunk_id": "parent_5903_1134__551",
+            "children": []
+          },
+          {
+            "title": "فصل في جواز الاستصناع",
+            "chunk_id": "parent_5903_1134__552",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط جواز الاستصناع",
+            "chunk_id": "parent_5903_1135__553",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم الاستصناع",
+            "chunk_id": "parent_5903_1135__554",
+            "children": []
+          },
+          {
+            "title": "فصل في صفة الاستصناع",
+            "chunk_id": "parent_5903_1135__555",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الشفعة",
+        "chunk_id": null,
+        "children": [
+          {
+            "title": "سبب ثبوت حق الشفعة",
+            "chunk_id": "parent_5903_1136__556",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط وجوب الشفعة",
+            "chunk_id": "parent_5903_1142__557",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يتأكد به حق الشفعة ويستقر",
+            "chunk_id": "parent_5903_1149__558",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يبطل به حق الشفعة بعد ثبوته",
+            "chunk_id": "parent_5903_1151__559",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يملك به المشفوع فيه",
+            "chunk_id": "parent_5903_1154__560",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان طريق التملك بالشفعة وبيان كيفيته",
+            "chunk_id": "parent_5903_1155__561",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان شرط التملك في الشفعة",
+            "chunk_id": "parent_5903_1157__562",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يتملك به الأخذ بالشفعة",
+            "chunk_id": "parent_5903_1158__563",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يتملك بالشفعة",
+            "chunk_id": "parent_5903_1159__564",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان من يتملك منه الشقص المشفوع فيه",
+            "chunk_id": "parent_5903_1162__565",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان حكم اختلاف الشفيع والمشتري",
+            "chunk_id": "parent_5903_1162__566",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان الحيلة في إسقاط الشفعة",
+            "chunk_id": "parent_5903_1166__567",
+            "children": []
+          },
+          {
+            "title": "فصل في كراهة الحيلة لإسقاط الشفعة",
+            "chunk_id": "parent_5903_1167__568",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الذبائح والصيود",
+        "chunk_id": null,
+        "children": [
+          {
+            "title": "المأكول وغير المأكول من الحيوانات",
+            "chunk_id": "parent_5903_1167__569",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يكره من الحيوانات",
+            "chunk_id": "parent_5903_1171__570",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان شرط حل الأكل في الحيوان المأكول",
+            "chunk_id": "parent_5903_1172__571",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يحرم أكله من أجزاء الحيوان المأكول",
+            "chunk_id": "parent_5903_1193__572",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الاصطياد",
+        "chunk_id": null,
+        "children": [
+          {
+            "title": "ما يباح اصطياده وما لا يباح ومن يباح له الاصطياد ومن لا يباح له",
+            "chunk_id": "parent_5903_1193__573",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب التضحية",
+        "chunk_id": null,
+        "children": [
+          {
+            "title": "صفة التضحية",
+            "chunk_id": "parent_5903_1193__575",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط وجوب في الأضحية",
+            "chunk_id": "parent_5903_1195__577",
+            "children": []
+          },
+          {
+            "title": "فصل في وقت وجوب الأضحية",
+            "chunk_id": "parent_5903_1197__578",
+            "children": []
+          },
+          {
+            "title": "فصل في أنواع كيفية الوجوب",
+            "chunk_id": "parent_5903_1197__579",
+            "children": []
+          },
+          {
+            "title": "فصل في محل إقامة الواجب في الأضحية",
+            "chunk_id": "parent_5903_1201__580",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط جواز إقامة الواجب في الأضحية",
+            "chunk_id": "parent_5903_1203__581",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يستحب قبل التضحية وبعدها وما يكره",
+            "chunk_id": "parent_5903_1210__582",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب النذر",
+        "chunk_id": "parent_5903_1213__583",
+        "children": [
+          {
+            "title": "فصل في حكم النذر",
+            "chunk_id": "parent_5903_1222__584",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الكفارات",
+        "chunk_id": "parent_5903_1227__585",
+        "children": [
+          {
+            "title": "فصل في بيان كيفية وجوب هذه الأنواع",
+            "chunk_id": "parent_5903_1228__586",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط وجوب كل نوع",
+            "chunk_id": "parent_5903_1229__587",
+            "children": []
+          },
+          {
+            "title": "فصل في شرط جواز كل نوع",
+            "chunk_id": "parent_5903_1231__588",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الأشربة",
+        "chunk_id": "parent_5903_1244__589",
+        "children": [
+          {
+            "title": "بيان أحكام الأشربة",
+            "chunk_id": "parent_5903_1244__590",
+            "children": []
+          },
+          {
+            "title": "حد شرب الخمر وحد السكر",
+            "chunk_id": "parent_5903_1245__591",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الاستحسان",
+        "chunk_id": "parent_5903_1250__592",
+        "children": []
+      },
+      {
+        "title": "كتاب البيوع",
+        "chunk_id": null,
+        "children": [
+          {
+            "title": "بيان ركن البيع",
+            "chunk_id": "parent_5903_1265__593",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط ركن البيع",
+            "chunk_id": "parent_5903_1266__594",
+            "children": []
+          },
+          {
+            "title": "فصل في الشرط الذي يرجع إلى نفس العقد",
+            "chunk_id": "parent_5903_1268__595",
+            "children": []
+          },
+          {
+            "title": "فصل في الشرط الذي يرجع إلى مكان العقد",
+            "chunk_id": "parent_5903_1269__596",
+            "children": []
+          },
+          {
+            "title": "فصل في الشرط الذي يرجع إلى المعقود عليه",
+            "chunk_id": "parent_5903_1270__597",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط النفاذ ومنها الولاية",
+            "chunk_id": "parent_5903_1285__598",
+            "children": []
+          },
+          {
+            "title": "فصل في ترتيب الولاية",
+            "chunk_id": "parent_5903_1287__599",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط الصحة في البيوع",
+            "chunk_id": "parent_5903_1288__600",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط جريان الربا في البيع",
+            "chunk_id": "parent_5903_1324__601",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط الركن وهي نوعان نوع يرجع إلى نفس العقد ونوع يرجع إلى البدل",
+            "chunk_id": "parent_5903_1333__602",
+            "children": []
+          },
+          {
+            "title": "فصل في الشرط الذي يرجع إلى المسلم",
+            "chunk_id": "parent_5903_1339__603",
+            "children": []
+          },
+          {
+            "title": "فصل في الشرط الذي يرجع إلى البدلين جميعا",
+            "chunk_id": "parent_5903_1346__604",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يجوز من التصرف في المسلم فيه وما لا يجوز",
+            "chunk_id": "parent_5903_1346__605",
+            "children": []
+          },
+          {
+            "title": "الصرف وتفسيره",
+            "chunk_id": "parent_5903_1347__606",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط الصرف",
+            "chunk_id": "parent_5903_1347__607",
+            "children": []
+          },
+          {
+            "title": "المرابحة وتفسيرها وشرائطها",
+            "chunk_id": "parent_5903_1352__608",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان رأس المال",
+            "chunk_id": "parent_5903_1354__609",
+            "children": []
+          },
+          {
+            "title": "فصل بيان ما يلحق برأس المال وما لا يلحق به في المرابحة",
+            "chunk_id": "parent_5903_1355__610",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يجب بيانه في المرابحة وما لا يجب",
+            "chunk_id": "parent_5903_1355__611",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم الخيانة في المرابحة",
+            "chunk_id": "parent_5903_1357__612",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم الإشراك في المرابحة",
+            "chunk_id": "parent_5903_1358__613",
+            "children": []
+          },
+          {
+            "title": "فصل في المواضعة",
+            "chunk_id": "parent_5903_1360__614",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط لزوم البيع بعد انعقاده",
+            "chunk_id": "parent_5903_1360__615",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يكره من البياعات وما يتصل بها",
+            "chunk_id": "parent_5903_1360__616",
+            "children": []
+          },
+          {
+            "title": "كراهة التفريق في البيع",
+            "chunk_id": "parent_5903_1361__617",
+            "children": []
+          },
+          {
+            "title": "فصل في ما يحصل به التفريق في البيع",
+            "chunk_id": "parent_5903_1363__618",
+            "children": []
+          },
+          {
+            "title": "فصل في صفة البيع الذي يحصل به التفريق",
+            "chunk_id": "parent_5903_1364__619",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم البيع",
+            "chunk_id": "parent_5903_1365__620",
+            "children": []
+          },
+          {
+            "title": "خيار الشرط",
+            "chunk_id": "parent_5903_1394__621",
+            "children": []
+          },
+          {
+            "title": "خيار الرؤية",
+            "chunk_id": "parent_5903_1423__624",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يرفع حكم البيع",
+            "chunk_id": "parent_5903_1438__628",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الكفالة",
+        "chunk_id": null,
+        "children": [
+          {
+            "title": "ركن الكفالة",
+            "chunk_id": "parent_5903_1443__629",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط الكفالة",
+            "chunk_id": "parent_5903_1446__632",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان حكم الكفالة",
+            "chunk_id": "parent_5903_1451__633",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يخرج به الكفيل عن الكفالة",
+            "chunk_id": "parent_5903_1452__634",
+            "children": []
+          },
+          {
+            "title": "فصل في رجوع الكفيل بعد الخروج عن الكفالة",
+            "chunk_id": "parent_5903_1454__635",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يرجع به الكفيل",
+            "chunk_id": "parent_5903_1456__636",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الحوالة",
+        "chunk_id": null,
+        "children": [
+          {
+            "title": "بيان ركن الحوالة",
+            "chunk_id": "parent_5903_1456__637",
+            "children": []
+          },
+          {
+            "title": "شرائط الحوالة",
+            "chunk_id": "parent_5903_1457__638",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان حكم الحوالة",
+            "chunk_id": "parent_5903_1458__639",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يخرج به المحال عليه من الحوالة",
+            "chunk_id": "parent_5903_1459__640",
+            "children": []
+          },
+          {
+            "title": "فصل في الرجوع في الحوالة",
+            "chunk_id": "parent_5903_1460__641",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الوكالة",
+        "chunk_id": "parent_5903_1462__645",
+        "children": [
+          {
+            "title": "بيان معنى التوكيل",
+            "chunk_id": "parent_5903_1460__642",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ركن التوكيل",
+            "chunk_id": "parent_5903_1461__643",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط الوكالة",
+            "chunk_id": "parent_5903_1461__644",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان حكم التوكيل",
+            "chunk_id": "parent_5903_1465__646",
+            "children": []
+          },
+          {
+            "title": "فصل في الوكيلان هل ينفرد أحدهما بالتصرف فيما وكلا به",
+            "chunk_id": "parent_5903_1473__647",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يخرج به الوكيل عن الوكالة",
+            "chunk_id": "parent_5903_1478__648",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الصلح",
+        "chunk_id": "parent_5903_1480__649",
+        "children": [
+          {
+            "title": "فصل في ركن الصلح",
+            "chunk_id": "parent_5903_1481__650",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط ركن الصلح وبعضها يرجع إلى المصالح",
+            "chunk_id": "parent_5903_1481__651",
+            "children": []
+          },
+          {
+            "title": "فصل في الشرائط التي ترجع إلى المصالح عليه",
+            "chunk_id": "parent_5903_1483__652",
+            "children": []
+          },
+          {
+            "title": "فصل في الشرائط التي ترجع إلى المصالح عنه",
+            "chunk_id": "parent_5903_1489__653",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان حكم الصلح",
+            "chunk_id": "parent_5903_1494__654",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يبطل به الصلح بعد وجوده",
+            "chunk_id": "parent_5903_1495__655",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان حكم الصلح إذا بطل بعد صحته",
+            "chunk_id": "parent_5903_1496__656",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الشركة",
+        "chunk_id": "parent_5903_1497__657",
+        "children": [
+          {
+            "title": "أنواع الشركة",
+            "chunk_id": "parent_5903_1498__658",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم الشركة",
+            "chunk_id": "parent_5903_1506__661",
+            "children": []
+          },
+          {
+            "title": "فصل في صفة عقد الشركة",
+            "chunk_id": "parent_5903_1518__662",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يبطل به عقد الشركة",
+            "chunk_id": "parent_5903_1519__663",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب المضاربة",
+        "chunk_id": "parent_5903_1520__664",
+        "children": [
+          {
+            "title": "فصل في ركن عقد المضاربة",
+            "chunk_id": "parent_5903_1520__665",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط ركن المضاربة",
+            "chunk_id": "parent_5903_1522__666",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان حكم المضاربة",
+            "chunk_id": "parent_5903_1527__667",
+            "children": []
+          },
+          {
+            "title": "فصل في صفة عقد المضاربة",
+            "chunk_id": "parent_5903_1550__668",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم اختلاف المضارب ورب المال",
+            "chunk_id": "parent_5903_1550__669",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يبطل به عقد المضاربة",
+            "chunk_id": "parent_5903_1553__670",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الهبة",
+        "chunk_id": null,
+        "children": [
+          {
+            "title": "ركن الهبة",
+            "chunk_id": "parent_5903_1556__671",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط ركن الهبة",
+            "chunk_id": "parent_5903_1559__672",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم الهبة",
+            "chunk_id": "parent_5903_1568__673",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يرفع عقد الهبة",
+            "chunk_id": "parent_5903_1575__674",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الرهن",
+        "chunk_id": null,
+        "children": [
+          {
+            "title": "بيان ركن الرهن",
+            "chunk_id": "parent_5903_1576__675",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط ركن الرهن",
+            "chunk_id": "parent_5903_1576__676",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم الرهن",
+            "chunk_id": "parent_5903_1586__677",
+            "children": []
+          },
+          {
+            "title": "فصل في ما يتعلق بحال هلاك المرهون",
+            "chunk_id": "parent_5903_1595__678",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط كون المرهون مضمونا عند الهلاك",
+            "chunk_id": "parent_5903_1596__679",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يخرج به المرهون عن كونه مرهونا ويبطل به عقد الرهن",
+            "chunk_id": "parent_5903_1611__680",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم اختلاف الراهن والمرتهن",
+            "chunk_id": "parent_5903_1615__681",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب المزارعة",
+        "chunk_id": "parent_5903_1626__701",
+        "children": [
+          {
+            "title": "معنى المزارعة",
+            "chunk_id": "parent_5903_1616__682",
+            "children": []
+          },
+          {
+            "title": "فصل في شرعية المزارعة",
+            "chunk_id": "parent_5903_1616__683",
+            "children": []
+          },
+          {
+            "title": "فصل في ركن المزارعة",
+            "chunk_id": "parent_5903_1617__684",
+            "children": []
+          },
+          {
+            "title": "فصل في الشرائط المصححة للمزارعة",
+            "chunk_id": "parent_5903_1617__685",
+            "children": []
+          },
+          {
+            "title": "فصل في الشرائط التي ترجع إلى الزرع",
+            "chunk_id": "parent_5903_1618__686",
+            "children": []
+          },
+          {
+            "title": "فصل في الشرائط التي ترجع إلى المزروع",
+            "chunk_id": "parent_5903_1618__687",
+            "children": []
+          },
+          {
+            "title": "فصل في الشرائط التي ترجع إلى الخارج من الزرع",
+            "chunk_id": "parent_5903_1618__688",
+            "children": []
+          },
+          {
+            "title": "فصل في الشرائط التي ترجع إلى المزروع فيه وهو الأرض",
+            "chunk_id": "parent_5903_1619__689",
+            "children": []
+          },
+          {
+            "title": "فصل في الشرائط التي ترجع إلى ما عقد عليه المزارعة",
+            "chunk_id": "parent_5903_1620__690",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان أنواع المزارعة",
+            "chunk_id": "parent_5903_1620__691",
+            "children": []
+          },
+          {
+            "title": "فصل في الشرائط التي ترجع إلى آلة المزارعة",
+            "chunk_id": "parent_5903_1621__692",
+            "children": []
+          },
+          {
+            "title": "فصل في الشرائط التي ترجع إلى مدة المزارعة",
+            "chunk_id": "parent_5903_1621__693",
+            "children": []
+          },
+          {
+            "title": "فصل في الشرائط المفسدة للمزارعة",
+            "chunk_id": "parent_5903_1621__694",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان حكم المزارعة الصحيحة",
+            "chunk_id": "parent_5903_1622__695",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم المزارعة الفاسدة",
+            "chunk_id": "parent_5903_1623__696",
+            "children": []
+          },
+          {
+            "title": "فصل في المعاني التي هي عذر في فسخ المزارعة",
+            "chunk_id": "parent_5903_1624__697",
+            "children": []
+          },
+          {
+            "title": "فصل في الذي ينفسخ به عقد المزارعة بعد وجوده",
+            "chunk_id": "parent_5903_1625__698",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان حكم المزارعة المنفسخة",
+            "chunk_id": "parent_5903_1625__699",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب المعاملة",
+        "chunk_id": "parent_5903_1626__700",
+        "children": [
+          {
+            "title": "فصل في الشرائط المفسدة للمعاملة",
+            "chunk_id": "parent_5903_1627__705",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم المعاملة الصحيحة",
+            "chunk_id": "parent_5903_1628__707",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الشرب",
+        "chunk_id": "parent_5903_1629__713",
+        "children": []
+      },
+      {
+        "title": "كتاب الأراضي",
+        "chunk_id": "parent_5903_1633__714",
+        "children": []
+      },
+      {
+        "title": "كتاب المفقود",
+        "chunk_id": null,
+        "children": [
+          {
+            "title": "بيان حال المفقود",
+            "chunk_id": "parent_5903_1637__715",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يصنع بمال المفقود",
+            "chunk_id": "parent_5903_1637__716",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم مال المفقود",
+            "chunk_id": "parent_5903_1638__717",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب اللقيط",
+        "chunk_id": "parent_5903_1638__718",
+        "children": []
+      },
+      {
+        "title": "كتاب اللقطة",
+        "chunk_id": "parent_5903_1641__720",
+        "children": [
+          {
+            "title": "فصل في بيان أحوال اللقطة",
+            "chunk_id": "parent_5903_1641__721",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يصنع باللقطة",
+            "chunk_id": "parent_5903_1643__722",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الإباق",
+        "chunk_id": "parent_5903_1644__723",
+        "children": [
+          {
+            "title": "فصل في بيان حكم مال الآبق",
+            "chunk_id": "parent_5903_1644__724",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط استحقاق جعل الآبق",
+            "chunk_id": "parent_5903_1645__725",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان من يستحق عليه جعل الآبق",
+            "chunk_id": "parent_5903_1646__726",
+            "children": []
+          },
+          {
+            "title": "فصل بيان قدر المستحق في جعل الآبق",
+            "chunk_id": "parent_5903_1646__727",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب السباق",
+        "chunk_id": "parent_5903_1647__728",
+        "children": []
+      },
+      {
+        "title": "كتاب الوديعة",
+        "chunk_id": null,
+        "children": [
+          {
+            "title": "ركن الوديعة",
+            "chunk_id": "parent_5903_1648__729",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان حكم عقد الوديعة",
+            "chunk_id": "parent_5903_1648__731",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان حال الوديعة",
+            "chunk_id": "parent_5903_1651__732",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يغير حال الوديعة من الأمانة إلى الضمان",
+            "chunk_id": "parent_5903_1652__733",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب العارية",
+        "chunk_id": null,
+        "children": [
+          {
+            "title": "ركن العارية",
+            "chunk_id": "parent_5903_1655__734",
+            "children": []
+          },
+          {
+            "title": "فصل في الشرائط التي يصير الركن بها إعارة شرعا",
+            "chunk_id": "parent_5903_1655__735",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان حكم عقد الإعارة",
+            "chunk_id": "parent_5903_1655__736",
+            "children": []
+          },
+          {
+            "title": "فصل في صفة الحكم في الإعارة",
+            "chunk_id": "parent_5903_1657__737",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان حال المستعار",
+            "chunk_id": "parent_5903_1658__738",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يوجب تغير حال المستعار من الأمانة إلى الضمان",
+            "chunk_id": "parent_5903_1659__739",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الوقف والصدقة",
+        "chunk_id": null,
+        "children": [
+          {
+            "title": "جواز الوقف وكيفيته",
+            "chunk_id": "parent_5903_1659__740",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط جواز الوقف وبعضها يرجع إلى الواقف",
+            "chunk_id": "parent_5903_1660__741",
+            "children": []
+          },
+          {
+            "title": "فصل في الشرائط التي ترجع إلى الموقوف",
+            "chunk_id": "parent_5903_1661__742",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم الوقف الجائز وما يتصل به",
+            "chunk_id": "parent_5903_1661__743",
+            "children": []
+          },
+          {
+            "title": "فصل في الصدقة الموقوفة",
+            "chunk_id": "parent_5903_1662__744",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الدعوى",
+        "chunk_id": null,
+        "children": [
+          {
+            "title": "بيان ركن الدعوى",
+            "chunk_id": "parent_5903_1662__745",
+            "children": []
+          },
+          {
+            "title": "فصل في الشرائط المصححة للدعوى",
+            "chunk_id": "parent_5903_1663__746",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان حد المدعي والمدعى عليه",
+            "chunk_id": "parent_5903_1665__747",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان حكم الدعوى وما يتصل به",
+            "chunk_id": "parent_5903_1665__748",
+            "children": []
+          },
+          {
+            "title": "فصل في حجة المدعي والمدعى عليه",
+            "chunk_id": "parent_5903_1666__749",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان كيفية اليمين",
+            "chunk_id": "parent_5903_1668__750",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم أداء اليمين",
+            "chunk_id": "parent_5903_1670__751",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم الامتناع عن تحصيل اليمين",
+            "chunk_id": "parent_5903_1671__752",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما تندفع به الخصومة عن المدعى عليه",
+            "chunk_id": "parent_5903_1672__753",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم تعارض الدعوتين مع تعارض البينتين",
+            "chunk_id": "parent_5903_1673__754",
+            "children": []
+          },
+          {
+            "title": "دعوى النسب",
+            "chunk_id": null,
+            "children": [
+              {
+                "title": "بيان ما يثبت به النسب",
+                "chunk_id": "parent_5903_1683__755",
+                "children": []
+              },
+              {
+                "title": "فصل في بيان ما يظهر به النسب",
+                "chunk_id": "parent_5903_1693__756",
+                "children": []
+              },
+              {
+                "title": "فصل في صفة النسب الثابت",
+                "chunk_id": "parent_5903_1696__757",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "فصل في حكم تعارض الدعوتين لا غير",
+            "chunk_id": null,
+            "children": [
+              {
+                "title": "حكم تعارض الدعوتين في أصل الملك",
+                "chunk_id": "parent_5903_1696__758",
+                "children": []
+              },
+              {
+                "title": "فصل في حكم تعارض الدعوتين في قدر الملك",
+                "chunk_id": "parent_5903_1700__759",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "فصل في بيان حكم الملك والحق الثابت في المحل",
+            "chunk_id": "parent_5903_1704__760",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الشهادة",
+        "chunk_id": null,
+        "children": [
+          {
+            "title": "بيان ركن الشهادة",
+            "chunk_id": "parent_5903_1707__761",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط ركن الشهادة",
+            "chunk_id": "parent_5903_1707__762",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يلزم الشاهد بتحمل الشهادة",
+            "chunk_id": "parent_5903_1723__763",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان حكم الشهادة",
+            "chunk_id": "parent_5903_1723__764",
+            "children": []
+          },
+          {
+            "title": "كتاب الرجوع عن الشهادة",
+            "chunk_id": "parent_5903_1724__765",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب آداب القاضي",
+        "chunk_id": null,
+        "children": [
+          {
+            "title": "بيان فرضية نصب القاضي",
+            "chunk_id": "parent_5903_1732__766",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان من يصلح للقضاء",
+            "chunk_id": "parent_5903_1733__767",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان من يفترض عليه قبول تقليد القضاء",
+            "chunk_id": "parent_5903_1733__768",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان شرائط جواز القضاء",
+            "chunk_id": "parent_5903_1734__769",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان آداب القضاء",
+            "chunk_id": "parent_5903_1739__770",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما ينفذ من القضايا وما ينقض منها إذا رفع إلى قاض آخر",
+            "chunk_id": "parent_5903_1744__771",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يحله القضاء وما لا يحله",
+            "chunk_id": "parent_5903_1745__772",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان حكم خطأ القاضي في القضاء",
+            "chunk_id": "parent_5903_1746__773",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يخرج به القاضي عن القضاء",
+            "chunk_id": "parent_5903_1746__774",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب القسمة",
+        "chunk_id": "parent_5903_1747__775",
+        "children": [
+          {
+            "title": "فصل في بيان معنى القسمة",
+            "chunk_id": "parent_5903_1747__776",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط القسمة وبعضها يرجع إلى القاسم",
+            "chunk_id": "parent_5903_1748__777",
+            "children": []
+          },
+          {
+            "title": "فصل في الشرائط التي ترجع إلى المقسوم له",
+            "chunk_id": "parent_5903_1749__778",
+            "children": []
+          },
+          {
+            "title": "فصل في الشرائط التي ترجع إلى المقسوم",
+            "chunk_id": "parent_5903_1754__779",
+            "children": []
+          },
+          {
+            "title": "فصل في صفات القسمة",
+            "chunk_id": "parent_5903_1756__780",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان حكم القسمة",
+            "chunk_id": "parent_5903_1758__781",
+            "children": []
+          },
+          {
+            "title": "فصل في ما يوجب نقض القسمة بعد وجودها",
+            "chunk_id": "parent_5903_1760__782",
+            "children": []
+          },
+          {
+            "title": "فصل في قسمة المنافع",
+            "chunk_id": null,
+            "children": [
+              {
+                "title": "أنواع المهايئات وما يجوز منها وما لا يجوز",
+                "chunk_id": "parent_5903_1761__783",
+                "children": []
+              },
+              {
+                "title": "فصل في محل المهايئات",
+                "chunk_id": "parent_5903_1762__785",
+                "children": []
+              },
+              {
+                "title": "فصل في صفة المهايئات",
+                "chunk_id": "parent_5903_1762__786",
+                "children": []
+              },
+              {
+                "title": "فصل في بيان ما يملك كل واحد من الشريكين من التصرف بعد المهايئات",
+                "chunk_id": "parent_5903_1762__787",
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "كتاب الحدود",
+        "chunk_id": "parent_5903_1763__788",
+        "children": [
+          {
+            "title": "فصل في بيان أسباب وجوب الحدود",
+            "chunk_id": "parent_5903_1763__789",
+            "children": []
+          },
+          {
+            "title": "فصل في أنواع الإحصان",
+            "chunk_id": "parent_5903_1767__790",
+            "children": []
+          },
+          {
+            "title": "فصل في حد الشرب",
+            "chunk_id": "parent_5903_1769__791",
+            "children": [
+              {
+                "title": "فصل في شرائط وجوب حد الشرب",
+                "chunk_id": "parent_5903_1769__792",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "فصل في سبب وجوب حد القذف",
+            "chunk_id": "parent_5903_1770__793",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط وجوب حد القذف وبعضها يرجع إلى القاذف",
+            "chunk_id": "parent_5903_1770__794",
+            "children": []
+          },
+          {
+            "title": "فصل في الشرائط التي ترجع إلى المقذوف",
+            "chunk_id": "parent_5903_1770__795",
+            "children": []
+          },
+          {
+            "title": "فصل في الشرائط التي ترجع إلى القاذف والمقذوف",
+            "chunk_id": "parent_5903_1772__796",
+            "children": []
+          },
+          {
+            "title": "فصل في الشرائط التي ترجع إلى المقذوف به",
+            "chunk_id": "parent_5903_1772__797",
+            "children": []
+          },
+          {
+            "title": "فصل في الشرائط التي ترجع إلى المقذوف فيه",
+            "chunk_id": "parent_5903_1775__798",
+            "children": []
+          },
+          {
+            "title": "فصل في الشرائط التي ترجع إلى نفس القذف",
+            "chunk_id": "parent_5903_1776__799",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما تظهر به الحدود عند القاضي",
+            "chunk_id": "parent_5903_1776__800",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان من يملك الخصومة ومن لا يملكها في القذف",
+            "chunk_id": "parent_5903_1784__801",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان صفات الحدود",
+            "chunk_id": "parent_5903_1785__802",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان مقدار الواجب من الحدود",
+            "chunk_id": "parent_5903_1787__803",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط جواز إقامة الحدود",
+            "chunk_id": "parent_5903_1787__804",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يسقط الحد بعد وجوبه",
+            "chunk_id": "parent_5903_1791__805",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان حكم الحدود إذا اجتمعت",
+            "chunk_id": "parent_5903_1792__806",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان حكم المحدود",
+            "chunk_id": "parent_5903_1793__807",
+            "children": []
+          },
+          {
+            "title": "فصل في التعزير",
+            "chunk_id": null,
+            "children": [
+              {
+                "title": "بيان سبب وجوب التعزير",
+                "chunk_id": "parent_5903_1793__808",
+                "children": []
+              },
+              {
+                "title": "فصل في شرط وجوب التعزير",
+                "chunk_id": "parent_5903_1793__809",
+                "children": []
+              },
+              {
+                "title": "فصل في قدر التعزير",
+                "chunk_id": "parent_5903_1794__810",
+                "children": []
+              },
+              {
+                "title": "فصل في صفة التعزير",
+                "chunk_id": "parent_5903_1794__811",
+                "children": []
+              },
+              {
+                "title": "فصل في بيان ما يظهر به التعزير",
+                "chunk_id": "parent_5903_1795__812",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "كتاب السرقة",
+            "chunk_id": "parent_5903_1795__813",
+            "children": [
+              {
+                "title": "فصل في شرائط ركن السرقة وبعضها يرجع إلى السارق",
+                "chunk_id": "parent_5903_1796__814",
+                "children": []
+              },
+              {
+                "title": "فصل في الشرط الذي يرجع إلى المسروق",
+                "chunk_id": "parent_5903_1797__815",
+                "children": []
+              },
+              {
+                "title": "فصل في الشرط الذي يرجع إلى المسروق منه",
+                "chunk_id": "parent_5903_1810__816",
+                "children": []
+              },
+              {
+                "title": "فصل في الشرط الذي يرجع إلى المسروق فيه",
+                "chunk_id": "parent_5903_1810__817",
+                "children": []
+              },
+              {
+                "title": "فصل في بيان ما تظهر به السرقة عند القاضي",
+                "chunk_id": "parent_5903_1811__818",
+                "children": []
+              },
+              {
+                "title": "فصل في حكم السرقة",
+                "chunk_id": "parent_5903_1814__819",
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "كتاب قطاع الطريق",
+        "chunk_id": "parent_5903_1820__820",
+        "children": [
+          {
+            "title": "فصل في شرائط قطع الطريق وبعضها يرجع إلى القاطع",
+            "chunk_id": "parent_5903_1821__821",
+            "children": []
+          },
+          {
+            "title": "فصل في ما يرجع إلى المقطوع عليه",
+            "chunk_id": "parent_5903_1821__822",
+            "children": []
+          },
+          {
+            "title": "فصل في ما يرجع إلى القاطع والمقطوع عليه",
+            "chunk_id": "parent_5903_1821__823",
+            "children": []
+          },
+          {
+            "title": "فصل في ما يرجع إلى المقطوع له",
+            "chunk_id": "parent_5903_1822__824",
+            "children": []
+          },
+          {
+            "title": "فصل في ما يرجع إلى المقطوع فيه",
+            "chunk_id": "parent_5903_1822__825",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يظهر به القطع عند القاضي",
+            "chunk_id": "parent_5903_1823__826",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم قطع الطريق",
+            "chunk_id": "parent_5903_1823__827",
+            "children": []
+          },
+          {
+            "title": "فصل في صفات حكم قطع الطريق",
+            "chunk_id": "parent_5903_1825__828",
+            "children": []
+          },
+          {
+            "title": "فصل في محل إقامة حكم قطع الطريق",
+            "chunk_id": "parent_5903_1825__829",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان من يقيم حد قطع الطريق",
+            "chunk_id": "parent_5903_1826__830",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يسقط حد قطع الطريق بعد وجوبه",
+            "chunk_id": "parent_5903_1826__831",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم سقوط حد قطع الطريق بعد وجوبه",
+            "chunk_id": "parent_5903_1826__832",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم المال الذي أخذه قاطع الطريق",
+            "chunk_id": "parent_5903_1827__833",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب السير",
+        "chunk_id": "parent_5903_1827__834",
+        "children": [
+          {
+            "title": "فصل في بيان كيفية فرضية الجهاد",
+            "chunk_id": "parent_5903_1828__836",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان من يفترض عليه الجهاد",
+            "chunk_id": "parent_5903_1828__837",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يندب إليه الإمام عند بعث الجيش أو السرية إلى الجهاد",
+            "chunk_id": "parent_5903_1829__838",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يجب على الغزاة الافتتاح به حالة الوقعة ولقاء العدو",
+            "chunk_id": "parent_5903_1830__839",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان من يحل قتله من الكفرة ومن لا يحل",
+            "chunk_id": "parent_5903_1831__840",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان من يسع تركه في دار الحرب ممن لا يحل قتله، ومن لا يسع",
+            "chunk_id": "parent_5903_1832__841",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يكره حمله إلى دار الحرب وما لا يكره",
+            "chunk_id": "parent_5903_1832__842",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يعترض من الأسباب المحرمة للقتال",
+            "chunk_id": "parent_5903_1832__843",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان حكم الغنائم وما يتصل بها",
+            "chunk_id": "parent_5903_1844__844",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان حكم الاستيلاء من الكفرة على أموال المسلمين",
+            "chunk_id": "parent_5903_1857__845",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان معنى الدارين دار الإسلام ودار الكفر",
+            "chunk_id": "parent_5903_1860__846",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان الأحكام التي تختلف باختلاف الدارين",
+            "chunk_id": "parent_5903_1861__847",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان أحكام المرتدين",
+            "chunk_id": "parent_5903_1864__848",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان حكم ولد المرتد",
+            "chunk_id": "parent_5903_1869__849",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان أحكام البغاة",
+            "chunk_id": "parent_5903_1870__850",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الغصب",
+        "chunk_id": "parent_5903_1872__851",
+        "children": [
+          {
+            "title": "فصل في حكم الغصب",
+            "chunk_id": "parent_5903_1878__852",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم اختلاف الغاصب والمغصوب منه",
+            "chunk_id": "parent_5903_1893__853",
+            "children": []
+          },
+          {
+            "title": "فصل في مسائل الإتلاف",
+            "chunk_id": "parent_5903_1894__854",
+            "children": [
+              {
+                "title": "فصل في بيان شروط وجوب ضمان الإتلاف",
+                "chunk_id": "parent_5903_1897__855",
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "كتاب الحجر والحبس",
+        "chunk_id": null,
+        "children": [
+          {
+            "title": "الفصل الأول في الحجر",
+            "chunk_id": null,
+            "children": [
+              {
+                "title": "أسباب الحجر",
+                "chunk_id": "parent_5903_1899__856",
+                "children": []
+              },
+              {
+                "title": "فصل في بيان حكم الحجر",
+                "chunk_id": "parent_5903_1900__859",
+                "children": []
+              },
+              {
+                "title": "فصل في بيان ما يرفع الحجر",
+                "chunk_id": "parent_5903_1901__860",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "الفصل الثاني الحبس",
+            "chunk_id": "parent_5903_1903__861",
+            "children": [
+              {
+                "title": "فصل في بيان ما يمنع المحبوس عنه وما لا يمنع",
+                "chunk_id": "parent_5903_1904__862",
+                "children": []
+              },
+              {
+                "title": "فصل في حبس العين بالدين",
+                "chunk_id": "parent_5903_1905__863",
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "كتاب الإكراه",
+        "chunk_id": "parent_5903_1905__864",
+        "children": [
+          {
+            "title": "فصل في بيان أنواع الإكراه",
+            "chunk_id": "parent_5903_1905__865",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط الإكراه",
+            "chunk_id": "parent_5903_1906__866",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يقع عليه الإكراه",
+            "chunk_id": "parent_5903_1906__867",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان حكم ما يقع عليه الإكراه",
+            "chunk_id": "parent_5903_1906__868",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان حكم ما عدل المكره إلى غير ما وقع عليه الإكراه",
+            "chunk_id": "parent_5903_1920__869",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب المأذون",
+        "chunk_id": "parent_5903_1921__870",
+        "children": [
+          {
+            "title": "فصل في شرائط ركن الإذن بالتجارة",
+            "chunk_id": "parent_5903_1923__871",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يظهر به الإذن بالتجارة",
+            "chunk_id": "parent_5903_1924__872",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يملكه المأذون من التصرف وما لا يملكه",
+            "chunk_id": "parent_5903_1924__873",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يملكه المولى من التصرف في المأذون وما لا يملك",
+            "chunk_id": "parent_5903_1928__874",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان حكم الغرور في العبد المأذون",
+            "chunk_id": "parent_5903_1931__875",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان حكم الدين الذي يلحق المأذون",
+            "chunk_id": "parent_5903_1931__876",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان سبب ظهور الدين الذي يلحق المأذون",
+            "chunk_id": "parent_5903_1932__877",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان محل تعلق الدين بالمأذون",
+            "chunk_id": "parent_5903_1933__878",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان حكم تعلق الدين بالمأذون",
+            "chunk_id": "parent_5903_1934__879",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يبطل به الإذن بعد وجوده ويصير محجورا",
+            "chunk_id": "parent_5903_1936__880",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم تصرف المحجور",
+            "chunk_id": "parent_5903_1937__881",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الإقرار",
+        "chunk_id": null,
+        "children": [
+          {
+            "title": "ركن الإقرار",
+            "chunk_id": "parent_5903_1937__882",
+            "children": []
+          },
+          {
+            "title": "القرينة المغيرة في ركن الإقرار",
+            "chunk_id": "parent_5903_1939__884",
+            "children": []
+          },
+          {
+            "title": "فصل في القرينة الداخلة على قدر المقر به في ركن الإقرار",
+            "chunk_id": "parent_5903_1939__885",
+            "children": []
+          },
+          {
+            "title": "فصل في القرينة المبنية على الإطلاق في ركن الإقرار",
+            "chunk_id": "parent_5903_1944__886",
+            "children": []
+          },
+          {
+            "title": "فصل في القرينة الداخلة على وصف المقر به في ركن الإقرار",
+            "chunk_id": "parent_5903_1945__887",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط ركن الإقرار",
+            "chunk_id": "parent_5903_1952__888",
+            "children": []
+          },
+          {
+            "title": "فصل أنواع المقر به ومنها حق العبد",
+            "chunk_id": "parent_5903_1953__889",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان محل تعلق الحق في الإقرار",
+            "chunk_id": "parent_5903_1956__890",
+            "children": []
+          },
+          {
+            "title": "فصل في إقرار المريض باستيفاء دين وجب له على غيره",
+            "chunk_id": "parent_5903_1956__891",
+            "children": []
+          },
+          {
+            "title": "فصل في إقرار المريض بدين وجب له على وارثه",
+            "chunk_id": "parent_5903_1957__892",
+            "children": []
+          },
+          {
+            "title": "فصل في إقرار المريض بالإبراء",
+            "chunk_id": "parent_5903_1958__893",
+            "children": []
+          },
+          {
+            "title": "فصل في الإقرار بالنسب",
+            "chunk_id": "parent_5903_1958__894",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يبطل به الإقرار بعد وجوده",
+            "chunk_id": "parent_5903_1962__895",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الجنايات",
+        "chunk_id": "parent_5903_1963__896",
+        "children": [
+          {
+            "title": "وجوب القصاص وشرائطه",
+            "chunk_id": "parent_5903_1964__897",
+            "children": []
+          },
+          {
+            "title": "فصل في كيفية وجوب القصاص",
+            "chunk_id": "parent_5903_1971__898",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان من يستحق القصاص",
+            "chunk_id": "parent_5903_1972__899",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان من يلي استيفاء القصاص وشرط جواز استيفائه",
+            "chunk_id": "parent_5903_1973__900",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يستوفى به القصاص وكيفية الاستيفاء",
+            "chunk_id": "parent_5903_1975__901",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يسقط القصاص بعد وجوبه",
+            "chunk_id": "parent_5903_1976__902",
+            "children": []
+          },
+          {
+            "title": "وجوب الدية",
+            "chunk_id": "parent_5903_1981__903",
+            "children": [
+              {
+                "title": "من تجب عليه الدية",
+                "chunk_id": "parent_5903_1985__906",
+                "children": []
+              },
+              {
+                "title": "كيفية وجوب الدية",
+                "chunk_id": "parent_5903_1986__907",
+                "children": []
+              },
+              {
+                "title": "بيان من يجب عليه ومن يتحملها",
+                "chunk_id": "parent_5903_1987__908",
+                "children": []
+              },
+              {
+                "title": "أحكام جناية الحر على العبد",
+                "chunk_id": "parent_5903_1988__910",
+                "children": []
+              },
+              {
+                "title": "بيان ما يصير به المولى مختارا للفداء وبيان صحة الاختيار",
+                "chunk_id": "parent_5903_1993__911",
+                "children": []
+              },
+              {
+                "title": "بيان أصل الواجب بجناية العبد",
+                "chunk_id": "parent_5903_1996__912",
+                "children": []
+              },
+              {
+                "title": "صفة الواجب بجناية العبد",
+                "chunk_id": "parent_5903_1998__913",
+                "children": []
+              },
+              {
+                "title": "القتل الذي هو في معنى القتل الخطأ نوعان",
+                "chunk_id": "parent_5903_2001__914",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "فصل في وجوب الضمان إذا وقع عليه حائط وسبب الوجوب",
+            "chunk_id": "parent_5903_2013__915",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ماهية الضمان الواجب بهذه الجناية",
+            "chunk_id": "parent_5903_2015__916",
+            "children": []
+          },
+          {
+            "title": "فصل في القسامة",
+            "chunk_id": "parent_5903_2016__917",
+            "children": [
+              {
+                "title": "فصل في شرائط وجوب القسامة والدية",
+                "chunk_id": "parent_5903_2017__918",
+                "children": []
+              },
+              {
+                "title": "فصل في بيان سبب وجوب القسامة والدية",
+                "chunk_id": "parent_5903_2020__919",
+                "children": []
+              },
+              {
+                "title": "فصل في بيان من يدخل في القسامة والدية بعد وجوبهما ومن لا يدخل في ذلك",
+                "chunk_id": "parent_5903_2024__920",
+                "children": []
+              },
+              {
+                "title": "فصل في ما يكون إبراء عن القسامة والدية",
+                "chunk_id": "parent_5903_2025__921",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "فصل في الجناية على ما دون النفس مطلقا وأنواعها",
+            "chunk_id": "parent_5903_2026__922",
+            "children": [
+              {
+                "title": "فصل في أحكام كل نوع من أنواع الجناية فيما دون النفس",
+                "chunk_id": "parent_5903_2027__923",
+                "children": []
+              },
+              {
+                "title": "فصل في الجناية فيما دون النفس بالسلاح",
+                "chunk_id": "parent_5903_2040__924",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "في الأعضاء التي تجب فيها الدية كاملة",
+            "chunk_id": "parent_5903_2041__925",
+            "children": []
+          },
+          {
+            "title": "فصل في الجروح التي يجب فيها أرش مقدر",
+            "chunk_id": "parent_5903_2044__926",
+            "children": []
+          },
+          {
+            "title": "فصل في ما يلحق بمسائل التداخل في الدية والأرش",
+            "chunk_id": "parent_5903_2048__927",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط وجوب الدية",
+            "chunk_id": "parent_5903_2052__928",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان الجناية التي تتحملها العاقلة والتي لا تتحملها فيما دون النفس",
+            "chunk_id": "parent_5903_2052__929",
+            "children": []
+          },
+          {
+            "title": "فصل في الجنايات التي تجب فيها أرش غير مقدر",
+            "chunk_id": "parent_5903_2053__930",
+            "children": []
+          },
+          {
+            "title": "فصل في الجناية على ما هو نفس من وجه دون وجه",
+            "chunk_id": "parent_5903_2055__931",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الخنثى",
+        "chunk_id": null,
+        "children": [
+          {
+            "title": "تفسير الخنثى",
+            "chunk_id": "parent_5903_2057__932",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما يعرف به الخنثى أنه ذكر أو أنثى",
+            "chunk_id": "parent_5903_2057__933",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم الخنثى المشكل",
+            "chunk_id": "parent_5903_2058__934",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب الوصايا",
+        "chunk_id": null,
+        "children": [
+          {
+            "title": "بيان جواز الوصية",
+            "chunk_id": "parent_5903_2060__935",
+            "children": []
+          },
+          {
+            "title": "فصل في ركن الوصية",
+            "chunk_id": "parent_5903_2061__936",
+            "children": []
+          },
+          {
+            "title": "فصل في معنى الوصية",
+            "chunk_id": "parent_5903_2063__937",
+            "children": []
+          },
+          {
+            "title": "فصل في شرائط ركن الوصية",
+            "chunk_id": "parent_5903_2064__938",
+            "children": [
+              {
+                "title": "الشرط الذي يرجع إلى الموصي",
+                "chunk_id": "parent_5903_2064__939",
+                "children": []
+              },
+              {
+                "title": "الشرط الذي يرجع إلى الموصى له",
+                "chunk_id": "parent_5903_2065__940",
+                "children": []
+              },
+              {
+                "title": "الشرط الذي يرجع إلى الموصى به",
+                "chunk_id": "parent_5903_2082__941",
+                "children": []
+              },
+              {
+                "title": "وجود الموصى به عند موت الموصي هل هو شرط بقاء الوصية",
+                "chunk_id": "parent_5903_2084__942",
+                "children": []
+              }
+            ]
+          },
+          {
+            "title": "فصل في صفة عقد الوصية",
+            "chunk_id": "parent_5903_2108__943",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم الوصية",
+            "chunk_id": "parent_5903_2115__944",
+            "children": []
+          },
+          {
+            "title": "فصل في بيان ما تبطل به الوصية",
+            "chunk_id": "parent_5903_2124__945",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "كتاب القرض",
+        "chunk_id": null,
+        "children": [
+          {
+            "title": "ركن القرض",
+            "chunk_id": "parent_5903_2124__946",
+            "children": []
+          },
+          {
+            "title": "فصل في حكم القرض",
+            "chunk_id": "parent_5903_2126__948",
+            "children": []
+          }
+        ]
+      }
+    ]
+  }
+]

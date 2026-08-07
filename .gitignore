@@ -37,7 +37,51 @@ venv/
 # Misc
 # ======================
 .pytest_cache/
+# ======================
+# VS Code
+# ======================
+.vscode/
+
+# ======================
+# Environment
+# ======================
+.env
+.env.*
+!.env.example
+
+# ======================
+# Python
+# ======================
+__pycache__/
+*.pyc
+*.pyo
+
+# ======================
+# Virtual Environment
+# ======================
+venv/
+
+# ======================
+# Models & Embeddings
+# ======================
+*.bin
+*.pt
+*.pth
+
+# ======================
+# Data
+/data/ 
+
+# ======================
+# Misc
+# ======================
+.pytest_cache/
 AppDataLocalPackages*
 infrastructure/docker/Zad_Space
 services/ai_rag_engine/app/agentic_pipeline/
 docs/LangGraph_Tutorials/
+docs/assets/Logos/
+
+services/voice_agent/
+.venv/
+__pycache__/
