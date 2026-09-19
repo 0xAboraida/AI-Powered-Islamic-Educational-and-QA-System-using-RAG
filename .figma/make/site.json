@@ -1,0 +1,13 @@
+{
+  "description": "This web application offers a sleek, responsive interface for the زاد mobile app, showcasing features through interactive cards and a user-friendly navigation system.",
+  "robots": {
+    "index": false
+  },
+  "icons": {
+    "icon": "/favicon.png?v=2"
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

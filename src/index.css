@@ -1,0 +1,452 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Aref+Ruqaa:wght@400;700&family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Scheherazade+New:wght@400;700&family=Noto+Naskh+Arabic:wght@400;600;700&display=swap');
+@import 'tailwindcss';
+
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: 'Cairo', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Aref Ruqaa', 'Cairo', serif;
+
+  --color-background: #faf7ff;
+  --color-foreground: #2b1b3d;
+  --color-card: #ffffff;
+  --color-card-foreground: #2b1b3d;
+  --color-primary: #7a17c9;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #f3e8ff;
+  --color-secondary-foreground: #5b0e9c;
+  --color-muted: #f6f1fb;
+  --color-muted-foreground: #6a5b7a;
+  --color-accent: #950bc4;
+  --color-accent-foreground: #ffffff;
+  --color-brand-blue: #2b7fff;
+  --color-brand-deep: #5b0e9c;
+  --color-brand-mid: #760bb3;
+  --color-brand-magenta: #950bc4;
+  --color-border: #ecd9fb;
+  --color-ring: #ad46ff;
+
+  --radius: 1.25rem;
+}
+
+:root {
+  color-scheme: light;
+}
+
+.dark {
+  color-scheme: dark;
+  --color-background: #12041f;
+  --color-foreground: #f6f1fb;
+  --color-card: #1a0730;
+  --color-card-foreground: #f6f1fb;
+  --color-primary: #8a17c9;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #2b1b3d;
+  --color-secondary-foreground: #e9d5ff;
+  --color-muted: #231042;
+  --color-muted-foreground: #a78bfa;
+  --color-accent: #950bc4;
+  --color-accent-foreground: #ffffff;
+  --color-border: #3d2459;
+  --color-ring: #ad46ff;
+}
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-accent) 28%, transparent);
+  color: var(--color-brand-deep);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-read,
+.font-amiri {
+  font-family: 'Amiri', 'Traditional Arabic', serif;
+}
+
+.font-scheherazade {
+  font-family: 'Scheherazade New', 'Amiri', serif;
+}
+
+.font-noto-naskh {
+  font-family: 'Noto Naskh Arabic', 'Amiri', serif;
+}
+
+.font-cairo {
+  font-family: 'Cairo', sans-serif;
+}
+
+.brand-gradient {
+  background-image: linear-gradient(135deg, #5b0e9c 0%, #8a17c9 50%, #c020f0 100%);
+}
+
+.brand-gradient-blue {
+  background-image: linear-gradient(135deg, #ad46ff 0%, #2b7fff 100%);
+}
+
+.brand-text-gradient {
+  background-image: linear-gradient(120deg, #8a17c9 0%, #c020f0 55%, #2b7fff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Animated moving purple gradient border (for the ask input) */
+@keyframes borderShift {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.gradient-border {
+  background-image: linear-gradient(120deg,
+      #5b0e9c,
+      #8a17c9,
+      #c020f0,
+      #ad46ff,
+      #2b7fff,
+      #8a17c9,
+      #5b0e9c);
+  background-size: 300% 300%;
+  animation: borderShift 5s ease-in-out infinite;
+}
+
+.gradient-border-card {
+  background-image: linear-gradient(135deg,
+      #2b7fff 0%,
+      #ad46ff 20%,
+      #c020f0 40%,
+      #8a17c9 60%,
+      #5b0e9c 80%,
+      #2b7fff 100%);
+  background-size: 200% 200%;
+  animation: borderShift 5s linear infinite;
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes float-subtle {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-float-subtle {
+  animation: float-subtle 6s ease-in-out infinite;
+}
+
+@keyframes orbit {
+  0% {
+    transform: rotate(0deg) translateX(20px) rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg) translateX(20px) rotate(-360deg);
+  }
+}
+
+.animate-orbit {
+  animation: orbit 15s linear infinite;
+}
+
+.dot-grid {
+  background-image: radial-gradient(circle at center, rgba(255, 255, 255, 0.16) 1.3px, transparent 1.6px);
+  background-size: 20px 20px;
+}
+
+/* Twinkling night-sky stars (opacity only, so it can combine with drift) */
+@keyframes twinkle {
+
+  0%,
+  100% {
+    opacity: var(--star-min, 0.2);
+  }
+
+  50% {
+    opacity: var(--star-max, 1);
+  }
+}
+
+/* Gentle floating drift */
+@keyframes drift {
+  0% {
+    transform: translate(0, 0) scale(0.85);
+  }
+
+  50% {
+    transform: translate(var(--drift-x, 4px), var(--drift-y, -5px)) scale(1.1);
+  }
+
+  100% {
+    transform: translate(0, 0) scale(0.85);
+  }
+}
+
+.star {
+  position: absolute;
+  border-radius: 9999px;
+  background: #fff;
+  box-shadow: 0 0 6px 1px rgba(255, 255, 255, 0.7);
+  animation:
+    twinkle var(--star-dur, 3s) ease-in-out infinite,
+    drift var(--drift-dur, 7s) ease-in-out infinite;
+  animation-delay: var(--star-delay, 0s), var(--star-delay, 0s);
+  will-change: transform, opacity;
+}
+
+@keyframes shoot {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(18deg);
+    opacity: 0;
+  }
+
+  2% {
+    opacity: 1;
+  }
+
+  6% {
+    opacity: 1;
+  }
+
+  12%,
+  100% {
+    transform: translate3d(800px, 350px, 0) rotate(18deg);
+    opacity: 0;
+  }
+}
+
+.shooting-star {
+  position: absolute;
+  height: 2px;
+  width: 120px;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0), #fff);
+  border-radius: 9999px;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.8));
+  animation: shoot var(--shoot-dur, 6s) ease-in infinite;
+  animation-delay: var(--shoot-delay, 0s);
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Auth Page Internal Animations */
+.auth-content-switch {
+  animation: authFadeIn 0.4s ease-out forwards;
+}
+
+@keyframes authFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.auth-item {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: authItemSlide 0.5s ease-out forwards;
+  animation-delay: var(--delay, 0ms);
+}
+
+.auth-title {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: authItemSlide 0.5s ease-out forwards, borderShift 5s ease-in-out infinite;
+  animation-delay: 40ms, 0s;
+  background-image: linear-gradient(120deg,
+      #5b0e9c,
+      #8a17c9,
+      #c020f0,
+      #ad46ff,
+      #2b7fff,
+      #8a17c9,
+      #5b0e9c);
+  background-size: 300% 300%;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+}
+
+.auth-subtitle {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: authItemSlide 0.5s ease-out forwards;
+  animation-delay: 80ms;
+}
+
+@keyframes authItemSlide {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Remove default browser white background on Autofill */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  transition: background-color 5000s ease-in-out 0s;
+  -webkit-text-fill-color: white !important;
+  caret-color: white !important;
+}
+
+/* =========================================
+   Zad Logo Animation
+   ========================================= */
+
+@keyframes authLogoEntrance {
+  0% {
+    opacity: 0;
+    transform: scale(0.88);
+    filter: blur(8px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes authLogoFloat {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+@keyframes authLogoGlow {
+
+  0%,
+  100% {
+    filter:
+      drop-shadow(0 0 18px rgba(192, 32, 240, 0.12)) drop-shadow(0 0 35px rgba(138, 23, 201, 0.08));
+  }
+
+  50% {
+    filter:
+      drop-shadow(0 0 25px rgba(192, 32, 240, 0.22)) drop-shadow(0 0 50px rgba(138, 23, 201, 0.14));
+  }
+}
+
+.auth-logo-entrance {
+  animation:
+    authLogoEntrance 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.auth-logo {
+  animation:
+    authLogoFloat 6s ease-in-out 900ms infinite,
+    authLogoGlow 4s ease-in-out 900ms infinite;
+
+  will-change: transform, filter;
+}
+
+.auth-scroll {
+  -webkit-mask-image: linear-gradient(to bottom,
+      transparent 0px,
+      black 45px,
+      black 100%);
+
+  mask-image: linear-gradient(to bottom,
+      transparent 0px,
+      black 45px,
+      black 100%);
+}
+
+/* Hide redundant vertical dash inside list items */
+li .strong-vertical-dash {
+  display: none !important;
+}
+
+/* Custom Scrollbar for sidebars and specific panels */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(149, 11, 196, 0.4);
+  border-radius: 20px;
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(149, 11, 196, 0.7);
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(149, 11, 196, 0.5);
+}
+
+.dark .custom-scrollbar:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(149, 11, 196, 0.8);
+}

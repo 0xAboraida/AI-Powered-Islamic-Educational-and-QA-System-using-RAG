@@ -1,0 +1,1 @@
+export { VisualMindmap } from '../mindmap'
