@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/utils/app_assets.dart';
 import '../../../../core/utils/app_colors/app_colors.dart';
@@ -30,7 +31,7 @@ class AboutAppPage extends StatelessWidget {
               size: 16.sp,
               color: isDark ? Colors.white : Colors.black87,
             ),
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => context.pop(),
           ),
         ),
         title: Text(

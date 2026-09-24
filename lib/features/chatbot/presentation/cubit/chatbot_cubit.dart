@@ -8,6 +8,7 @@ import '../../domain/models/chat_session.dart';
 import '../../../../core/services/shared_prefs.dart';
 import '../../../../core/di/injection.dart';
 import '../../../auth/data/repos/auth_repository.dart';
+import '../../../../core/utils/app_strings.dart';
 import 'chatbot_state.dart';
 
 @injectable
@@ -17,7 +18,7 @@ class ChatbotCubit extends Cubit<ChatbotState> {
   ChatbotCubit(this._chatRepository)
       : super(ChatbotInitial(messages: [
           ChatMessage(
-            text: "السلام عليكم، كيف يمكنني مساعدتك اليوم؟",
+            text: AppStrings.botWelcomeMessage,
             isUser: false,
             timestamp: DateTime.now(),
             isAnimated: false,
@@ -32,6 +33,50 @@ class ChatbotCubit extends Cubit<ChatbotState> {
     _cancelToken?.cancel('User cancelled sending message');
   }
 
+  void setResponseMode(String mode) {
+    if (state.selectedResponseMode == mode) return;
+
+    if (state is ChatbotMessageSending) {
+      emit(ChatbotMessageSending(
+        messages: state.messages,
+        currentSessionId: state.currentSessionId,
+        sessions: state.sessions,
+        isLoadingSessions: state.isLoadingSessions,
+        isLoadingHistory: state.isLoadingHistory,
+        selectedResponseMode: mode,
+      ));
+    } else if (state is ChatbotMessageSuccess) {
+      emit(ChatbotMessageSuccess(
+        messages: state.messages,
+        currentSessionId: state.currentSessionId,
+        sessions: state.sessions,
+        isLoadingSessions: state.isLoadingSessions,
+        isLoadingHistory: state.isLoadingHistory,
+        selectedResponseMode: mode,
+      ));
+    } else if (state is ChatbotMessageFailure) {
+      final fState = state as ChatbotMessageFailure;
+      emit(ChatbotMessageFailure(
+        messages: state.messages,
+        currentSessionId: state.currentSessionId,
+        sessions: state.sessions,
+        isLoadingSessions: state.isLoadingSessions,
+        isLoadingHistory: state.isLoadingHistory,
+        selectedResponseMode: mode,
+        errorMessage: fState.errorMessage,
+      ));
+    } else {
+      emit(ChatbotInitial(
+        messages: state.messages,
+        currentSessionId: state.currentSessionId,
+        sessions: state.sessions,
+        isLoadingSessions: state.isLoadingSessions,
+        isLoadingHistory: state.isLoadingHistory,
+        selectedResponseMode: mode,
+      ));
+    }
+  }
+
   Future<void> loadSessions() async {
     emit(ChatbotInitial(
       messages: state.messages,
@@ -39,12 +84,16 @@ class ChatbotCubit extends Cubit<ChatbotState> {
       sessions: state.sessions,
       isLoadingSessions: true,
       isLoadingHistory: state.isLoadingHistory,
+      selectedResponseMode: state.selectedResponseMode,
     ));
 
     try {
       final email = SharedPrefs.getString('last_login_email');
       final password = SharedPrefs.getString('last_login_password');
-      if (email != null && password != null && email.isNotEmpty && password.isNotEmpty) {
+      if (email != null &&
+          password != null &&
+          email.isNotEmpty &&
+          password.isNotEmpty) {
         final authRepo = getIt<AuthRepository>();
         await authRepo.login(email: email, password: password);
       }
@@ -60,6 +109,7 @@ class ChatbotCubit extends Cubit<ChatbotState> {
         sessions: fetchedSessions,
         isLoadingSessions: false,
         isLoadingHistory: state.isLoadingHistory,
+        selectedResponseMode: state.selectedResponseMode,
       ));
     } catch (e) {
       emit(ChatbotMessageFailure(
@@ -68,6 +118,7 @@ class ChatbotCubit extends Cubit<ChatbotState> {
         sessions: state.sessions,
         isLoadingSessions: false,
         isLoadingHistory: state.isLoadingHistory,
+        selectedResponseMode: state.selectedResponseMode,
         errorMessage: 'فشل في تحميل قائمة المحادثات السابقة',
       ));
     }
@@ -77,7 +128,7 @@ class ChatbotCubit extends Cubit<ChatbotState> {
     emit(ChatbotInitial(
       messages: [
         ChatMessage(
-          text: "السلام عليكم، كيف يمكنني مساعدتك اليوم؟",
+          text: AppStrings.botWelcomeMessage,
           isUser: false,
           timestamp: DateTime.now(),
           isAnimated: false,
@@ -87,6 +138,7 @@ class ChatbotCubit extends Cubit<ChatbotState> {
       sessions: state.sessions,
       isLoadingHistory: false,
       isLoadingSessions: false,
+      selectedResponseMode: state.selectedResponseMode,
     ));
   }
 
@@ -97,6 +149,7 @@ class ChatbotCubit extends Cubit<ChatbotState> {
       sessions: state.sessions,
       isLoadingHistory: true,
       isLoadingSessions: state.isLoadingSessions,
+      selectedResponseMode: state.selectedResponseMode,
     ));
     try {
       final newSession = await _chatRepository.createSession(name);
@@ -107,7 +160,7 @@ class ChatbotCubit extends Cubit<ChatbotState> {
       emit(ChatbotInitial(
         messages: [
           ChatMessage(
-            text: "السلام عليكم، كيف يمكنني مساعدتك اليوم؟",
+            text: AppStrings.botWelcomeMessage,
             isUser: false,
             timestamp: DateTime.now(),
             isAnimated: false,
@@ -117,6 +170,7 @@ class ChatbotCubit extends Cubit<ChatbotState> {
         sessions: updatedSessions,
         isLoadingHistory: false,
         isLoadingSessions: false,
+        selectedResponseMode: state.selectedResponseMode,
       ));
     } catch (e) {
       emit(ChatbotMessageFailure(
@@ -125,6 +179,7 @@ class ChatbotCubit extends Cubit<ChatbotState> {
         sessions: state.sessions,
         isLoadingHistory: false,
         isLoadingSessions: false,
+        selectedResponseMode: state.selectedResponseMode,
         errorMessage: 'فشل في إنشاء جلسة محادثة جديدة',
       ));
     }
@@ -137,48 +192,53 @@ class ChatbotCubit extends Cubit<ChatbotState> {
       sessions: state.sessions,
       isLoadingSessions: state.isLoadingSessions,
       isLoadingHistory: true,
+      selectedResponseMode: state.selectedResponseMode,
     ));
     try {
       final history = await _chatRepository.getSessionHistory(sessionId);
-      final loadedMessages = history.messages.map((m) {
-        final Map<String, CitationDTO> mappedCitations = {};
-        for (int i = 0; i < m.citations.length; i++) {
-          final cit = m.citations[i];
-          mappedCitations[(i + 1).toString()] = CitationDTO(
-            bookTitle: cit.bookTitle,
-            madhhab: cit.madhhab,
-            author: cit.author,
-            authorDeath: cit.authorDeath,
-            totalParts: cit.totalParts,
-            part: cit.part,
-            pageId: cit.pageId,
-            hierarchy: cit.hierarchy,
-            sourceUrl: cit.sourceUrl,
-          );
-        }
+      final loadedMessages = history.messages
+          .map((m) {
+            final Map<String, CitationDTO> mappedCitations = {};
+            for (int i = 0; i < m.citations.length; i++) {
+              final cit = m.citations[i];
+              mappedCitations[(i + 1).toString()] = CitationDTO(
+                bookTitle: cit.bookTitle,
+                madhhab: cit.madhhab,
+                author: cit.author,
+                authorDeath: cit.authorDeath,
+                totalParts: cit.totalParts,
+                part: cit.part,
+                pageId: cit.pageId,
+                hierarchy: cit.hierarchy,
+                sourceUrl: cit.sourceUrl,
+              );
+            }
 
-        return [
-          ChatMessage(
-            text: m.question,
-            isUser: true,
-            timestamp: m.createdAt,
-          ),
-          ChatMessage(
-            text: m.answer,
-            isUser: false,
-            timestamp: m.createdAt,
-            isAnimated: false,
-            response: ChatResponseDTO(
-              answer: m.answer,
-              citations: mappedCitations,
-            ),
-          )
-        ];
-      }).expand((x) => x).toList();
+            return [
+              ChatMessage(
+                text: m.question,
+                isUser: true,
+                timestamp: m.createdAt,
+              ),
+              ChatMessage(
+                text: m.answer,
+                isUser: false,
+                timestamp: m.createdAt,
+                isAnimated: false,
+                questionText: m.question,
+                response: ChatResponseDTO(
+                  answer: m.answer,
+                  citations: mappedCitations,
+                ),
+              )
+            ];
+          })
+          .expand((x) => x)
+          .toList();
 
       if (loadedMessages.isEmpty) {
         loadedMessages.add(ChatMessage(
-          text: "السلام عليكم، كيف يمكنني مساعدتك اليوم؟",
+          text: AppStrings.botWelcomeMessage,
           isUser: false,
           timestamp: DateTime.now(),
           isAnimated: false,
@@ -191,6 +251,7 @@ class ChatbotCubit extends Cubit<ChatbotState> {
         sessions: state.sessions,
         isLoadingSessions: false,
         isLoadingHistory: false,
+        selectedResponseMode: state.selectedResponseMode,
       ));
     } catch (e) {
       emit(ChatbotMessageFailure(
@@ -199,13 +260,22 @@ class ChatbotCubit extends Cubit<ChatbotState> {
         sessions: state.sessions,
         isLoadingSessions: false,
         isLoadingHistory: false,
+        selectedResponseMode: state.selectedResponseMode,
         errorMessage: 'فشل في تحميل تاريخ المحادثة',
       ));
     }
   }
 
-  Future<void> sendMessage({required String query, required int domain}) async {
+  Future<void> sendMessage({
+    required String query,
+    required int domain,
+    String? domainName,
+    String? responseMode,
+  }) async {
     if (query.trim().isEmpty) return;
+
+    final selectedMode = responseMode ?? state.selectedResponseMode;
+    final modeToSend = (selectedMode == 'simple') ? 'simple' : 'student';
 
     int? sessionId = state.currentSessionId;
     bool isNewSession = sessionId == null;
@@ -219,6 +289,7 @@ class ChatbotCubit extends Cubit<ChatbotState> {
           messages: state.messages,
           currentSessionId: state.currentSessionId,
           sessions: state.sessions,
+          selectedResponseMode: state.selectedResponseMode,
           errorMessage: 'فشل في إنشاء جلسة محادثة لإرسال الرسالة',
         ));
         return;
@@ -236,7 +307,8 @@ class ChatbotCubit extends Cubit<ChatbotState> {
       ),
     );
 
-    List<ChatSessionDTO> updatedSessions = List<ChatSessionDTO>.from(state.sessions);
+    List<ChatSessionDTO> updatedSessions =
+        List<ChatSessionDTO>.from(state.sessions);
     if (isNewSession && newSession != null) {
       if (!updatedSessions.any((s) => s.id == newSession!.id)) {
         updatedSessions.insert(0, newSession);
@@ -247,13 +319,15 @@ class ChatbotCubit extends Cubit<ChatbotState> {
       messages: updatedMessages,
       currentSessionId: sessionId,
       sessions: updatedSessions,
+      selectedResponseMode: state.selectedResponseMode,
     ));
 
     _cancelToken = CancelToken();
 
     try {
       final historyMsg = await _chatRepository.sendSessionMessage(
-        sessionId: sessionId??0,
+        responseMode: modeToSend,
+        sessionId: sessionId ?? 0,
         query: query,
         domain: domain,
         cancelToken: _cancelToken,
@@ -279,7 +353,9 @@ class ChatbotCubit extends Cubit<ChatbotState> {
         text: historyMsg.answer,
         isUser: false,
         timestamp: historyMsg.createdAt,
-        isAnimated: true,
+        isAnimated: false,
+        questionText: query,
+        domainName: domainName,
         response: ChatResponseDTO(
           answer: historyMsg.answer,
           citations: mappedCitations,
@@ -301,6 +377,7 @@ class ChatbotCubit extends Cubit<ChatbotState> {
         messages: finalMessages,
         currentSessionId: sessionId,
         sessions: updatedSessions,
+        selectedResponseMode: state.selectedResponseMode,
       ));
     } on DioException catch (e) {
       if (CancelToken.isCancel(e)) {
@@ -308,6 +385,7 @@ class ChatbotCubit extends Cubit<ChatbotState> {
           messages: state.messages,
           currentSessionId: sessionId,
           sessions: updatedSessions,
+          selectedResponseMode: state.selectedResponseMode,
         ));
         return;
       }
@@ -315,6 +393,7 @@ class ChatbotCubit extends Cubit<ChatbotState> {
         messages: state.messages,
         currentSessionId: sessionId,
         sessions: updatedSessions,
+        selectedResponseMode: state.selectedResponseMode,
         errorMessage: _parseDioError(e),
       ));
     } catch (e) {
@@ -322,6 +401,7 @@ class ChatbotCubit extends Cubit<ChatbotState> {
         messages: state.messages,
         currentSessionId: sessionId,
         sessions: updatedSessions,
+        selectedResponseMode: state.selectedResponseMode,
         errorMessage: 'حدث خطأ غير متوقع، حاول مجدداً',
       ));
     }

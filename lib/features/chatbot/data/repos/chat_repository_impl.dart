@@ -54,6 +54,7 @@ class ChatRepositoryImpl implements ChatRepository {
     required int sessionId,
     required String query,
     required int domain,
+    String? responseMode,
     CancelToken? cancelToken,
   }) async {
     return await _sessionApiClient.sendMessage(
@@ -61,6 +62,7 @@ class ChatRepositoryImpl implements ChatRepository {
       {
         'question': query,
         'mode': domain,
+        "responseMode":responseMode??"student"
       },
       cancelToken: cancelToken,
     );

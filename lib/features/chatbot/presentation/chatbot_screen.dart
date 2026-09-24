@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 import 'package:zaad/core/routes/app_routes.dart';
 import 'package:zaad/features/chatbot/domain/models/chat_response.dart';
@@ -17,6 +18,7 @@ import 'widgets/chat_input_field.dart';
 import 'widgets/chatbot_app_bar.dart';
 import 'widgets/chatbot_drawer.dart';
 import 'widgets/field_selection_bottom_sheet.dart';
+import 'widgets/response_mode_selector.dart';
 import 'widgets/selected_field_indicator.dart';
 import 'widgets/suggested_questions_list.dart';
 
@@ -25,7 +27,8 @@ import 'widgets/chat_message_bubble.dart';
 import 'package:zaad/core/services/shared_prefs.dart';
 
 class ChatbotScreen extends StatefulWidget {
-  const ChatbotScreen({super.key});
+  final String? initialQuestion;
+  const ChatbotScreen({super.key, this.initialQuestion});
 
   @override
   State<ChatbotScreen> createState() => _ChatbotScreenState();
@@ -35,8 +38,10 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   int? selectedFieldIndex;
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  bool _handledInitialQuestion = false;
 
   final List<FieldOption> fields = [
+    FieldOption("تحديد تلقائي", AppAssets.bar),
     FieldOption(AppStrings.fiqh, AppAssets.feqh),
     FieldOption(AppStrings.aqidah, AppAssets.aqeda),
     FieldOption(AppStrings.sirah, AppAssets.sera),
@@ -59,8 +64,35 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     });
   }
 
+  void _checkAndSendInitialQuestion(ChatbotCubit cubit) {
+    if (!_handledInitialQuestion &&
+        widget.initialQuestion != null &&
+        widget.initialQuestion!.trim().isNotEmpty) {
+      _handledInitialQuestion = true;
+      final q = widget.initialQuestion!.trim();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        cubit.sendMessage(
+          query: q,
+          domain: 0,
+          domainName: 'تحديد تلقائي',
+        );
+        _scrollToBottom();
+      });
+    }
+  }
+
   final FocusNode _focusNode = FocusNode();
   final GlobalKey voiceKey = GlobalKey();
+
+  @override
+  void didUpdateWidget(covariant ChatbotScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialQuestion != oldWidget.initialQuestion &&
+        widget.initialQuestion != null &&
+        widget.initialQuestion!.trim().isNotEmpty) {
+      _handledInitialQuestion = false;
+    }
+  }
 
   @override
   void initState() {
@@ -107,6 +139,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
         },
         builder: (context, state) {
           final cubit = context.read<ChatbotCubit>();
+          _checkAndSendInitialQuestion(cubit);
           final messages = state.messages;
           final isSending = state is ChatbotMessageSending;
 
@@ -151,7 +184,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                                   top: MediaQuery.of(context).padding.top +
                                       kToolbarHeight +
                                       10.h,
-                                  bottom: 120.h,
+                                  bottom: 140.h,
                                 ),
                                 itemCount:
                                     messages.length + (isSending ? 1 : 0),
@@ -171,30 +204,50 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
               padding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).viewInsets.bottom,
               ),
-              child: ChatInputField(
-                isLoading: isSending,
-                voiceKey: voiceKey,
-                focusNode: _focusNode,
-                controller: _messageController,
-                onSend: () {
-                  if (_messageController.text.isEmpty) {
-                    Navigator.pushNamed(context, AppRoutes.childMode);
-                  } else {
-                    final text = _messageController.text.trim();
-                    if (text.isNotEmpty) {
-                      cubit.sendMessage(
-                        query: text,
-                        domain:
-                            ChatDomain.values[selectedFieldIndex ?? 0].index +
-                                1,
-                      );
-                      _messageController.clear();
-                      _scrollToBottom();
-                    }
-                  }
-                },
-                onCancel: () => cubit.cancelSendMessage(),
-                onGridTap: () => _showFieldSelectionBottomSheet(context),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: ResponseModeSelector(
+                      selectedMode: state.selectedResponseMode,
+                      onModeChanged: (newMode) {
+                        cubit.setResponseMode(newMode);
+                      },
+                    ),
+                  ),
+                  SizedBox(height: 2.h),
+                  ChatInputField(
+                    isLoading: isSending,
+                    voiceKey: voiceKey,
+                    focusNode: _focusNode,
+                    controller: _messageController,
+                    onSend: () {
+                      if (_messageController.text.isEmpty) {
+                        context.push(AppRoutes.childMode);
+                      } else {
+                        final text = _messageController.text.trim();
+                        if (text.isNotEmpty) {
+                          final selectedIdx = selectedFieldIndex ?? 0;
+                          final dName =
+                              (selectedIdx >= 0 && selectedIdx < fields.length)
+                                  ? fields[selectedIdx].title
+                                  : 'تحديد تلقائي';
+                          cubit.sendMessage(
+                            query: text,
+                            domain: ChatDomain.values[selectedIdx].index,
+                            domainName: dName,
+                          );
+                          _messageController.clear();
+                          _scrollToBottom();
+                        }
+                      }
+                    },
+                    onCancel: () => cubit.cancelSendMessage(),
+                    onGridTap: () => _showFieldSelectionBottomSheet(context),
+                  ),
+                ],
               ),
             ),
           );

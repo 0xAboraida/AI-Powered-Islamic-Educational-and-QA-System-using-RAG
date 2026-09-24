@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:zaad/core/utils/app_assets.dart';
 import 'package:zaad/core/utils/app_colors/app_colors.dart';
 import 'package:zaad/core/utils/app_strings.dart';
 import 'package:zaad/features/chatbot/domain/models/chat_session.dart';
 import 'package:zaad/features/chatbot/presentation/cubit/chatbot_cubit.dart';
 import 'package:zaad/features/chatbot/presentation/cubit/chatbot_state.dart';
+import '../pages/admin_ratings_screen.dart';
 
 class ChatbotDrawer extends StatelessWidget {
   const ChatbotDrawer({super.key});
@@ -178,7 +180,7 @@ class ChatbotDrawer extends StatelessWidget {
           ],
         ),
         IconButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => context.pop(),
           icon: Icon(Icons.close,
               color: isDark ? Colors.white : AppColors.primary, size: 28.sp),
         ),
@@ -222,7 +224,7 @@ class ChatbotDrawer extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         cubit.startNewChat();
-        Navigator.pop(context);
+        context.pop();
       },
       child: Container(
         width: double.infinity,
@@ -283,8 +285,8 @@ class ChatbotDrawer extends StatelessWidget {
       padding: EdgeInsets.only(bottom: 14.h),
       child: GestureDetector(
         onTap: () {
-          cubit.selectSession(session.id??0);
-          Navigator.pop(context);
+          cubit.selectSession(session.id ?? 0);
+          context.pop();
         },
         behavior: HitTestBehavior.opaque,
         child: Row(
@@ -316,7 +318,7 @@ class ChatbotDrawer extends StatelessWidget {
             SizedBox(width: 12.w),
             Expanded(
               child: Text(
-                session.name??"",
+                session.name ?? "",
                 style: TextStyle(
                   fontFamily: 'Cairo',
                   fontSize: 14.sp,

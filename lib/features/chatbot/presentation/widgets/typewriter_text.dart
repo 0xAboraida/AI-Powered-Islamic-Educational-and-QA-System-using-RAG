@@ -10,7 +10,7 @@ class TypewriterText extends StatefulWidget {
   const TypewriterText({
     super.key,
     required this.text,
-    this.speed = const Duration(milliseconds: 30),
+    this.speed = const Duration(milliseconds: 8),
     this.style,
     this.onFinished,
   });
@@ -20,6 +20,7 @@ class TypewriterText extends StatefulWidget {
 }
 
 class _TypewriterTextState extends State<TypewriterText> {
+  late final List<String> _chars;
   String _displayedText = "";
   Timer? _timer;
   int _currentIndex = 0;
@@ -27,16 +28,21 @@ class _TypewriterTextState extends State<TypewriterText> {
   @override
   void initState() {
     super.initState();
+    _chars = widget.text.characters.toList();
     _startTyping();
   }
 
   void _startTyping() {
     _timer = Timer.periodic(widget.speed, (timer) {
-      if (_currentIndex < widget.text.length) {
+      if (_currentIndex < _chars.length) {
         if (mounted) {
           setState(() {
-            _displayedText += widget.text[_currentIndex];
-            _currentIndex++;
+            int step = 3;
+            int end = (_currentIndex + step < _chars.length) ? _currentIndex + step : _chars.length;
+            for (int i = _currentIndex; i < end; i++) {
+              _displayedText += _chars[i];
+            }
+            _currentIndex = end;
           });
         }
       } else {

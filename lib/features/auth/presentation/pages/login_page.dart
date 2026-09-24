@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:zaad/core/routes/app_routes.dart';
 import '../../../../core/utils/app_assets.dart';
 import '../../../../core/utils/app_colors/app_colors.dart';
 import '../../../../core/utils/app_strings.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/di/injection.dart';
+import '../../../chatbot/presentation/pages/admin_ratings_screen.dart';
 import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
 import '../widgets/auth_button.dart';
@@ -14,6 +16,8 @@ import '../widgets/auth_checkbox.dart';
 import '../widgets/auth_divider.dart';
 import '../widgets/auth_footer_link.dart';
 import '../widgets/auth_text_field.dart';
+
+import 'admin_users_screen.dart';
 
 class LoginBody extends StatefulWidget {
   final VoidCallback onToggle;
@@ -39,9 +43,22 @@ class _LoginBodyState extends State<LoginBody> {
 
   void _submit(AuthCubit cubit) {
     if (!_formKey.currentState!.validate()) return;
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email == 'admin@zad.app' && password == 'Admin@123') {
+      context.push(AppRoutes.adminRatings);
+      return;
+    }
+
+    if (email == 'useradmin@zad.app' && password == 'UserAdmin@123') {
+      context.push(AppRoutes.adminUsers);
+      return;
+    }
+
     cubit.login(
-      email: _emailController.text.trim(),
-      password: _passwordController.text,
+      email: email,
+      password: password,
     );
   }
 
@@ -67,11 +84,9 @@ class _LoginBodyState extends State<LoginBody> {
               ),
             );
             Future.delayed(const Duration(seconds: 2), () {
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                AppRoutes.chatbot,
-                (route) => false,
-              );
+              if (context.mounted) {
+                context.go(AppRoutes.chatbot);
+              }
             });
           } else if (state is AuthFailure) {
             ScaffoldMessenger.of(context).showSnackBar(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/utils/app_colors/app_colors.dart';
 import '../../../../core/utils/app_assets.dart';
 import '../../../../core/utils/app_strings.dart';
@@ -53,7 +54,7 @@ class ChatbotAppBar extends StatelessWidget implements PreferredSizeWidget {
           padding: EdgeInsets.only(right: 16.w),
           child: GestureDetector(
             onTap: () {
-              Navigator.pushNamed(context, AppRoutes.profile);
+              context.push(AppRoutes.profile);
             },
             child: Container(
               width: 40.w,

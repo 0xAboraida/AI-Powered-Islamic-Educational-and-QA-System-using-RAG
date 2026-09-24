@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.example.zaad",
+      "sha256_cert_fingerprints": [
+        "61:00:40:85:A0:ED:76:2E:9C:52:58:F5:90:93:79:11:CC:EC:99:80:E6:B2:E6:B9:58:66:99:24:F0:4C:CF:BC"
+      ]
+    }
+  }
+]

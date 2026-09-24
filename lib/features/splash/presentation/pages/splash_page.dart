@@ -1,18 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:zaad/core/services/shared_prefs_service.dart';
 import 'package:zaad/core/utils/app_strings.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../core/utils/app_assets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-
-import 'package:dio/dio.dart';
-import 'package:zaad/core/di/injection.dart';
-import 'package:zaad/core/api/api_endpoints.dart';
-import 'package:zaad/core/services/shared_prefs.dart';
-import 'package:zaad/core/utils/app_colors/app_colors.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -48,13 +43,24 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   void _navigateNext() {
+    final state = GoRouterState.of(context);
+    final question = state.uri.queryParameters['question'];
+
     if (token?.isNotEmpty == true && token != null) {
-      Navigator.pushReplacementNamed(context, AppRoutes.chatbot);
+      if (question != null && question.trim().isNotEmpty) {
+        context.go(
+          Uri(
+            path: AppRoutes.chatbot,
+            queryParameters: {'question': question.trim()},
+          ).toString(),
+        );
+      } else {
+        context.go(AppRoutes.chatbot);
+      }
     } else {
-      Navigator.pushReplacementNamed(context, AppRoutes.login);
+      context.go(AppRoutes.login);
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -68,8 +74,8 @@ class _SplashPageState extends State<SplashPage> {
         clipBehavior: Clip.none,
         fit: StackFit.expand,
         children: [
-          SvgPicture.asset(
-            AppAssets.splashBg,
+          Image.asset(
+            "assets/images/zad_new_splash.png",
             width: double.infinity,
             height: double.infinity,
             fit: BoxFit.fill,
@@ -83,27 +89,22 @@ class _SplashPageState extends State<SplashPage> {
                   height: 69.h,
                 ),
                 SvgPicture.asset(
-                  AppAssets.zaadLogo,
-                  height: 220.h,
+                  AppAssets.zadColoredLogo,
+                  height: 250.h,
                   width: 220.w,
                   fit: BoxFit.contain,
-                )
-                    .animate(delay: 400.ms)
-                    .slideY(
+                ).animate(delay: 400.ms).slideY(
                       begin: slideRatio,
                       end: 0,
                       duration: 800.ms,
                       curve: Curves.easeInOut,
                     ),
-                SizedBox(
-                  height: 15.h,
-                ),
                 Text(
                   AppStrings.splashWelcome,
                   style: TextStyle(
                     fontSize: 28.sp,
-                    fontWeight: FontWeight.w400,
-                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xff422B5F),
                     letterSpacing: 1.2,
                   ),
                 )
@@ -113,21 +114,21 @@ class _SplashPageState extends State<SplashPage> {
               ],
             ),
           ),
-          Positioned(
-            right: 0,
-            left: 0,
-            bottom: 0,
-            child: SvgPicture.asset(
-              AppAssets.mosque,
-              height: 200.h,
-              width: double.infinity,
-              fit: BoxFit.cover,
-            ).animate(delay: 400.ms).slideY(
-                begin: 0.5,
-                end: 0,
-                curve: Curves.easeOut,
-                duration: 700.ms).fade(duration: 500.ms),
-          ),
+          // Positioned(
+          //   right: 0,
+          //   left: 0,
+          //   bottom: 0,
+          //   child: SvgPicture.asset(
+          //     AppAssets.mosque,
+          //     height: 200.h,
+          //     width: double.infinity,
+          //     fit: BoxFit.cover,
+          //   )
+          //       .animate(delay: 400.ms)
+          //       .slideY(
+          //           begin: 0.5, end: 0, curve: Curves.easeOut, duration: 700.ms)
+          //       .fade(duration: 500.ms),
+          // ),
         ],
       ),
     );

@@ -86,7 +86,7 @@ class _CitationsSectionState extends State<CitationsSection>
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        '$count مصدر',
+                        '$count ${count <= 1 ? "مصدر" : "مصادر"}',
                         style: TextStyle(
                           fontFamily: 'Cairo',
                           fontSize: 13.sp,

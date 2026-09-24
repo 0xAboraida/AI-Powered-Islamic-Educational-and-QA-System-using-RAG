@@ -21,6 +21,7 @@ abstract class ChatRepository {
     required int sessionId,
     required String query,
     required int domain,
+    String? responseMode,
     CancelToken? cancelToken,
   });
 }

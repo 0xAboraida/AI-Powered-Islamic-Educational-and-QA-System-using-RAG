@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/utils/app_assets.dart';
 import '../../../../core/utils/app_colors/app_colors.dart';
 import '../../../../core/utils/app_strings.dart';
@@ -99,9 +100,9 @@ class _WelcomePageState extends State<WelcomePage> {
                   onTap: () {
                     if (_selectedIndex != null) {
                       if (_selectedIndex == 0) {
-                        Navigator.pushNamed(context, AppRoutes.childMode);
+                        context.push(AppRoutes.childMode);
                       } else {
-                        Navigator.pushNamed(context, AppRoutes.chatbot);
+                        context.push(AppRoutes.chatbot);
                       }
                     }
                   },

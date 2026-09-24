@@ -14,6 +14,8 @@ import '../widgets/auth_divider.dart';
 import '../widgets/auth_footer_link.dart';
 import '../widgets/auth_text_field.dart';
 
+import '../../../../core/services/users_service.dart';
+
 class SignupBody extends StatefulWidget {
   final VoidCallback onToggle;
   const SignupBody({super.key, required this.onToggle});
@@ -76,6 +78,10 @@ class _SignupBodyState extends State<SignupBody> {
       child: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {
           if (state is AuthSuccess) {
+            UsersService.saveUser(
+              userName: _nameController.text.trim(),
+              userEmail: _emailController.text.trim(),
+            );
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: const Text(
@@ -91,8 +97,6 @@ class _SignupBodyState extends State<SignupBody> {
               ),
             );
             widget.onToggle();
-
-            // Navigator.pushReplacementNamed(context, AppRoutes.chatbot);
           } else if (state is AuthFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(

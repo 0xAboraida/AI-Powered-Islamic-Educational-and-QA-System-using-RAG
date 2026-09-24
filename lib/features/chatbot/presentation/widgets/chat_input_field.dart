@@ -138,22 +138,16 @@ class _ChatInputFieldState extends State<ChatInputField> {
             color: _isFocused
                 ? AppColors.primary
                 : (isDark
-                    ? const Color(0xFFC54EEC).withOpacity(0.2)
-                    : const Color(0xFFC54EEC).withOpacity(0.4)),
-            width: 2,
+                    ? const Color.fromARGB(255, 155, 69, 184).withOpacity(0.2)
+                    : const Color.fromARGB(255, 96, 38, 116).withOpacity(0.4)),
+            width: 1,
           ),
           boxShadow: const [
             BoxShadow(
-                color: Color(0xFFC54EEC),
+                color: Color.fromARGB(255, 44, 7, 56),
                 blurRadius: 20,
                 spreadRadius: -15,
                 offset: Offset(6, 0)),
-            BoxShadow(
-              color: Color(0xFF3B82F6),
-              blurRadius: 20,
-              spreadRadius: -15,
-              offset: Offset(-6, 0),
-            ),
           ],
         ),
         padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
@@ -176,7 +170,8 @@ class _ChatInputFieldState extends State<ChatInputField> {
                           width: 20.w,
                           height: 20.w,
                           colorFilter: const ColorFilter.mode(
-                              Color(0xFFBA68C8), BlendMode.srcIn),
+                              Color.fromARGB(255, 154, 67, 169),
+                              BlendMode.srcIn),
                         ),
                         Positioned(
                           top: -2,
@@ -225,9 +220,14 @@ class _ChatInputFieldState extends State<ChatInputField> {
                   minLines: 1,
                   maxLines: 5,
                   keyboardType: TextInputType.multiline,
-                  onSubmitted: (_) => widget.controller!.text.isEmpty
-                      ? null
-                      : widget.onSend?.call(),
+                  onSubmitted: (s) {
+                    if (widget.controller!.text.isEmpty) {
+                      return null;
+                    } else {
+                      widget.onSend?.call();
+                      FocusScope.of(context).unfocus();
+                    }
+                  },
                   textAlign: TextAlign.right,
                   style: TextStyle(
                     color: isDark ? Colors.white : Colors.black87,
@@ -235,22 +235,20 @@ class _ChatInputFieldState extends State<ChatInputField> {
                     fontWeight: FontWeight.w600,
                   ),
                   decoration: InputDecoration(
-                    focusedBorder: const UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.transparent)),
-                    fillColor: Colors.transparent,
-                    filled: true,
-                    hintText: AppStrings.writeQuestion,
-                    hintStyle: TextStyle(
-                      color: isDark
-                          ? Colors.white.withOpacity(0.4)
-                          : Colors.grey[400],
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    border: InputBorder.none,
-                    contentPadding:
-                        EdgeInsets.symmetric(horizontal: 8.w, vertical: 10.h),
-                  ),
+                      focusedBorder: const UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.transparent)),
+                      fillColor: Colors.transparent,
+                      filled: true,
+                      hintText: AppStrings.writeQuestion,
+                      hintStyle: TextStyle(
+                        color: isDark
+                            ? Colors.white.withOpacity(0.4)
+                            : Colors.grey[400],
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.zero),
                 ),
               ),
             ),
@@ -283,31 +281,14 @@ class _ChatInputFieldState extends State<ChatInputField> {
                             size: 24,
                           ),
                         )
-                      : showVoice
-                          ? Center(
-                              key: widget.voiceKey,
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  _bar(10),
-                                  const SizedBox(width: 3),
-                                  _bar(18),
-                                  const SizedBox(width: 3),
-                                  _bar(15),
-                                  const SizedBox(width: 3),
-                                  _bar(10),
-                                ],
-                              ),
-                            )
-                          : Padding(
-                              padding: EdgeInsets.all(10.w),
-                              child: SvgPicture.asset(
-                                AppAssets.send,
-                                colorFilter: const ColorFilter.mode(
-                                    Colors.white, BlendMode.srcIn),
-                              ),
-                            ),
+                      : Padding(
+                          padding: EdgeInsets.all(10.w),
+                          child: SvgPicture.asset(
+                            AppAssets.send,
+                            colorFilter: const ColorFilter.mode(
+                                Colors.white, BlendMode.srcIn),
+                          ),
+                        ),
                 ),
               ),
             ),

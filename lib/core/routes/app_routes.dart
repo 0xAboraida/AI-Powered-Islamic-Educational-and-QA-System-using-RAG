@@ -7,4 +7,7 @@ class AppRoutes {
   static const String profile = '/profile';
   static const String childMode = '/childMode';
   static const String aboutApp = '/aboutApp';
+  static const String adminRatings = '/adminRatings';
+  static const String adminUsers = '/adminUsers';
 }
+

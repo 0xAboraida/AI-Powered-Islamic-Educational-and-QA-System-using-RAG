@@ -8,6 +8,7 @@ abstract class ChatbotState extends Equatable {
   final List<ChatSessionDTO> sessions;
   final bool isLoadingSessions;
   final bool isLoadingHistory;
+  final String selectedResponseMode;
 
   const ChatbotState({
     required this.messages,
@@ -15,6 +16,7 @@ abstract class ChatbotState extends Equatable {
     this.sessions = const [],
     this.isLoadingSessions = false,
     this.isLoadingHistory = false,
+    this.selectedResponseMode = 'simple',
   });
 
   @override
@@ -24,6 +26,7 @@ abstract class ChatbotState extends Equatable {
         sessions,
         isLoadingSessions,
         isLoadingHistory,
+        selectedResponseMode,
       ];
 }
 
@@ -34,6 +37,7 @@ class ChatbotInitial extends ChatbotState {
     super.sessions,
     super.isLoadingSessions,
     super.isLoadingHistory,
+    super.selectedResponseMode,
   });
 }
 
@@ -44,6 +48,7 @@ class ChatbotMessageSending extends ChatbotState {
     super.sessions,
     super.isLoadingSessions,
     super.isLoadingHistory,
+    super.selectedResponseMode,
   });
 }
 
@@ -54,6 +59,7 @@ class ChatbotMessageSuccess extends ChatbotState {
     super.sessions,
     super.isLoadingSessions,
     super.isLoadingHistory,
+    super.selectedResponseMode,
   });
 }
 
@@ -66,6 +72,7 @@ class ChatbotMessageFailure extends ChatbotState {
     super.sessions,
     super.isLoadingSessions,
     super.isLoadingHistory,
+    super.selectedResponseMode,
     required this.errorMessage,
   });
 
@@ -76,6 +83,7 @@ class ChatbotMessageFailure extends ChatbotState {
         sessions,
         isLoadingSessions,
         isLoadingHistory,
+        selectedResponseMode,
         errorMessage,
       ];
 }

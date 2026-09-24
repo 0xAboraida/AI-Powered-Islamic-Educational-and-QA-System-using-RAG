@@ -16,6 +16,12 @@ abstract class AppColors {
   static const LinearGradient textGradient = LinearGradient(
     colors: [Color(0xFF3B82F6), Color(0xFFC54EEC)],
   );
+  static const LinearGradient textGradientReverse = LinearGradient(
+    colors: [
+      Color(0xFFC54EEC),
+      Color(0xFF3B82F6),
+    ],
+  );
   static const LinearGradient cardGradient = LinearGradient(
     stops: [0.0, 0.0],
     colors: [
