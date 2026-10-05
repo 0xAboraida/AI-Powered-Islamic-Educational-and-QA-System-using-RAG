@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import whiteLogo from '@/assets/images/WhiteLogo.png'
 import darkLogo from '@/assets/images/ZadDarkLogo.png'
-import { User, LogOut, Settings, LayoutDashboard, Sun, Moon, Sparkles, LogIn, Loader2 } from 'lucide-react'
+import { User, LogOut, Settings, LayoutDashboard, Sun, Moon, Sparkles, LogIn, Loader2, Activity, Zap, Server } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import { useTheme } from '../../contexts/ThemeContext'
 import StoreBadges from '../ui/StoreBadges'
@@ -16,19 +16,27 @@ export default function Navbar({
   onOpenKnowledge,
   onOpenStudy,
   onOpenAdmin,
+  onOpenTurathRag,
   onOpenDataIngestion,
   onOpenV2PipelineAdmin,
   onOpenAdminLibrary,
   onOpenVoiceChat,
+  onOpenLessons,
+  onOpenYoutubeImporter,
+  onOpenSystemObservability,
 }: {
   onTryChat: () => void
   onOpenKnowledge: () => void
   onOpenStudy: () => void
+  onOpenLessons: () => void
   onOpenAdmin?: () => void
+  onOpenTurathRag?: () => void
   onOpenDataIngestion?: () => void
   onOpenV2PipelineAdmin?: () => void
   onOpenAdminLibrary?: () => void
   onOpenVoiceChat?: () => void
+  onOpenYoutubeImporter?: () => void
+  onOpenSystemObservability?: () => void
 }) {
   const [open, setOpen] = useState(false)
   const [showProfileMenu, setShowProfileMenu] = useState(false)
@@ -81,6 +89,16 @@ export default function Navbar({
                 className="group relative flex flex-col items-center py-1 text-[16.5px] font-semibold text-white/80 transition-colors duration-300 hover:text-white"
               >
                 المكتبة
+                <span className="absolute -bottom-3 h-[3px] w-0 rounded-full bg-purple-500 shadow-[0_0_12px_rgba(168,85,247,0.9)] transition-all duration-300 group-hover:w-8" />
+              </button>
+            </li>
+            <li>
+              <button
+                type="button"
+                onClick={onOpenLessons}
+                className="group relative flex flex-col items-center py-1 text-[16.5px] font-semibold text-white/80 transition-colors duration-300 hover:text-white"
+              >
+                الشروحات والدروس
                 <span className="absolute -bottom-3 h-[3px] w-0 rounded-full bg-purple-500 shadow-[0_0_12px_rgba(168,85,247,0.9)] transition-all duration-300 group-hover:w-8" />
               </button>
             </li>
@@ -150,24 +168,37 @@ export default function Navbar({
               </button>
 
               {showProfileMenu && (
-                <div className="absolute left-0 top-full mt-4 w-64 rounded-3xl border border-white/15 bg-[#1a0730]/95 py-3 shadow-2xl backdrop-blur-2xl transition-all">
+                <div dir="rtl" className="absolute left-0 top-full mt-4 w-72 rounded-3xl border border-white/15 bg-[#1a0730]/95 py-3 shadow-2xl backdrop-blur-2xl transition-all text-right">
                   {/* Profile Header */}
-                  <div className="border-b border-white/10 px-5 pb-4 pt-2 text-white">
-                    <div className="text-lg font-bold truncate">{user?.name || (isAdmin ? 'أدمن زاد' : 'مستخدم زاد')}</div>
-                    <div className="text-sm text-white/60 truncate">{user?.email || 'طالب'}</div>
+                  <div className="border-b border-white/10 px-5 pb-4 pt-2 text-white text-right">
+                    <div className="text-lg font-bold truncate text-right">{user?.name || (isAdmin ? 'أدمن زاد' : 'مستخدم زاد')}</div>
+                    <div className="text-sm text-white/60 truncate text-right font-mono">{user?.email || 'طالب'}</div>
                   </div>
 
                   {/* Menu Items */}
-                  <div className="mt-1 flex flex-col gap-1 p-2">
+                  <div className="mt-1 flex flex-col gap-1 p-2 text-right">
+                    {isAdmin && onOpenTurathRag && (
+                      <button
+                        onClick={() => {
+                          setShowProfileMenu(false)
+                          onOpenTurathRag()
+                        }}
+                        className="flex w-full items-center justify-start gap-3 rounded-xl px-4 py-2.5 text-sm font-bold text-sky-400 transition-colors hover:bg-white/10 text-right"
+                      >
+                        <Zap size={18} className="shrink-0 text-sky-400" />
+                        <span className="text-right leading-tight">إدارة استخراج الكتب وتخزينها</span>
+                      </button>
+                    )}
                     {isAdmin && onOpenAdmin && (
                       <button
                         onClick={() => {
                           setShowProfileMenu(false)
                           onOpenAdmin()
                         }}
-                        className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-brand-blue transition-colors hover:bg-white/10"
+                        className="flex w-full items-center justify-start gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-brand-blue transition-colors hover:bg-white/10 text-right"
                       >
-                        <LayoutDashboard size={18} /> لوحة التحكم
+                        <LayoutDashboard size={18} className="shrink-0" />
+                        <span className="text-right">إدارة وضع الدراسة</span>
                       </button>
                     )}
                     {isAdmin && onOpenDataIngestion && (
@@ -176,9 +207,10 @@ export default function Navbar({
                           setShowProfileMenu(false)
                           onOpenDataIngestion()
                         }}
-                        className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-emerald-400 transition-colors hover:bg-white/10"
+                        className="flex w-full items-center justify-start gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-emerald-400 transition-colors hover:bg-white/10 text-right"
                       >
-                        <Settings size={18} /> إدارة البيانات
+                        <Settings size={18} className="shrink-0" />
+                        <span className="text-right">إدارة البيانات</span>
                       </button>
                     )}
                     {isAdmin && onOpenV2PipelineAdmin && (
@@ -187,9 +219,10 @@ export default function Navbar({
                           setShowProfileMenu(false)
                           onOpenV2PipelineAdmin()
                         }}
-                        className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-blue-400 transition-colors hover:bg-white/10"
+                        className="flex w-full items-center justify-start gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-blue-400 transition-colors hover:bg-white/10 text-right"
                       >
-                        <Sparkles size={18} /> إدخال بيانات الـ AI (Ingestion)
+                        <Sparkles size={18} className="shrink-0" />
+                        <span className="text-right leading-tight">إدخال بيانات الـ AI (Ingestion)</span>
                       </button>
                     )}
                     {isAdmin && onOpenAdminLibrary && (
@@ -198,9 +231,34 @@ export default function Navbar({
                           setShowProfileMenu(false)
                           onOpenAdminLibrary()
                         }}
-                        className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-amber-400 transition-colors hover:bg-white/10"
+                        className="flex w-full items-center justify-start gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-amber-400 transition-colors hover:bg-white/10 text-right"
                       >
-                        <Settings size={18} /> إدارة مكتبة القراءة (Library)
+                        <Settings size={18} className="shrink-0" />
+                        <span className="text-right leading-tight">إدارة مكتبة القراءة (Library)</span>
+                      </button>
+                    )}
+                    {isAdmin && onOpenYoutubeImporter && (
+                      <button
+                        onClick={() => {
+                          setShowProfileMenu(false)
+                          onOpenYoutubeImporter()
+                        }}
+                        className="flex w-full items-center justify-start gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-red-500 transition-colors hover:bg-white/10 text-right"
+                      >
+                        <Settings size={18} className="shrink-0" />
+                        <span className="text-right">استيراد شروحات يوتيوب</span>
+                      </button>
+                    )}
+                    {isAdmin && onOpenSystemObservability && (
+                      <button
+                        onClick={() => {
+                          setShowProfileMenu(false)
+                          onOpenSystemObservability()
+                        }}
+                        className="flex w-full items-center justify-start gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-amber-300 transition-colors hover:bg-white/10 text-right"
+                      >
+                        <Activity size={18} className="shrink-0 text-amber-400" />
+                        <span className="text-right leading-tight">مراقبة النظام والـ AI (Observability)</span>
                       </button>
                     )}
 
@@ -211,9 +269,10 @@ export default function Navbar({
                         setShowProfileMenu(false)
                         logout()
                       }}
-                      className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm text-red-400 transition-colors hover:bg-white/10 hover:text-red-300"
+                      className="flex w-full items-center justify-start gap-3 rounded-xl px-4 py-2.5 text-sm text-red-400 transition-colors hover:bg-white/10 hover:text-red-300 text-right"
                     >
-                      <LogOut size={18} /> تسجيل خروج
+                      <LogOut size={18} className="shrink-0" />
+                      <span className="text-right">تسجيل خروج</span>
                     </button>
                   </div>
                 </div>
@@ -298,6 +357,18 @@ export default function Navbar({
                 type="button"
                 onClick={() => {
                   setOpen(false)
+                  onOpenLessons()
+                }}
+                className="block w-full rounded-xl px-4 py-3 text-right text-sm font-medium text-white/85 transition-colors hover:bg-white/10"
+              >
+                الشروحات والدروس
+              </button>
+            </li>
+            <li>
+              <button
+                type="button"
+                onClick={() => {
+                  setOpen(false)
                   onOpenStudy()
                 }}
                 className="block w-full rounded-xl px-4 py-3 text-right text-sm font-medium text-white/85 transition-colors hover:bg-white/10"
@@ -333,6 +404,20 @@ export default function Navbar({
             {isAuthenticated ? (
               <>
                 <li className="px-4 text-xs font-semibold uppercase tracking-wider text-white/50">حسابي</li>
+                {isAdmin && onOpenTurathRag && (
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOpen(false)
+                        onOpenTurathRag()
+                      }}
+                      className="block w-full rounded-xl px-4 py-3 text-right text-sm font-bold text-sky-400 transition-colors hover:bg-white/10"
+                    >
+                      إدارة استخراج الكتب وتخزينها
+                    </button>
+                  </li>
+                )}
                 {isAdmin && onOpenAdmin && (
                   <li>
                     <button
@@ -343,7 +428,7 @@ export default function Navbar({
                       }}
                       className="block w-full rounded-xl px-4 py-3 text-right text-sm font-bold text-brand-blue transition-colors hover:bg-white/10"
                     >
-                      لوحة التحكم
+                      إدارة وضع الدراسة
                     </button>
                   </li>
                 )}
@@ -386,6 +471,34 @@ export default function Navbar({
                       className="block w-full rounded-xl px-4 py-3 text-right text-sm font-bold text-amber-400 transition-colors hover:bg-white/10"
                     >
                       إدارة مكتبة القراءة (Library)
+                    </button>
+                  </li>
+                )}
+                {isAdmin && onOpenYoutubeImporter && (
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOpen(false)
+                        onOpenYoutubeImporter()
+                      }}
+                      className="block w-full rounded-xl px-4 py-3 text-right text-sm font-bold text-red-400 transition-colors hover:bg-white/10"
+                    >
+                      استيراد شروحات يوتيوب
+                    </button>
+                  </li>
+                )}
+                {isAdmin && onOpenSystemObservability && (
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOpen(false)
+                        onOpenSystemObservability()
+                      }}
+                      className="block w-full rounded-xl px-4 py-3 text-right text-sm font-bold text-amber-300 transition-colors hover:bg-white/10"
+                    >
+                      مراقبة النظام والـ AI (Observability)
                     </button>
                   </li>
                 )}

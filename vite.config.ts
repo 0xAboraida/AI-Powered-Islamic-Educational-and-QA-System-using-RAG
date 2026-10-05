@@ -39,10 +39,52 @@ export default defineConfig(({ mode }) => {
       port: parseInt(process.env.PORT || '8443'),
       strictPort: true,
       watch: { ignored: ['**/.figma/**'] },
+      proxy: {
+        '/turath-proxy': {
+          target: 'https://api.turath.io',
+          changeOrigin: true,
+          secure: false,
+          rewrite: (path) => path.replace(/^\/turath-proxy/, ''),
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          },
+        },
+        '/yt-community-proxy': {
+          target: 'https://www.youtube.com',
+          changeOrigin: true,
+          secure: false,
+          rewrite: (path) => path.replace(/^\/yt-community-proxy/, ''),
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept-Language': 'ar,en;q=0.9',
+          },
+        },
+      },
     },
     preview: {
       host: '0.0.0.0',
       port: parseInt(process.env.PORT || '8443'),
+      proxy: {
+        '/turath-proxy': {
+          target: 'https://api.turath.io',
+          changeOrigin: true,
+          secure: false,
+          rewrite: (path) => path.replace(/^\/turath-proxy/, ''),
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          },
+        },
+        '/yt-community-proxy': {
+          target: 'https://www.youtube.com',
+          changeOrigin: true,
+          secure: false,
+          rewrite: (path) => path.replace(/^\/yt-community-proxy/, ''),
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept-Language': 'ar,en;q=0.9',
+          },
+        },
+      },
     },
   }
 })

@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/turath-proxy/:path*",
+      "destination": "https://api.turath.io/:path*"
+    },
+    {
+      "source": "/yt-community-proxy/:path*",
+      "destination": "https://www.youtube.com/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

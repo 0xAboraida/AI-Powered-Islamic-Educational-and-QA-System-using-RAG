@@ -101,43 +101,45 @@ function preprocessFrameText(frameStr: string): string {
     return res
   })
 
-  // Hadith: %Hadith% -> tagged blockquote
-  text = text.replace(/^([ \t]*)(.*?)%([^%\r\n]+)%(?:[ \t]*(?:\r?\n[ \t]*)?\^([^\^\r\n]+)\^)?(.*)$/gm, (match, indent, before, quote, ref, after) => {
-    let res = ''
-    if (before.trim()) res += `${indent}${before.trim()}\n\n`
-    const refTag = ref ? `[REF:${ref.trim()}]` : ''
-    res += `\n${indent}> [HADITH]${refTag} ${quote.trim()}\n`
-    const cleanAfter = (after || '').replace(/^[.\u06D4\s]+/, '')
-    if (cleanAfter.trim()) res += `\n${indent}${cleanAfter.trim()}\n\n`
-    return res
-  })
+  // Standalone Qur'an: entire line is &Ayah& or &&Ayah&&
+  text = text.replace(/^[ \t]*&+([^&\r\n]+)&+(?:[ \t]*(?:\r?\n[ \t]*)?\^+([^\^\r\n]+)\^+)?\s*$/gm, (match, quote, ref) => {
+    const refTag = ref ? `[REF:${ref.trim()}]` : '';
+    return `\n> [QURAN]${refTag} ${quote.trim()}\n`;
+  });
 
-  // Scholars' sayings: @Saying@
-  text = text.replace(/^([ \t]*)(.*?)@([^@\r\n]+)@(?:[ \t]*(?:\r?\n[ \t]*)?\^([^\^\r\n]+)\^)?(.*)$/gm, (match, indent, before, quote, ref, after) => {
-    let res = ''
-    if (before.trim()) res += `${indent}${before.trim()}\n\n`
-    const refTag = ref ? `[REF:${ref.trim()}]` : ''
-    res += `\n${indent}> [SAYING]${refTag} ${quote.trim()}\n`
-    const cleanAfter = (after || '').replace(/^[.\u06D4\s]+/, '')
-    if (cleanAfter.trim()) res += `\n${indent}${cleanAfter.trim()}\n\n`
-    return res
-  })
+  // Standalone Hadith: entire line is %Hadith% or %%Hadith%%
+  text = text.replace(/^[ \t]*%+([^%\r\n]+)%+(?:[ \t]*(?:\r?\n[ \t]*)?\^+([^\^\r\n]+)\^+)?\s*$/gm, (match, quote, ref) => {
+    const refTag = ref ? `[REF:${ref.trim()}]` : '';
+    return `\n> [HADITH]${refTag} ${quote.trim()}\n`;
+  });
 
-  // Poetry: $Poetry$
-  text = text.replace(/^([ \t]*)(.*?)\$([^$\r\n]+)\$(?:[ \t]*(?:\r?\n[ \t]*)?\^([^\^\r\n]+)\^)?(.*)$/gm, (match, indent, before, quote, ref, after) => {
-    let res = ''
-    if (before.trim()) res += `${indent}${before.trim()}\n\n`
-    const refTag = ref ? `[REF:${ref.trim()}]` : ''
-    res += `\n${indent}> [POETRY]${refTag} ${quote.trim()}\n`
-    const cleanAfter = (after || '').replace(/^[.\u06D4\s]+/, '')
-    if (cleanAfter.trim()) res += `\n${indent}${cleanAfter.trim()}\n\n`
-    return res
-  })
+  // Standalone Scholars' sayings: entire line is @Saying@ or @@Saying@@
+  text = text.replace(/^[ \t]*@+([^@\r\n]+)@+(?:[ \t]*(?:\r?\n[ \t]*)?\^+([^\^\r\n]+)\^+)?\s*$/gm, (match, quote, ref) => {
+    const refTag = ref ? `[REF:${ref.trim()}]` : '';
+    return `\n> [SAYING]${refTag} ${quote.trim()}\n`;
+  });
 
-  text = text.replace(/^\s*[\.\u06D4]\s*$/gm, '')
-  text = text.replace(/([^\n])\n([ \t]*)([0-9]+\.|[\u0600-\u06FF]\.|\*|-)[ \t]+/g, '$1\n\n$2$3 ')
-  text = text.replace(/\+\+([^+]+)\+\+/g, '~~$1~~')
-  text = text.replace(/«([^»\n]+)»/g, '~~«$1»~~')
+  // Standalone Poetry: entire line is $Poetry$ or $$Poetry$$
+  text = text.replace(/^[ \t]*\$+([^$\r\n]+)\$+(?:[ \t]*(?:\r?\n[ \t]*)?\^+([^\^\r\n]+)\^+)?\s*$/gm, (match, quote, ref) => {
+    const refTag = ref ? `[REF:${ref.trim()}]` : '';
+    return `\n> [POETRY]${refTag} ${quote.trim()}\n`;
+  });
+
+  // Standalone References
+  text = text.replace(/^[ \t]*\^+([^\^\r\n]+)\^+\s*$/gm, (match, ref) => {
+    return `\n> [REFERENCE] ${ref.trim()}\n`;
+  });
+
+  // Inline replacements
+  text = text.replace(/@+([^@\r\n]+)@+/g, '«$1»');
+  text = text.replace(/%+([^%\r\n]+)%+/g, '«$1»');
+  text = text.replace(/&+([^&\r\n]+)&+/g, '﴿$1﴾');
+  text = text.replace(/\$+([^$\r\n]+)\$+/g, '«$1»');
+  text = text.replace(/\^+([^\^\r\n]+)\^+/g, ' (*$1*)');
+
+  text = text.replace(/^\s*[\.\u06D4]\s*$/gm, '');
+  text = text.replace(/([^\n])\n([ \t]*)([0-9]+\.|[\u0600-\u06FF]\.|\*|-)[ \t]+/g, '$1\n\n$2$3 ');
+  text = text.replace(/\+\+([^+]+)\+\+/g, '~~$1~~');
   text = autoIndentSubLists(text)
   text = text.replace(/\n{3,}/g, '\n\n')
 

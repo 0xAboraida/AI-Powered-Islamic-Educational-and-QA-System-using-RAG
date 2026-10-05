@@ -4,11 +4,12 @@ import bgDark from '@/assets/images/image.webp'
 import bgLight from '@/assets/images/bg-islamic-light.webp'
 import whiteLogo from '@/assets/images/WhiteLogo.png'
 import darkLogo from '@/assets/images/ZadDarkLogo.png'
+import IslamicPattern from '../knowledge/components/IslamicPattern'
 import {
   ArrowLeft, Menu, BookOpen, X,
   AlertCircle, XCircle, Sun, Moon,
   MessageCircle, Brain, ClipboardList,
-  Maximize, Minimize, History, ChevronUp, ChevronDown
+  Maximize, Minimize, History, ChevronUp, ChevronDown, Image, LayoutGrid, Square
 } from 'lucide-react'
 import {
   useStudyContext,
@@ -30,6 +31,30 @@ import { StudyTimerWidget } from './components/StudyTimerWidget'
 import { studyPlanManager } from './utils/studyPlanManager'
 import { STUDY_PROMPTS } from './utils/studyPrompts'
 import { type QuizFlowState, defaultQuizFlowState } from './quiz/types'
+import {
+  idbGetBookTree,
+  idbSetBookTree,
+  idbGetCachedBookTitles,
+  idbGetTurathBookTree,
+  idbSetTurathBookTree,
+  idbGetCachedTurathBookIds,
+  idbDeleteTurathBookTree
+} from '../../utils/indexedDbStorage'
+import {
+  fetchTurathBookIndexes,
+  fetchTurathPage,
+  fetchTurathChapterText,
+  convertTurathHeadingsToTree,
+  type ChapterSliceOptions
+} from '../../api/turathApi'
+import {
+  parseTurathInfoField,
+  calculateHijriCentury,
+  resolveMadhhab,
+  resolveDomain,
+  findTurathBookInTree,
+  buildTurathHierarchy
+} from './utils/turathMetaHelper'
 
 const TUTOR_ENGINE_URL = import.meta.env.VITE_TUTOR_ENGINE_URL || 'https://abourida-zad-tutor-engine-space.hf.space'
 const API_BASE = TUTOR_ENGINE_URL
@@ -37,6 +62,25 @@ const TUTOR_API_KEY = import.meta.env.VITE_TUTOR_ENGINE_API_KEY || 'zad-super-se
 
 export default function StudyMode({ onExit }: { onExit: () => void }) {
   const { toggleTheme, isDark } = useTheme()
+
+  // Library Provider Engine: 'mongo' (198 books classic) vs 'turath' (8,589 books global)
+  const [librarySource, setLibrarySource] = useState<'mongo' | 'turath'>(() => {
+    return (localStorage.getItem('zad_study_library_source') as 'mongo' | 'turath') || 'mongo'
+  })
+
+  // Background Type (Image vs Pattern vs Solid)
+  const [bgType, setBgType] = useState<'image' | 'pattern' | 'solid'>(() => {
+    return (localStorage.getItem('zad_study_bg_type') as 'image' | 'pattern' | 'solid') || 'pattern'
+  })
+
+  const toggleBgType = useCallback(() => {
+    setBgType((prev) => {
+      const next = prev === 'image' ? 'pattern' : prev === 'pattern' ? 'solid' : 'image'
+      localStorage.setItem('zad_study_bg_type', next)
+      return next
+    })
+  }, [])
+
   const {
     messages, setMessages,
     chatHistory, setChatHistory,
@@ -67,13 +111,16 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
   // Resizable & Toggleable 5 Independent Panels
   // Default: Index, Document Reader, and Smart Tutor Chat are ALL open initially
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
-  const [sidebarWidth, setSidebarWidth] = useState(300)
+  const [sidebarWidth, setSidebarWidth] = useState(380)
 
   const [isDocumentOpen, setIsDocumentOpen] = useState(true)
-  const [documentWidth, setDocumentWidth] = useState(480)
+  const [documentWidth, setDocumentWidth] = useState(900)
 
   const [isChatOpen, setIsChatOpen] = useState(true)
-  const [chatWidth, setChatWidth] = useState(550)
+  const [chatWidth, setChatWidth] = useState<number>(() => {
+    const saved = typeof window !== 'undefined' ? localStorage.getItem('zad_study_chat_width') : null
+    return saved ? Math.max(350, Math.min(Number(saved), 1400)) : 700
+  })
 
   const [isMindmapOpen, setIsMindmapOpen] = useState(false)
   const [mindmapWidth, setMindmapWidth] = useState(750)
@@ -93,7 +140,7 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
   }, [])
 
   const [confirmClose, setConfirmClose] = useState(false)
-  const [pendingChunkSwitch, setPendingChunkSwitch] = useState<{ chunkId: string; title: string; fullPath: string } | null>(null)
+  const [pendingChunkSwitch, setPendingChunkSwitch] = useState<{ chunkId: string; title: string; fullPath: string; node?: TreeNode } | null>(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false)
   const [isHeaderCollapsed, setIsHeaderCollapsed] = useState<boolean>(() => {
@@ -148,14 +195,14 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
       if (savedMessages && savedMessages.length > 0) {
         const uiMsgs = savedMessages.map(m => {
           let cleanText = m.content;
-          
+
           if (m.role === 'user') {
             if (cleanText.includes('ملاحظات حتمية للعمل') || cleanText.includes('أنا كطالب أود البدء في دراسة درس')) {
               cleanText = 'أود الحصول على خطة تفاعلية لمذاكرة هذا الدرس.';
             } else if (cleanText.includes('أنا كطالب أود الحصول على تلخيص مركز وشامل لدرس')) {
               cleanText = 'أود الحصول على تلخيص مركز ومُتوازن لهذا الدرس (لا إفراط ولا تفريط).';
             } else if (cleanText.includes('مرحباً يا زاد، أود فتح باب النقاش المباشر والأسئلة حول درس')) {
-              cleanText = '💬 أود بدء التحاور المباشر مع زاد وطرح أسئلتي في هذا الدرس.';
+              cleanText = 'أود بدء التحاور المباشر مع زاد وطرح أسئلتي في هذا الدرس.';
             }
           } else {
             const { cleanText: parsed } = studyPlanManager.parseLLMResponse(cleanText, sess.id, true);
@@ -245,7 +292,13 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
 
       if (panelKey === 'sidebar') setSidebarWidth(Math.max(220, Math.min(newWidth, 800)))
       else if (panelKey === 'document') setDocumentWidth(Math.max(280, Math.min(newWidth, 1200)))
-      else if (panelKey === 'chat') setChatWidth(Math.max(300, Math.min(newWidth, 1400)))
+      else if (panelKey === 'chat') {
+        const clamped = Math.max(350, Math.min(newWidth, 1400))
+        setChatWidth(clamped)
+        try {
+          localStorage.setItem('zad_study_chat_width', String(clamped))
+        } catch { }
+      }
       else if (panelKey === 'mindmap') setMindmapWidth(Math.max(320, Math.min(newWidth, 1400)))
       else if (panelKey === 'quiz') setQuizWidth(Math.max(280, Math.min(newWidth, 1200)))
     }
@@ -284,70 +337,155 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
     return () => clearTimeout(timer)
   }, [focusTarget])
 
+  const updateBookInTree = (nodes: TreeNode[], bookTitle: string, chapters: TreeNode[], bookId?: number): TreeNode[] => {
+    return nodes.map(node => {
+      if (node.is_book && ((bookId && node.turath_id === bookId) || node.title === bookTitle)) {
+        return {
+          ...node,
+          children: chapters,
+          is_loaded: true
+        }
+      }
+      if (node.children && node.children.length > 0) {
+        return {
+          ...node,
+          children: updateBookInTree(node.children, bookTitle, chapters, bookId)
+        }
+      }
+      return node
+    })
+  }
+
   const fetchTree = async () => {
     try {
-      // 1. Load from cache immediately to show UI instantly
-      const cachedTreeStr = localStorage.getItem('zad_library_tree')
-      const cachedVersionStr = localStorage.getItem('zad_library_version')
-      
-      let hasValidCache = false
-      if (cachedTreeStr) {
+      setTreeLoading(true)
+      const currentSource = (localStorage.getItem('zad_study_library_source') as 'mongo' | 'turath') || librarySource || 'mongo'
+
+      // ==============================================================
+      // 1. TURATH GLOBAL ENGINE PIPELINE (8,589 books across 40 domains)
+      // ==============================================================
+      if (currentSource === 'turath') {
+        let turathCatalog: TreeNode[] | null = null
         try {
-          const parsedCache = JSON.parse(cachedTreeStr)
-          if (parsedCache && parsedCache.length > 0) {
-            setTreeData(parsedCache)
-            hasValidCache = true
+          const res = await fetch('/data/turath_catalog.json')
+          if (res.ok) {
+            turathCatalog = await res.json()
           }
         } catch (e) {
-          console.warn('Failed parsing cached tree', e)
+          console.warn('Failed to load /data/turath_catalog.json:', e)
         }
-      }
 
-      if (!hasValidCache) setTreeLoading(true)
+        if (turathCatalog && turathCatalog.length > 0) {
+          // Apply Admin Turath Visibility Filtering if configured
+          try {
+            const rawConfig = localStorage.getItem('zad_turath_visibility_config')
+            if (rawConfig) {
+              const cfg = JSON.parse(rawConfig)
+              if (cfg.mode === 'custom' && Array.isArray(cfg.allowedBookIds)) {
+                const allowedSet = new Set(cfg.allowedBookIds.map(String))
+                turathCatalog = turathCatalog
+                  .map(cat => ({
+                    ...cat,
+                    children: (cat.children || []).filter(b => allowedSet.has(String(b.turath_id)))
+                  }))
+                  .filter(cat => cat.children && cat.children.length > 0)
+              } else if (cfg.mode === 'all' && Array.isArray(cfg.hiddenBookIds) && cfg.hiddenBookIds.length > 0) {
+                const hiddenSet = new Set(cfg.hiddenBookIds.map(String))
+                turathCatalog = turathCatalog
+                  .map(cat => ({
+                    ...cat,
+                    children: (cat.children || []).filter(b => !hiddenSet.has(String(b.turath_id)))
+                  }))
+                  .filter(cat => cat.children && cat.children.length > 0)
+              }
+            }
+          } catch (cfgErr) {
+            console.warn('Turath visibility filtering notice:', cfgErr)
+          }
 
-      // 2. Check version from Tutor Engine (Fast & Lightweight)
-      let currentVersion = null
-      try {
-        const versionRes = await fetch(`${API_BASE}/api/v1/library/version`)
-        const versionData = await versionRes.json()
-        if (versionData.success) {
-          currentVersion = versionData.version || versionData.last_updated
+          // Hydrate only books that were previously clicked & cached in IndexedDB
+          try {
+            const cachedIds = await idbGetCachedTurathBookIds()
+            if (cachedIds.length > 0) {
+              const cachedSet = new Set(cachedIds.map(String))
+              for (const cat of turathCatalog) {
+                for (const book of cat.children || []) {
+                  const bId = String(book.turath_id || '')
+                  if (bId && cachedSet.has(bId)) {
+                    const cachedBook = await idbGetTurathBookTree(bId)
+                    const isFallback = cachedBook?.children?.length === 1 && cachedBook.children[0].title === 'قراءة الكتاب (من البداية)'
+                    const isOldFormat = Boolean(cachedBook?.children && cachedBook.children.length > 0 && (!cachedBook.children[0].toc_id || !cachedBook.children[0].chunk_id?.includes('_v2')))
+                    if (isFallback || isOldFormat) {
+                      // Stale fallback or old format without TOC indices - delete it immediately so fresh headings load!
+                      await idbDeleteTurathBookTree(bId)
+                    } else if (cachedBook && cachedBook.children && cachedBook.children.length > 0) {
+                      book.children = cachedBook.children
+                      book.is_loaded = true
+                    }
+                  }
+                }
+              }
+            }
+          } catch (idbErr) {
+            console.warn('Turath IndexedDB hydration notice:', idbErr)
+          }
+
+          setTreeData(turathCatalog)
         }
-      } catch (e) {
-        console.warn('Failed to fetch library version', e)
-      }
-
-      // 3. If version matches, we are done!
-      if (hasValidCache && currentVersion && cachedVersionStr === String(currentVersion)) {
-        setTreeLoading(false)
         return
       }
 
-      // 4. Version mismatch or no cache -> Fetch full tree (forceRefresh = false)
-      setTreeLoading(true)
-      let newTreeData = null
-      
+      // ==============================================================
+      // 2. MONGO RAG CLASSIC PIPELINE (198 books - completely intact)
+      // ==============================================================
+      let catalog: TreeNode[] | null = null
       try {
-        const data = await studyApi.getLibraryTrees(false)
-        if (data && data.tree) newTreeData = data.tree
-      } catch (err) {
-        // Fallback to direct Python FastAPI
-        const fallbackRes = await fetch(`${API_BASE}/api/v1/library/trees?force_refresh=false`)
-        const fallbackData = await fallbackRes.json()
-        if (fallbackData.success && fallbackData.tree) newTreeData = fallbackData.tree
+        const res = await fetch('/data/catalog.json')
+        if (res.ok) {
+          catalog = await res.json()
+        }
+      } catch (e) {
+        console.warn('Failed to load /data/catalog.json, falling back to API:', e)
       }
 
-      // 5. Save to state and cache
-      if (newTreeData) {
-        setTreeData(newTreeData)
+      // If local static catalog failed, fallback to API
+      if (!catalog) {
         try {
-          localStorage.setItem('zad_library_tree', JSON.stringify(newTreeData))
-          if (currentVersion) {
-            localStorage.setItem('zad_library_version', String(currentVersion))
+          const res = await fetch(`${API_BASE}/api/v1/library/trees?catalog_only=true`)
+          if (res.ok) {
+            const data = await res.json()
+            if (data.success && data.tree) catalog = data.tree
           }
         } catch (e) {
-          console.warn('Failed saving tree to cache (might be too large)', e)
+          console.warn('Failed to fetch catalog from API:', e)
         }
+      }
+
+      if (catalog && catalog.length > 0) {
+        // Hydrate ONLY books previously clicked and cached in IndexedDB
+        try {
+          const cachedTitles = await idbGetCachedBookTitles()
+          if (cachedTitles.length > 0) {
+            const cachedSet = new Set(cachedTitles)
+            for (const domain of catalog) {
+              for (const sub of domain.children || []) {
+                for (const book of sub.children || []) {
+                  if (cachedSet.has(book.title)) {
+                    const cachedBook = await idbGetBookTree(book.title)
+                    if (cachedBook && cachedBook.children) {
+                      book.children = cachedBook.children
+                      book.is_loaded = true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        } catch (idbErr) {
+          console.warn('IndexedDB hydration notice:', idbErr)
+        }
+
+        setTreeData(catalog)
       }
     } catch (error) {
       console.error('Error in fetchTree pipeline:', error)
@@ -356,17 +494,148 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
     }
   }
 
+  const handleLoadBookTree = useCallback(async (bookNode: TreeNode) => {
+    const isTurath = bookNode.is_turath || !!bookNode.turath_id || librarySource === 'turath'
+    const turathId = bookNode.turath_id
+
+    // PATH A: TURATH ON-DEMAND BOOK TOC LOADING
+    if (isTurath && turathId) {
+      // 1. Check IndexedDB first (0ms)
+      try {
+        const cached = await idbGetTurathBookTree(turathId)
+        if (cached && cached.children && cached.children.length > 0) {
+          const isFallback = cached.children.length === 1 && cached.children[0].title === 'قراءة الكتاب (من البداية)'
+          const isOldFormat = Boolean(!cached.children[0].toc_id || !cached.children[0].chunk_id?.includes('_v3'))
+          if (!isFallback && !isOldFormat) {
+            setTreeData(prev => updateBookInTree(prev, bookNode.title, cached.children, turathId))
+            return cached.children
+          } else {
+            // Delete stale fallback or old format without TOC indices so fresh headings can load
+            await idbDeleteTurathBookTree(turathId)
+          }
+        }
+      } catch (e) {
+        console.warn('IndexedDB Turath read error:', e)
+      }
+
+      // 2. Fetch live from Turath indexes API (through local proxy)
+      try {
+        const data = await fetchTurathBookIndexes(turathId)
+        const headings = data?.indexes?.headings || []
+
+        if (headings && headings.length > 0) {
+          const chapters = convertTurathHeadingsToTree(headings, turathId, bookNode.title)
+          // 3. Cache in IndexedDB with authentic headings AND metadata!
+          await idbSetTurathBookTree(turathId, { children: chapters, meta: data?.meta })
+          // 4. Update state in memory tree
+          setTreeData(prev => updateBookInTree(prev, bookNode.title, chapters, turathId))
+          return chapters
+        } else {
+          // If book has no headings in Turath metadata, show reader node without permanently caching it
+          const chapters = convertTurathHeadingsToTree([], turathId, bookNode.title)
+          setTreeData(prev => updateBookInTree(prev, bookNode.title, chapters, turathId))
+          return chapters
+        }
+      } catch (err) {
+        console.error(`Failed to load Turath book ${turathId}:`, err)
+      }
+      return undefined
+    }
+
+    // PATH B: MONGO RAG BOOK TOC LOADING (Completely untouched)
+    const bookTitle = bookNode.title
+
+    // 1. Check IndexedDB first (0ms)
+    try {
+      const cached = await idbGetBookTree(bookTitle)
+      if (cached && cached.children && cached.children.length > 0) {
+        setTreeData(prev => updateBookInTree(prev, bookTitle, cached.children))
+        return cached.children
+      }
+    } catch (e) {
+      console.warn('IndexedDB read error:', e)
+    }
+
+    // 2. Load from /data/books/${filename}
+    let bookData: any = null
+    const filename = bookNode.book_file || (bookTitle.replace(/ /g, '_').replace(/[/\\\\]/g, '_') + '.json')
+
+    try {
+      const res = await fetch(`/data/books/${encodeURIComponent(filename)}`)
+      if (res.ok) {
+        bookData = await res.json()
+      }
+    } catch (err) {
+      console.warn('Fetch from /data/books/ failed, trying API fallback:', err)
+    }
+
+    // Fallback to API if static file not found
+    if (!bookData) {
+      try {
+        const res = await fetch(`${API_BASE}/api/v1/library/trees?book_names=${encodeURIComponent(bookTitle)}`)
+        if (res.ok) {
+          const data = await res.json()
+          if (data.success && data.tree) {
+            const findBook = (nodes: any[]): any => {
+              for (const n of nodes) {
+                if (n.title === bookTitle && n.children) return n
+                if (n.children) {
+                  const found = findBook(n.children)
+                  if (found) return found
+                }
+              }
+              return null
+            }
+            bookData = findBook(data.tree)
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch book from API:', err)
+      }
+    }
+
+    if (bookData && bookData.children) {
+      // 3. Save to IndexedDB ONLY for this book that user opened!
+      try {
+        await idbSetBookTree(bookTitle, bookData)
+      } catch (e) {
+        console.warn('Failed saving book to IndexedDB:', e)
+      }
+
+      // 4. Update state in memory tree
+      setTreeData(prev => updateBookInTree(prev, bookTitle, bookData.children))
+      return bookData.children
+    }
+    return undefined
+  }, [librarySource])
+
   useEffect(() => {
     fetchTree()
 
     const handleTreeUpdated = () => {
       fetchTree()
     }
-    window.addEventListener('zad_library_updated', handleTreeUpdated)
-    return () => window.removeEventListener('zad_library_updated', handleTreeUpdated)
-  }, [])
+    const handleSourceChanged = (e: any) => {
+      const nextSource = e.detail?.source || localStorage.getItem('zad_study_library_source') || 'mongo'
+      setLibrarySource(nextSource)
+    }
+    const handleCustomChunkSelect = (e: any) => {
+      if (e.detail?.chunkId) {
+        executeChunkSelect(e.detail.chunkId, e.detail.title, e.detail.fullPath, e.detail.node)
+      }
+    }
 
-  const executeChunkSelect = async (chunkId: string, title: string, fullPath: string) => {
+    window.addEventListener('zad_library_updated', handleTreeUpdated)
+    window.addEventListener('zad_library_source_changed', handleSourceChanged)
+    window.addEventListener('zad_select_chunk', handleCustomChunkSelect)
+    return () => {
+      window.removeEventListener('zad_library_updated', handleTreeUpdated)
+      window.removeEventListener('zad_library_source_changed', handleSourceChanged)
+      window.removeEventListener('zad_select_chunk', handleCustomChunkSelect)
+    }
+  }, [librarySource])
+
+  const executeChunkSelect = async (chunkId: string, title: string, fullPath: string, selectedNode?: TreeNode) => {
     setIsChunkLoading(true)
     setCurrentChunkId(chunkId)
     setActiveSessionId(null)
@@ -398,8 +667,195 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
       setIsChatOpen(true)
     }
 
+    // 1. TURATH FULL CHAPTER RETRIEVAL (Pulls entire section / chapter across its pages)
+    if (chunkId.startsWith('turath_')) {
+      try {
+        const parts = chunkId.split('_')
+        const turathId = parseInt(parts[1], 10)
+        const startPage = parseInt(parts[3], 10) || 1
+        const endPage = parts[5] ? parseInt(parts[5], 10) : startPage
+        let startTocIndex = parts[7] ? parseInt(parts[7], 10) : undefined
+        let endTocIndex = parts[9] ? parseInt(parts[9], 10) : undefined
+
+        // Resolve chapter boundary options directly from selected node or chunk ID
+        let resolvedStartTocId = selectedNode?.toc_id || (startTocIndex ? `toc-${startTocIndex}` : undefined)
+        let resolvedEndTocId = selectedNode?.next_toc_id || (endTocIndex && endTocIndex > 0 ? `toc-${endTocIndex}` : undefined)
+        let nextChapterTitle = selectedNode?.next_title
+
+        // Fallback: If not passed as selectedNode, locate in cached chapters
+        if (!resolvedStartTocId || !resolvedEndTocId) {
+          const { bookNode } = findTurathBookInTree(treeData, turathId)
+          let bookChapters = bookNode?.children
+          if (!bookChapters || bookChapters.length === 0) {
+            try {
+              const cachedBookData = await idbGetTurathBookTree(turathId)
+              if (cachedBookData?.children && cachedBookData.children.length > 0) {
+                bookChapters = cachedBookData.children
+              }
+            } catch {}
+          }
+          if (bookChapters) {
+            const flattenNodes = (nodes: TreeNode[]): TreeNode[] => {
+              const list: TreeNode[] = []
+              for (const n of nodes) {
+                list.push(n)
+                if (n.children && n.children.length > 0) {
+                  list.push(...flattenNodes(n.children))
+                }
+              }
+              return list
+            }
+            const flat = flattenNodes(bookChapters)
+            const matched = flat.find(n => n.chunk_id === chunkId || (n.title === title && n.page === startPage))
+            if (matched) {
+              if (!resolvedStartTocId) resolvedStartTocId = matched.toc_id
+              if (!resolvedEndTocId) resolvedEndTocId = matched.next_toc_id
+              if (!nextChapterTitle) nextChapterTitle = matched.next_title
+            }
+          }
+        }
+
+        const sliceOptions: ChapterSliceOptions = {
+          startTocId: resolvedStartTocId,
+          endTocId: resolvedEndTocId,
+          chapterTitle: title,
+          nextChapterTitle: nextChapterTitle
+        }
+
+        // Pull the lesson content with exact boundary slicing
+        const turathData = await fetchTurathChapterText(turathId, startPage, endPage, sliceOptions)
+        if (turathData) {
+          const rawText = turathData.text || ''
+          const cleanRawText = rawText
+            .replace(/<!--[\s\S]*?-->/g, '')
+            .replace(/<[^>]+>/g, '')
+            .replace(/[^\u0621-\u064A\u0671-\u06D3\w]/g, '')
+            .trim()
+
+          // If a parent folder has no body text between its heading and the next heading
+          if (cleanRawText.length < 15 && selectedNode?.children && selectedNode.children.length > 0) {
+            const firstChild = selectedNode.children[0]
+            const nextHeadingName = firstChild?.title || nextChapterTitle || 'الدرس الأول'
+            const noticeHtml = `
+              <div class="turath-empty-parent-notice" style="margin: 3em auto; max-width: 580px; padding: 2.2em 1.8em; border-radius: 1.5rem; text-align: center; background: ${isDark ? 'rgba(56, 189, 248, 0.05)' : 'rgba(2, 132, 199, 0.04)'}; border: 1.5px dashed ${isDark ? 'rgba(56, 189, 248, 0.3)' : 'rgba(2, 132, 199, 0.25)'}; backdrop-filter: blur(10px);">
+                <div style="display: inline-flex; align-items: center; justify-content: center; width: 54px; height: 54px; border-radius: 9999px; margin-bottom: 1.2em; background: ${isDark ? 'rgba(56, 189, 248, 0.15)' : 'rgba(2, 132, 199, 0.1)'}; color: ${isDark ? '#38bdf8' : '#0284c7'};">
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/></svg>
+                </div>
+                <h3 style="font-size: 1.25em; font-weight: 700; margin-bottom: 0.6em; color: ${isDark ? '#ffffff' : '#0f172a'}; font-family: 'Amiri', serif;">${title}</h3>
+                <p style="font-size: 0.95em; line-height: 1.8; color: ${isDark ? 'rgba(255, 255, 255, 0.7)' : 'rgba(15, 23, 42, 0.7)'}; margin-bottom: 1.6em;">
+                  هذا العنوان عبارة عن باب وتصنيف رئيسي تبدأ موضوعاته التفصيلية مباشرة من:
+                  <br />
+                  <strong style="color: ${isDark ? '#38bdf8' : '#0284c7'}; font-size: 1.05em;">«${nextHeadingName}»</strong>
+                </p>
+                ${firstChild?.chunk_id ? `
+                  <button
+                    type="button"
+                    onclick="window.dispatchEvent(new CustomEvent('zad_select_chunk', { detail: { chunkId: '${firstChild.chunk_id}', title: '${firstChild.title.replace(/'/g, "\\'")}', fullPath: '${fullPath} ← ${firstChild.title.replace(/'/g, "\\'")}' } }))"
+                    style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 22px; border-radius: 9999px; font-weight: 700; font-size: 0.92em; cursor: pointer; border: none; background: #0284c7; color: #ffffff; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35); transition: all 0.2s;"
+                  >
+                    <span>الانتقال إلى ${firstChild.title}</span>
+                    <span style="font-size: 1.1em;">←</span>
+                  </button>
+                ` : ''}
+              </div>
+            `
+            setChunkText(noticeHtml)
+          } else {
+            setChunkText(rawText || 'لا يوجد نص متوفر لهذا الفصل.')
+          }
+
+          // Resolve book metadata from tree and local cache
+          const { bookNode, categoryTitle } = findTurathBookInTree(treeData, turathId)
+
+          let bookIndexesMeta: any = null
+          try {
+            const cachedBook = await idbGetTurathBookTree(turathId)
+            if (cachedBook?.meta) {
+              bookIndexesMeta = cachedBook.meta
+            } else {
+              // Lazy-fetch book indexes meta if not in cache yet
+              const liveIndexes = await fetchTurathBookIndexes(turathId)
+              if (liveIndexes?.meta) {
+                bookIndexesMeta = liveIndexes.meta
+                if (cachedBook && cachedBook.children) {
+                  await idbSetTurathBookTree(turathId, { ...cachedBook, meta: liveIndexes.meta })
+                }
+              }
+            }
+          } catch (e) {
+            console.warn('Turath metadata resolution notice:', e)
+          }
+
+          const parsedInfo = parseTurathInfoField(bookIndexesMeta?.info)
+
+          // 1. Book Title: Always authentic book title (e.g. 'عمدة الفقه' or 'حكم التقليد'), never lesson title
+          const resolvedBookTitle =
+            bookIndexesMeta?.name ||
+            bookNode?.title ||
+            (turathData.meta as any)?.book_name ||
+            (fullPath.split('←')[1]?.trim()) ||
+            'اسم الكتاب'
+
+          // 2. Author and Death Date (e.g. 'ابن قدامة المقدسي' and '620هـ')
+          const resolvedAuthor =
+            parsedInfo.author ||
+            bookNode?.author ||
+            (turathData.meta as any)?.author_name ||
+            'غير محدد'
+          const resolvedAuthorDeath = parsedInfo.authorDeath || ''
+          const resolvedCentury = parsedInfo.deathYear
+            ? calculateHijriCentury(parsedInfo.deathYear)
+            : ''
+
+          // 3. Domain and Madhhab (e.g. 'فقه' and 'حنبلي')
+          const resolvedDomain = resolveDomain(categoryTitle, resolvedBookTitle)
+          const resolvedMadhhab = resolveMadhhab(
+            categoryTitle,
+            resolvedAuthor,
+            resolvedBookTitle,
+            parsedInfo.madhhabHint
+          )
+
+          // 4. Volume / Part and Total Parts (e.g. '1 / 1' or '1 / 2')
+          const currentVol = (turathData.meta as any)?.vol || '1'
+          const totalParts = parsedInfo.totalParts || 1
+
+          // 5. Clean hierarchy without duplication (kitab: 'كتاب الطهارة', sections: ['باب أحكام المياه'])
+          const resolvedHierarchy = buildTurathHierarchy(fullPath, resolvedBookTitle, title)
+
+          // 6. Turath Source URL
+          const sourceUrl = `https://app.turath.io/book/${turathId}?page=${startPage}`
+
+          setChunkMeta({
+            book_title: resolvedBookTitle,
+            author: resolvedAuthor,
+            author_death: resolvedAuthorDeath,
+            domain: resolvedDomain,
+            madhhab: resolvedMadhhab,
+            hijri_century: resolvedCentury,
+            part: currentVol,
+            total_parts: totalParts,
+            page_id: startPage,
+            end_page: endPage,
+            hierarchy: resolvedHierarchy,
+            source_url: sourceUrl
+          })
+        } else {
+          setChunkText('تعذر تحميل الفصل من مكتبة تراث، يرجى التحقق من الاتصال بالإنترنت.')
+        }
+      } catch (err) {
+        console.error('Error fetching Turath chapter:', err)
+        setChunkText('حدث خطأ أثناء تحميل فصل الكتاب من تراث.')
+      } finally {
+        setIsChunkLoading(false)
+        setLoading(false)
+      }
+      return
+    }
+
+    // 2. MONGO RAG CHUNK HANDLING (Completely untouched)
     try {
-      // 1. Start or resume session in Backend SQL database
+      // Start or resume session in Backend SQL database
       let currentSessionId: number | null = null
       try {
         const session = await studyApi.startSession(chunkId, title, fullPath)
@@ -411,7 +867,7 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
         console.warn('Backend study session start failed, operating in offline/direct mode:', err)
       }
 
-      // 2. Fetch Chunk details
+      // Fetch Chunk details
       let data: any = null
       try {
         data = await studyApi.getChunkById(chunkId)
@@ -432,17 +888,28 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
     }
   }
 
-  const handleChunkSelect = (chunkId: string, title: string, fullPath: string) => {
+  const handleTurathPageChange = (direction: 'next' | 'prev') => {
+    if (!currentChunkId || !currentChunkId.startsWith('turath_')) return
+    const parts = currentChunkId.split('_')
+    const turathId = parseInt(parts[1], 10)
+    const currentPage = parseInt(parts[3], 10) || 1
+    const currentEndPage = parts[5] ? parseInt(parts[5], 10) : currentPage
+    const targetPage = direction === 'next' ? currentEndPage + 1 : Math.max(1, currentPage - 1)
+    const targetChunkId = `turath_${turathId}_pg_${targetPage}_to_${targetPage}`
+    executeChunkSelect(targetChunkId, `صفحة ${targetPage}`, headerSubtitle)
+  }
+
+  const handleChunkSelect = (chunkId: string, title: string, fullPath: string, node?: TreeNode) => {
     if (currentChunkId && currentChunkId !== chunkId) {
-      setPendingChunkSwitch({ chunkId, title, fullPath })
+      setPendingChunkSwitch({ chunkId, title, fullPath, node })
     } else {
-      executeChunkSelect(chunkId, title, fullPath)
+      executeChunkSelect(chunkId, title, fullPath, node)
     }
   }
 
   const handleConfirmChunkSwitch = () => {
     if (pendingChunkSwitch) {
-      executeChunkSelect(pendingChunkSwitch.chunkId, pendingChunkSwitch.title, pendingChunkSwitch.fullPath)
+      executeChunkSelect(pendingChunkSwitch.chunkId, pendingChunkSwitch.title, pendingChunkSwitch.fullPath, pendingChunkSwitch.node)
       setPendingChunkSwitch(null)
     }
   }
@@ -460,15 +927,50 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
 
   const filterTreeNodes = useCallback((nodes: TreeNode[], query: string): TreeNode[] => {
     if (!query) return nodes
-    return nodes.reduce<TreeNode[]>((acc, node) => {
-      const matchTitle = node.title.toLowerCase().includes(query.toLowerCase())
-      const filteredChildren = node.children ? filterTreeNodes(node.children, query) : []
+    const q = query.trim().toLowerCase()
+    if (!q) return nodes
 
-      if (matchTitle || filteredChildren.length > 0) {
+    return nodes.reduce<TreeNode[]>((acc, node) => {
+      const matchTitle = (node.title || '').toLowerCase().includes(q)
+      const matchAuthor = (node.author || '').toLowerCase().includes(q)
+      const isSelfMatch = matchTitle || matchAuthor
+
+      // 1. If this node is a BOOK:
+      if (node.is_book) {
+        if (isSelfMatch) {
+          // If the book itself matched by title or author:
+          // Keep ALL its loaded children (chapters) intact so the user can browse them when they expand the book
+          acc.push({
+            ...node,
+            children: node.children || []
+          })
+          return acc
+        }
+
+        // If the book title itself didn't match, check if any loaded chapters match
+        if (node.children && node.children.length > 0) {
+          const matchedChapters = filterTreeNodes(node.children, query)
+          if (matchedChapters.length > 0) {
+            acc.push({
+              ...node,
+              children: matchedChapters,
+              _hasMatchedChild: true
+            } as any)
+            return acc
+          }
+        }
+
+        return acc
+      }
+
+      // 2. For CATEGORIES / FOLDERS:
+      const filteredChildren = node.children ? filterTreeNodes(node.children, query) : []
+      if (isSelfMatch || filteredChildren.length > 0) {
         acc.push({
           ...node,
-          children: filteredChildren
-        })
+          children: filteredChildren,
+          _hasMatchedChild: filteredChildren.length > 0 && !isSelfMatch
+        } as any)
       }
       return acc
     }, [])
@@ -479,6 +981,106 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
   }, [treeData, deferredSearchQuery, filterTreeNodes])
 
   const [pendingPlanSteps, setPendingPlanSteps] = useState<string[]>([])
+
+  /**
+   * Unified Tutor Chat Dispatcher:
+   * - For Turath chunks (or missing Mongo chunks): sends text directly to /chat/raw,
+   *   bypassing MongoDB entirely so "Chunk not found" never happens!
+   * - For Mongo RAG chunks: keeps the classic Mongo /chat flow.
+   */
+  const requestTutorChat = async (
+    message: string,
+    mode: 'chat' | 'plan' | 'summary' = 'chat',
+    history = chatHistory
+  ): Promise<string> => {
+    const isTurath = currentChunkId?.startsWith('turath_')
+
+    // 1. Try SQL backend session if available and not Turath
+    if (activeSessionId && !isTurath) {
+      try {
+        const chatMsgDto = await studyApi.sendMessage(activeSessionId, message, mode)
+        if (chatMsgDto && chatMsgDto.content) {
+          return chatMsgDto.content
+        }
+      } catch (e) {
+        console.warn('Backend session send failed, fallback to direct tutor engine:', e)
+      }
+    }
+
+    // 2. For Turath: Use /chat/raw directly with live chapter text!
+    // This completely bypasses MongoDB and prevents "Chunk not found"!
+    if (isTurath) {
+      const res = await fetch(`${API_BASE}/api/v1/tutor/chat/raw`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-API-Key': TUTOR_API_KEY },
+        body: JSON.stringify({
+          text: chunkText || 'نص الدرس الشرعي',
+          message: message,
+          mode: mode,
+          history: history
+        })
+      })
+      const data = await res.json()
+      if (data.success && data.reply) {
+        return data.reply
+      }
+      throw new Error(data.detail || 'فشل توليد الرد من المعلم')
+    }
+
+    // 3. For Mongo RAG chunks: try standard /chat
+    try {
+      const res = await fetch(`${API_BASE}/api/v1/tutor/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-API-Key': TUTOR_API_KEY },
+        body: JSON.stringify({
+          chunk_id: currentChunkId,
+          message: message,
+          mode: mode,
+          history: history
+        })
+      })
+      const data = await res.json()
+      if (data.success && data.reply) {
+        return data.reply
+      }
+      // If Mongo lookup failed, fallback to /chat/raw with chunkText!
+      if (chunkText) {
+        const rawRes = await fetch(`${API_BASE}/api/v1/tutor/chat/raw`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-API-Key': TUTOR_API_KEY },
+          body: JSON.stringify({
+            text: chunkText,
+            message: message,
+            mode: mode,
+            history: history
+          })
+        })
+        const rawData = await rawRes.json()
+        if (rawData.success && rawData.reply) {
+          return rawData.reply
+        }
+      }
+      throw new Error(data.detail || 'فشل الاتصال بالمعلم')
+    } catch (err: any) {
+      if (chunkText) {
+        const rawRes = await fetch(`${API_BASE}/api/v1/tutor/chat/raw`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-API-Key': TUTOR_API_KEY },
+          body: JSON.stringify({
+            text: chunkText,
+            message: message,
+            mode: mode,
+            history: history
+          })
+        })
+        const rawData = await rawRes.json()
+        if (rawData.success && rawData.reply) {
+          return rawData.reply
+        }
+      }
+      throw err
+    }
+  }
 
   const handleSelectStartOption = async (optionKey: 'plan' | 'summary' | 'chat') => {
     if (!currentChunkId) return
@@ -493,57 +1095,32 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
       userDisplayMsg = 'أود الحصول على تلخيص مركز ومُتوازن لهذا الدرس (لا إفراط ولا تفريط).'
     } else {
       promptMsg = STUDY_PROMPTS.DIRECT_DISCUSSION(chunkTitle)
-      userDisplayMsg = '💬 أود بدء التحاور المباشر مع زاد وطرح أسئلتي في هذا الدرس.'
+      userDisplayMsg = 'أود بدء التحاور المباشر مع زاد وطرح أسئلتي في هذا الدرس.'
     }
 
     setMessages(prev => [...prev, { id: Date.now().toString(), role: 'user', text: userDisplayMsg }])
     setLoading(true)
 
     try {
-      let replyText = ''
-      if (activeSessionId) {
-        try {
-          const chatMsgDto = await studyApi.sendMessage(activeSessionId, promptMsg, optionKey)
-          replyText = chatMsgDto.content
-        } catch (e) {
-          console.warn('Backend send message failed, fallback to direct tutor engine:', e)
-        }
-      }
-
-      if (!replyText) {
-        const res = await fetch(`${API_BASE}/api/v1/tutor/chat`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-API-Key': TUTOR_API_KEY },
-          body: JSON.stringify({
-            chunk_id: currentChunkId,
-            message: promptMsg,
-            mode: optionKey,
-            history: chatHistory
-          })
-        })
-        const data = await res.json()
-        if (data.success) replyText = data.reply
-        else setMessages(prev => [...prev, { id: Date.now().toString(), role: 'tutor', text: 'خطأ: ' + data.detail }])
-      }
+      const replyText = await requestTutorChat(promptMsg, optionKey)
 
       if (replyText) {
         const keyId = activeSessionId || currentChunkId
         const { cleanText, extractedSteps } = studyPlanManager.parseLLMResponse(replyText, keyId, false)
-        replyText = cleanText
 
         if (optionKey === 'plan' && extractedSteps && extractedSteps.length > 0) {
           setPendingPlanSteps(extractedSteps)
         }
 
-        setMessages(prev => [...prev, { id: Date.now().toString(), role: 'tutor', text: replyText }])
+        setMessages(prev => [...prev, { id: Date.now().toString(), role: 'tutor', text: cleanText }])
         setChatHistory(prev => [
           ...prev,
           { role: 'user', content: userDisplayMsg },
-          { role: 'assistant', content: replyText }
+          { role: 'assistant', content: cleanText }
         ])
       }
-    } catch (e) {
-      setMessages(prev => [...prev, { id: Date.now().toString(), role: 'tutor', text: 'فشل الاتصال بالسيرفر.' }])
+    } catch (e: any) {
+      setMessages(prev => [...prev, { id: Date.now().toString(), role: 'tutor', text: 'خطأ: ' + (e.message || 'فشل الاتصال بالسيرفر.') }])
     } finally {
       setLoading(false)
     }
@@ -562,26 +1139,7 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
     setLoading(true)
 
     try {
-      let replyText = ''
-      if (activeSessionId) {
-        try {
-          const chatMsgDto = await studyApi.sendMessage(activeSessionId, userText)
-          replyText = chatMsgDto.content
-        } catch (e) {
-          console.warn('Backend send failed:', e)
-        }
-      }
-
-      if (!replyText) {
-        const res = await fetch(`${API_BASE}/api/v1/tutor/chat`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-API-Key': TUTOR_API_KEY },
-          body: JSON.stringify({ chunk_id: currentChunkId, message: userText, history: chatHistory })
-        })
-        const data = await res.json()
-        if (data.success) replyText = data.reply
-      }
-
+      const replyText = await requestTutorChat(userText, 'chat')
       if (replyText) {
         const { cleanText } = studyPlanManager.parseLLMResponse(replyText, keyId, true)
         setMessages(prev => [...prev, { id: Date.now().toString(), role: 'tutor', text: cleanText }])
@@ -591,8 +1149,8 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
           { role: 'assistant', content: cleanText }
         ])
       }
-    } catch (e) {
-      console.error(e)
+    } catch (e: any) {
+      setMessages(prev => [...prev, { id: Date.now().toString(), role: 'tutor', text: 'خطأ: ' + (e.message || 'فشل الاتصال بالسيرفر.') }])
     } finally {
       setLoading(false)
     }
@@ -622,43 +1180,18 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
     setLoading(true)
 
     try {
-      let replyText = ''
-      if (activeSessionId) {
-        try {
-          const chatMsgDto = await studyApi.sendMessage(activeSessionId, userPromptMsg)
-          replyText = chatMsgDto.content
-        } catch (e) {
-          console.warn('Backend send message failed, fallback to direct tutor engine:', e)
-        }
-      }
-
-      if (!replyText) {
-        const res = await fetch(`${API_BASE}/api/v1/tutor/chat`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-API-Key': TUTOR_API_KEY },
-          body: JSON.stringify({
-            chunk_id: currentChunkId,
-            message: userPromptMsg,
-            history: chatHistory
-          })
-        })
-        const data = await res.json()
-        if (data.success) replyText = data.reply
-        else setMessages(prev => [...prev, { id: Date.now().toString(), role: 'tutor', text: 'خطأ: ' + data.detail }])
-      }
-
+      const replyText = await requestTutorChat(userPromptMsg, 'chat')
       if (replyText) {
         const { cleanText } = studyPlanManager.parseLLMResponse(replyText, keyId, false)
-        replyText = cleanText
-        setMessages(prev => [...prev, { id: Date.now().toString(), role: 'tutor', text: replyText }])
+        setMessages(prev => [...prev, { id: Date.now().toString(), role: 'tutor', text: cleanText }])
         setChatHistory(prev => [
           ...prev,
           { role: 'user', content: userPromptMsg },
-          { role: 'assistant', content: replyText }
+          { role: 'assistant', content: cleanText }
         ])
       }
-    } catch (e) {
-      setMessages(prev => [...prev, { id: Date.now().toString(), role: 'tutor', text: 'فشل الاتصال بالسيرفر.' }])
+    } catch (e: any) {
+      setMessages(prev => [...prev, { id: Date.now().toString(), role: 'tutor', text: 'خطأ: ' + (e.message || 'فشل الاتصال بالسيرفر.') }])
     } finally {
       setLoading(false)
     }
@@ -677,36 +1210,10 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
     setLoading(true)
 
     try {
-      let replyText = ''
-
-      if (activeSessionId) {
-        try {
-          const chatMsgDto = await studyApi.sendMessage(activeSessionId, userText)
-          replyText = chatMsgDto.content
-        } catch (e) {
-          console.warn('Backend send message failed, fallback to direct tutor engine:', e)
-        }
-      }
-
-      if (!replyText) {
-        const res = await fetch(`${API_BASE}/api/v1/tutor/chat`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-API-Key': TUTOR_API_KEY },
-          body: JSON.stringify({
-            chunk_id: currentChunkId,
-            message: userText,
-            history: chatHistory
-          })
-        })
-        const data = await res.json()
-        if (data.success) replyText = data.reply
-        else setMessages(prev => [...prev, { id: Date.now().toString(), role: 'tutor', text: 'خطأ: ' + data.detail }])
-      }
-
+      const replyText = await requestTutorChat(userText, 'chat')
       if (replyText) {
         const keyId = activeSessionId || currentChunkId || 'current_session'
         const { cleanText, extractedSteps } = studyPlanManager.parseLLMResponse(replyText, keyId, false)
-        replyText = cleanText
 
         // If LLM returned plan steps during chat, queue them for user approval instead of auto-activating
         if (extractedSteps && extractedSteps.length > 0) {
@@ -716,15 +1223,15 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
           }
         }
 
-        setMessages(prev => [...prev, { id: Date.now().toString(), role: 'tutor', text: replyText }])
+        setMessages(prev => [...prev, { id: Date.now().toString(), role: 'tutor', text: cleanText }])
         setChatHistory(prev => [
           ...prev,
           { role: 'user', content: userText },
-          { role: 'assistant', content: replyText }
+          { role: 'assistant', content: cleanText }
         ])
       }
-    } catch (e) {
-      setMessages(prev => [...prev, { id: Date.now().toString(), role: 'tutor', text: 'فشل الاتصال بالسيرفر.' }])
+    } catch (e: any) {
+      setMessages(prev => [...prev, { id: Date.now().toString(), role: 'tutor', text: 'خطأ: ' + (e.message || 'فشل الاتصال بالسيرفر.') }])
     } finally {
       setLoading(false)
     }
@@ -750,28 +1257,163 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
     const num_questions = options?.numQuestions === 'auto' ? 0 : (options?.numQuestions || 5)
     const mode = options?.aiMode || 'comprehensive'
     const difficulty = options?.difficulty || 'medium'
+    const isTurath = currentChunkId.startsWith('turath_')
 
     try {
       let questionsList: any = null
 
-      try {
-        const quizDto = await studyApi.generateQuiz(currentChunkId, num_questions, mode, difficulty, chunkTitle)
-        if (quizDto?.id) {
-          setActiveQuizId(quizDto.id)
+      // 1. For Mongo chunks: try standard backend / SQL first
+      if (!isTurath) {
+        try {
+          const quizDto = await studyApi.generateQuiz(currentChunkId, num_questions, mode, difficulty, chunkTitle)
+          if (quizDto?.id) {
+            setActiveQuizId(quizDto.id)
+          }
+          questionsList = quizDto.questionsData?.questions || quizDto.questionsData
+        } catch (err) {
+          console.warn('Backend generate quiz failed, trying tutor engine API:', err)
         }
-        questionsList = quizDto.questionsData?.questions || quizDto.questionsData
-      } catch (err) {
-        console.warn('Backend generate quiz failed, fallback to direct:', err)
-        const res = await fetch(`${API_BASE}/api/v1/tutor/quiz/generate`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-API-Key': TUTOR_API_KEY },
-          body: JSON.stringify({ chunk_id: currentChunkId, num_questions, mode, difficulty })
-        })
-        const data = await res.json()
-        if (data.success) questionsList = data.quiz.questions
       }
 
-      if (questionsList) {
+      // 2. Try calling dedicated /api/v1/tutor/quiz/generate (supports both Mongo chunk_id and live Turath text)
+      if (!questionsList && (chunkText || currentChunkId)) {
+        try {
+          const res = await fetch(`${API_BASE}/api/v1/tutor/quiz/generate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-API-Key': TUTOR_API_KEY },
+            body: JSON.stringify({
+              chunk_id: isTurath ? undefined : currentChunkId,
+              text: chunkText || undefined,
+              metadata: { book_title: chunkTitle },
+              num_questions,
+              mode,
+              difficulty,
+              question_types: options?.questionTypes || ['mcq', 'true_false', 'fill_blank', 'matching']
+            })
+          })
+          if (res.ok) {
+            const data = await res.json()
+            if (data.success && data.quiz) {
+              questionsList = data.quiz.questions || data.quiz
+            }
+          }
+        } catch (tutorErr) {
+          console.warn('Backend tutor quiz/generate failed, falling back to direct prompt:', tutorErr)
+        }
+      }
+
+      // 3. Direct Fallback: generate quiz questions directly via /chat/raw with universal multi-discipline prompt
+      if (!questionsList && chunkText) {
+        try {
+          const allowedTypes = options?.questionTypes && options.questionTypes.length > 0
+            ? options.questionTypes
+            : ['mcq', 'true_false', 'fill_blank', 'matching']
+
+          const typesGuide = []
+          if (allowedTypes.includes('mcq')) {
+            typesGuide.push(`- 'mcq' (اختيار من متعدد): 4 خيارات رصينة (أحدها صحيح تماماً و3 مشتتات علمية واقعية)، يقيس الفهم العميق والتحليل والاستنباط.`)
+          }
+          if (allowedTypes.includes('true_false')) {
+            typesGuide.push(`- 'true_false' (صح أو خطأ): الخيارات دائماً حصراً ["صواب", "خطأ"]، يقيس الدقة في ضبط القواعد والشروط وصحة نسبة الأقوال ونفي الأوهام.`)
+          }
+          if (allowedTypes.includes('fill_blank')) {
+            typesGuide.push(`- 'fill_blank' (إكمال الفراغ): يجب أن يحتوي نص السؤال وجوباً على كلمة '[فراغ]'، والخيارات 4 مصطلحات مقتضبة، لضبط المصطلحات الدقيقة وألفاظ المتون والقواعد.`)
+          }
+          if (allowedTypes.includes('matching')) {
+            typesGuide.push(`- 'matching' (توصيل ومطابقة): يجب أن يحتوي السؤال على خاصية 'matching_pairs' بها من 3 إلى 5 أزواج متناسقة [{"left": "...", "right": "..."}]، لمطابقة المصطلحات بتعريفاتها، أو الأقوال بقائليها، أو الأقسام بضوابطها.`)
+          }
+
+          const countInstruction = num_questions <= 0
+            ? `1. استقصاء شامل وحصري (Exhaustive Knowledge Scan): هذا النص قد ينتمي لأي فرع من العلوم الإسلامية والعربية والتاريخية (عقيدة وتوحيد، تفسير وعلوم قرآن، حديث ومصطلحه وشروحه، فقه وأصول وقواعد، سيرة وتاريخ وتراجم، علوم اللغة من نحو وصرف وبلاغة، تزكية وآداب).\nقم بعمل مسح دقيق للنص من أوله إلى آخره، واستخرج سؤالاً مستقلاً لكل مسألة، تعريف، مصطلح، تقسيم، حكم، علة، دليل، شاهد، أو فائدة علمية وردت في النص، دون أن تترك أي معلومة ذات بال بدون سؤال، واجعل عدد الأسئلة الإجمالي متطابقاً مع عدد النقاط المعرفية المستخلصة دون تحديد سقف مصطنع.`
+            : `1. التزم باستخراج بالضبط (${num_questions}) أسئلة تقييمية تغطي أهم وأبرز المحاور والفوائد العلمية في النص.`
+
+          const quizPrompt =
+            `أنت خبير تربوي ومحقق متخصص في العلوم الإسلامية واللغوية والتاريخية.
+المطلوب إنشاء اختبار تقييمي احترافي تفاعلي للنص التالي المأخوذ من: "${chunkTitle || 'الدرس المختار'}".
+مستوى الصعوبة المطلوب: ${difficulty === 'easy' ? 'مباشر وواضح' : difficulty === 'hard' ? 'متقدم ودقيق يقيس الاستنباط' : 'متوسط يقيس الاستيعاب والفهم'}.
+
+التعليمات والقواعد الصارمة:
+${countInstruction}
+2. تنويع الأنماط بذكاء: وزّع الأسئلة بين الأنماط المتاحة أدناه بحسب ما يناسب طبيعة كل معلومة وفائدة، ولا تقصر الاختبار على نمط واحد:
+${typesGuide.join('\n')}
+3. التعليل العلمي (explanation): لكل سؤال، اكتب شرحاً علمياً دقيقاً في حقل explanation يوضح وجه صحة الإجابة مستنداً إلى النص المعروض ومبيناً دليله أو تعليله وعزوه للمصنف إن وُجد.
+4. التنسيق: أخرج الناتج فقط وحصرياً ككائن JSON صالح 100% بدون أي نصوص أو شروحات خارج الكود، بالهيكل التالي:
+\`\`\`json
+{
+  "questions": [
+    {
+      "id": "1",
+      "type": "mcq",
+      "question": "نص السؤال الاستنباطي أو التحليلي؟",
+      "options": ["الخيار الصحيح", "مشتت 1", "مشتت 2", "مشتت 3"],
+      "correct_answer_index": 0,
+      "explanation": "بيان وجه الصحة والتعليل من النص."
+    },
+    {
+      "id": "2",
+      "type": "true_false",
+      "question": "نص العبارة التقريرية المراد الحكم عليها من واقع النص؟",
+      "options": ["صواب", "خطأ"],
+      "correct_answer_index": 0,
+      "explanation": "توضيح الصواب والتعليل."
+    },
+    {
+      "id": "3",
+      "type": "fill_blank",
+      "question": "المقصود بـ [فراغ] في هذا السياق هو كذا وكذا.",
+      "options": ["المصطلح الصحيح", "بديل 1", "بديل 2", "بديل 3"],
+      "correct_answer_index": 0,
+      "explanation": "شرح المصطلح وسياقه في النص."
+    },
+    {
+      "id": "4",
+      "type": "matching",
+      "question": "صل بين المفاهيم في القائمة (أ) وما يطابقها في القائمة (ب):",
+      "options": ["الربط الصحيح الكامل", "ربط غير صحيح"],
+      "correct_answer_index": 0,
+      "explanation": "شرح التوافق والمطابقة بين العناصر.",
+      "matching_pairs": [
+        {"left": "العنصر أو المفهوم 1", "right": "البيان أو التعريف 1"},
+        {"left": "العنصر أو المفهوم 2", "right": "البيان أو التعريف 2"},
+        {"left": "العنصر أو المفهوم 3", "right": "البيان أو التعريف 3"}
+      ]
+    }
+  ]
+}
+\`\`\``
+
+          const res = await fetch(`${API_BASE}/api/v1/tutor/chat/raw`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-API-Key': TUTOR_API_KEY },
+            body: JSON.stringify({
+              text: chunkText,
+              message: quizPrompt,
+              mode: 'chat',
+              history: []
+            })
+          })
+          const data = await res.json()
+          if (data.success && data.reply) {
+            const raw = data.reply
+            const jsonMatch = raw.match(/```(?:json)?\s*([\s\S]*?)\s*```/) || [null, raw]
+            const cleaned = (jsonMatch[1] || raw).trim()
+            const parsed = JSON.parse(cleaned)
+            questionsList = parsed.questions || parsed
+          }
+        } catch (rawQuizErr) {
+          console.warn('Raw quiz generation fallback failed:', rawQuizErr)
+        }
+      }
+
+      if (questionsList && Array.isArray(questionsList)) {
+        questionsList = questionsList.map((q: any, i: number) => ({
+          ...q,
+          id: q.id || String(i + 1),
+          type: q.type || 'mcq',
+          options: Array.isArray(q.options) ? q.options : [],
+          correct_answer_index: typeof q.correct_answer_index === 'number' ? q.correct_answer_index : 0,
+          explanation: q.explanation || ''
+        }))
         if (options?.isAppend) {
           setQuizQuestions(prev => prev ? [...prev, ...questionsList] : questionsList)
         } else {
@@ -802,6 +1444,8 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
         } catch (e) {
           console.warn('Failed saving quiz to localStorage fallback:', e)
         }
+      } else {
+        alert('تعذر استخراج أسئلة التقييم لهذا الدرس حالياً، يرجى المحاولة مرة أخرى.')
       }
     } catch (e) {
       alert('فشل الاتصال بالسيرفر')
@@ -854,32 +1498,79 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
     setMindmapLoading(true)
     setMindmapData(null)
 
+    const isTurath = currentChunkId.startsWith('turath_')
+
     try {
       let tree: any = null
 
-      try {
-        const mindmapDto = await studyApi.generateMindmap(currentChunkId, chunkText, chunkTitle, chunkMeta)
-        tree = mindmapDto.treeData
-      } catch (err) {
-        console.warn('Backend mindmap failed, fallback to direct:', err)
-        const res = await fetch(`${API_BASE}/api/v1/tutor/mindmap/generate`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-API-Key': TUTOR_API_KEY },
-          body: JSON.stringify({
-            chunk_id: currentChunkId,
-            text: chunkText,
-            metadata: {
-              ...chunkMeta,
-              chunk_title: chunkTitle,
-            }
+      // 1. Try SQL backend if not Turath
+      if (!isTurath) {
+        try {
+          const mindmapDto = await studyApi.generateMindmap(currentChunkId, chunkText, chunkTitle, chunkMeta)
+          tree = mindmapDto.treeData
+        } catch (err) {
+          console.warn('Backend mindmap failed, fallback to direct:', err)
+        }
+      }
+
+      // 2. Direct tutor engine (omit chunk_id for Turath so Mongo DB is never queried!)
+      if (!tree) {
+        try {
+          const res = await fetch(`${API_BASE}/api/v1/tutor/mindmap/generate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-API-Key': TUTOR_API_KEY },
+            body: JSON.stringify({
+              chunk_id: isTurath ? undefined : currentChunkId,
+              text: chunkText,
+              metadata: {
+                ...chunkMeta,
+                chunk_title: chunkTitle,
+              }
+            })
           })
-        })
-        const data = await res.json()
-        if (data.success) tree = data.tree
+          const data = await res.json()
+          if (data.success && data.tree) {
+            tree = data.tree
+          }
+        } catch (mindmapErr) {
+          console.warn('Direct mindmap API failed, fallback to raw generation:', mindmapErr)
+        }
+      }
+
+      // 3. Fallback: generate Mindmap directly from raw chapter text via /chat/raw
+      if (!tree && chunkText) {
+        try {
+          const mindmapPrompt = `قم باستخراج خريطة ذهنية هيكلية لهذا الدرس الشرعي: "${chunkTitle || ''}".\n` +
+            `أخرج النتيجة حصراً بصيغة كود JSON فقط تمثل الشجرة الهيكلية بهذا الشكل وبدون أي نصوص إضافية:\n` +
+            `\`\`\`json\n` +
+            `{\n  "id": "1",\n  "label": "${chunkTitle || 'عنوان الدرس'}",\n  "content": "ملخص عام للدرس",\n  "children": [\n    {\n      "id": "2",\n      "label": "المحور الأول",\n      "content": "شرح وتفاصيل المحور الأول",\n      "children": []\n    }\n  ]\n}\n\`\`\``
+
+          const res = await fetch(`${API_BASE}/api/v1/tutor/chat/raw`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-API-Key': TUTOR_API_KEY },
+            body: JSON.stringify({
+              text: chunkText,
+              message: mindmapPrompt,
+              mode: 'chat',
+              history: []
+            })
+          })
+          const data = await res.json()
+          if (data.success && data.reply) {
+            const raw = data.reply
+            const jsonMatch = raw.match(/```(?:json)?\s*([\s\S]*?)\s*```/) || [null, raw]
+            const cleaned = (jsonMatch[1] || raw).trim()
+            tree = JSON.parse(cleaned)
+          }
+        } catch (rawMindmapErr) {
+          console.warn('Raw mindmap fallback failed:', rawMindmapErr)
+        }
       }
 
       if (tree) {
         setMindmapData(Array.isArray(tree) ? tree : [tree])
+      } else {
+        alert('تعذر استخراج الخريطة الذهنية لهذا الدرس، يرجى المحاولة مرة أخرى.')
       }
     } catch (e) {
       alert('فشل الاتصال بالسيرفر')
@@ -902,32 +1593,7 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
     setLoading(true)
 
     try {
-      let replyText = ''
-
-      if (activeSessionId) {
-        try {
-          const msgDto = await studyApi.sendMessage(activeSessionId, hiddenMsg, 'chat')
-          replyText = msgDto.content
-        } catch (e) {
-          console.warn('Backend discuss question failed, fallback to direct:', e)
-        }
-      }
-
-      if (!replyText) {
-        const res = await fetch(`${API_BASE}/api/v1/tutor/chat`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-API-Key': 'zad-super-secret-key' },
-          body: JSON.stringify({
-            chunk_id: currentChunkId,
-            message: hiddenMsg,
-            history: chatHistory
-          })
-        })
-        const data = await res.json()
-        if (data.success) replyText = data.reply
-        else setMessages(prev => [...prev, { id: Date.now().toString(), role: 'tutor', text: 'خطأ: ' + data.detail }])
-      }
-
+      const replyText = await requestTutorChat(hiddenMsg, 'chat')
       if (replyText) {
         setMessages(prev => [...prev, { id: Date.now().toString(), role: 'tutor', text: replyText }])
         setChatHistory(prev => [
@@ -936,8 +1602,8 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
           { role: 'assistant', content: replyText }
         ])
       }
-    } catch (e) {
-      setMessages(prev => [...prev, { id: Date.now().toString(), role: 'tutor', text: 'فشل الاتصال بالسيرفر.' }])
+    } catch (e: any) {
+      setMessages(prev => [...prev, { id: Date.now().toString(), role: 'tutor', text: 'خطأ: ' + (e.message || 'فشل الاتصال بالسيرفر.') }])
     } finally {
       setLoading(false)
     }
@@ -984,21 +1650,43 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
       {/* Background with Dark/Light styling */}
       {isDark ? (
         <div className="absolute inset-0 z-0 pointer-events-none">
-          <img
-            src={bgDark}
-            alt=""
-            className="h-full w-full object-cover opacity-100"
-          />
-          <div className="absolute inset-0 bg-[#12041f]/60" />
+          {bgType === 'image' ? (
+            <>
+              <img
+                src={bgDark}
+                alt=""
+                className="h-full w-full object-cover opacity-100"
+              />
+              <div className="absolute inset-0 bg-[#12041f]/30" />
+            </>
+          ) : bgType === 'pattern' ? (
+            <>
+              <div className="absolute inset-0 bg-[#0a0216]" />
+              <IslamicPattern className="text-purple-400 pointer-events-none" opacity={0.12} scale={0.8} />
+            </>
+          ) : (
+            <div className="absolute inset-0 bg-[#0a0216]" />
+          )}
         </div>
       ) : (
         <div className="absolute inset-0 z-0 pointer-events-none">
-          <img
-            src={bgLight}
-            alt=""
-            className="h-full w-full object-cover opacity-100"
-          />
-          <div className="absolute inset-0 bg-white/40" />
+          {bgType === 'image' ? (
+            <>
+              <img
+                src={bgLight}
+                alt=""
+                className="h-full w-full object-cover opacity-100"
+              />
+              <div className="absolute inset-0 bg-white/20" />
+            </>
+          ) : bgType === 'pattern' ? (
+            <>
+              <div className="absolute inset-0 bg-[#faf8fd]" />
+              <IslamicPattern className="text-purple-600 pointer-events-none" opacity={0.08} scale={0.9} />
+            </>
+          ) : (
+            <div className="absolute inset-0 bg-[#faf8fd]" />
+          )}
         </div>
       )}
 
@@ -1175,6 +1863,22 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
             </div>
           </button>
 
+          {/* Background Type Toggle Button */}
+          <button
+            type="button"
+            onClick={toggleBgType}
+            aria-label={bgType === 'image' ? 'الخلفية: صورة' : bgType === 'pattern' ? 'الخلفية: زخرفة' : 'الخلفية: سادة'}
+            className={`flex h-8 w-8 sm:h-11 sm:w-11 items-center justify-center rounded-full transition-all shadow-lg ${isDark
+              ? 'bg-[#a855f7]/15 backdrop-blur-md border border-[#a855f7]/30 hover:bg-[#a855f7]/25 text-purple-100'
+              : 'bg-white border border-purple-200 hover:bg-purple-50 text-purple-700 shadow-md'
+              }`}
+            title={bgType === 'image' ? 'التبديل لزخرفة مريحة' : bgType === 'pattern' ? 'التبديل لخلفية سادة' : 'التبديل لصورة فنية'}
+          >
+            <div className="transition-all duration-500 hover:scale-110">
+              {bgType === 'image' ? <LayoutGrid size={17} strokeWidth={2.5} /> : bgType === 'pattern' ? <Square size={17} strokeWidth={2.5} /> : <Image size={17} strokeWidth={2.5} />}
+            </div>
+          </button>
+
           {/* سجل الجلسات والإحصائيات */}
           <button
             type="button"
@@ -1261,12 +1965,12 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
               focusPanel('sidebar')
             }}
             className={`flex flex-1 items-center justify-center gap-1 rounded-xl px-2 py-1.5 text-xs font-black transition-all shrink-0 whitespace-nowrap ${isSidebarOpen
-                ? isDark
-                  ? 'bg-purple-600 text-white shadow-md shadow-purple-900/40 ring-1 ring-purple-400'
-                  : 'bg-purple-600 text-white shadow-md'
-                : isDark
-                  ? 'bg-white/5 border border-white/10 text-white/70 hover:bg-white/10'
-                  : 'bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200'
+              ? isDark
+                ? 'bg-purple-600 text-white shadow-md shadow-purple-900/40 ring-1 ring-purple-400'
+                : 'bg-purple-600 text-white shadow-md'
+              : isDark
+                ? 'bg-white/5 border border-white/10 text-white/70 hover:bg-white/10'
+                : 'bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200'
               }`}
           >
             <Menu size={14} className={isSidebarOpen ? 'text-white' : 'text-teal-400'} />
@@ -1284,12 +1988,12 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
               focusPanel('document')
             }}
             className={`flex flex-1 items-center justify-center gap-1 rounded-xl px-2 py-1.5 text-xs font-black transition-all shrink-0 whitespace-nowrap ${isDocumentOpen
-                ? isDark
-                  ? 'bg-purple-600 text-white shadow-md shadow-purple-900/40 ring-1 ring-purple-400'
-                  : 'bg-purple-600 text-white shadow-md'
-                : isDark
-                  ? 'bg-white/5 border border-white/10 text-white/70 hover:bg-white/10'
-                  : 'bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200'
+              ? isDark
+                ? 'bg-purple-600 text-white shadow-md shadow-purple-900/40 ring-1 ring-purple-400'
+                : 'bg-purple-600 text-white shadow-md'
+              : isDark
+                ? 'bg-white/5 border border-white/10 text-white/70 hover:bg-white/10'
+                : 'bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200'
               }`}
           >
             <BookOpen size={14} className={isDocumentOpen ? 'text-white' : 'text-sky-400'} />
@@ -1307,12 +2011,12 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
               focusPanel('chat')
             }}
             className={`flex flex-1 items-center justify-center gap-1 rounded-xl px-2 py-1.5 text-xs font-black transition-all shrink-0 whitespace-nowrap ${isChatOpen
-                ? isDark
-                  ? 'bg-purple-600 text-white shadow-md shadow-purple-900/40 ring-1 ring-purple-400'
-                  : 'bg-purple-600 text-white shadow-md'
-                : isDark
-                  ? 'bg-white/5 border border-white/10 text-white/70 hover:bg-white/10'
-                  : 'bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200'
+              ? isDark
+                ? 'bg-purple-600 text-white shadow-md shadow-purple-900/40 ring-1 ring-purple-400'
+                : 'bg-purple-600 text-white shadow-md'
+              : isDark
+                ? 'bg-white/5 border border-white/10 text-white/70 hover:bg-white/10'
+                : 'bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200'
               }`}
           >
             <MessageCircle size={14} className={isChatOpen ? 'text-white' : 'text-purple-400'} />
@@ -1330,12 +2034,12 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
               focusPanel('mindmap')
             }}
             className={`flex flex-1 items-center justify-center gap-1 rounded-xl px-2 py-1.5 text-xs font-black transition-all shrink-0 whitespace-nowrap ${isMindmapOpen
-                ? isDark
-                  ? 'bg-purple-600 text-white shadow-md shadow-purple-900/40 ring-1 ring-purple-400'
-                  : 'bg-purple-600 text-white shadow-md'
-                : isDark
-                  ? 'bg-white/5 border border-white/10 text-white/70 hover:bg-white/10'
-                  : 'bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200'
+              ? isDark
+                ? 'bg-purple-600 text-white shadow-md shadow-purple-900/40 ring-1 ring-purple-400'
+                : 'bg-purple-600 text-white shadow-md'
+              : isDark
+                ? 'bg-white/5 border border-white/10 text-white/70 hover:bg-white/10'
+                : 'bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200'
               }`}
           >
             <Brain size={14} className={isMindmapOpen ? 'text-white' : 'text-sky-400'} />
@@ -1353,12 +2057,12 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
               focusPanel('quiz')
             }}
             className={`flex flex-1 items-center justify-center gap-1 rounded-xl px-2 py-1.5 text-xs font-black transition-all shrink-0 whitespace-nowrap ${isQuizOpen
-                ? isDark
-                  ? 'bg-purple-600 text-white shadow-md shadow-purple-900/40 ring-1 ring-purple-400'
-                  : 'bg-purple-600 text-white shadow-md'
-                : isDark
-                  ? 'bg-white/5 border border-white/10 text-white/70 hover:bg-white/10'
-                  : 'bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200'
+              ? isDark
+                ? 'bg-purple-600 text-white shadow-md shadow-purple-900/40 ring-1 ring-purple-400'
+                : 'bg-purple-600 text-white shadow-md'
+              : isDark
+                ? 'bg-white/5 border border-white/10 text-white/70 hover:bg-white/10'
+                : 'bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200'
               }`}
           >
             <ClipboardList size={14} className={isQuizOpen ? 'text-white' : 'text-emerald-400'} />
@@ -1401,7 +2105,7 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
               جميع التبويبات مغلقة
             </h2>
             <p className={`text-sm leading-relaxed max-w-md ${isDark ? 'text-white/70' : 'text-slate-600 font-medium'}`}>
-              اضغط على أي زر من التبويبات الخمسة بالأعلى 🔝 لفتح الفهرس، النص الأصلي، المحادثة، الخريطة، أو التقييم.
+              اضغط على أي زر من التبويبات الخمسة بالأعلى لفتح الفهرس، النص الأصلي، المحادثة، الخريطة، أو التقييم.
             </p>
           </div>
         ) : (
@@ -1431,6 +2135,8 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
                     handleChunkSelect={handleChunkSelect}
                     startResizingSidebar={() => { }}
                     isDark={isDark}
+                    onLoadBookTree={handleLoadBookTree}
+                    librarySource={librarySource}
                   />
                 </motion.div>
 
@@ -1458,7 +2164,7 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
                 >
                   <StudyDocument
                     isDocumentOpen={isDocumentOpen}
-                    documentWidth={documentWidth}
+                    documentWidth={(isMobile || openPanelNames.length === 1) ? undefined : documentWidth}
                     setIsDocumentOpen={setIsDocumentOpen}
                     currentChunkId={currentChunkId}
                     chunkMeta={chunkMeta}
@@ -1470,6 +2176,7 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
                     handleGenerateQuiz={handleOpenQuizSetup}
                     startResizingDocument={() => { }}
                     isDark={isDark}
+                    onPageChange={handleTurathPageChange}
                   />
                 </motion.div>
 
@@ -1696,7 +2403,7 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
                 }`}>
                 عند الخروج باستخدام زر (X)، سيتم إنهاء الدرس الحالي وتصفير المحادثة والأسئلة والتقدم الحالي، والعودة للشاشة الرئيسية.
                 <br /><br />
-                <span className={isDark ? 'text-purple-300' : 'text-purple-800'}>💡 ملاحظة: إذا أردت العودة للرئيسية مع حفظ تقدمك دون مسحه، يمكنك استخدام زر السهم (الرجوع).</span>
+                <span className={isDark ? 'text-purple-300' : 'text-purple-800'}>ملاحظة: إذا أردت العودة للرئيسية مع حفظ تقدمك دون مسحه، يمكنك استخدام زر السهم (الرجوع).</span>
               </p>
               <div className="flex items-center justify-end gap-3 pt-1">
                 <button

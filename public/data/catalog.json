@@ -1,0 +1,525 @@
+[
+  {
+    "title": "فقه",
+    "children": [
+      {
+        "title": "حنبلي",
+        "children": [
+          {
+            "title": "عمدة الفقه",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 27,
+            "book_file": "عمدة_الفقه.json"
+          },
+          {
+            "title": "المغني لابن قدامة",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 70,
+            "book_file": "المغني_لابن_قدامة.json"
+          },
+          {
+            "title": "الإقناع في فقه الإمام أحمد بن حنبل",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 17,
+            "book_file": "الإقناع_في_فقه_الإمام_أحمد_بن_حنبل.json"
+          },
+          {
+            "title": "الإنصاف في معرفة الراجح من الخلاف ت التركي",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 38,
+            "book_file": "الإنصاف_في_معرفة_الراجح_من_الخلاف_ت_التركي.json"
+          },
+          {
+            "title": "الجامع لعلوم الإمام أحمد - الفقه",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 57,
+            "book_file": "الجامع_لعلوم_الإمام_أحمد_-_الفقه.json"
+          },
+          {
+            "title": "الروض المربع شرح زاد المستقنع",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 52,
+            "book_file": "الروض_المربع_شرح_زاد_المستقنع.json"
+          },
+          {
+            "title": "الكافي في فقه الإمام أحمد",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 65,
+            "book_file": "الكافي_في_فقه_الإمام_أحمد.json"
+          }
+        ]
+      },
+      {
+        "title": "حنفي",
+        "children": [
+          {
+            "title": "الدر المختار وحاشية ابن عابدين (رد المحتار)",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 67,
+            "book_file": "الدر_المختار_وحاشية_ابن_عابدين_(رد_المحتار).json"
+          },
+          {
+            "title": "المبسوط للسرخسي",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 70,
+            "book_file": "المبسوط_للسرخسي.json"
+          },
+          {
+            "title": "الهداية في شرح بداية المبتدي",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 59,
+            "book_file": "الهداية_في_شرح_بداية_المبتدي.json"
+          },
+          {
+            "title": "بدائع الصنائع في ترتيب الشرائع",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 67,
+            "book_file": "بدائع_الصنائع_في_ترتيب_الشرائع.json"
+          },
+          {
+            "title": "البحر الرائق شرح كنز الدقائق ومنحة الخالق وتكملة الطوري",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 46,
+            "book_file": "البحر_الرائق_شرح_كنز_الدقائق_ومنحة_الخالق_وتكملة_الطوري.json"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "العقيدة",
+    "children": [
+      {
+        "title": "أهل السنة والجماعة",
+        "children": [
+          {
+            "title": "منة الرحمن في نصيحة الأخوان",
+            "chunk_id": "parent_26750_1__2",
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 0,
+            "book_file": "منة_الرحمن_في_نصيحة_الأخوان.json"
+          },
+          {
+            "title": "عقيدة الولاء والبراء - المقدم",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 28,
+            "book_file": "عقيدة_الولاء_والبراء_-_المقدم.json"
+          },
+          {
+            "title": "التوحيد لابن عبد الوهاب",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 67,
+            "book_file": "التوحيد_لابن_عبد_الوهاب.json"
+          },
+          {
+            "title": "العقيدة الواسطية",
+            "chunk_id": "parent_10857_4__2",
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 15,
+            "book_file": "العقيدة_الواسطية.json"
+          },
+          {
+            "title": "العقيدة الصحيحة وما يضادها",
+            "chunk_id": "parent_6203_1__1",
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 1,
+            "book_file": "العقيدة_الصحيحة_وما_يضادها.json"
+          },
+          {
+            "title": "الشريعة للآجري",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 72,
+            "book_file": "الشريعة_للآجري.json"
+          },
+          {
+            "title": "أصول الإيمان في ضوء الكتاب والسنة",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 6,
+            "book_file": "أصول_الإيمان_في_ضوء_الكتاب_والسنة.json"
+          },
+          {
+            "title": "معارج القبول بشرح سلم الوصول",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 15,
+            "book_file": "معارج_القبول_بشرح_سلم_الوصول.json"
+          },
+          {
+            "title": "عقيدة أهل السنة والجماعة للعثيمين",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 8,
+            "book_file": "عقيدة_أهل_السنة_والجماعة_للعثيمين.json"
+          },
+          {
+            "title": "أعلام السنة المنشورة لاعتقاد الطائفة الناجية المنصورة = 200 سؤال وجواب في العقيدة الاسلامية",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 209,
+            "book_file": "أعلام_السنة_المنشورة_لاعتقاد_الطائفة_الناجية_المنصورة_=_200_سؤال_وجواب_في_العقيدة_الاسلامية.json"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "السيرة",
+    "children": [
+      {
+        "title": "السيرة الشاملة",
+        "children": [
+          {
+            "title": "الرحيق المختوم",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 11,
+            "book_file": "الرحيق_المختوم.json"
+          },
+          {
+            "title": "السيرة النبوية لابن كثير",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 119,
+            "book_file": "السيرة_النبوية_لابن_كثير.json"
+          },
+          {
+            "title": "زاد المعاد في هدي خير العباد",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 5,
+            "book_file": "زاد_المعاد_في_هدي_خير_العباد.json"
+          },
+          {
+            "title": "سيرة ابن هشام ت السقا",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 220,
+            "book_file": "سيرة_ابن_هشام_ت_السقا.json"
+          }
+        ]
+      },
+      {
+        "title": "الشمائل والصفات",
+        "children": [
+          {
+            "title": "أخلاق النبي لأبي الشيخ الأصبهاني",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 110,
+            "book_file": "أخلاق_النبي_لأبي_الشيخ_الأصبهاني.json"
+          },
+          {
+            "title": "الشمائل المحمدية والخصائل المصطفوية",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 56,
+            "book_file": "الشمائل_المحمدية_والخصائل_المصطفوية.json"
+          }
+        ]
+      },
+      {
+        "title": "الخصائص النبوية",
+        "children": [
+          {
+            "title": "الخصائص الكبرى",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 1,
+            "book_file": "الخصائص_الكبرى.json"
+          },
+          {
+            "title": "غاية السول في خصائص الرسول",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 11,
+            "book_file": "غاية_السول_في_خصائص_الرسول.json"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "الحديث",
+    "children": [
+      {
+        "title": "مصطلح الحديث",
+        "children": [
+          {
+            "title": "نخبة الفكر في مصطلح أهل الأثر",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 9,
+            "book_file": "نخبة_الفكر_في_مصطلح_أهل_الأثر.json"
+          }
+        ]
+      },
+      {
+        "title": "شروح الحديث",
+        "children": [
+          {
+            "title": "شرح النووي على مسلم",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 53,
+            "book_file": "شرح_النووي_على_مسلم.json"
+          },
+          {
+            "title": "سير أعلام النبلاء ط الحديث",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 37,
+            "book_file": "سير_أعلام_النبلاء_ط_الحديث.json"
+          }
+        ]
+      },
+      {
+        "title": "الأطراف",
+        "children": [
+          {
+            "title": "تحفة الأشراف بمعرفة الأطراف",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 36,
+            "book_file": "تحفة_الأشراف_بمعرفة_الأطراف.json"
+          }
+        ]
+      },
+      {
+        "title": "أحاديث الأحكام",
+        "children": [
+          {
+            "title": "المحرر في الحديث",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 33,
+            "book_file": "المحرر_في_الحديث.json"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "التاريخ",
+    "children": [
+      {
+        "title": "التراجم والطبقات",
+        "children": [
+          {
+            "title": "سير أعلام النبلاء ط الحديث",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 37,
+            "book_file": "سير_أعلام_النبلاء_ط_الحديث.json"
+          }
+        ]
+      },
+      {
+        "title": "تاريخ الخلفاء",
+        "children": [
+          {
+            "title": "تاريخ الخلفاء",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 10,
+            "book_file": "تاريخ_الخلفاء.json"
+          }
+        ]
+      },
+      {
+        "title": "ثقافة عامة وتاريخ",
+        "children": [
+          {
+            "title": "رسالة في الطريق إلى ثقافتنا",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 2,
+            "book_file": "رسالة_في_الطريق_إلى_ثقافتنا.json"
+          }
+        ]
+      },
+      {
+        "title": "الأنساب والقبائل",
+        "children": [
+          {
+            "title": "جمهرة أنساب العرب لابن حزم",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 496,
+            "book_file": "جمهرة_أنساب_العرب_لابن_حزم.json"
+          },
+          {
+            "title": "الأنساب للسمعاني",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 14,
+            "book_file": "الأنساب_للسمعاني.json"
+          },
+          {
+            "title": "اللباب في تهذيب الأنساب",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 29,
+            "book_file": "اللباب_في_تهذيب_الأنساب.json"
+          }
+        ]
+      },
+      {
+        "title": "تاريخ الدول",
+        "children": [
+          {
+            "title": "السلوك لمعرفة دول الملوك",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 7,
+            "book_file": "السلوك_لمعرفة_دول_الملوك.json"
+          },
+          {
+            "title": "إنباء الغمر بأبناء العمر",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 80,
+            "book_file": "إنباء_الغمر_بأبناء_العمر.json"
+          },
+          {
+            "title": "النجوم الزاهرة فى ملوك مصر والقاهرة",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 16,
+            "book_file": "النجوم_الزاهرة_فى_ملوك_مصر_والقاهرة.json"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "النحو والصرف",
+    "children": [
+      {
+        "title": "نحو",
+        "children": [
+          {
+            "title": "ألفية ابن مالك",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 78,
+            "book_file": "ألفية_ابن_مالك.json"
+          },
+          {
+            "title": "أوضح المسالك إلى ألفية ابن مالك",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 4,
+            "book_file": "أوضح_المسالك_إلى_ألفية_ابن_مالك.json"
+          },
+          {
+            "title": "الآجرومية",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 25,
+            "book_file": "الآجرومية.json"
+          },
+          {
+            "title": "الجمل في النحو",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 247,
+            "book_file": "الجمل_في_النحو.json"
+          },
+          {
+            "title": "الانتصار لسيبويه على المبرد",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 48,
+            "book_file": "الانتصار_لسيبويه_على_المبرد.json"
+          }
+        ]
+      },
+      {
+        "title": "صرف",
+        "children": [
+          {
+            "title": "شرح شافية ابن الحاجب - ركن الدين الاستراباذي",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 4,
+            "book_file": "شرح_شافية_ابن_الحاجب_-_ركن_الدين_الاستراباذي.json"
+          },
+          {
+            "title": "المنصف لابن جني، شرح كتاب التصريف لأبي عثمان المازني",
+            "chunk_id": null,
+            "is_book": true,
+            "is_loaded": false,
+            "children_count": 1,
+            "book_file": "المنصف_لابن_جني،_شرح_كتاب_التصريف_لأبي_عثمان_المازني.json"
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -103,3 +103,99 @@ export async function idbDelete(key: string): Promise<void> {
     console.warn('IndexedDB delete error:', err);
   }
 }
+
+// -------------------------------------------------------------
+// Study Mode: Per-Book On-Demand Caching Helpers
+// -------------------------------------------------------------
+
+export async function idbGetBookTree<T = any>(bookTitle: string): Promise<T | null> {
+  return idbGet<T>(`zad_study_book_${bookTitle}`);
+}
+
+export async function idbSetBookTree(bookTitle: string, bookData: any): Promise<void> {
+  return idbSet(`zad_study_book_${bookTitle}`, bookData);
+}
+
+export async function idbGetCachedBookTitles(): Promise<string[]> {
+  try {
+    const db = await getDB();
+    return new Promise((resolve) => {
+      const transaction = db.transaction(STORE_NAME, 'readonly');
+      const store = transaction.objectStore(STORE_NAME);
+      const request = store.getAllKeys();
+
+      request.onsuccess = () => {
+        const keys = (request.result || []) as string[];
+        const bookTitles = keys
+          .filter((k) => typeof k === 'string' && k.startsWith('zad_study_book_'))
+          .map((k) => k.replace('zad_study_book_', ''));
+        resolve(bookTitles);
+      };
+
+      request.onerror = () => resolve([]);
+    });
+  } catch {
+    return [];
+  }
+}
+
+export async function idbClearAllBookTrees(): Promise<void> {
+  try {
+    const titles = await idbGetCachedBookTitles();
+    for (const title of titles) {
+      await idbDelete(`zad_study_book_${title}`);
+    }
+  } catch (e) {
+    console.warn('Error clearing book trees:', e);
+  }
+}
+
+// -------------------------------------------------------------
+// Turath Global Mode: Per-Book On-Demand Caching Helpers
+// -------------------------------------------------------------
+
+export async function idbGetTurathBookTree<T = any>(turathId: number | string): Promise<T | null> {
+  return idbGet<T>(`zad_turath_book_${turathId}`);
+}
+
+export async function idbSetTurathBookTree(turathId: number | string, bookData: any): Promise<void> {
+  return idbSet(`zad_turath_book_${turathId}`, bookData);
+}
+
+export async function idbGetCachedTurathBookIds(): Promise<string[]> {
+  try {
+    const db = await getDB();
+    return new Promise((resolve) => {
+      const transaction = db.transaction(STORE_NAME, 'readonly');
+      const store = transaction.objectStore(STORE_NAME);
+      const request = store.getAllKeys();
+
+      request.onsuccess = () => {
+        const keys = (request.result || []) as string[];
+        const ids = keys
+          .filter((k) => typeof k === 'string' && k.startsWith('zad_turath_book_'))
+          .map((k) => k.replace('zad_turath_book_', ''));
+        resolve(ids);
+      };
+
+      request.onerror = () => resolve([]);
+    });
+  } catch {
+    return [];
+  }
+}
+
+export async function idbDeleteTurathBookTree(turathId: number | string): Promise<void> {
+  return idbDelete(`zad_turath_book_${turathId}`);
+}
+
+export async function idbClearAllTurathBookTrees(): Promise<void> {
+  try {
+    const ids = await idbGetCachedTurathBookIds();
+    for (const id of ids) {
+      await idbDelete(`zad_turath_book_${id}`);
+    }
+  } catch (e) {
+    console.warn('Error clearing Turath book trees:', e);
+  }
+}

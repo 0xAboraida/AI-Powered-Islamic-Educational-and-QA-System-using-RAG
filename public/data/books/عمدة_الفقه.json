@@ -1,0 +1,1175 @@
+{
+  "title": "عمدة الفقه",
+  "chunk_id": null,
+  "children": [
+    {
+      "title": "مقدمة",
+      "chunk_id": "parent_827_1__1",
+      "children": []
+    },
+    {
+      "title": "كتاب الطهارة",
+      "chunk_id": null,
+      "children": [
+        {
+          "title": "باب أحكام المياه",
+          "chunk_id": "parent_827_2__3",
+          "children": []
+        },
+        {
+          "title": "باب الآنية",
+          "chunk_id": "parent_827_3__4",
+          "children": []
+        },
+        {
+          "title": "باب قضاء الحاجة",
+          "chunk_id": "parent_827_4__5",
+          "children": []
+        },
+        {
+          "title": "باب الوضوء",
+          "chunk_id": "parent_827_6__6",
+          "children": []
+        },
+        {
+          "title": "باب المسح على الخفين",
+          "chunk_id": "parent_827_8__7",
+          "children": []
+        },
+        {
+          "title": "باب نواقض الوضوء",
+          "chunk_id": "parent_827_9__8",
+          "children": []
+        },
+        {
+          "title": "باب الغسل من الجنابة",
+          "chunk_id": "parent_827_11__9",
+          "children": []
+        },
+        {
+          "title": "باب التيمم",
+          "chunk_id": "parent_827_12__10",
+          "children": []
+        },
+        {
+          "title": "باب الحيض",
+          "chunk_id": "parent_827_14__11",
+          "children": []
+        },
+        {
+          "title": "باب النفاس",
+          "chunk_id": "parent_827_15__12",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب الصلاة",
+      "chunk_id": null,
+      "children": [
+        {
+          "title": "مدخل",
+          "chunk_id": "parent_827_16__13",
+          "children": []
+        },
+        {
+          "title": "باب الأذان والإقامة",
+          "chunk_id": "parent_827_17__14",
+          "children": []
+        },
+        {
+          "title": "باب شرائط الصلاة",
+          "chunk_id": "parent_827_19__15",
+          "children": []
+        },
+        {
+          "title": "باب آداب المشي إلى الصلاة",
+          "chunk_id": "parent_827_21__16",
+          "children": []
+        },
+        {
+          "title": "باب صفة الصلاة",
+          "chunk_id": "parent_827_23__17",
+          "children": []
+        },
+        {
+          "title": "باب أركان الصلاة وواجباتها",
+          "chunk_id": "parent_827_25__18",
+          "children": []
+        },
+        {
+          "title": "باب سجود السهو",
+          "chunk_id": "parent_827_26__19",
+          "children": []
+        },
+        {
+          "title": "باب صلاة التطوع",
+          "chunk_id": "parent_827_28__20",
+          "children": []
+        },
+        {
+          "title": "باب الساعات التي نهي عن الصلاة فيها",
+          "chunk_id": "parent_827_30__21",
+          "children": []
+        },
+        {
+          "title": "باب الإمامة",
+          "chunk_id": "parent_827_31__22",
+          "children": []
+        },
+        {
+          "title": "باب صلاة المريض",
+          "chunk_id": "parent_827_33__23",
+          "children": []
+        },
+        {
+          "title": "باب صلاة المسافر",
+          "chunk_id": "parent_827_34__24",
+          "children": []
+        },
+        {
+          "title": "باب صلاة الخوف",
+          "chunk_id": "parent_827_35__25",
+          "children": []
+        },
+        {
+          "title": "باب صلاة الجمعة",
+          "chunk_id": "parent_827_36__26",
+          "children": []
+        },
+        {
+          "title": "باب صلاة العيدين",
+          "chunk_id": "parent_827_38__27",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب الجنائز",
+      "chunk_id": "parent_827_40__28",
+      "children": []
+    },
+    {
+      "title": "كتاب الزكاة",
+      "chunk_id": null,
+      "children": [
+        {
+          "title": "مدخل",
+          "chunk_id": "parent_827_42__29",
+          "children": []
+        },
+        {
+          "title": "باب زكاة السائمة",
+          "chunk_id": "parent_827_43__30",
+          "children": []
+        },
+        {
+          "title": "باب زكاة الخارج من الأرض",
+          "chunk_id": "parent_827_45__31",
+          "children": []
+        },
+        {
+          "title": "باب زكاة الأثمان",
+          "chunk_id": "parent_827_46__32",
+          "children": []
+        },
+        {
+          "title": "باب حكم الدين",
+          "chunk_id": "parent_827_47__33",
+          "children": []
+        },
+        {
+          "title": "باب زكاة العروض",
+          "chunk_id": "parent_827_48__34",
+          "children": []
+        },
+        {
+          "title": "باب زكاة الفطر",
+          "chunk_id": "parent_827_49__35",
+          "children": []
+        },
+        {
+          "title": "باب إخراج الزكاة",
+          "chunk_id": "parent_827_50__36",
+          "children": []
+        },
+        {
+          "title": "باب من يجوز دفع الزكاة إليه",
+          "chunk_id": "parent_827_51__37",
+          "children": []
+        },
+        {
+          "title": "باب من لا يجوز دفع الزكاة إليه",
+          "chunk_id": "parent_827_53__38",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب الصيام",
+      "chunk_id": null,
+      "children": [
+        {
+          "title": "مدخل",
+          "chunk_id": "parent_827_54__39",
+          "children": []
+        },
+        {
+          "title": "باب أحكام المفطرين في رمضان",
+          "chunk_id": "parent_827_55__40",
+          "children": []
+        },
+        {
+          "title": "باب ما يفسد الصوم",
+          "chunk_id": "parent_827_57__41",
+          "children": []
+        },
+        {
+          "title": "باب صيام التطوع",
+          "chunk_id": "parent_827_58__42",
+          "children": []
+        },
+        {
+          "title": "باب الاعتكاف",
+          "chunk_id": "parent_827_60__43",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب الحج والعمرة",
+      "chunk_id": null,
+      "children": [
+        {
+          "title": "مدخل",
+          "chunk_id": "parent_827_61__44",
+          "children": []
+        },
+        {
+          "title": "باب المواقيت",
+          "chunk_id": "parent_827_62__45",
+          "children": []
+        },
+        {
+          "title": "باب الإحرام",
+          "chunk_id": "parent_827_63__46",
+          "children": []
+        },
+        {
+          "title": "باب محظورات الإحرام",
+          "chunk_id": "parent_827_64__47",
+          "children": []
+        },
+        {
+          "title": "باب الفدية",
+          "chunk_id": "parent_827_66__48",
+          "children": []
+        },
+        {
+          "title": "باب دخول مكة",
+          "chunk_id": "parent_827_67__49",
+          "children": []
+        },
+        {
+          "title": "باب صفة الحج",
+          "chunk_id": "parent_827_68__50",
+          "children": []
+        },
+        {
+          "title": "باب ما يفعله بعد الحل",
+          "chunk_id": "parent_827_70__51",
+          "children": []
+        },
+        {
+          "title": "باب أركان الحج والعمرة",
+          "chunk_id": "parent_827_72__52",
+          "children": []
+        },
+        {
+          "title": "باب الهدي والأضحية",
+          "chunk_id": "parent_827_74__53",
+          "children": []
+        },
+        {
+          "title": "باب العقيقة",
+          "chunk_id": "parent_827_76__54",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب البيوع",
+      "chunk_id": null,
+      "children": [
+        {
+          "title": "مدخل",
+          "chunk_id": "parent_827_77__55",
+          "children": []
+        },
+        {
+          "title": "فصل [في البيوع المنهى عنها] *",
+          "chunk_id": "parent_827_78__56",
+          "children": []
+        },
+        {
+          "title": "باب الربا",
+          "chunk_id": "parent_827_80__57",
+          "children": []
+        },
+        {
+          "title": "باب بيع الأصول والثمار",
+          "chunk_id": "parent_827_81__58",
+          "children": []
+        },
+        {
+          "title": "فصل [في بيع الثمار وصلاحها]",
+          "chunk_id": "parent_827_82__59",
+          "children": []
+        },
+        {
+          "title": "باب الخيار",
+          "chunk_id": "parent_827_83__60",
+          "children": []
+        },
+        {
+          "title": "باب السلم",
+          "chunk_id": "parent_827_85__61",
+          "children": []
+        },
+        {
+          "title": "باب القرض وغيره",
+          "chunk_id": "parent_827_86__62",
+          "children": []
+        },
+        {
+          "title": "باب أحكام الدين",
+          "chunk_id": "parent_827_88__63",
+          "children": []
+        },
+        {
+          "title": "باب الحوالة والضمان",
+          "chunk_id": "parent_827_90__64",
+          "children": []
+        },
+        {
+          "title": "باب الرهن",
+          "chunk_id": "parent_827_91__65",
+          "children": []
+        },
+        {
+          "title": "باب الصلح",
+          "chunk_id": "parent_827_92__66",
+          "children": []
+        },
+        {
+          "title": "باب الوكالة",
+          "chunk_id": "parent_827_94__67",
+          "children": []
+        },
+        {
+          "title": "باب الشركة",
+          "chunk_id": "parent_827_95__68",
+          "children": []
+        },
+        {
+          "title": "باب المساقاة والمزارعة",
+          "chunk_id": "parent_827_97__69",
+          "children": []
+        },
+        {
+          "title": "باب إحياء الموات",
+          "chunk_id": "parent_827_98__70",
+          "children": []
+        },
+        {
+          "title": "باب الجعالة",
+          "chunk_id": "parent_827_99__71",
+          "children": []
+        },
+        {
+          "title": "باب اللقطة",
+          "chunk_id": "parent_827_100__72",
+          "children": []
+        },
+        {
+          "title": "فصل في اللقيط",
+          "chunk_id": "parent_827_102__73",
+          "children": []
+        },
+        {
+          "title": "باب السبق",
+          "chunk_id": "parent_827_103__74",
+          "children": []
+        },
+        {
+          "title": "باب الوديعة",
+          "chunk_id": "parent_827_104__75",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب الإجارة",
+      "chunk_id": null,
+      "children": [
+        {
+          "title": "مدخل",
+          "chunk_id": "parent_827_105__76",
+          "children": []
+        },
+        {
+          "title": "باب الغصب",
+          "chunk_id": "parent_827_106__77",
+          "children": []
+        },
+        {
+          "title": "باب الشفعة",
+          "chunk_id": "parent_827_108__78",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب الوقف",
+      "chunk_id": null,
+      "children": [
+        {
+          "title": "مدخل",
+          "chunk_id": "parent_827_110__79",
+          "children": []
+        },
+        {
+          "title": "باب الهبة",
+          "chunk_id": "parent_827_111__80",
+          "children": []
+        },
+        {
+          "title": "باب عطية المريض",
+          "chunk_id": "parent_827_112__81",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب الوصايا",
+      "chunk_id": null,
+      "children": [
+        {
+          "title": "مدخل",
+          "chunk_id": "parent_827_114__82",
+          "children": []
+        },
+        {
+          "title": "فصل [في بطلان الوصية]",
+          "chunk_id": "parent_827_116__83",
+          "children": []
+        },
+        {
+          "title": "باب الموصى إليه",
+          "chunk_id": "parent_827_117__84",
+          "children": []
+        },
+        {
+          "title": "فصل [في الحجر واختبار الرشد]",
+          "chunk_id": "parent_827_119__85",
+          "children": []
+        },
+        {
+          "title": "فصل [في الإذن للعبد في التصرف]",
+          "chunk_id": "parent_827_120__86",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب الفرائض",
+      "chunk_id": null,
+      "children": [
+        {
+          "title": "مدخل",
+          "chunk_id": "parent_827_121__87",
+          "children": []
+        },
+        {
+          "title": "فصل [في أحوال الأب في الميراث]",
+          "chunk_id": "parent_827_122__88",
+          "children": []
+        },
+        {
+          "title": "فصل [في أحوال الجد في الميراث]",
+          "chunk_id": "parent_827_123__89",
+          "children": []
+        },
+        {
+          "title": "فصل [في أحوال الأم في الميراث]",
+          "chunk_id": "parent_827_125__90",
+          "children": []
+        },
+        {
+          "title": "فصل [في أحوال الجدة في الميراث]",
+          "chunk_id": "parent_827_126__91",
+          "children": []
+        },
+        {
+          "title": "فصل [في أحوال البنات في الميراث]",
+          "chunk_id": "parent_827_127__92",
+          "children": []
+        },
+        {
+          "title": "فصل [في أحوال الأخوات في الميراث]",
+          "chunk_id": "parent_827_128__93",
+          "children": []
+        },
+        {
+          "title": "فصل [في أحوال الإخوة والأخوات من الأم في الميراث]",
+          "chunk_id": "parent_827_129__94",
+          "children": []
+        },
+        {
+          "title": "باب الحجب",
+          "chunk_id": "parent_827_130__95",
+          "children": []
+        },
+        {
+          "title": "باب العصبات",
+          "chunk_id": "parent_827_131__96",
+          "children": []
+        },
+        {
+          "title": "باب ذوي الأرحام",
+          "chunk_id": "parent_827_133__97",
+          "children": []
+        },
+        {
+          "title": "باب أصول المسائل",
+          "chunk_id": "parent_827_135__98",
+          "children": []
+        },
+        {
+          "title": "باب الرد",
+          "chunk_id": "parent_827_136__99",
+          "children": []
+        },
+        {
+          "title": "باب تصحيح المسلئل",
+          "chunk_id": "parent_827_137__100",
+          "children": []
+        },
+        {
+          "title": "باب المناسخات",
+          "chunk_id": "parent_827_139__101",
+          "children": []
+        },
+        {
+          "title": "باب موانع الميراث",
+          "chunk_id": "parent_827_140__102",
+          "children": []
+        },
+        {
+          "title": "باب مسائل شتى",
+          "chunk_id": "parent_827_142__103",
+          "children": []
+        },
+        {
+          "title": "باب الولاء",
+          "chunk_id": "parent_827_143__104",
+          "children": []
+        },
+        {
+          "title": "باب الميراث بالولاء",
+          "chunk_id": "parent_827_145__105",
+          "children": []
+        },
+        {
+          "title": "باب العتق",
+          "chunk_id": "parent_827_146__106",
+          "children": []
+        },
+        {
+          "title": "فصل [في تعليق العتق على شرط]",
+          "chunk_id": "parent_827_148__107",
+          "children": []
+        },
+        {
+          "title": "باب التدبير",
+          "chunk_id": "parent_827_149__108",
+          "children": []
+        },
+        {
+          "title": "باب المكاتب",
+          "chunk_id": "parent_827_151__109",
+          "children": []
+        },
+        {
+          "title": "باب أحكام أمهات الأولاد",
+          "chunk_id": "parent_827_153__110",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب النكاح",
+      "chunk_id": null,
+      "children": [
+        {
+          "title": "مدخل",
+          "chunk_id": "parent_827_154__111",
+          "children": []
+        },
+        {
+          "title": "باب ولاية النكاح",
+          "chunk_id": "parent_827_155__112",
+          "children": []
+        },
+        {
+          "title": "فصل [في الاستئذان في التزويج]",
+          "chunk_id": "parent_827_156__113",
+          "children": []
+        },
+        {
+          "title": "فصل [في تزويج العبيد والإماء]",
+          "chunk_id": "parent_827_157__114",
+          "children": []
+        },
+        {
+          "title": "باب المحرمات في النكاح",
+          "chunk_id": "parent_827_158__115",
+          "children": []
+        },
+        {
+          "title": "فصل [في التحريم بالجمع]",
+          "chunk_id": "parent_827_159__116",
+          "children": []
+        },
+        {
+          "title": "فصل [في التحريم في الملك]",
+          "chunk_id": "parent_827_161__117",
+          "children": []
+        },
+        {
+          "title": "فصل [في موانع نكاح الإماء]",
+          "chunk_id": "parent_827_162__118",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب الرضاع",
+      "chunk_id": null,
+      "children": [
+        {
+          "title": "مدخل",
+          "chunk_id": "parent_827_163__119",
+          "children": []
+        },
+        {
+          "title": "فصل [في تحريم النكاح وفسخه بسبب الرضاع]",
+          "chunk_id": "parent_827_165__120",
+          "children": []
+        },
+        {
+          "title": "باب نكاح الكفار",
+          "chunk_id": "parent_827_166__121",
+          "children": []
+        },
+        {
+          "title": "فصل [في فسخ نكاح الإماء]",
+          "chunk_id": "parent_827_167__122",
+          "children": []
+        },
+        {
+          "title": "باب الشروط في النكاح",
+          "chunk_id": "parent_827_168__123",
+          "children": []
+        },
+        {
+          "title": "باب العيوب التي يفسخ بها النكاح",
+          "chunk_id": "parent_827_169__124",
+          "children": []
+        },
+        {
+          "title": "فصل [في التفريق للعتق]",
+          "chunk_id": "parent_827_170__125",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب الصداق",
+      "chunk_id": null,
+      "children": [
+        {
+          "title": "مدخل",
+          "chunk_id": "parent_827_171__126",
+          "children": []
+        },
+        {
+          "title": "فصل [في من لم يسم لها المهر]",
+          "chunk_id": "parent_827_172__127",
+          "children": []
+        },
+        {
+          "title": "فصل [في سقوط المهر واستقراه]",
+          "chunk_id": "parent_827_173__128",
+          "children": []
+        },
+        {
+          "title": "باب معاشرة النساء",
+          "chunk_id": "parent_827_174__129",
+          "children": []
+        },
+        {
+          "title": "فصل في الإيلاء",
+          "chunk_id": "parent_827_176__130",
+          "children": []
+        },
+        {
+          "title": "باب القسم والنشوز",
+          "chunk_id": "parent_827_177__131",
+          "children": []
+        },
+        {
+          "title": "فصل [في آداب الجماع]",
+          "chunk_id": "parent_827_179__132",
+          "children": []
+        },
+        {
+          "title": "فصل [في النشوز]",
+          "chunk_id": "parent_827_180__133",
+          "children": []
+        },
+        {
+          "title": "باب الخلع",
+          "chunk_id": "parent_827_181__134",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب الطلاق",
+      "chunk_id": null,
+      "children": [
+        {
+          "title": "مدخل",
+          "chunk_id": "parent_827_183__135",
+          "children": []
+        },
+        {
+          "title": "باب صريح الطلاق وكنايته",
+          "chunk_id": "parent_827_184__136",
+          "children": []
+        },
+        {
+          "title": "باب تعليق الطلاق بالشروط",
+          "chunk_id": "parent_827_186__137",
+          "children": []
+        },
+        {
+          "title": "باب ما يختلف به عدد الطلاق وغيره",
+          "chunk_id": "parent_827_188__138",
+          "children": []
+        },
+        {
+          "title": "باب الرجعة",
+          "chunk_id": "parent_827_189__139",
+          "children": []
+        },
+        {
+          "title": "باب العدة",
+          "chunk_id": "parent_827_191__140",
+          "children": []
+        },
+        {
+          "title": "باب الإحداد",
+          "chunk_id": "parent_827_193__141",
+          "children": []
+        },
+        {
+          "title": "باب نفقة المعتدات",
+          "chunk_id": "parent_827_194__142",
+          "children": []
+        },
+        {
+          "title": "باب استبراء الإماء",
+          "chunk_id": "parent_827_196__143",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب الظهار",
+      "chunk_id": "parent_827_197__144",
+      "children": []
+    },
+    {
+      "title": "كتاب اللعان",
+      "chunk_id": null,
+      "children": [
+        {
+          "title": "مدخل",
+          "chunk_id": "parent_827_198__145",
+          "children": []
+        },
+        {
+          "title": "فصل [في لحوق النسب]",
+          "chunk_id": "parent_827_199__146",
+          "children": []
+        },
+        {
+          "title": "فصل [في إلحاق مجهول النسب]",
+          "chunk_id": "parent_827_201__147",
+          "children": []
+        },
+        {
+          "title": "باب الحضانة",
+          "chunk_id": "parent_827_202__148",
+          "children": []
+        },
+        {
+          "title": "باب نفقة الأقارب والمماليك",
+          "chunk_id": "parent_827_203__149",
+          "children": []
+        },
+        {
+          "title": "باب الوليمة",
+          "chunk_id": "parent_827_205__150",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب الأطعمة",
+      "chunk_id": null,
+      "children": [
+        {
+          "title": "مدخل",
+          "chunk_id": "parent_827_206__151",
+          "children": []
+        },
+        {
+          "title": "فصل [في ما يحل ويحرم من الحيوان]",
+          "chunk_id": "parent_827_207__152",
+          "children": []
+        },
+        {
+          "title": "باب الذكاة",
+          "chunk_id": "parent_827_208__153",
+          "children": []
+        },
+        {
+          "title": "فصل [في شروط الذكاة]",
+          "chunk_id": "parent_827_209__154",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب الصيد",
+      "chunk_id": null,
+      "children": [
+        {
+          "title": "مدخل",
+          "chunk_id": "parent_827_211__155",
+          "children": []
+        },
+        {
+          "title": "باب المضطر",
+          "chunk_id": "parent_827_212__156",
+          "children": []
+        },
+        {
+          "title": "باب النذر",
+          "chunk_id": "parent_827_213__157",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب الأيمان",
+      "chunk_id": null,
+      "children": [
+        {
+          "title": "مدخل",
+          "chunk_id": "parent_827_215__158",
+          "children": []
+        },
+        {
+          "title": "باب جامع الأيمان",
+          "chunk_id": "parent_827_216__159",
+          "children": []
+        },
+        {
+          "title": "باب كفارة اليمين",
+          "chunk_id": "parent_827_218__160",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب الجنايات",
+      "chunk_id": null,
+      "children": [
+        {
+          "title": "مدخل",
+          "chunk_id": "parent_827_220__161",
+          "children": []
+        },
+        {
+          "title": "باب شروط وجوب القصاص واستيفائه",
+          "chunk_id": "parent_827_221__162",
+          "children": []
+        },
+        {
+          "title": "فصل [في شروط جواز استيفاء القصاص]",
+          "chunk_id": "parent_827_223__163",
+          "children": []
+        },
+        {
+          "title": "فصل [في سقوط القصاص]",
+          "chunk_id": "parent_827_224__164",
+          "children": []
+        },
+        {
+          "title": "باب الاشتراك في القتل",
+          "chunk_id": "parent_827_226__165",
+          "children": []
+        },
+        {
+          "title": "باب القود في الجروح",
+          "chunk_id": "parent_827_227__166",
+          "children": []
+        },
+        {
+          "title": "فصل [في القود والدية بالأجزاء]",
+          "chunk_id": "parent_827_229__167",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب الديات",
+      "chunk_id": null,
+      "children": [
+        {
+          "title": "مدخل",
+          "chunk_id": "parent_827_230__168",
+          "children": []
+        },
+        {
+          "title": "باب العاقلة وما تحمله",
+          "chunk_id": "parent_827_231__169",
+          "children": []
+        },
+        {
+          "title": "فصل [في جناية العبد والبهائم]",
+          "chunk_id": "parent_827_233__170",
+          "children": []
+        },
+        {
+          "title": "باب ديات الجراح",
+          "chunk_id": "parent_827_234__171",
+          "children": []
+        },
+        {
+          "title": "باب الشجاج وغيرها",
+          "chunk_id": "parent_827_236__172",
+          "children": []
+        },
+        {
+          "title": "باب كفارة القتل",
+          "chunk_id": "parent_827_237__173",
+          "children": []
+        },
+        {
+          "title": "باب القسامة",
+          "chunk_id": "parent_827_239__174",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب الحدود",
+      "chunk_id": null,
+      "children": [
+        {
+          "title": "مدخل",
+          "chunk_id": "parent_827_240__175",
+          "children": []
+        },
+        {
+          "title": "فصل [في وسائل إقامة الحد وكيفيته]",
+          "chunk_id": "parent_827_241__176",
+          "children": []
+        },
+        {
+          "title": "فصل [في اجتماع الحدود]",
+          "chunk_id": "parent_827_242__177",
+          "children": []
+        },
+        {
+          "title": "فصل [في استيفاء الحدود في الحرم والغزو]",
+          "chunk_id": "parent_827_244__178",
+          "children": []
+        },
+        {
+          "title": "باب حد الزنا",
+          "chunk_id": "parent_827_245__179",
+          "children": []
+        },
+        {
+          "title": "باب حد القذف",
+          "chunk_id": "parent_827_246__180",
+          "children": []
+        },
+        {
+          "title": "باب حد المسكر",
+          "chunk_id": "parent_827_247__181",
+          "children": []
+        },
+        {
+          "title": "باب حد السرقة",
+          "chunk_id": "parent_827_248__182",
+          "children": []
+        },
+        {
+          "title": "باب حد المحاربين",
+          "chunk_id": "parent_827_249__183",
+          "children": []
+        },
+        {
+          "title": "فصل [في دفع الصائل]",
+          "chunk_id": "parent_827_251__184",
+          "children": []
+        },
+        {
+          "title": "باب قتال أهل البغي",
+          "chunk_id": "parent_827_252__185",
+          "children": []
+        },
+        {
+          "title": "باب حكم المرتد",
+          "chunk_id": "parent_827_253__186",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب الجهاد",
+      "chunk_id": null,
+      "children": [
+        {
+          "title": "مدخل",
+          "chunk_id": "parent_827_255__187",
+          "children": []
+        },
+        {
+          "title": "باب الأنفال",
+          "chunk_id": "parent_827_257__188",
+          "children": []
+        },
+        {
+          "title": "فصل [في من يرضخ له]",
+          "chunk_id": "parent_827_259__189",
+          "children": []
+        },
+        {
+          "title": "باب الغنائم وقسمتها",
+          "chunk_id": "parent_827_260__190",
+          "children": []
+        },
+        {
+          "title": "فصل [في الفيء]",
+          "chunk_id": "parent_827_262__191",
+          "children": []
+        },
+        {
+          "title": "باب الأمان",
+          "chunk_id": "parent_827_263__192",
+          "children": []
+        },
+        {
+          "title": "فصل [في الهدنة]",
+          "chunk_id": "parent_827_265__193",
+          "children": []
+        },
+        {
+          "title": "باب الجزية",
+          "chunk_id": "parent_827_266__194",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب القضاء",
+      "chunk_id": null,
+      "children": [
+        {
+          "title": "مدخل",
+          "chunk_id": "parent_827_267__195",
+          "children": []
+        },
+        {
+          "title": "باب صفة الحكم",
+          "chunk_id": "parent_827_268__196",
+          "children": []
+        },
+        {
+          "title": "باب في تعارض الدعاوى",
+          "chunk_id": "parent_827_270__197",
+          "children": []
+        },
+        {
+          "title": "باب حكم كتاب القاضي",
+          "chunk_id": "parent_827_272__198",
+          "children": []
+        },
+        {
+          "title": "باب القسمة",
+          "chunk_id": "parent_827_273__199",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب الشهادات",
+      "chunk_id": null,
+      "children": [
+        {
+          "title": "مدخل",
+          "chunk_id": "parent_827_275__200",
+          "children": []
+        },
+        {
+          "title": "باب من ترد شهادته",
+          "chunk_id": "parent_827_276__201",
+          "children": []
+        },
+        {
+          "title": "باب الشهادة على الشهادة والرجوع عنها",
+          "chunk_id": "parent_827_277__202",
+          "children": []
+        },
+        {
+          "title": "فصل [في تغيير الشهادة]",
+          "chunk_id": "parent_827_278__203",
+          "children": []
+        },
+        {
+          "title": "باب اليمين في الدعاوي",
+          "chunk_id": "parent_827_280__204",
+          "children": []
+        },
+        {
+          "title": "باب الإقرار",
+          "chunk_id": "parent_827_281__205",
+          "children": []
+        },
+        {
+          "title": "فصل [في من يقبل إقراره]",
+          "chunk_id": "parent_827_283__206",
+          "children": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,6 +1,7 @@
-import { X, BookOpen, ChevronLeft, User, Book, Library, CalendarDays, Layers, Hash, Link, Brain, ClipboardList, Loader2 } from 'lucide-react'
+import React, { useState, useEffect, useMemo, useRef } from 'react'
+import { X, BookOpen, ChevronLeft, ChevronRight, User, Book, Library, CalendarDays, Layers, Hash, Link } from 'lucide-react'
 import type { ChunkMetadata } from '../../../contexts/StudyContext'
-import { formatMarkdown } from '../utils/markdownParser'
+import { formatMarkdown, formatTurathLiveText } from '../utils/markdownParser'
 
 export function StudyDocument({
   isDocumentOpen,
@@ -15,10 +16,11 @@ export function StudyDocument({
   handleGenerateMindmap,
   handleGenerateQuiz,
   startResizingDocument,
-  isDark = true
+  isDark = true,
+  onPageChange
 }: {
   isDocumentOpen: boolean
-  documentWidth: number
+  documentWidth?: number
   setIsDocumentOpen: (v: boolean) => void
   currentChunkId: string | null
   chunkMeta: ChunkMetadata | null
@@ -30,7 +32,108 @@ export function StudyDocument({
   handleGenerateQuiz: () => void
   startResizingDocument: (e: React.MouseEvent) => void
   isDark?: boolean
+  onPageChange?: (direction: 'next' | 'prev') => void
 }) {
+  const [viewMode, setViewMode] = useState<'paged' | 'continuous'>('paged')
+  const [activePageIndex, setActivePageIndex] = useState<number>(0)
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+
+  // Reset to first page when new chunk/chapter is opened
+  useEffect(() => {
+    setActivePageIndex(0)
+  }, [currentChunkId, chunkText])
+
+  const turathResult = useMemo(() => {
+    if (!currentChunkId?.startsWith('turath_')) return null
+    return formatTurathLiveText(chunkText, isDark, chunkMeta?.page_id)
+  }, [chunkText, isDark, chunkMeta?.page_id, currentChunkId])
+
+  // When a chapter starts at the very bottom of a book page (or ends at the very top of one),
+  // that page holds only a line or two. Showing it alone in paged mode looks like missing content,
+  // so merge such tiny fragment pages with their neighbor.
+  const pages = useMemo(() => {
+    const raw = turathResult?.pages || []
+    if (raw.length < 2) return raw
+    const FRAGMENT_CHARS = 450
+    const textLen = (html: string) => html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim().length
+    const merged = raw.map(p => ({ ...p }))
+    if (merged.length >= 2 && textLen(merged[0].html) < FRAGMENT_CHARS) {
+      merged[1] = { pgNum: `${merged[0].pgNum}-${merged[1].pgNum}`, html: merged[0].html + merged[1].html }
+      merged.shift()
+    }
+    const last = merged.length - 1
+    if (merged.length >= 2 && textLen(merged[last].html) < FRAGMENT_CHARS) {
+      merged[last - 1] = { pgNum: `${merged[last - 1].pgNum}-${merged[last].pgNum}`, html: merged[last - 1].html + merged[last].html }
+      merged.pop()
+    }
+    return merged
+  }, [turathResult])
+  const totalPages = pages.length
+  const safePageIndex = Math.max(0, Math.min(activePageIndex, totalPages - 1))
+  const currentPageItem = pages[safePageIndex]
+  const isFirstPage = safePageIndex <= 0
+  const isLastPage = safePageIndex >= totalPages - 1
+
+  const scrollToTextStart = () => {
+    setTimeout(() => {
+      const el = document.getElementById('study-text-start')
+      const container = scrollContainerRef.current
+      if (el && container) {
+        const containerTop = container.getBoundingClientRect().top
+        const elTop = el.getBoundingClientRect().top
+        container.scrollTo({ top: container.scrollTop + elTop - containerTop - 15, behavior: 'smooth' })
+      } else {
+        container?.scrollTo({ top: 0, behavior: 'smooth' })
+      }
+    }, 10)
+  }
+
+  const handlePrevPage = () => {
+    if (viewMode === 'paged' && totalPages > 1) {
+      if (!isFirstPage) {
+        setActivePageIndex(prev => prev - 1)
+        scrollToTextStart()
+        return
+      }
+    }
+    if (onPageChange) {
+      onPageChange('prev')
+    }
+  }
+
+  const handleNextPage = () => {
+    if (viewMode === 'paged' && totalPages > 1) {
+      if (!isLastPage) {
+        setActivePageIndex(prev => prev + 1)
+        scrollToTextStart()
+        return
+      }
+    }
+    if (onPageChange) {
+      onPageChange('next')
+    }
+  }
+
+  // Keyboard navigation for page flipping (ArrowLeft: next, ArrowRight: prev in RTL)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const activeTag = document.activeElement?.tagName.toLowerCase()
+      if (activeTag === 'input' || activeTag === 'textarea' || (document.activeElement as HTMLElement)?.isContentEditable) {
+        return
+      }
+      if (!isDocumentOpen || !currentChunkId?.startsWith('turath_') || viewMode !== 'paged') return
+
+      if (e.key === 'ArrowLeft') {
+        handleNextPage()
+      } else if (e.key === 'ArrowRight') {
+        handlePrevPage()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isDocumentOpen, currentChunkId, viewMode, safePageIndex, totalPages, isFirstPage, isLastPage])
+
   return (
     <>
       <style>{`
@@ -57,10 +160,57 @@ export function StudyDocument({
           {/* Header Bar matching Chat/Sidebar/Mindmap/Quiz panels */}
           <div className={`flex items-center justify-between px-4 py-3 border-b backdrop-blur-md ${isDark ? 'border-white/10 bg-[#12041f]/70 text-white' : 'border-slate-200 bg-slate-50/90 text-slate-800'
             }`}>
-            <div className="flex items-center gap-2 text-sm font-bold">
-              <BookOpen size={18} className="text-sky-500 shrink-0 stroke-[2.2]" />
-              <span>النص الأصلي</span>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 text-sm font-bold">
+                <BookOpen size={18} className="text-sky-500 shrink-0 stroke-[2.2]" />
+                <span>النص الأصلي</span>
+              </div>
+
+              {/* View Mode Toggle: Paged (Single Page) vs Continuous */}
+              {currentChunkId?.startsWith('turath_') && totalPages > 1 && (
+                <div className={`flex items-center p-0.5 rounded-lg border text-xs font-semibold ${isDark ? 'bg-white/5 border-white/10' : 'bg-slate-100 border-slate-200'}`}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setViewMode('paged')
+                      scrollToTextStart()
+                    }}
+                    className={`px-2.5 py-1 rounded-md transition-all flex items-center gap-1.5 ${viewMode === 'paged'
+                      ? isDark
+                        ? 'bg-sky-500/25 text-sky-300 font-bold border border-sky-500/35 shadow-sm'
+                        : 'bg-white text-sky-700 font-bold shadow-sm'
+                      : isDark
+                        ? 'text-white/60 hover:text-white'
+                        : 'text-slate-500 hover:text-slate-800'
+                      }`}
+                    title="عرض صفحة واحدة والتقليب بالشريط"
+                  >
+                    <BookOpen size={13} />
+                    <span>صفحة بصفحة</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setViewMode('continuous')
+                      scrollToTextStart()
+                    }}
+                    className={`px-2.5 py-1 rounded-md transition-all flex items-center gap-1.5 ${viewMode === 'continuous'
+                      ? isDark
+                        ? 'bg-sky-500/25 text-sky-300 font-bold border border-sky-500/35 shadow-sm'
+                        : 'bg-white text-sky-700 font-bold shadow-sm'
+                      : isDark
+                        ? 'text-white/60 hover:text-white'
+                        : 'text-slate-500 hover:text-slate-800'
+                      }`}
+                    title="عرض كل الصفحات متتابعة بتمرير مستمر"
+                  >
+                    <Layers size={13} />
+                    <span>متتابع</span>
+                  </button>
+                </div>
+              )}
             </div>
+
             <button
               onClick={() => setIsDocumentOpen(false)}
               className={`flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${isDark ? 'bg-white/5 hover:bg-white/10 text-white/60 hover:text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-400 hover:text-slate-700'
@@ -71,7 +221,7 @@ export function StudyDocument({
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {!currentChunkId ? (
               <div className={`flex flex-col items-center justify-center rounded-3xl border p-12 text-center backdrop-blur-md shadow-xl mt-10 ${isDark ? 'border-white/10 bg-gradient-to-b from-white/5 to-transparent' : 'border-slate-200 bg-slate-50'
                 }`}>
@@ -88,10 +238,11 @@ export function StudyDocument({
             ) : (
               <>
                 {chunkMeta && (
-                  <div className={`group mb-8 flex flex-col items-center justify-center rounded-3xl border-2 p-8 text-center backdrop-blur-md opacity-0 animate-[scaleFadeIn_0.5s_ease-out_forwards] transition-all duration-500 hover:-translate-y-1 ${isDark ? 'border-white/10 bg-white/[0.04] hover:border-white/20 hover:shadow-[0_8px_30px_rgba(138,23,201,0.15)] shadow-xl' : 'border-[#38bdf8]/50 bg-white/95 hover:border-[#38bdf8]/80 hover:shadow-2xl shadow-xl shadow-[#38bdf8]/15 ring-1 ring-[#38bdf8]/25'
+                  <div className={`group mb-8 flex flex-col items-center justify-center rounded-3xl border p-8 text-center backdrop-blur-md opacity-0 animate-[scaleFadeIn_0.5s_ease-out_forwards] transition-all duration-500 hover:-translate-y-1 ${isDark ? 'border-white/10 bg-white/[0.04] hover:border-white/20 hover:shadow-[0_8px_30px_rgba(138,23,201,0.15)] shadow-xl' : 'border-slate-200 bg-white/95 hover:shadow-xl shadow-md'
                     }`}>
                     <div className="flex flex-col items-center justify-center mb-6 mt-2 relative">
-                      <h3 className="font-display text-[38px] font-bold gradient-border bg-clip-text text-transparent drop-shadow-[0_4px_24px_rgba(138,23,201,0.4)] pb-1 leading-tight text-center relative z-10 px-4">
+                      <h3 className={`font-amiri text-[30px] md:text-[36px] font-bold leading-relaxed text-center relative z-10 px-4 pb-2 tracking-normal ${isDark ? 'text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]' : 'text-[#4c1d95] drop-shadow-sm'
+                        }`}>
                         {chunkMeta.book_title || 'اسم الكتاب غير متوفر'}
                       </h3>
                     </div>
@@ -137,7 +288,7 @@ export function StudyDocument({
                     <div className="flex flex-wrap items-center justify-center gap-3 mt-2">
                       {chunkMeta.author && (
                         <span
-                          className="inline-flex items-center gap-1.5 rounded-full border border-[#f43f5e]/25 bg-[#f43f5e]/10 px-4 py-2 text-[13px] font-semibold text-[#f43f5e] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:shadow-[#f43f5e]/20 cursor-default opacity-0 animate-[fadeInUp_0.5s_ease-out_forwards]"
+                          className="inline-flex items-center gap-1.5 rounded-full border border-[#10b981]/25 bg-[#10b981]/10 px-4 py-2 text-[13px] font-semibold text-[#10b981] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:shadow-[#10b981]/20 cursor-default opacity-0 animate-[fadeInUp_0.5s_ease-out_forwards]"
                           style={{ animationDelay: '0.1s' }}
                         >
                           <User size={14} />
@@ -155,7 +306,7 @@ export function StudyDocument({
                       )}
                       {chunkMeta.madhhab && (
                         <span
-                          className="inline-flex items-center gap-1.5 rounded-full border border-[#10b981]/25 bg-[#10b981]/10 px-4 py-2 text-[13px] font-semibold text-[#10b981] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:shadow-[#10b981]/20 cursor-default opacity-0 animate-[fadeInUp_0.5s_ease-out_forwards]"
+                          className="inline-flex items-center gap-1.5 rounded-full border border-[#f43f5e]/25 bg-[#f43f5e]/10 px-4 py-2 text-[13px] font-semibold text-[#f43f5e] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:shadow-[#f43f5e]/20 cursor-default opacity-0 animate-[fadeInUp_0.5s_ease-out_forwards]"
                           style={{ animationDelay: '0.3s' }}
                         >
                           <Library size={14} />
@@ -168,7 +319,7 @@ export function StudyDocument({
                           style={{ animationDelay: '0.4s' }}
                         >
                           <CalendarDays size={14} />
-                          القرن: {chunkMeta.hijri_century}
+                          {chunkMeta.hijri_century}
                         </span>
                       )}
                       {(chunkMeta.part !== undefined && chunkMeta.part !== null || chunkMeta.total_parts !== undefined && chunkMeta.total_parts !== null) && (
@@ -205,67 +356,85 @@ export function StudyDocument({
                   </div>
                 )}
 
-                <div className="mt-10 mb-6 flex items-center gap-4 w-full px-2">
+                <div id="study-text-start" className="mt-10 mb-6 flex items-center gap-4 w-full px-2">
                   <div className={`h-px flex-1 bg-gradient-to-l from-transparent ${isDark ? 'via-[#38bdf8]/40' : 'via-sky-500/60'} to-transparent`}></div>
-                  <div className={`group flex items-center gap-3 px-6 py-2.5 rounded-full backdrop-blur-md relative overflow-hidden transition-all ${isDark 
-                    ? 'bg-[#38bdf8]/10 border border-[#38bdf8]/25 shadow-[0_0_20px_rgba(56,189,248,0.15)] hover:bg-[#38bdf8]/15 hover:shadow-[0_0_25px_rgba(56,189,248,0.25)]' 
+                  <div className={`group flex items-center gap-3 px-6 py-2.5 rounded-full backdrop-blur-md relative overflow-hidden transition-all ${isDark
+                    ? 'bg-[#38bdf8]/10 border border-[#38bdf8]/25 shadow-[0_0_20px_rgba(56,189,248,0.15)] hover:bg-[#38bdf8]/15 hover:shadow-[0_0_25px_rgba(56,189,248,0.25)]'
                     : 'bg-sky-100 border border-sky-300 shadow-md hover:bg-sky-200 hover:shadow-lg'}`}>
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
                     <BookOpen size={18} className={isDark ? 'text-[#38bdf8]' : 'text-sky-700'} />
-                    <span className={`font-bold text-[16px] tracking-wide ${isDark ? 'text-[#38bdf8]' : 'text-sky-800'}`}>النص الأساسي للدرس</span>
+                    <span className={`font-bold text-[16px] tracking-wide ${isDark ? 'text-[#38bdf8]' : 'text-sky-800'}`}>نص الدرس</span>
                   </div>
                   <div className={`h-px flex-1 bg-gradient-to-r from-transparent ${isDark ? 'via-[#38bdf8]/40' : 'via-sky-500/60'} to-transparent`}></div>
                 </div>
 
-                <div
-                  data-selectable="true"
-                  data-library-content="true"
-                  className={`rounded-3xl border-2 p-8 text-[18px] leading-[1.9] font-serif tracking-wide relative overflow-hidden backdrop-blur-md transition-all ${isDark
-                    ? 'border-white/10 bg-white/[0.04] text-white/90 shadow-xl'
-                    : 'border-[#38bdf8]/50 bg-white text-slate-900 shadow-xl shadow-[#38bdf8]/15 ring-1 ring-[#38bdf8]/25 font-sans'
-                    }`}
-                  dangerouslySetInnerHTML={formatMarkdown(chunkText, true, isDark)}
-                />
+                <div className="relative">
+                  <div
+                    key={`${viewMode}-${safePageIndex}`}
+                    data-selectable="true"
+                    data-library-content="true"
+                    className={
+                      currentChunkId?.startsWith('turath_')
+                        ? `text-[18px] leading-[1.8] font-amiri tracking-wide relative transition-all animate-[fadeInUp_0.8s_ease-out_forwards] ${isDark ? 'text-white/90' : 'text-slate-900'
+                        }`
+                        : `rounded-3xl border-2 p-8 text-[18px] leading-[1.9] font-amiri tracking-wide relative overflow-hidden backdrop-blur-md transition-all animate-[fadeInUp_0.8s_ease-out_forwards] ${isDark
+                          ? 'border-white/10 bg-white/[0.04] text-white/90 shadow-xl'
+                          : 'border-[#38bdf8]/50 bg-white text-slate-900 shadow-xl shadow-[#38bdf8]/15 ring-1 ring-[#38bdf8]/25'
+                        }`
+                    }
+                    dangerouslySetInnerHTML={
+                      currentChunkId?.startsWith('turath_')
+                        ? viewMode === 'paged' && currentPageItem
+                          ? { __html: currentPageItem.html + (isLastPage ? (turathResult?.continuationNotice || '') : '') }
+                          : { __html: turathResult?.__html || '' }
+                        : formatMarkdown(chunkText, true, isDark)
+                    }
+                  />
+
+                  {/* Turath Book Authentic Page Navigator (Floating on bottom edges) */}
+                  {currentChunkId?.startsWith('turath_') && viewMode === 'paged' && onPageChange && (
+                    <div className="absolute -bottom-[17px] left-0 right-0 flex items-center justify-between px-8 pointer-events-none z-20">
+                      <button
+                        type="button"
+                        onClick={handlePrevPage}
+                        disabled={isFirstPage}
+                        className={`pointer-events-auto flex items-center justify-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-bold transition-all border ${isFirstPage
+                          ? isDark
+                            ? 'opacity-40 cursor-not-allowed text-white/40 border-white/10 bg-[#1a0733]'
+                            : 'opacity-50 cursor-not-allowed text-slate-400 border-slate-200 bg-slate-50'
+                          : isDark
+                            ? 'bg-[#1a0733] hover:bg-white/10 text-white border-[#38bdf8]/40 shadow-[0_4px_16px_rgba(0,0,0,0.5)]'
+                            : 'bg-white hover:bg-slate-50 text-sky-700 border-sky-300 shadow-[0_4px_14px_rgba(56,189,248,0.2)]'
+                          }`}
+                        title="الصفحة السابقة"
+                      >
+                        <ChevronRight size={14} />
+                        <span>السابقة</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleNextPage}
+                        disabled={isLastPage}
+                        className={`pointer-events-auto flex items-center justify-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-bold transition-all border ${isLastPage
+                          ? isDark
+                            ? 'opacity-40 cursor-not-allowed text-sky-300/40 border-white/10 bg-[#1a0733]'
+                            : 'opacity-50 cursor-not-allowed text-slate-400 border-slate-200 bg-slate-50'
+                          : isDark
+                            ? 'bg-[#1a0733] hover:bg-white/10 text-sky-300 border-[#38bdf8]/40 shadow-[0_4px_16px_rgba(0,0,0,0.5)]'
+                            : 'bg-white hover:bg-sky-50 text-sky-700 border-sky-300 shadow-[0_4px_14px_rgba(56,189,248,0.2)]'
+                          }`}
+                        title="الصفحة التالية"
+                      >
+                        <span>التالية</span>
+                        <ChevronLeft size={14} />
+                      </button>
+                    </div>
+                  )}
+                </div>
               </>
             )}
 
-            <div className="mt-12 mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-              <button
-                onClick={handleGenerateMindmap}
-                disabled={!currentChunkId || mindmapLoading || loading}
-                className={`group relative flex flex-col items-center justify-center gap-3 overflow-hidden rounded-3xl border p-6 transition-all duration-300 ${(!currentChunkId || mindmapLoading || loading) ? 'bg-white/5 border-white/10 text-white/30 cursor-not-allowed' : 'bg-gradient-to-br from-purple-500/5 to-pink-500/5 border-purple-500/20 hover:border-purple-500/40 hover:bg-purple-500/10 hover:-translate-y-1 shadow-lg'}`}
-              >
-                <div className={`rounded-full p-3.5 transition-all duration-300 ${(!currentChunkId || mindmapLoading || loading) ? 'bg-white/5 text-white/20' : 'bg-gradient-to-br from-purple-500 to-pink-500 text-white shadow-md shadow-purple-500/20 group-hover:shadow-purple-500/40'}`}>
-                  {mindmapLoading || loading ? <Loader2 size={24} className="animate-spin text-purple-300" /> : <Brain size={24} className={currentChunkId ? "group-hover:scale-110 transition-transform duration-300" : ""} />}
-                </div>
-                <div className="text-center">
-                  <h4 className={`font-bold text-[16px] mb-1.5 ${!currentChunkId ? 'text-white/30' : isDark ? 'text-purple-200 group-hover:text-white' : 'text-purple-800'}`}>
-                    {mindmapLoading ? 'جاري إنشاء الخريطة...' : 'خريطة ذهنية'}
-                  </h4>
-                  <p className={`text-[13px] ${!currentChunkId ? 'text-white/20' : isDark ? 'text-purple-200/60' : 'text-purple-600'}`}>
-                    {mindmapLoading ? 'جاري التحليل واستخراج المفاهيم' : 'إنشاء خريطة ذهنية لهذا الدرس'}
-                  </p>
-                </div>
-              </button>
-
-              <button
-                onClick={handleGenerateQuiz}
-                disabled={!currentChunkId || quizLoading || loading}
-                className={`group relative flex flex-col items-center justify-center gap-3 overflow-hidden rounded-3xl border p-6 transition-all duration-300 ${(!currentChunkId || quizLoading || loading) ? 'bg-white/5 border-white/10 text-white/30 cursor-not-allowed' : 'bg-gradient-to-br from-blue-500/5 to-cyan-500/5 border-blue-500/20 hover:border-blue-500/40 hover:bg-blue-500/10 hover:-translate-y-1 shadow-lg'}`}
-              >
-                <div className={`rounded-full p-3.5 transition-all duration-300 ${(!currentChunkId || quizLoading || loading) ? 'bg-white/5 text-white/20' : 'bg-gradient-to-br from-blue-500 to-cyan-500 text-white shadow-md shadow-blue-500/20 group-hover:shadow-blue-500/40'}`}>
-                  {quizLoading || loading ? <Loader2 size={24} className="animate-spin text-emerald-300" /> : <ClipboardList size={24} className={currentChunkId ? "group-hover:scale-110 transition-transform duration-300" : ""} />}
-                </div>
-                <div className="text-center">
-                  <h4 className={`font-bold text-[16px] mb-1.5 ${!currentChunkId ? 'text-white/30' : isDark ? 'text-blue-200 group-hover:text-white' : 'text-blue-800'}`}>
-                    {quizLoading ? 'جاري فتح الإعدادات...' : 'تخصيص وإعداد اختبار'}
-                  </h4>
-                  <p className={`text-[13px] ${!currentChunkId ? 'text-white/20' : isDark ? 'text-blue-200/60' : 'text-blue-600'}`}>
-                    {quizLoading ? 'جاري توجيهك لشاشة الاختبار' : 'ضبط الوقت، الصعوبة، وإنشاء الاختبار'}
-                  </p>
-                </div>
-              </button>
-            </div>
           </div>
         </div>
       </div>

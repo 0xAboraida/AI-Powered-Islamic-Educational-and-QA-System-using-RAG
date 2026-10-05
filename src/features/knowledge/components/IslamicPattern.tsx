@@ -5,6 +5,7 @@ interface IslamicPatternProps {
   opacity?: number;
   strokeColor?: string;
   fillColor?: string;
+  scale?: number;
 }
 
 /**
@@ -15,7 +16,8 @@ export default function IslamicPattern({
   className = '',
   opacity = 0.08,
   strokeColor = 'currentColor',
-  fillColor = 'none'
+  fillColor = 'none',
+  scale = 1
 }: IslamicPatternProps) {
   return (
     <div 
@@ -27,11 +29,12 @@ export default function IslamicPattern({
         <defs>
           <pattern
             id="islamic-girih-pattern"
-            width="120"
-            height="120"
+            width={120 * scale}
+            height={120 * scale}
             patternUnits="userSpaceOnUse"
           >
-            {/* Center 8-pointed star: Center (60, 60), Outer R=28, Inner R=14 */}
+            <g transform={`scale(${scale})`}>
+              {/* Center 8-pointed star: Center (60, 60), Outer R=28, Inner R=14 */}
             <polygon
               points="
                 88,60 72.9,65.4 79.8,79.8 65.4,72.9 
@@ -127,12 +130,7 @@ export default function IslamicPattern({
               strokeWidth="1"
             />
 
-            {/* Subtle inner rosette ring */}
-            <circle cx="60" cy="60" r="8" fill="none" stroke={strokeColor} strokeWidth="0.8" opacity="0.6" />
-            <circle cx="0" cy="0" r="8" fill="none" stroke={strokeColor} strokeWidth="0.8" opacity="0.6" />
-            <circle cx="120" cy="0" r="8" fill="none" stroke={strokeColor} strokeWidth="0.8" opacity="0.6" />
-            <circle cx="0" cy="120" r="8" fill="none" stroke={strokeColor} strokeWidth="0.8" opacity="0.6" />
-            <circle cx="120" cy="120" r="8" fill="none" stroke={strokeColor} strokeWidth="0.8" opacity="0.6" />
+            </g>
           </pattern>
         </defs>
         <rect width="100%" height="100%" fill="url(#islamic-girih-pattern)" />

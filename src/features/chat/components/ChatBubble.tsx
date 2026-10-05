@@ -258,71 +258,57 @@ function preprocessFrameText(frameStr: string): string {
     return (str || '').replace(/^[.\u06D4\s\`"'«»:\u061B;,،\(\)]+/, '');
   };
 
-  // Qur'an: &Ayah& or &&Ayah&& -> tagged blockquote (supports multiple on same line)
-  text = text.replace(/^([ \t]*)(.*?)&+([^&\r\n]+)&+(?:[ \t]*(?:\r?\n[ \t]*)?\^+([^\^\r\n]+)\^+)?(.*)$/gm, (match, indent, before, quote, ref, after) => {
-    const { citations, rest } = extractLeadingCitations(after);
-    const cb = cleanBeforeStr(before);
-    let res = '';
-    if (cb) res += `${indent}${cb}\n\n`;
-    res += `\n${indent}> [QURAN] ${quote.trim()}${citations ? ' ' + citations : ''}`;
-    if (ref) res += `  \n${indent}> *__REF__${ref.trim()}*`;
+  // Standalone Qur'an: entire line is &Ayah& or &&Ayah&& (with optional reference ^Ref^)
+  text = text.replace(/^[ \t]*&+([^&\r\n]+)&+(?:[ \t]*(?:\r?\n[ \t]*)?\^+([^\^\r\n]+)\^+)?\s*$/gm, (match, quote, ref) => {
+    let res = `\n> [QURAN] ${quote.trim()}`;
+    if (ref) res += `  \n> *__REF__${ref.trim()}*`;
     res += '\n';
-    const cleanAfter = cleanAfterStr(rest);
-    if (cleanAfter.trim()) res += `\n${indent}${cleanAfter.trim()}\n\n`;
     return res;
   });
 
-  // Hadith: %Hadith% or %%Hadith%% -> tagged blockquote (supports multiple on same line)
-  text = text.replace(/^([ \t]*)(.*?)%+([^%\r\n]+)%+(?:[ \t]*(?:\r?\n[ \t]*)?\^+([^\^\r\n]+)\^+)?(.*)$/gm, (match, indent, before, quote, ref, after) => {
-    const { citations, rest } = extractLeadingCitations(after);
-    const cb = cleanBeforeStr(before);
-    let res = '';
-    if (cb) res += `${indent}${cb}\n\n`;
-    res += `\n${indent}> [HADITH] ${quote.trim()}${citations ? ' ' + citations : ''}`;
-    if (ref) res += `  \n${indent}> *__REF__${ref.trim()}*`;
+  // Standalone Hadith: entire line is %Hadith% or %%Hadith%% (with optional reference ^Ref^)
+  text = text.replace(/^[ \t]*%+([^%\r\n]+)%+(?:[ \t]*(?:\r?\n[ \t]*)?\^+([^\^\r\n]+)\^+)?\s*$/gm, (match, quote, ref) => {
+    let res = `\n> [HADITH] ${quote.trim()}`;
+    if (ref) res += `  \n> *__REF__${ref.trim()}*`;
     res += '\n';
-    const cleanAfter = cleanAfterStr(rest);
-    if (cleanAfter.trim()) res += `\n${indent}${cleanAfter.trim()}\n\n`;
     return res;
   });
 
-  // Scholars' sayings: @Saying@ or @@Saying@@ -> tagged blockquote (supports multiple on same line)
-  text = text.replace(/^([ \t]*)(.*?)@+([^@\r\n]+)@+(?:[ \t]*(?:\r?\n[ \t]*)?\^+([^\^\r\n]+)\^+)?(.*)$/gm, (match, indent, before, quote, ref, after) => {
-    const { citations, rest } = extractLeadingCitations(after);
-    const cb = cleanBeforeStr(before);
-    let res = '';
-    if (cb) res += `${indent}${cb}\n\n`;
-    res += `\n${indent}> [SAYING] ${quote.trim()}${citations ? ' ' + citations : ''}`;
-    if (ref) res += `  \n${indent}> *__REF__${ref.trim()}*`;
+  // Standalone Scholars' sayings: entire line is @Saying@ or @@Saying@@ (with optional reference ^Ref^)
+  text = text.replace(/^[ \t]*@+([^@\r\n]+)@+(?:[ \t]*(?:\r?\n[ \t]*)?\^+([^\^\r\n]+)\^+)?\s*$/gm, (match, quote, ref) => {
+    let res = `\n> [SAYING] ${quote.trim()}`;
+    if (ref) res += `  \n> *__REF__${ref.trim()}*`;
     res += '\n';
-    const cleanAfter = cleanAfterStr(rest);
-    if (cleanAfter.trim()) res += `\n${indent}${cleanAfter.trim()}\n\n`;
     return res;
   });
 
-  // Poetry: $Poetry$ or $$Poetry$$ -> tagged blockquote (supports multiple on same line)
-  text = text.replace(/^([ \t]*)(.*?)\$+([^$\r\n]+)\$+(?:[ \t]*(?:\r?\n[ \t]*)?\^+([^\^\r\n]+)\^+)?(.*)$/gm, (match, indent, before, quote, ref, after) => {
-    const { citations, rest } = extractLeadingCitations(after);
-    const cb = cleanBeforeStr(before);
-    let res = '';
-    if (cb) res += `${indent}${cb}\n\n`;
-    res += `\n${indent}> [POETRY] ${quote.trim()}${citations ? ' ' + citations : ''}`;
-    if (ref) res += `  \n${indent}> *__REF__${ref.trim()}*`;
+  // Standalone Poetry: entire line is $Poetry$ or $$Poetry$$ (with optional reference ^Ref^)
+  text = text.replace(/^[ \t]*\$+([^$\r\n]+)\$+(?:[ \t]*(?:\r?\n[ \t]*)?\^+([^\^\r\n]+)\^+)?\s*$/gm, (match, quote, ref) => {
+    let res = `\n> [POETRY] ${quote.trim()}`;
+    if (ref) res += `  \n> *__REF__${ref.trim()}*`;
     res += '\n';
-    const cleanAfter = cleanAfterStr(rest);
-    if (cleanAfter.trim()) res += `\n${indent}${cleanAfter.trim()}\n\n`;
     return res;
   });
 
-  // Standalone References: ^text^ or ^^text^^ -> tagged blockquote
-  text = text.replace(/^([ \t]*)(.*?)\^+([^\^\r\n]+)\^+(.*)$/gm, (match, indent, before, ref, after) => {
-    let res = '';
-    if (before.trim()) res += `${indent}${before.trim()}\n\n`;
-    res += `\n${indent}> [REFERENCE] ${ref.trim()}\n`;
-    const cleanAfter = (after || '').replace(/^[.\u06D4\s]+/, '');
-    if (cleanAfter.trim()) res += `\n${indent}${cleanAfter.trim()}\n\n`;
-    return res;
+  // Standalone References: entire line is ^text^ or ^^text^^ -> tagged blockquote
+  text = text.replace(/^[ \t]*\^+([^\^\r\n]+)\^+\s*$/gm, (match, ref) => {
+    return `\n> [REFERENCE] ${ref.trim()}\n`;
   });
+
+  // Inline Scholars' sayings / terms / expressions: @Saying@ or @@Saying@@ -> bold quotation «Saying»
+  text = text.replace(/@+([^@\r\n]+)@+/g, '**«$1»**');
+
+  // Inline Hadith: %Hadith% or %%Hadith%% -> bold quotation «Hadith»
+  text = text.replace(/%+([^%\r\n]+)%+/g, '**«$1»**');
+
+  // Inline Qur'an: &Ayah& or &&Ayah&& -> bold quotation ﴿Ayah﴾
+  text = text.replace(/&+([^&\r\n]+)&+/g, '**﴿$1﴾**');
+
+  // Inline Poetry: $Poetry$ or $$Poetry$$ -> bold quotation «Poetry»
+  text = text.replace(/\$+([^$\r\n]+)\$+/g, '**«$1»**');
+
+  // Inline References: ^Ref^ or ^^Ref^^ -> subtle reference (*Ref*)
+  text = text.replace(/\^+([^\^\r\n]+)\^+/g, ' (*$1*)');
 
   // Remove any remaining standalone lines containing only a dot or period
   text = text.replace(/^\s*[\.\u06D4]\s*$/gm, '');
@@ -332,9 +318,6 @@ function preprocessFrameText(frameStr: string): string {
 
   // ++Keyword++ -> ~~Keyword~~.
   text = text.replace(/\+\+([^+]+)\+\+/g, '~~$1~~');
-
-  // Wrap Arabic quotes in ~~ to parse as <del>, which we style specially.
-  text = text.replace(/«([^»\n]+)»/g, '~~«$1»~~');
 
   // Automatically indent sub-list items under parent title bullets
   text = autoIndentSubLists(text);
@@ -588,21 +571,6 @@ export function Bubble({
         return <em className="italic" {...props} />;
       },
       del: ({ node, ...props }: any) => {
-        const text = extractText(props.children);
-        if (text.startsWith('«') && text.endsWith('»')) {
-          return (
-            <span
-              className={`block w-full my-4 px-5 py-5 rounded-2xl border-r-[4px] transition-all duration-300 hover:shadow-md ${dark
-                ? 'bg-[#0f172a]/90 border-emerald-400 text-emerald-50 shadow-[0_4px_15px_rgba(0,0,0,0.2)]'
-                : 'bg-[#FDFBF7] border-purple-600 text-[#1E1B4B] shadow-sm ring-1 ring-purple-100/70'
-                }`}
-            >
-              <span className="block text-[16.5px] md:text-[17.5px] leading-[2.2] font-bold text-center">
-                {props.children}
-              </span>
-            </span>
-          );
-        }
         return (
           <span
             className={`inline-flex items-center mx-1 px-3 py-1 rounded-lg border align-middle font-bold text-[13px] md:text-[14px] ${dark

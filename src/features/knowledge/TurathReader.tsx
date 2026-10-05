@@ -452,19 +452,19 @@ const RenderSharhDivider = ({ readerTheme }: { readerTheme: 'light' | 'dark' | '
     <div className="absolute inset-0 flex items-center">
       <div
         className={`w-full border-t-2 border-dashed ${readerTheme === 'dark'
-            ? 'border-amber-500/35'
-            : readerTheme === 'sepia'
-              ? 'border-[#B89F7D]'
-              : 'border-amber-400/60'
+          ? 'border-amber-500/35'
+          : readerTheme === 'sepia'
+            ? 'border-[#B89F7D]'
+            : 'border-amber-400/60'
           }`}
       />
     </div>
     <div
       className={`relative px-4 py-1 text-xs font-extrabold rounded-full border backdrop-blur-md transition-all ${readerTheme === 'dark'
-          ? 'bg-[#181825] border-amber-500/40 text-amber-300 shadow-sm'
-          : readerTheme === 'sepia'
-            ? 'bg-[#F4ECD8] border-[#C8B89E] text-[#7A401A] shadow-2xs'
-            : 'bg-white border-amber-300 text-amber-900 shadow-xs'
+        ? 'bg-[#181825] border-amber-500/40 text-amber-300 shadow-sm'
+        : readerTheme === 'sepia'
+          ? 'bg-[#F4ECD8] border-[#C8B89E] text-[#7A401A] shadow-2xs'
+          : 'bg-white border-amber-300 text-amber-900 shadow-xs'
         }`}
     >
       الشرح
@@ -508,19 +508,19 @@ const RenderFootnotes = ({
         <div className="absolute inset-0 flex items-center">
           <div
             className={`w-full border-t-2 border-dashed ${readerTheme === 'dark'
-                ? 'border-purple-500/30'
-                : readerTheme === 'sepia'
-                  ? 'border-[#C8B89E]'
-                  : 'border-purple-200/80'
+              ? 'border-purple-500/30'
+              : readerTheme === 'sepia'
+                ? 'border-[#C8B89E]'
+                : 'border-purple-200/80'
               }`}
           />
         </div>
         <div
           className={`relative px-4 py-1 text-xs font-extrabold rounded-full border backdrop-blur-md transition-all ${readerTheme === 'dark'
-              ? 'bg-[#181825] border-purple-500/40 text-purple-300 shadow-sm'
-              : readerTheme === 'sepia'
-                ? 'bg-[#F4ECD8] border-[#C8B89E] text-[#5C3F22] shadow-2xs'
-                : 'bg-white border-purple-200 text-purple-800 shadow-xs'
+            ? 'bg-[#181825] border-purple-500/40 text-purple-300 shadow-sm'
+            : readerTheme === 'sepia'
+              ? 'bg-[#F4ECD8] border-[#C8B89E] text-[#5C3F22] shadow-2xs'
+              : 'bg-white border-purple-200 text-purple-800 shadow-xs'
             }`}
         >
           الحواشي والتعليقات
@@ -1186,7 +1186,7 @@ export default function TurathReader({
 
       for (let i = 0; i < pagesToFetch.length; i++) {
         if (currentSession !== pageSessionRef.current) return;
-        
+
         try {
           const baseUrl = import.meta.env.VITE_DATA_INGESTION_URL || 'https://abourida-zad-tutor-engine-space.hf.space';
           const res = await fetch(`${baseUrl}/api/v1/data-ingestion/turath-page-preview/${book.id}/${pagesToFetch[i]}`);
@@ -1195,7 +1195,7 @@ export default function TurathReader({
             break;
           }
           const data = await res.json();
-          
+
           if (data && data.text) {
             const { main, matn, sharh, footnote } = processTextContent(data.text);
             const newPage = {

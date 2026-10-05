@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import bgDark from '@/assets/images/image.webp'
+import TurathAdminManager from './TurathAdminManager'
 
 const TUTOR_ENGINE_URL = import.meta.env.VITE_TUTOR_ENGINE_URL || 'https://abourida-zad-tutor-engine-space.hf.space'
 const API_BASE = TUTOR_ENGINE_URL
@@ -46,7 +47,15 @@ interface LogEntry {
   details?: string
 }
 
-export default function AdminDashboard({ onExit, onNavigateToIngestion }: { onExit: () => void; onNavigateToIngestion?: () => void }) {
+export default function AdminDashboard({ 
+  onExit, 
+  onNavigateToIngestion,
+  onNavigateToObservability 
+}: { 
+  onExit: () => void; 
+  onNavigateToIngestion?: () => void;
+  onNavigateToObservability?: () => void;
+}) {
   const [hierarchy, setHierarchy] = useState<Record<string, Record<string, string[]>>>({})
   const [loadingBooks, setLoadingBooks] = useState(true)
   const [fetchError, setFetchError] = useState<string | null>(null)
@@ -77,6 +86,29 @@ export default function AdminDashboard({ onExit, onNavigateToIngestion }: { onEx
   const [logs, setLogs] = useState<LogEntry[]>([])
   const [showLogsDrawer, setShowLogsDrawer] = useState(false)
 
+  // Library Provider Switcher (Mongo RAG vs Turath Global)
+  const [librarySource, setLibrarySource] = useState<'mongo' | 'turath'>(() => {
+    return (localStorage.getItem('zad_study_library_source') as 'mongo' | 'turath') || 'mongo'
+  })
+
+  // Master Section Tab (Mongo vs Turath)
+  const [activeSectionTab, setActiveSectionTab] = useState<'mongo' | 'turath'>(() => {
+    return (localStorage.getItem('zad_study_library_source') as 'mongo' | 'turath') || 'mongo'
+  })
+
+  const handleSwitchLibrarySource = (source: 'mongo' | 'turath') => {
+    setLibrarySource(source)
+    localStorage.setItem('zad_study_library_source', source)
+    window.dispatchEvent(new CustomEvent('zad_library_source_changed', { detail: { source } }))
+    window.dispatchEvent(new Event('zad_library_updated'))
+    addLog(
+      'info',
+      source === 'turath'
+        ? 'تم تفعيل: مكتبة تراث الإسلامية الكبرى (8,589 كتاب محقق)'
+        : 'تم تفعيل: نظام زاد الكلاسيكي (Mongo RAG - 198 كتاب)'
+    )
+  }
+
   // Notifications State
   const [showNotificationModal, setShowNotificationModal] = useState(false)
   const [notificationTitle, setNotificationTitle] = useState('تحديث جديد في المكتبة')
@@ -99,6 +131,14 @@ export default function AdminDashboard({ onExit, onNavigateToIngestion }: { onEx
   const abortControllerRef = useRef<AbortController | null>(null)
   const activeJobAbortRef = useRef<AbortController | null>(null)
   const jobsRef = useRef<Job[]>([])
+  const mainScrollRef = useRef<HTMLDivElement>(null)
+
+  // Ensure scroll is at the top upon opening
+  useEffect(() => {
+    if (mainScrollRef.current) {
+      mainScrollRef.current.scrollTop = 0
+    }
+  }, [])
 
   // Keep jobsRef in sync
   useEffect(() => { jobsRef.current = jobs }, [jobs])
@@ -522,63 +562,80 @@ export default function AdminDashboard({ onExit, onNavigateToIngestion }: { onEx
       <div className="pointer-events-none absolute inset-0 bg-[#12041f]/90 backdrop-blur-md" />
 
       {/* Header */}
-      <header className="relative z-10 flex h-16 shrink-0 items-center justify-between border-b border-white/10 bg-[#1a0730]/60 px-6 backdrop-blur-md">
+      <header className="relative z-10 flex h-16 shrink-0 items-center justify-between border-b border-white/10 bg-[#1a0730]/70 px-6 backdrop-blur-md">
         <div className="flex items-center gap-3">
           <button
             onClick={onExit}
             className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 text-white/70 transition-colors hover:bg-white/20 hover:text-white"
+            title="العودة"
           >
             →
           </button>
           <div>
-            <h1 className="font-display text-lg font-bold text-white">لوحة تحكم المكتبة (Admin Dashboard)</h1>
-            <p className="text-xs text-white/60">بناء وتحديث كاش الخرائط وفهارس الدروس</p>
+            <h1 className="font-display text-lg font-bold text-white tracking-wide">إدارة وضع الدراسة</h1>
+            <p className="text-xs text-white/60">التحكم المركزي في مسارات الكتب وفهارس المعرفة</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          {onNavigateToIngestion && (
-            <button
-              onClick={onNavigateToIngestion}
-              className="flex items-center gap-1.5 rounded-xl bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 border border-blue-500/30 px-3 py-2 text-xs font-bold transition-all shadow-sm"
-              title="الانتقال إلى واجهة استدخال ومعالجة كتب الذكاء الاصطناعي"
-            >
-              ✨ معالجة الـ AI (Ingestion) ↗
-            </button>
-          )}
+        {/* Global Active Engine Selector (Centralized & Clean) */}
+        <div className="hidden md:flex items-center gap-1.5 rounded-2xl bg-black/50 p-1 border border-white/10 shadow-inner backdrop-blur-md">
+          <span className="text-xs font-semibold text-white/60 px-2.5">المحرك المعتمد:</span>
+          <button
+            type="button"
+            onClick={() => handleSwitchLibrarySource('mongo')}
+            className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition-all ${
+              librarySource === 'mongo'
+                ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-500/25 ring-1 ring-emerald-400/40'
+                : 'text-white/60 hover:text-white hover:bg-white/5'
+            }`}
+            title="نظام زاد الكلاسيكي (Mongo RAG - 198 كتاب)"
+          >
+            <span className="text-[10px]">🟢</span>
+            <span>زاد (198 كتاب)</span>
+          </button>
 
+          <button
+            type="button"
+            onClick={() => handleSwitchLibrarySource('turath')}
+            className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition-all ${
+              librarySource === 'turath'
+                ? 'bg-gradient-to-r from-sky-600 to-blue-600 text-white shadow-md shadow-sky-500/25 ring-1 ring-sky-400/40'
+                : 'text-white/60 hover:text-white hover:bg-white/5'
+            }`}
+            title="مكتبة تراث الشاملة (Turath Global - 8,589 كتاب)"
+          >
+            <span className="text-[10px]">🏛️</span>
+            <span>تراث (8,589 كتاب)</span>
+          </button>
+        </div>
+
+        {/* Header Quick Navigation Tools */}
+        <div className="flex items-center gap-2">
           {/* System Error & Logs Trigger Button */}
           <button
             onClick={() => setShowLogsDrawer(!showLogsDrawer)}
-            className={`flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-bold transition-all border ${
+            className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium transition-all border ${
               logs.some(l => l.type === 'error')
                 ? 'bg-red-500/20 text-red-300 border-red-500/40 animate-pulse'
-                : 'bg-white/10 text-white/80 border-white/15 hover:bg-white/20'
+                : 'bg-white/5 text-white/80 border-white/10 hover:bg-white/10'
             }`}
             title="فتح سجل الأخطاء والنشاط"
           >
-            📜 سجل الأخطاء {logs.filter(l => l.type === 'error').length > 0 && `(${logs.filter(l => l.type === 'error').length})`}
-          </button>
-
-          <button
-            onClick={handleFastSync}
-            disabled={syncing}
-            className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-2 text-xs font-bold text-white shadow-lg transition-transform hover:scale-105 disabled:opacity-50"
-          >
-            {syncing ? '⏳ جاري المزامنة...' : '⚡ إعادة مزامنة سريعة'}
-          </button>
-          <button
-            onClick={handleCheckIntegrity}
-            disabled={checkingIntegrity}
-            className="flex items-center gap-2 rounded-xl border border-emerald-500/40 bg-emerald-500/20 px-4 py-2 text-xs font-bold text-emerald-300 transition-colors hover:bg-emerald-500/30 disabled:opacity-50"
-          >
-            {checkingIntegrity ? '⏳ جاري الفحص...' : '🩺 فحص سلامة الشجرة'}
+            <span>📜 السجلات</span>
+            {logs.filter(l => l.type === 'error').length > 0 && (
+              <span className="rounded-full bg-red-500 text-white text-[10px] px-1.5 py-0.2 font-bold">
+                {logs.filter(l => l.type === 'error').length}
+              </span>
+            )}
           </button>
         </div>
       </header>
 
       {/* Main Content */}
-      <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 overflow-y-auto p-6 md:p-10 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <div 
+        ref={mainScrollRef}
+        className="relative z-10 mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 overflow-y-auto p-6 md:p-10 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent"
+      >
 
         {/* REAL-TIME LOGS DRAWER / BANNER IF THERE ARE ERRORS */}
         {logs.length > 0 && logs[0].type === 'error' && (
@@ -598,6 +655,103 @@ export default function AdminDashboard({ onExit, onNavigateToIngestion }: { onEx
             </button>
           </div>
         )}
+
+        {/* MASTER SECTION TABS: TURATH VS MONGO */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-1.5 rounded-2xl bg-black/40 border border-white/10 backdrop-blur-xl shadow-xl">
+          <button
+            type="button"
+            onClick={() => setActiveSectionTab('turath')}
+            className={`flex items-center justify-between gap-3 rounded-xl px-5 py-3.5 transition-all text-right select-none ${
+              activeSectionTab === 'turath'
+                ? 'bg-gradient-to-r from-sky-600 to-blue-700 text-white shadow-lg shadow-sky-500/20 ring-1 ring-sky-400/40'
+                : 'text-white/60 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 text-xl">
+                🏛️
+              </span>
+              <div>
+                <h2 className="font-bold text-sm text-white">قسم مسار TURATH (المكتبة الشاملة)</h2>
+                <p className="text-[11px] opacity-75 font-normal">إدارة ظهور 8,589 كتاب محقق عبر 40 مجالاً إسلامياً</p>
+              </div>
+            </div>
+            {librarySource === 'turath' && (
+              <span className="shrink-0 rounded-full bg-sky-400/20 px-2.5 py-1 text-[10px] font-bold text-sky-200 border border-sky-400/30">
+                المحرك المعتمد
+              </span>
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveSectionTab('mongo')}
+            className={`flex items-center justify-between gap-3 rounded-xl px-5 py-3.5 transition-all text-right select-none ${
+              activeSectionTab === 'mongo'
+                ? 'bg-gradient-to-r from-emerald-600 to-teal-700 text-white shadow-lg shadow-emerald-500/20 ring-1 ring-emerald-400/40'
+                : 'text-white/60 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 text-xl">
+                🟢
+              </span>
+              <div>
+                <h2 className="font-bold text-sm text-white">قسم مسار MONGO (النظام الكلاسيكي)</h2>
+                <p className="text-[11px] opacity-75 font-normal">إدارة فهارس وقاعدة Mongo Atlas والـ RAG (198 كتاب)</p>
+              </div>
+            </div>
+            {librarySource === 'mongo' && (
+              <span className="shrink-0 rounded-full bg-emerald-400/20 px-2.5 py-1 text-[10px] font-bold text-emerald-200 border border-emerald-400/30">
+                المحرك المعتمد
+              </span>
+            )}
+          </button>
+        </div>
+
+        {/* SECTION CONTENT: TURATH vs MONGO */}
+        {activeSectionTab === 'turath' ? (
+          <TurathAdminManager
+            librarySource={librarySource}
+            onSwitchLibrarySource={handleSwitchLibrarySource}
+            onNotify={(type, msg) => addLog(type, msg)}
+          />
+        ) : (
+          <>
+            {/* MONGO CONTROL TOOLBAR */}
+            <div className="flex flex-wrap items-center justify-between gap-4 p-5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-xl">
+              <div className="flex items-center gap-3">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/20 text-lg text-emerald-400 border border-emerald-500/30">
+                  🟢
+                </span>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-bold text-sm text-white">إدارة كتب وقاعدة Mongo Atlas (198 كتاب)</h3>
+                    <span className="rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold px-2 py-0.5 border border-emerald-500/30">
+                      RAG الكلاسيكي
+                    </span>
+                  </div>
+                  <p className="mt-0.5 text-xs text-white/60">بناء شجرة الفهارس المحلية، فحص سلامة الـ Chunks، والنشر للمستخدمين</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleCheckIntegrity}
+                  disabled={checkingIntegrity}
+                  className="flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/15 px-3.5 py-2 text-xs font-bold text-emerald-300 transition-colors hover:bg-emerald-500/25 disabled:opacity-50"
+                >
+                  {checkingIntegrity ? '⏳ جاري الفحص...' : '🩺 فحص سلامة الشجرة'}
+                </button>
+                <button
+                  onClick={handleFastSync}
+                  disabled={syncing}
+                  className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-2 text-xs font-bold text-white shadow-md hover:brightness-110 active:scale-95 transition-all disabled:opacity-50"
+                >
+                  {syncing ? '⏳ جاري المزامنة...' : '⚡ إعادة مزامنة سريعة'}
+                </button>
+              </div>
+            </div>
 
         {/* STATS OVERVIEW CARDS */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -923,7 +1077,8 @@ export default function AdminDashboard({ onExit, onNavigateToIngestion }: { onEx
             </div>
           )}
         </div>
-
+        </>
+      )}
       </div>
 
       {/* SYSTEM LOGS & ERROR DRAWER MODAL */}

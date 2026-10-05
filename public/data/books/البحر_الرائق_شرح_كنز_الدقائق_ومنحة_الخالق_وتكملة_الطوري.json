@@ -1,0 +1,5205 @@
+{
+  "title": "البحر الرائق شرح كنز الدقائق ومنحة الخالق وتكملة الطوري",
+  "chunk_id": null,
+  "children": [
+    {
+      "title": "مقدمة الكتاب",
+      "chunk_id": "parent_1259_1__1",
+      "children": []
+    },
+    {
+      "title": "كتاب الطهارة",
+      "chunk_id": "parent_1259_6__2",
+      "children": [
+        {
+          "title": "سبب وجوب الطهارة",
+          "chunk_id": "parent_1259_8__3",
+          "children": []
+        },
+        {
+          "title": "أحكام الوضوء",
+          "chunk_id": "parent_1259_9__4",
+          "children": [
+            {
+              "title": "فرائض الوضوء",
+              "chunk_id": "parent_1259_9__5",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "أركان الطهارة",
+          "chunk_id": "parent_1259_9__6",
+          "children": [
+            {
+              "title": "سنن الوضوء",
+              "chunk_id": "parent_1259_15__7",
+              "children": []
+            },
+            {
+              "title": "نواقض الوضوء",
+              "chunk_id": "parent_1259_30__8",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "أحكام الغسل",
+          "chunk_id": "parent_1259_46__9",
+          "children": [
+            {
+              "title": "فرائض الغسل",
+              "chunk_id": "parent_1259_46__10",
+              "children": []
+            },
+            {
+              "title": "سنن الغسل",
+              "chunk_id": "parent_1259_51__11",
+              "children": []
+            },
+            {
+              "title": "آداب الغسل",
+              "chunk_id": "parent_1259_53__12",
+              "children": []
+            },
+            {
+              "title": "موجبات الغسل",
+              "chunk_id": "parent_1259_54__13",
+              "children": []
+            },
+            {
+              "title": "الغسل المسنون",
+              "chunk_id": "parent_1259_66__14",
+              "children": []
+            },
+            {
+              "title": "الغسل الواجب",
+              "chunk_id": "parent_1259_67__15",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "أحكام المياه",
+          "chunk_id": "parent_1259_68__16",
+          "children": [
+            {
+              "title": "الوضوء بماء السماء",
+              "chunk_id": "parent_1259_68__17",
+              "children": []
+            },
+            {
+              "title": "الوضوء بالماء ولو خالطه شيء طاهر فغير أحد أوصافه",
+              "chunk_id": "parent_1259_71__18",
+              "children": []
+            },
+            {
+              "title": "موت حيوان ليس له دم سائل في الماء القليل",
+              "chunk_id": "parent_1259_92__19",
+              "children": []
+            },
+            {
+              "title": "الماء المستعمل",
+              "chunk_id": "parent_1259_94__20",
+              "children": [
+                {
+                  "title": "صفة الماء المستعمل",
+                  "chunk_id": "parent_1259_98__21",
+                  "children": []
+                },
+                {
+                  "title": "حكم الماء المستعمل",
+                  "chunk_id": "parent_1259_101__22",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "الطهارة بالدباغ",
+          "chunk_id": "parent_1259_104__23",
+          "children": [
+            {
+              "title": "استعمال جلد الخنزير والآدمي بالدباغ",
+              "chunk_id": "parent_1259_104__24",
+              "children": []
+            },
+            {
+              "title": "استعمال جلد الفيل إذا دبغ",
+              "chunk_id": "parent_1259_106__25",
+              "children": []
+            },
+            {
+              "title": "التداوي ببول ما يؤكل لحمه",
+              "chunk_id": "parent_1259_121__26",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "طهارة سؤر الآدمي والفرس وما يؤكل لحمه",
+          "chunk_id": "parent_1259_132__27",
+          "children": [
+            {
+              "title": "سؤر الكلب والخنزير وسباع البهائم",
+              "chunk_id": "parent_1259_133__28",
+              "children": []
+            },
+            {
+              "title": "الصلاة مع حمل ما سؤره مكروه كالهرة",
+              "chunk_id": "parent_1259_139__29",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب التيمم",
+          "chunk_id": "parent_1259_144__30",
+          "children": [
+            {
+              "title": "أركان التيمم",
+              "chunk_id": "parent_1259_144__31",
+              "children": []
+            },
+            {
+              "title": "شرائط التيمم",
+              "chunk_id": "parent_1259_145__32",
+              "children": []
+            },
+            {
+              "title": "كيفية التيمم",
+              "chunk_id": "parent_1259_152__33",
+              "children": []
+            },
+            {
+              "title": "سنن التيمم",
+              "chunk_id": "parent_1259_152__34",
+              "children": []
+            },
+            {
+              "title": "نواقض التيمم",
+              "chunk_id": "parent_1259_158__35",
+              "children": []
+            },
+            {
+              "title": "التيمم قبل الوقت",
+              "chunk_id": "parent_1259_163__36",
+              "children": []
+            },
+            {
+              "title": "التيمم لخوف فوت صلاة الجنازة",
+              "chunk_id": "parent_1259_164__37",
+              "children": []
+            },
+            {
+              "title": "التيمم لخوف فوت صلاة عيد",
+              "chunk_id": "parent_1259_165__38",
+              "children": []
+            },
+            {
+              "title": "التيمم لخوف فوت صلاة الجمعة وصلاة مكتوبة",
+              "chunk_id": "parent_1259_166__39",
+              "children": []
+            },
+            {
+              "title": "رجل تيمم للجنابة وصلى ثم أحدث ومعه من الماء قدر ما يتوضأ به",
+              "chunk_id": "parent_1259_171__40",
+              "children": []
+            },
+            {
+              "title": "الجمع بين التيمم والغسل",
+              "chunk_id": "parent_1259_171__41",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب المسح على الخفين",
+          "chunk_id": "parent_1259_172__42",
+          "children": [
+            {
+              "title": "المسح على الخفين لمن وجب عليه الغسل",
+              "chunk_id": "parent_1259_176__43",
+              "children": []
+            },
+            {
+              "title": "بيان مدة المسح على الخفين",
+              "chunk_id": "parent_1259_179__44",
+              "children": []
+            },
+            {
+              "title": "بيان محل المسح على الخفين",
+              "chunk_id": "parent_1259_179__45",
+              "children": []
+            },
+            {
+              "title": "بيان مقدار آلة المسح علي الخفين",
+              "chunk_id": "parent_1259_181__46",
+              "children": []
+            },
+            {
+              "title": "ما يمنع المسح على الخفين",
+              "chunk_id": "parent_1259_183__47",
+              "children": []
+            },
+            {
+              "title": "ما ينقض المسح علي الخفين",
+              "chunk_id": "parent_1259_185__48",
+              "children": []
+            },
+            {
+              "title": "المسح على الجرموق",
+              "chunk_id": "parent_1259_188__49",
+              "children": []
+            },
+            {
+              "title": "المسح على الجورب",
+              "chunk_id": "parent_1259_190__50",
+              "children": []
+            },
+            {
+              "title": "المسح على الجبيرة وخرقة القرحة",
+              "chunk_id": "parent_1259_192__51",
+              "children": []
+            },
+            {
+              "title": "المسح على العمامة والقلنسوة والبرقع والقفاز",
+              "chunk_id": "parent_1259_193__52",
+              "children": []
+            },
+            {
+              "title": "المسح على الجبيرة مع الغسل",
+              "chunk_id": "parent_1259_195__53",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب الحيض",
+          "chunk_id": "parent_1259_198__54",
+          "children": [
+            {
+              "title": "كيفية الحيض",
+              "chunk_id": "parent_1259_201__55",
+              "children": []
+            },
+            {
+              "title": "أقل الحيض",
+              "chunk_id": "parent_1259_201__56",
+              "children": []
+            },
+            {
+              "title": "ما يمنعه الحيض",
+              "chunk_id": "parent_1259_202__57",
+              "children": []
+            },
+            {
+              "title": "أقل الطهر من الحيض",
+              "chunk_id": "parent_1259_217__58",
+              "children": []
+            },
+            {
+              "title": "المحيرة في الحيض",
+              "chunk_id": "parent_1259_218__59",
+              "children": []
+            },
+            {
+              "title": "الحكم فيما لو زاد الدم على أكثر الحيض والنفاس",
+              "chunk_id": "parent_1259_222__60",
+              "children": []
+            },
+            {
+              "title": "حيض المبتدأة ونفاسها",
+              "chunk_id": "parent_1259_224__61",
+              "children": []
+            },
+            {
+              "title": "أحكام النفاس",
+              "chunk_id": "parent_1259_228__62",
+              "children": []
+            },
+            {
+              "title": "أقل النفاس",
+              "chunk_id": "parent_1259_229__63",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب الأنجاس",
+          "chunk_id": "parent_1259_230__64",
+          "children": [
+            {
+              "title": "التطهير بالدهن",
+              "chunk_id": "parent_1259_234__65",
+              "children": []
+            },
+            {
+              "title": "جلدة آدمي إذا وقعت في الماء القليل",
+              "chunk_id": "parent_1259_242__66",
+              "children": []
+            },
+            {
+              "title": "طهارة دم السمك ولعاب البغل والحمار",
+              "chunk_id": "parent_1259_246__67",
+              "children": []
+            },
+            {
+              "title": "النجس المرئي يطهر بزوال عينه",
+              "chunk_id": "parent_1259_247__68",
+              "children": []
+            },
+            {
+              "title": "الاستنجاء بحجر منق",
+              "chunk_id": "parent_1259_251__69",
+              "children": []
+            },
+            {
+              "title": "آداب دخول الخلاء",
+              "chunk_id": "parent_1259_255__71",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "كتاب الصلاة",
+      "chunk_id": "parent_1259_255__70",
+      "children": [
+        {
+          "title": "حكم الصلاة",
+          "chunk_id": "parent_1259_255__72",
+          "children": []
+        },
+        {
+          "title": "أوقات الصلاة",
+          "chunk_id": "parent_1259_256__73",
+          "children": [
+            {
+              "title": "وقت صلاة الفجر",
+              "chunk_id": "parent_1259_256__74",
+              "children": []
+            },
+            {
+              "title": "وقت صلاة العصر",
+              "chunk_id": "parent_1259_257__75",
+              "children": []
+            },
+            {
+              "title": "وقت صلاة المغرب",
+              "chunk_id": "parent_1259_257__76",
+              "children": []
+            },
+            {
+              "title": "وقت صلاة الظهر",
+              "chunk_id": "parent_1259_257__77",
+              "children": []
+            },
+            {
+              "title": "وقت صلاة العشاء",
+              "chunk_id": "parent_1259_258__78",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "الأوقات المنهي عن الصلاة فيها",
+          "chunk_id": "parent_1259_260__79",
+          "children": [
+            {
+              "title": "التنفل بعد صلاة الفجر والعصر",
+              "chunk_id": "parent_1259_264__80",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "الجمع بين الصلاتين في وقت بعذر",
+          "chunk_id": "parent_1259_266__81",
+          "children": [
+            {
+              "title": "استقبال القبلة بالآذان والإقامة",
+              "chunk_id": "parent_1259_271__84",
+              "children": []
+            },
+            {
+              "title": "إجابة المؤذن",
+              "chunk_id": "parent_1259_272__85",
+              "children": []
+            },
+            {
+              "title": "جلوس المؤذن بين الأذان والإقامة",
+              "chunk_id": "parent_1259_274__86",
+              "children": []
+            },
+            {
+              "title": "الأذان قبل الوقت",
+              "chunk_id": "parent_1259_276__87",
+              "children": []
+            },
+            {
+              "title": "أذان الجنب وإقامته وأذان المرأة والفاسق والقاعد والسكران",
+              "chunk_id": "parent_1259_276__88",
+              "children": []
+            },
+            {
+              "title": "أذان العبد وولد الزنا والأعمى والأعرابي",
+              "chunk_id": "parent_1259_278__89",
+              "children": []
+            },
+            {
+              "title": "ترك الأذان والإقامة",
+              "chunk_id": "parent_1259_279__91",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب الأذان",
+          "chunk_id": "parent_1259_266__82",
+          "children": [
+            {
+              "title": "التنفل وقت الخطبة",
+              "chunk_id": "parent_1259_266__83",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب شروط الصلاة",
+          "chunk_id": "parent_1259_279__90",
+          "children": []
+        },
+        {
+          "title": "باب صفة الصلاة",
+          "chunk_id": "parent_1259_305__92",
+          "children": [
+            {
+              "title": "القيام في الصلاة",
+              "chunk_id": "parent_1259_307__93",
+              "children": []
+            },
+            {
+              "title": "القراءة في الصلاة",
+              "chunk_id": "parent_1259_308__94",
+              "children": []
+            },
+            {
+              "title": "الركوع والسجود في الصلاة",
+              "chunk_id": "parent_1259_308__95",
+              "children": []
+            },
+            {
+              "title": "القنوت في الوتر",
+              "chunk_id": "parent_1259_317__96",
+              "children": []
+            },
+            {
+              "title": "الجهر والإسرار في الصلاة",
+              "chunk_id": "parent_1259_318__97",
+              "children": []
+            },
+            {
+              "title": "تكبير العيدين",
+              "chunk_id": "parent_1259_318__98",
+              "children": []
+            },
+            {
+              "title": "سنن الصلاة",
+              "chunk_id": "parent_1259_318__99",
+              "children": []
+            },
+            {
+              "title": "فصل ما يفعله من أراد الدخول في الصلاة",
+              "chunk_id": "parent_1259_321__100",
+              "children": []
+            },
+            {
+              "title": "آداب الصلاة",
+              "chunk_id": "parent_1259_321__101",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب الإمامة",
+          "chunk_id": "parent_1259_363__102",
+          "children": [
+            {
+              "title": "شرائط صحة الإمامة",
+              "chunk_id": "parent_1259_363__103",
+              "children": []
+            },
+            {
+              "title": "صفة الإمامة في الصلاة",
+              "chunk_id": "parent_1259_364__104",
+              "children": []
+            },
+            {
+              "title": "الأحق بالإمامة في الصلاة",
+              "chunk_id": "parent_1259_367__105",
+              "children": []
+            },
+            {
+              "title": "إمامة العبد والأعرابي والفاسق والمبتدع والأعمى وولد الزنا",
+              "chunk_id": "parent_1259_369__106",
+              "children": []
+            },
+            {
+              "title": "جماعة النساء في الصلاة",
+              "chunk_id": "parent_1259_371__107",
+              "children": []
+            },
+            {
+              "title": "وقوف المأمومين في الصلاة خلف الإمام",
+              "chunk_id": "parent_1259_373__108",
+              "children": []
+            },
+            {
+              "title": "حضور النساء الجماعات ومجالس الوعظ",
+              "chunk_id": "parent_1259_379__109",
+              "children": []
+            },
+            {
+              "title": "اقتداء رجل بامرأة أو صبي في الصلاة",
+              "chunk_id": "parent_1259_380__110",
+              "children": []
+            },
+            {
+              "title": "اقتداء المفترض بإمام متنفل أو بإمام يصلي فرضا غير فرض المقتدي",
+              "chunk_id": "parent_1259_381__111",
+              "children": []
+            },
+            {
+              "title": "اقتداء متوضئ بمتيمم",
+              "chunk_id": "parent_1259_384__112",
+              "children": []
+            },
+            {
+              "title": "اقتداء غاسل بماسح في الصلاة",
+              "chunk_id": "parent_1259_385__113",
+              "children": []
+            },
+            {
+              "title": "اقتداء متنفل بمفترض في الصلاة",
+              "chunk_id": "parent_1259_386__114",
+              "children": []
+            },
+            {
+              "title": "اقتدى أمي وقارئ بأمي أو استخلف أميا في الأخريين",
+              "chunk_id": "parent_1259_387__115",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب الحدث في الصلاة",
+          "chunk_id": "parent_1259_388__116",
+          "children": [
+            {
+              "title": "سبقه حدث وكان إماما في الصلاة",
+              "chunk_id": "parent_1259_390__117",
+              "children": []
+            },
+            {
+              "title": "رأى الإمام المتيمم ماء",
+              "chunk_id": "parent_1259_396__118",
+              "children": []
+            },
+            {
+              "title": "استخلاف المسبوق في الصلاة",
+              "chunk_id": "parent_1259_399__119",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب ما يفسد الصلاة وما يكره فيها",
+          "chunk_id": "parent_1259_405__120",
+          "children": [
+            {
+              "title": "الدعاء بما يشبه كلامنا في الصلاة",
+              "chunk_id": "parent_1259_406__121",
+              "children": []
+            },
+            {
+              "title": "الأنين والتأوه وارتفاع بكائه في الصلاة",
+              "chunk_id": "parent_1259_407__122",
+              "children": []
+            },
+            {
+              "title": "التنحنح بلا عذر في الصلاة",
+              "chunk_id": "parent_1259_408__123",
+              "children": []
+            },
+            {
+              "title": "تشميت العاطس في الصلاة",
+              "chunk_id": "parent_1259_408__124",
+              "children": []
+            },
+            {
+              "title": "الفتح على غير إمامه في الصلاة",
+              "chunk_id": "parent_1259_409__125",
+              "children": []
+            },
+            {
+              "title": "القراءة من مصحف في الصلاة",
+              "chunk_id": "parent_1259_414__126",
+              "children": []
+            },
+            {
+              "title": "الأكل والشرب في الصلاة",
+              "chunk_id": "parent_1259_415__127",
+              "children": []
+            },
+            {
+              "title": "العبث بالثوب والبدن في الصلاة",
+              "chunk_id": "parent_1259_423__128",
+              "children": []
+            },
+            {
+              "title": "فرقعة الأصابع في الصلاة",
+              "chunk_id": "parent_1259_425__129",
+              "children": []
+            },
+            {
+              "title": "التخصر في الصلاة",
+              "chunk_id": "parent_1259_425__130",
+              "children": []
+            },
+            {
+              "title": "الالتفات في الصلاة",
+              "chunk_id": "parent_1259_426__131",
+              "children": []
+            },
+            {
+              "title": "الإقعاء في الصلاة",
+              "chunk_id": "parent_1259_426__132",
+              "children": []
+            },
+            {
+              "title": "عقص شعر الرأس في الصلاة",
+              "chunk_id": "parent_1259_428__133",
+              "children": []
+            },
+            {
+              "title": "افتراش ذراعيه في الصلاة",
+              "chunk_id": "parent_1259_429__134",
+              "children": []
+            },
+            {
+              "title": "تغميض عينيه في الصلاة",
+              "chunk_id": "parent_1259_430__135",
+              "children": []
+            },
+            {
+              "title": "قتل الحية والعقرب في الصلاة",
+              "chunk_id": "parent_1259_436__136",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "الوطء فوق المسجد والبول والتغوط",
+          "chunk_id": "parent_1259_439__137",
+          "children": []
+        },
+        {
+          "title": "فصل استقبال القبلة بالفرج في الخلاء واستدبارها",
+          "chunk_id": "parent_1259_439__138",
+          "children": []
+        },
+        {
+          "title": "نقش المسجد",
+          "chunk_id": "parent_1259_442__139",
+          "children": []
+        },
+        {
+          "title": "أعظم المساجد حرمة",
+          "chunk_id": "parent_1259_442__140",
+          "children": []
+        },
+        {
+          "title": "باب الوتر والنوافل",
+          "chunk_id": "parent_1259_443__141",
+          "children": [
+            {
+              "title": "القنوت في غير الوتر",
+              "chunk_id": "parent_1259_450__142",
+              "children": []
+            },
+            {
+              "title": "الصلاة المسنونة كل يوم",
+              "chunk_id": "parent_1259_454__143",
+              "children": []
+            },
+            {
+              "title": "الزيادة على أربع في نفل النهار وعلى ثمان ليلا",
+              "chunk_id": "parent_1259_461__144",
+              "children": []
+            },
+            {
+              "title": "القراءة في ركعات النفل والوتر",
+              "chunk_id": "parent_1259_463__145",
+              "children": []
+            },
+            {
+              "title": "التنفل قاعدا مع قدرته على القيام",
+              "chunk_id": "parent_1259_470__146",
+              "children": []
+            },
+            {
+              "title": "التنفل راكبا",
+              "chunk_id": "parent_1259_472__147",
+              "children": []
+            },
+            {
+              "title": "صلاة التراويح",
+              "chunk_id": "parent_1259_474__148",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب إدراك فريضة الصلاة",
+          "chunk_id": "parent_1259_478__149",
+          "children": [
+            {
+              "title": "الخروج من المسجد بعد الأذان",
+              "chunk_id": "parent_1259_481__150",
+              "children": []
+            },
+            {
+              "title": "خاف فوت الفجر إن أدى سنته",
+              "chunk_id": "parent_1259_482__151",
+              "children": []
+            },
+            {
+              "title": "قضاء سنة الفجر",
+              "chunk_id": "parent_1259_483__152",
+              "children": []
+            },
+            {
+              "title": "قضاء السنة التي قبل الظهر في وقته",
+              "chunk_id": "parent_1259_484__153",
+              "children": []
+            },
+            {
+              "title": "صلاة التطوع عند ضيق الوقت",
+              "chunk_id": "parent_1259_485__154",
+              "children": []
+            },
+            {
+              "title": "فضل الجماعة",
+              "chunk_id": "parent_1259_485__155",
+              "children": []
+            },
+            {
+              "title": "أدرك إمامه راكعا فكبر ووقف حتى رفع رأسه",
+              "chunk_id": "parent_1259_486__156",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب قضاء الفوائت",
+          "chunk_id": "parent_1259_487__157",
+          "children": [
+            {
+              "title": "الترتيب بين صلاة الفائتة والوقتية وبين الفوائت",
+              "chunk_id": "parent_1259_489__158",
+              "children": []
+            },
+            {
+              "title": "سقوط الترتيب بين صلاة الفائتة",
+              "chunk_id": "parent_1259_491__159",
+              "children": []
+            },
+            {
+              "title": "صلى فرضا ذاكرا فائتة",
+              "chunk_id": "parent_1259_499__160",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب سجود السهو",
+          "chunk_id": "parent_1259_501__162",
+          "children": [
+            {
+              "title": "سجود السهو في مطلق الصلاة ولا يختص بالفرائض",
+              "chunk_id": "parent_1259_501__161",
+              "children": []
+            },
+            {
+              "title": "محل سجود السهو",
+              "chunk_id": "parent_1259_502__163",
+              "children": []
+            },
+            {
+              "title": "سبب سجود السهو",
+              "chunk_id": "parent_1259_504__164",
+              "children": []
+            },
+            {
+              "title": "ترك سجدة من ركعة فتذكرها في آخر صلاة",
+              "chunk_id": "parent_1259_505__165",
+              "children": []
+            },
+            {
+              "title": "ترك قنوت الوتر",
+              "chunk_id": "parent_1259_506__166",
+              "children": []
+            },
+            {
+              "title": "الإمام إذا سها عن التكبيرات حتى ركع",
+              "chunk_id": "parent_1259_506__167",
+              "children": []
+            },
+            {
+              "title": "الإمام إذا جهر فيما يخافت أو خافت فيما يجهر",
+              "chunk_id": "parent_1259_507__168",
+              "children": []
+            },
+            {
+              "title": "السهو عن السلام",
+              "chunk_id": "parent_1259_507__169",
+              "children": []
+            },
+            {
+              "title": "ترك جميع واجبات الصلاة ساهيا",
+              "chunk_id": "parent_1259_509__170",
+              "children": []
+            },
+            {
+              "title": "سجد للخامسة في الصلاة",
+              "chunk_id": "parent_1259_516__171",
+              "children": []
+            },
+            {
+              "title": "سلم الساهي فاقتدى به غيره",
+              "chunk_id": "parent_1259_517__172",
+              "children": []
+            },
+            {
+              "title": "شك أنه كم صلى أول مرة",
+              "chunk_id": "parent_1259_520__173",
+              "children": []
+            },
+            {
+              "title": "توهم مصلي الظهر أنه أتمها فسلم ثم علم أنه صلى ركعتين",
+              "chunk_id": "parent_1259_523__174",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب صلاة المريض",
+          "chunk_id": "parent_1259_524__175",
+          "children": [
+            {
+              "title": "تعذر علي المريض الركوع والسجود",
+              "chunk_id": "parent_1259_526__176",
+              "children": []
+            },
+            {
+              "title": "تعذر علي المريض القعود في الصلاة",
+              "chunk_id": "parent_1259_526__177",
+              "children": []
+            },
+            {
+              "title": "لم يقدر المصلي المريض على الإيماء برأسه",
+              "chunk_id": "parent_1259_528__178",
+              "children": []
+            },
+            {
+              "title": "صلى في فلك قاعدا بلا عذر",
+              "chunk_id": "parent_1259_529__179",
+              "children": []
+            },
+            {
+              "title": "للمتطوع أن يتكئ على شيء إن تعب في الصلاة",
+              "chunk_id": "parent_1259_530__180",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب سجود التلاوة",
+          "chunk_id": "parent_1259_531__181",
+          "children": [
+            {
+              "title": "أركان سجود التلاوة",
+              "chunk_id": "parent_1259_531__182",
+              "children": []
+            },
+            {
+              "title": "مواضع سجدة التلاوة",
+              "chunk_id": "parent_1259_531__183",
+              "children": []
+            },
+            {
+              "title": "من تجب عليه سجدة التلاوة",
+              "chunk_id": "parent_1259_532__184",
+              "children": []
+            },
+            {
+              "title": "تأخير سجدة التلاوة عن وقت القراءة",
+              "chunk_id": "parent_1259_532__185",
+              "children": []
+            },
+            {
+              "title": "كيفية سجود التلاوة",
+              "chunk_id": "parent_1259_540__186",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب صلاة المسافر",
+          "chunk_id": "parent_1259_541__187",
+          "children": [
+            {
+              "title": "اقتداء مسافر بمقيم في الصلاة",
+              "chunk_id": "parent_1259_548__188",
+              "children": []
+            },
+            {
+              "title": "قضاء فائتة السفر والحضر",
+              "chunk_id": "parent_1259_552__189",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب صلاة الجمعة",
+          "chunk_id": "parent_1259_553__190",
+          "children": [
+            {
+              "title": "صلاة الجمعة بمنى وعرفات",
+              "chunk_id": "parent_1259_556__191",
+              "children": []
+            },
+            {
+              "title": "أداء الجمعة في مصر واحد بمواضع كثيرة",
+              "chunk_id": "parent_1259_557__192",
+              "children": []
+            },
+            {
+              "title": "شروط صحة الجمعة",
+              "chunk_id": "parent_1259_558__193",
+              "children": []
+            },
+            {
+              "title": "شروط وجوب الجمعة",
+              "chunk_id": "parent_1259_566__194",
+              "children": []
+            },
+            {
+              "title": "أدرك الجمعة في التشهد أو في سجود السهو",
+              "chunk_id": "parent_1259_570__195",
+              "children": []
+            },
+            {
+              "title": "الصلاة والكلام بعد خروج الإمام في الجمعة",
+              "chunk_id": "parent_1259_570__196",
+              "children": []
+            },
+            {
+              "title": "السعي وترك البيع بالأذان الأول للجمعة",
+              "chunk_id": "parent_1259_571__197",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب العيدين",
+          "chunk_id": "parent_1259_573__198",
+          "children": [
+            {
+              "title": "الخروج إلى الجبانة يوم العيد",
+              "chunk_id": "parent_1259_574__199",
+              "children": []
+            },
+            {
+              "title": "التكبير يوم العيد",
+              "chunk_id": "parent_1259_575__200",
+              "children": []
+            },
+            {
+              "title": "ما يفعله يوم الفطر",
+              "chunk_id": "parent_1259_575__201",
+              "children": []
+            },
+            {
+              "title": "وقت صلاة العيد",
+              "chunk_id": "parent_1259_576__202",
+              "children": []
+            },
+            {
+              "title": "الأكل قبل صلاة العيد",
+              "chunk_id": "parent_1259_578__203",
+              "children": []
+            },
+            {
+              "title": "خطبة العيد",
+              "chunk_id": "parent_1259_579__204",
+              "children": []
+            },
+            {
+              "title": "الجهر بالتكبير في العيد",
+              "chunk_id": "parent_1259_579__205",
+              "children": []
+            },
+            {
+              "title": "وقوف الناس يوم عرفة في غير عرفات تشبها بالواقفين بها",
+              "chunk_id": "parent_1259_580__206",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب صلاة الكسوف",
+          "chunk_id": "parent_1259_583__207",
+          "children": []
+        },
+        {
+          "title": "باب صلاة الاستسقاء",
+          "chunk_id": "parent_1259_584__208",
+          "children": [
+            {
+              "title": "دعاء واستغفار الاستسقاء",
+              "chunk_id": "parent_1259_584__209",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "كتاب الجنائز",
+      "chunk_id": "parent_1259_586__210",
+      "children": [
+        {
+          "title": "أركان وسنن صلاة الجنازة",
+          "chunk_id": "parent_1259_586__211",
+          "children": []
+        },
+        {
+          "title": "باب صلاة الخوف",
+          "chunk_id": "parent_1259_586__212",
+          "children": []
+        },
+        {
+          "title": "حضور الجنب والحائض وقت الاحتضار",
+          "chunk_id": "parent_1259_587__213",
+          "children": []
+        },
+        {
+          "title": "ما يصنع بالمحتضر",
+          "chunk_id": "parent_1259_587__214",
+          "children": []
+        },
+        {
+          "title": "تلقين الشهادة للمحتضر",
+          "chunk_id": "parent_1259_587__215",
+          "children": []
+        },
+        {
+          "title": "غسل الميت",
+          "chunk_id": "parent_1259_589__216",
+          "children": []
+        },
+        {
+          "title": "تكفين الميت",
+          "chunk_id": "parent_1259_592__217",
+          "children": []
+        },
+        {
+          "title": "فصل الأحق بالصلاة علي الميت",
+          "chunk_id": "parent_1259_595__218",
+          "children": []
+        },
+        {
+          "title": "حكم صلاة الجنازة",
+          "chunk_id": "parent_1259_595__219",
+          "children": []
+        },
+        {
+          "title": "شروط صلاة الجنازة",
+          "chunk_id": "parent_1259_596__220",
+          "children": []
+        },
+        {
+          "title": "دفن الميت بلا صلاة",
+          "chunk_id": "parent_1259_599__221",
+          "children": []
+        },
+        {
+          "title": "الصلاة علي الميت في المسجد",
+          "chunk_id": "parent_1259_604__222",
+          "children": []
+        },
+        {
+          "title": "باب الشهيد",
+          "chunk_id": "parent_1259_614__223",
+          "children": []
+        },
+        {
+          "title": "باب الصلاة في الكعبة",
+          "chunk_id": "parent_1259_618__224",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب الزكاة",
+      "chunk_id": "parent_1259_619__225",
+      "children": [
+        {
+          "title": "شروط وجوب الزكاة",
+          "chunk_id": "parent_1259_621__226",
+          "children": []
+        },
+        {
+          "title": "شروط أداء الزكاة",
+          "chunk_id": "parent_1259_630__227",
+          "children": []
+        },
+        {
+          "title": "باب صدقة السوائم",
+          "chunk_id": "parent_1259_632__228",
+          "children": []
+        },
+        {
+          "title": "باب صدقة البقر",
+          "chunk_id": "parent_1259_634__229",
+          "children": []
+        },
+        {
+          "title": "فصل في زكاة الغنم",
+          "chunk_id": "parent_1259_635__230",
+          "children": []
+        },
+        {
+          "title": "زكاة الخيل",
+          "chunk_id": "parent_1259_636__231",
+          "children": []
+        },
+        {
+          "title": "زكاة الحملان والفصلان والعجاجيل",
+          "chunk_id": "parent_1259_637__232",
+          "children": []
+        },
+        {
+          "title": "باب زكاة المال",
+          "chunk_id": "parent_1259_645__233",
+          "children": [
+            {
+              "title": "زكاة عروض التجارة",
+              "chunk_id": "parent_1259_649__234",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب العاشر",
+          "chunk_id": "parent_1259_651__235",
+          "children": [
+            {
+              "title": "باب الركاز",
+              "chunk_id": "parent_1259_654__236",
+              "children": []
+            },
+            {
+              "title": "زكاة الخمر والخنزير",
+              "chunk_id": "parent_1259_654__237",
+              "children": []
+            },
+            {
+              "title": "لا يخمس ركاز في دار الحرب",
+              "chunk_id": "parent_1259_657__238",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب العشر",
+          "chunk_id": "parent_1259_657__239",
+          "children": [
+            {
+              "title": "حكم تعجيل العشر",
+              "chunk_id": "parent_1259_657__240",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب مصرف الزكاة",
+          "chunk_id": "parent_1259_661__241",
+          "children": [
+            {
+              "title": "دفع الزكاة إلى ذمي",
+              "chunk_id": "parent_1259_664__242",
+              "children": []
+            },
+            {
+              "title": "بناء المسجد وتكفين ميت وقضاء دينه وشراء قن من الزكاة",
+              "chunk_id": "parent_1259_664__243",
+              "children": []
+            },
+            {
+              "title": "دفع الزكاة للزوجة",
+              "chunk_id": "parent_1259_665__244",
+              "children": []
+            },
+            {
+              "title": "دفع الزكاة لعبده ومكاتبه ومدبره وأم ولده ومعتق البعض",
+              "chunk_id": "parent_1259_666__245",
+              "children": []
+            },
+            {
+              "title": "دفع الزكاة لغني يملك نصابا",
+              "chunk_id": "parent_1259_666__246",
+              "children": []
+            },
+            {
+              "title": "دفع الزكاة إلى الأب والجد أو الو لد وولد ولده",
+              "chunk_id": "parent_1259_666__247",
+              "children": []
+            },
+            {
+              "title": "دفع الزكاة لبني هاشم ومواليهم",
+              "chunk_id": "parent_1259_669__248",
+              "children": []
+            },
+            {
+              "title": "دفع الزكاة بتحر فبان أنه غني أو هاشمي أو كافر أو أبوه أو ابنه",
+              "chunk_id": "parent_1259_669__249",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب صدقة الفطر",
+          "chunk_id": "parent_1259_673__250",
+          "children": [
+            {
+              "title": "حكم صدقة الفطر",
+              "chunk_id": "parent_1259_673__251",
+              "children": []
+            },
+            {
+              "title": "شروط وجوب صدقة الفطر",
+              "chunk_id": "parent_1259_674__252",
+              "children": []
+            },
+            {
+              "title": "عن من تخرج صدقة الفطر",
+              "chunk_id": "parent_1259_674__253",
+              "children": []
+            },
+            {
+              "title": "مقدار صدقة الفطر",
+              "chunk_id": "parent_1259_677__254",
+              "children": []
+            },
+            {
+              "title": "وقت وجوب أداء صدقة الفطر",
+              "chunk_id": "parent_1259_678__255",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "كتاب الصوم",
+      "chunk_id": "parent_1259_679__256",
+      "children": [
+        {
+          "title": "شروط الصيام",
+          "chunk_id": "parent_1259_680__257",
+          "children": []
+        },
+        {
+          "title": "أقسام الصوم",
+          "chunk_id": "parent_1259_680__258",
+          "children": []
+        },
+        {
+          "title": "بما يثبت شهر رمضان",
+          "chunk_id": "parent_1259_686__259",
+          "children": []
+        },
+        {
+          "title": "باب ما يفسد الصوم وما لا يفسده",
+          "chunk_id": "parent_1259_694__260",
+          "children": []
+        },
+        {
+          "title": "فصل في عوارض الفطر في رمضان",
+          "chunk_id": "parent_1259_705__261",
+          "children": [
+            {
+              "title": "فصل ما يوجبه العبد على نفسه",
+              "chunk_id": "parent_1259_719__262",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب الاعتكاف",
+          "chunk_id": "parent_1259_724__263",
+          "children": [
+            {
+              "title": "أقل الاعتكاف",
+              "chunk_id": "parent_1259_726__264",
+              "children": []
+            },
+            {
+              "title": "أعتكاف المرأة",
+              "chunk_id": "parent_1259_727__265",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "كتاب الحج",
+      "chunk_id": "parent_1259_733__266",
+      "children": [
+        {
+          "title": "واجبات الحج",
+          "chunk_id": "parent_1259_735__267",
+          "children": []
+        },
+        {
+          "title": "مواقيت الإحرام",
+          "chunk_id": "parent_1259_744__268",
+          "children": [
+            {
+              "title": "تقديم الإحرام على المواقيت",
+              "chunk_id": "parent_1259_746__269",
+              "children": []
+            },
+            {
+              "title": "ميقات المكي إذا أراد الحج",
+              "chunk_id": "parent_1259_746__270",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب الإحرام",
+          "chunk_id": "parent_1259_747__271",
+          "children": [
+            {
+              "title": "استعمال الطيب في بدنه قبيل الإحرام",
+              "chunk_id": "parent_1259_748__272",
+              "children": []
+            },
+            {
+              "title": "قتل الصيد والإشارة إليه والدلالة عليه للمحرم",
+              "chunk_id": "parent_1259_751__273",
+              "children": []
+            },
+            {
+              "title": "لبس القميص والسراويل والعمامة والقلنسوة والقباء والخفين للمحرم",
+              "chunk_id": "parent_1259_751__274",
+              "children": []
+            },
+            {
+              "title": "الاغتسال ودخول الحمام للمحرم",
+              "chunk_id": "parent_1259_752__275",
+              "children": []
+            },
+            {
+              "title": "فصل لم يدخل مكة ووقف بعرفة",
+              "chunk_id": "parent_1259_782__276",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب القران",
+          "chunk_id": "parent_1259_786__277",
+          "children": []
+        },
+        {
+          "title": "باب التمتع",
+          "chunk_id": "parent_1259_793__278",
+          "children": []
+        },
+        {
+          "title": "باب الجنايات في الحج",
+          "chunk_id": "parent_1259_802__279",
+          "children": [
+            {
+              "title": "فصل نظر المحرم إلى فرج امرأة بشهوة فأمنى",
+              "chunk_id": "parent_1259_815__280",
+              "children": []
+            },
+            {
+              "title": "فصل قتل محرم صيدا أو دل عليه من قتله",
+              "chunk_id": "parent_1259_828__281",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب مجاوزة الميقات بغير إحرام",
+          "chunk_id": "parent_1259_851__282",
+          "children": []
+        },
+        {
+          "title": "باب إضافة الإحرام إلى الإحرام",
+          "chunk_id": "parent_1259_854__283",
+          "children": []
+        },
+        {
+          "title": "باب الإحصار في الحج أو العمرة",
+          "chunk_id": "parent_1259_857__284",
+          "children": []
+        },
+        {
+          "title": "باب الفوات في الحج",
+          "chunk_id": "parent_1259_861__285",
+          "children": []
+        },
+        {
+          "title": "باب الحج عن الغير",
+          "chunk_id": "parent_1259_863__286",
+          "children": []
+        },
+        {
+          "title": "باب الهدي",
+          "chunk_id": "parent_1259_875__287",
+          "children": []
+        },
+        {
+          "title": "مسائل منثورة في الحج والعمرة",
+          "chunk_id": "parent_1259_879__288",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب النكاح",
+      "chunk_id": "parent_1259_882__289",
+      "children": [
+        {
+          "title": "فصل في المحرمات في النكاح",
+          "chunk_id": "parent_1259_898__290",
+          "children": []
+        },
+        {
+          "title": "باب الأولياء والأكفاء في النكاح",
+          "chunk_id": "parent_1259_917__291",
+          "children": [
+            {
+              "title": "فصل في الأكفاء في النكاح",
+              "chunk_id": "parent_1259_937__292",
+              "children": []
+            },
+            {
+              "title": "فصل بعض مسائل الوكيل والفضولي في النكاح",
+              "chunk_id": "parent_1259_946__293",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب المهر",
+          "chunk_id": "parent_1259_952__294",
+          "children": []
+        },
+        {
+          "title": "باب نكاح الرقيق",
+          "chunk_id": "parent_1259_1002__295",
+          "children": []
+        },
+        {
+          "title": "باب نكاح الكافر",
+          "chunk_id": "parent_1259_1022__296",
+          "children": []
+        },
+        {
+          "title": "باب القسم",
+          "chunk_id": "parent_1259_1033__297",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب الرضاع",
+      "chunk_id": "parent_1259_1037__298",
+      "children": [
+        {
+          "title": "المحرمات بسبب الرضاع",
+          "chunk_id": "parent_1259_1041__299",
+          "children": []
+        },
+        {
+          "title": "ولبن الرجل لا يوجب الحرمة",
+          "chunk_id": "parent_1259_1046__300",
+          "children": []
+        },
+        {
+          "title": "أرضعت ضرتها",
+          "chunk_id": "parent_1259_1047__301",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب الطلاق",
+      "chunk_id": "parent_1259_1051__302",
+      "children": [
+        {
+          "title": "باب ألفاظ الطلاق",
+          "chunk_id": "parent_1259_1069__303",
+          "children": [
+            {
+              "title": "فصل في إضافة الطلاق إلى الزمان",
+              "chunk_id": "parent_1259_1087__304",
+              "children": []
+            },
+            {
+              "title": "فصل في الطلاق قبل الدخول",
+              "chunk_id": "parent_1259_1114__305",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب الكنايات في الطلاق",
+          "chunk_id": "parent_1259_1121__306",
+          "children": []
+        },
+        {
+          "title": "باب تفويض الطلاق",
+          "chunk_id": "parent_1259_1135__307",
+          "children": [
+            {
+              "title": "فصل في الأمر باليد",
+              "chunk_id": "parent_1259_1142__308",
+              "children": []
+            },
+            {
+              "title": "فصل في المشيئة",
+              "chunk_id": "parent_1259_1152__309",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب التعليق في الطلاق",
+          "chunk_id": "parent_1259_1171__310",
+          "children": []
+        },
+        {
+          "title": "باب طلاق المريض",
+          "chunk_id": "parent_1259_1215__311",
+          "children": []
+        },
+        {
+          "title": "باب الرجعة",
+          "chunk_id": "parent_1259_1222__312",
+          "children": [
+            {
+              "title": "فصل فيما تحل به المطلقة",
+              "chunk_id": "parent_1259_1230__313",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "باب الإيلاء",
+      "chunk_id": "parent_1259_1234__314",
+      "children": [
+        {
+          "title": "وطئ في مدة الإيلاء",
+          "chunk_id": "parent_1259_1237__315",
+          "children": []
+        },
+        {
+          "title": "ومدة إيلاء الأمة",
+          "chunk_id": "parent_1259_1241__316",
+          "children": []
+        },
+        {
+          "title": "الإيلاء من المبانة والأجنبية",
+          "chunk_id": "parent_1259_1241__317",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "باب الخلع",
+      "chunk_id": "parent_1259_1246__318",
+      "children": [
+        {
+          "title": "الخلع تطليقة بائنة",
+          "chunk_id": "parent_1259_1246__319",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "باب الظهار",
+      "chunk_id": "parent_1259_1271__320",
+      "children": [
+        {
+          "title": "فصل في كفارة الظهار",
+          "chunk_id": "parent_1259_1277__321",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "باب اللعان",
+      "chunk_id": "parent_1259_1290__322",
+      "children": [
+        {
+          "title": "شرائط وجوب اللعان",
+          "chunk_id": "parent_1259_1291__323",
+          "children": []
+        },
+        {
+          "title": "قال لامرأته يا زانية ولها ولد منه",
+          "chunk_id": "parent_1259_1299__324",
+          "children": []
+        },
+        {
+          "title": "اللعان بنفي الولد في المجبوب والخصي ومن لا يولد له ولد",
+          "chunk_id": "parent_1259_1299__325",
+          "children": []
+        },
+        {
+          "title": "قذف الأخرس",
+          "chunk_id": "parent_1259_1301__327",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "باب العنين",
+      "chunk_id": "parent_1259_1301__326",
+      "children": [
+        {
+          "title": "وجدت زوجها مجبوبا",
+          "chunk_id": "parent_1259_1302__328",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "باب العدة",
+      "chunk_id": "parent_1259_1307__329",
+      "children": [
+        {
+          "title": "عدة الحرة",
+          "chunk_id": "parent_1259_1309__330",
+          "children": []
+        },
+        {
+          "title": "عدة المتوفى عنها زوجها",
+          "chunk_id": "parent_1259_1312__331",
+          "children": []
+        },
+        {
+          "title": "عدة الأمة",
+          "chunk_id": "parent_1259_1314__332",
+          "children": []
+        },
+        {
+          "title": "عدة الحامل",
+          "chunk_id": "parent_1259_1314__333",
+          "children": []
+        },
+        {
+          "title": "عدة من اعتدت بالأشهر لإياسها ثم رأت دما",
+          "chunk_id": "parent_1259_1319__334",
+          "children": []
+        },
+        {
+          "title": "عدة المنكوحة نكاحا فاسدا والموطوءة بشبهة وأم الولد",
+          "chunk_id": "parent_1259_1320__335",
+          "children": []
+        },
+        {
+          "title": "عدة زوجة الصغير الحامل",
+          "chunk_id": "parent_1259_1324__336",
+          "children": []
+        },
+        {
+          "title": "مبدأ العدة",
+          "chunk_id": "parent_1259_1326__337",
+          "children": []
+        },
+        {
+          "title": "فصل في الإحداد",
+          "chunk_id": "parent_1259_1331__338",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "باب ثبوت النسب",
+      "chunk_id": "parent_1259_1337__339",
+      "children": [
+        {
+          "title": "أكثر مدة الحمل",
+          "chunk_id": "parent_1259_1346__340",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "باب الحضانة",
+      "chunk_id": "parent_1259_1348__341",
+      "children": []
+    },
+    {
+      "title": "باب النفقة",
+      "chunk_id": "parent_1259_1357__342",
+      "children": [
+        {
+          "title": "أسباب وجوب النفقة",
+          "chunk_id": "parent_1259_1357__344",
+          "children": [
+            {
+              "title": "الزوجية",
+              "chunk_id": "parent_1259_1357__343",
+              "children": [
+                {
+                  "title": "ونفقة الأمة المنكوحة",
+                  "chunk_id": "parent_1259_1378__345",
+                  "children": []
+                },
+                {
+                  "title": "النفقة والكسوة والسكنى لمعتدة الطلاق",
+                  "chunk_id": "parent_1259_1385__346",
+                  "children": []
+                },
+                {
+                  "title": "النفقة لمعتدة الموت",
+                  "chunk_id": "parent_1259_1386__347",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "title": "النفقة والسكنى والكسوة لولده الصغير الفقير",
+              "chunk_id": "parent_1259_1387__348",
+              "children": []
+            },
+            {
+              "title": "نفقة الأبوين والأجداد والجدات",
+              "chunk_id": "parent_1259_1392__349",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "النفقة مع اختلاف الدين",
+          "chunk_id": "parent_1259_1395__350",
+          "children": [
+            {
+              "title": "النفقة للقريب",
+              "chunk_id": "parent_1259_1397__351",
+              "children": []
+            },
+            {
+              "title": "النفقة والكسوة والسكنى لمملوكه",
+              "chunk_id": "parent_1259_1405__352",
+              "children": [
+                {
+                  "title": "امتنع المولى عن الإنفاق",
+                  "chunk_id": "parent_1259_1407__354",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "كتاب العتق",
+      "chunk_id": "parent_1259_1407__353",
+      "children": [
+        {
+          "title": "باب العبد يعتق بعضه",
+          "chunk_id": "parent_1259_1422__355",
+          "children": []
+        },
+        {
+          "title": "باب الحلف بالدخول",
+          "chunk_id": "parent_1259_1442__356",
+          "children": []
+        },
+        {
+          "title": "باب العتق على جعل",
+          "chunk_id": "parent_1259_1446__357",
+          "children": []
+        },
+        {
+          "title": "باب التدبير",
+          "chunk_id": "parent_1259_1454__358",
+          "children": []
+        },
+        {
+          "title": "باب الاستيلاد",
+          "chunk_id": "parent_1259_1460__359",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب الأيمان",
+      "chunk_id": "parent_1259_1469__360",
+      "children": [
+        {
+          "title": "باب اليمين في الدخول والخروج والسكنى والإتيان وغير ذلك",
+          "chunk_id": "parent_1259_1492__361",
+          "children": [
+            {
+              "title": "ثلاث مسائل في الحلف",
+              "chunk_id": "parent_1259_1494__362",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب اليمين في الأكل والشرب واللبس والكلام",
+          "chunk_id": "parent_1259_1513__363",
+          "children": []
+        },
+        {
+          "title": "باب اليمين في الطلاق والعتاق",
+          "chunk_id": "parent_1259_1539__364",
+          "children": [
+            {
+              "title": "شراء أبيه للكفارة",
+              "chunk_id": "parent_1259_1542__365",
+              "children": []
+            },
+            {
+              "title": "اشترى عبدا ثم عبدا ثم مات وكان قد قال آخر عبد أملكه فهو حر",
+              "chunk_id": "parent_1259_1542__366",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب اليمين في البيع والشراء والتزويج والصوم والصلاة",
+          "chunk_id": "parent_1259_1544__367",
+          "children": [
+            {
+              "title": "قال إن لم أبع هذا العبد فامرأته طالق فأعتقه",
+              "chunk_id": "parent_1259_1554__368",
+              "children": []
+            },
+            {
+              "title": "قوله على المشي إلى بيت الله أو إلى الكعبة",
+              "chunk_id": "parent_1259_1555__369",
+              "children": []
+            },
+            {
+              "title": "قالت تزوجت علي فقال كل امرأة لي طالق",
+              "chunk_id": "parent_1259_1555__370",
+              "children": []
+            },
+            {
+              "title": "قوله عبده حر إن لم يحج العام فشهدا بنحره بالكوفة",
+              "chunk_id": "parent_1259_1556__371",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب اليمين في الضرب والقتل وغير ذلك",
+          "chunk_id": "parent_1259_1563__372",
+          "children": [
+            {
+              "title": "قال لأقضين ديني اليوم فقضاه نبهرجة أو زيوفا أو مستحقة",
+              "chunk_id": "parent_1259_1565__373",
+              "children": []
+            },
+            {
+              "title": "حلف لا يتزوج فزوجه فضولي وأجاز بالقول",
+              "chunk_id": "parent_1259_1571__374",
+              "children": []
+            },
+            {
+              "title": "حلف ليهبن فلانا فوهب له فلم يقبل",
+              "chunk_id": "parent_1259_1571__375",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "كتاب الحدود",
+      "chunk_id": "parent_1259_1574__376",
+      "children": [
+        {
+          "title": "باب حد الزنا",
+          "chunk_id": "parent_1259_1575__377",
+          "children": []
+        },
+        {
+          "title": "ما يثبت به الزنا",
+          "chunk_id": "parent_1259_1577__378",
+          "children": []
+        },
+        {
+          "title": "ولا يحد السيد عبده إلا بإذن إمامه",
+          "chunk_id": "parent_1259_1582__379",
+          "children": []
+        },
+        {
+          "title": "الحامل في حد الزنا",
+          "chunk_id": "parent_1259_1583__380",
+          "children": []
+        },
+        {
+          "title": "الجمع بين الجلد والرجم وبين الجلد والنفي",
+          "chunk_id": "parent_1259_1583__381",
+          "children": []
+        },
+        {
+          "title": "باب الوطء الذي يوجب الحد والذي لا يوجبه",
+          "chunk_id": "parent_1259_1584__382",
+          "children": [
+            {
+              "title": "وطء أمة أخيه وعمه وامرأة وجدت في فراشه",
+              "chunk_id": "parent_1259_1587__383",
+              "children": []
+            },
+            {
+              "title": "وطء أجنبية زفت إليه وقال النساء هي زوجتك",
+              "chunk_id": "parent_1259_1587__384",
+              "children": []
+            },
+            {
+              "title": "وطء امرأة محرم له عقد عليها",
+              "chunk_id": "parent_1259_1589__385",
+              "children": []
+            },
+            {
+              "title": "الزنا في دار الحرب أو في دار البغي",
+              "chunk_id": "parent_1259_1590__386",
+              "children": []
+            },
+            {
+              "title": "وطئ امرأة أجنبية في دبرها",
+              "chunk_id": "parent_1259_1590__387",
+              "children": []
+            },
+            {
+              "title": "زنا رجل حربي مستأمن بذمية",
+              "chunk_id": "parent_1259_1591__388",
+              "children": []
+            },
+            {
+              "title": "زنى صبي أو مجنون بمكلفة",
+              "chunk_id": "parent_1259_1591__389",
+              "children": []
+            },
+            {
+              "title": "الحد بوطء بهيمة",
+              "chunk_id": "parent_1259_1591__390",
+              "children": []
+            },
+            {
+              "title": "زنى بأمة فقتلها",
+              "chunk_id": "parent_1259_1592__391",
+              "children": []
+            },
+            {
+              "title": "وطء من استأجرها ليزني بها",
+              "chunk_id": "parent_1259_1592__392",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب الشهادة على الزنا والرجوع عنها",
+          "chunk_id": "parent_1259_1593__393",
+          "children": [
+            {
+              "title": "الزنا بإكراه",
+              "chunk_id": "parent_1259_1593__394",
+              "children": []
+            },
+            {
+              "title": "أقر بالزنا بمجهولة",
+              "chunk_id": "parent_1259_1594__395",
+              "children": []
+            },
+            {
+              "title": "أثبتوا زناه بغائبة",
+              "chunk_id": "parent_1259_1595__396",
+              "children": []
+            },
+            {
+              "title": "شهدوا على زنا امرأة وهي بكر أو الشهود فسقة",
+              "chunk_id": "parent_1259_1596__397",
+              "children": []
+            },
+            {
+              "title": "رجع أحد الشهود بالزنا بعد الرجم",
+              "chunk_id": "parent_1259_1597__398",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب حد الشرب",
+          "chunk_id": "parent_1259_1599__399",
+          "children": [
+            {
+              "title": "أنكر الزاني الإحصان فشهد عليه رجل وامرأتان",
+              "chunk_id": "parent_1259_1599__400",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب حد القذف",
+          "chunk_id": "parent_1259_1603__401",
+          "children": [
+            {
+              "title": "ما يثبت به القذف",
+              "chunk_id": "parent_1259_1604__402",
+              "children": []
+            },
+            {
+              "title": "قذف محصنا أو محصنة بزنا",
+              "chunk_id": "parent_1259_1605__403",
+              "children": []
+            },
+            {
+              "title": "قال لغيره لست لأبيك أو لست بابن فلان في غضب",
+              "chunk_id": "parent_1259_1608__404",
+              "children": []
+            },
+            {
+              "title": "قال يا ابن الزانية وأمه ميتة فطلب الوالد أو الولد أو ولده",
+              "chunk_id": "parent_1259_1610__405",
+              "children": []
+            },
+            {
+              "title": "ولا يطلب ولد وعبد أباه وسيده بقذف أمه",
+              "chunk_id": "parent_1259_1611__406",
+              "children": []
+            },
+            {
+              "title": "ويبطل حد القذف بموت المقذوف",
+              "chunk_id": "parent_1259_1611__407",
+              "children": []
+            },
+            {
+              "title": "قال يا زاني وعكس",
+              "chunk_id": "parent_1259_1612__408",
+              "children": []
+            },
+            {
+              "title": "قال لامرأته يا زانية وعكست",
+              "chunk_id": "parent_1259_1612__409",
+              "children": []
+            },
+            {
+              "title": "أقر بولد ثم نفاه",
+              "chunk_id": "parent_1259_1613__410",
+              "children": []
+            },
+            {
+              "title": "قذف الملاعنة بغير ولد",
+              "chunk_id": "parent_1259_1613__411",
+              "children": []
+            },
+            {
+              "title": "قذف أو زنى أو شرب مرارا فحد",
+              "chunk_id": "parent_1259_1614__412",
+              "children": []
+            },
+            {
+              "title": "قاذف واطئ أمة مجوسية وحائض ومكاتبة ومسلم نكح أمه في كفره",
+              "chunk_id": "parent_1259_1615__413",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "فصل في التعزير",
+          "chunk_id": "parent_1259_1616__414",
+          "children": [
+            {
+              "title": "قذف مملوكا أو كافرا بالزنا أو مسلما بيا فاسق",
+              "chunk_id": "parent_1259_1618__415",
+              "children": []
+            },
+            {
+              "title": "أكثر التعزير",
+              "chunk_id": "parent_1259_1623__416",
+              "children": []
+            },
+            {
+              "title": "حد أو عزر فمات",
+              "chunk_id": "parent_1259_1625__417",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "كتاب السرقة",
+          "chunk_id": "parent_1259_1626__418",
+          "children": [
+            {
+              "title": "سرقة المصحف",
+              "chunk_id": "parent_1259_1631__419",
+              "children": []
+            },
+            {
+              "title": "سرق من القبر ثوبا غير الكفن",
+              "chunk_id": "parent_1259_1632__420",
+              "children": []
+            },
+            {
+              "title": "فصل في الحرز",
+              "chunk_id": "parent_1259_1634__421",
+              "children": [
+                {
+                  "title": "سرق من المسجد متاعا وربه عنده",
+                  "chunk_id": "parent_1259_1636__423",
+                  "children": []
+                },
+                {
+                  "title": "سرق ضيف ممن أضافه أو سرق شيئا ولم يخرجه من الدار",
+                  "chunk_id": "parent_1259_1637__424",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "title": "سرقة الساج والقنا والأبنوس والصندل والفصوص الأخضر",
+              "chunk_id": "parent_1259_1634__422",
+              "children": []
+            },
+            {
+              "title": "فصل في كيفية القطع في السرقة وإثباته",
+              "chunk_id": "parent_1259_1638__425",
+              "children": [
+                {
+                  "title": "سرق وإبهامه اليسرى مقطوعة أو شلاء أو رجله اليمنى مقطوعة",
+                  "chunk_id": "parent_1259_1639__426",
+                  "children": []
+                },
+                {
+                  "title": "أقرا بسرقة ثم قال أحدهما هو مالي",
+                  "chunk_id": "parent_1259_1642__427",
+                  "children": []
+                },
+                {
+                  "title": "شق ما سرقه في الدار ثم أخرجه",
+                  "chunk_id": "parent_1259_1643__428",
+                  "children": []
+                },
+                {
+                  "title": "أقر عبد بسرقة",
+                  "chunk_id": "parent_1259_1643__429",
+                  "children": []
+                },
+                {
+                  "title": "سرق شاة فذبحها فأخرجها",
+                  "chunk_id": "parent_1259_1644__430",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "باب قطع الطريق",
+          "chunk_id": "parent_1259_1644__431",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب السير",
+      "chunk_id": "parent_1259_1648__432",
+      "children": [
+        {
+          "title": "ولا يجب الجهاد على صبي وامرأة وعبد وأعمى ومقعد وأقطع",
+          "chunk_id": "parent_1259_1649__433",
+          "children": []
+        },
+        {
+          "title": "ما يصير به الكافر مسلما",
+          "chunk_id": "parent_1259_1652__434",
+          "children": []
+        },
+        {
+          "title": "ولا نقاتل من لم تبلغه دعوة الإسلام",
+          "chunk_id": "parent_1259_1654__435",
+          "children": []
+        },
+        {
+          "title": "إخراج مصحف وامرأة في سرية يخاف عليها",
+          "chunk_id": "parent_1259_1655__436",
+          "children": []
+        },
+        {
+          "title": "وقتل امرأة وغير مكلف وشيخ فان في الجهاد",
+          "chunk_id": "parent_1259_1656__437",
+          "children": []
+        },
+        {
+          "title": "ولا يقتل من أمنه حر أو حرة في الجهاد",
+          "chunk_id": "parent_1259_1659__438",
+          "children": []
+        },
+        {
+          "title": "باب الغنائم وقسمتها",
+          "chunk_id": "parent_1259_1661__439",
+          "children": [
+            {
+              "title": "قسمة الغنائم في دار الحرب لغير إيداع",
+              "chunk_id": "parent_1259_1662__441",
+              "children": []
+            },
+            {
+              "title": "ما يفعله الإمام بالأسرى",
+              "chunk_id": "parent_1259_1662__442",
+              "children": []
+            },
+            {
+              "title": "بيع الغنائم قبل القسمة",
+              "chunk_id": "parent_1259_1663__443",
+              "children": []
+            },
+            {
+              "title": "أسلم من أهل الحرب في دار الحرب قبل أخذه ولم يخرج إلينا",
+              "chunk_id": "parent_1259_1667__444",
+              "children": []
+            },
+            {
+              "title": "فصل في كيفية قسمة الغنائم",
+              "chunk_id": "parent_1259_1667__445",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "أمان ذمي وأسير وتاجر وعبد ومحجور في الجهاد",
+          "chunk_id": "parent_1259_1661__440",
+          "children": []
+        },
+        {
+          "title": "باب استيلاء الكفار",
+          "chunk_id": "parent_1259_1674__446",
+          "children": [
+            {
+              "title": "اشترى ما أخذه العدو منهم تاجر وأخرجه إلى دار الإسلام",
+              "chunk_id": "parent_1259_1675__447",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب المستأمن",
+          "chunk_id": "parent_1259_1679__448",
+          "children": [
+            {
+              "title": "فصل استئمان الكافر",
+              "chunk_id": "parent_1259_1681__449",
+              "children": []
+            },
+            {
+              "title": "مسلمان مستأمنان قتل أحدهما صاحبه",
+              "chunk_id": "parent_1259_1681__450",
+              "children": [
+                {
+                  "title": "قتل مؤمنا خطأ أو حربيا جاءنا بأمان فأسلم",
+                  "chunk_id": "parent_1259_1684__451",
+                  "children": []
+                },
+                {
+                  "title": "جاءنا حربي بأمان وله زوجة وولد ومال عند مسلم فأسلم",
+                  "chunk_id": "parent_1259_1684__453",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "باب العشر والخراج والجزية",
+          "chunk_id": "parent_1259_1684__452",
+          "children": [
+            {
+              "title": "فصل في الجزية",
+              "chunk_id": "parent_1259_1691__454",
+              "children": []
+            },
+            {
+              "title": "فروع لا يتكرر الخراج بتكرر الخارج في سنة",
+              "chunk_id": "parent_1259_1691__455",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب أحكام المرتدين",
+          "chunk_id": "parent_1259_1701__456",
+          "children": [
+            {
+              "title": "توبة الساحر",
+              "chunk_id": "parent_1259_1708__457",
+              "children": []
+            },
+            {
+              "title": "توبة الزنديق",
+              "chunk_id": "parent_1259_1709__458",
+              "children": []
+            },
+            {
+              "title": "إسلام المرتد",
+              "chunk_id": "parent_1259_1711__459",
+              "children": []
+            },
+            {
+              "title": "ولا تقتل المرتدة بل تحبس حتى تسلم",
+              "chunk_id": "parent_1259_1711__460",
+              "children": []
+            },
+            {
+              "title": "قتل المرتد قبل عرض الإسلام",
+              "chunk_id": "parent_1259_1711__461",
+              "children": []
+            },
+            {
+              "title": "ملك المرتد",
+              "chunk_id": "parent_1259_1713__462",
+              "children": []
+            },
+            {
+              "title": "مبايعة المرتد وعتقه وهبته",
+              "chunk_id": "parent_1259_1716__463",
+              "children": []
+            },
+            {
+              "title": "لحق المرتد بماله فظهر عليه",
+              "chunk_id": "parent_1259_1718__464",
+              "children": []
+            },
+            {
+              "title": "قتل مرتد رجلا خطأ ولحق أو قتل",
+              "chunk_id": "parent_1259_1719__465",
+              "children": []
+            },
+            {
+              "title": "ارتد مكاتب ولحق وأخذ بماله وقتل",
+              "chunk_id": "parent_1259_1720__466",
+              "children": []
+            },
+            {
+              "title": "ارتد الزوجان ولحقا فولدت ولدا وولد له ولد فظهر عليهم",
+              "chunk_id": "parent_1259_1720__467",
+              "children": []
+            },
+            {
+              "title": "ارتداد الصبي العاقل",
+              "chunk_id": "parent_1259_1722__469",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب البغاة",
+          "chunk_id": "parent_1259_1722__468",
+          "children": [
+            {
+              "title": "قتل عادل باغيا أو قتله باغ وقال أنا على حق",
+              "chunk_id": "parent_1259_1725__470",
+              "children": []
+            },
+            {
+              "title": "خرج قوم مسلمون عن طاعة الإمام وغلبوا على بلد",
+              "chunk_id": "parent_1259_1725__471",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "كتاب اللقيط",
+      "chunk_id": "parent_1259_1727__472",
+      "children": [
+        {
+          "title": "بيع السلاح من أهل الفتنة",
+          "chunk_id": "parent_1259_1727__473",
+          "children": []
+        },
+        {
+          "title": "لا يأخذ اللقيط من الملتقط أحد بغير رضاه",
+          "chunk_id": "parent_1259_1728__474",
+          "children": []
+        },
+        {
+          "title": "ولا يرق اللقيط إلا ببينة",
+          "chunk_id": "parent_1259_1731__475",
+          "children": []
+        },
+        {
+          "title": "وجد مع اللقيط مال",
+          "chunk_id": "parent_1259_1732__476",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب اللقطة",
+      "chunk_id": "parent_1259_1733__477",
+      "children": [
+        {
+          "title": "التعريف باللقطة",
+          "chunk_id": "parent_1259_1737__478",
+          "children": []
+        },
+        {
+          "title": "جاء مالك اللقطة بعد تصدق الملتقط بها",
+          "chunk_id": "parent_1259_1738__479",
+          "children": []
+        },
+        {
+          "title": "الإنفاق على اللقيط واللقطة",
+          "chunk_id": "parent_1259_1739__480",
+          "children": []
+        },
+        {
+          "title": "القاضي لو جعل ولاء اللقيط للملتقط",
+          "chunk_id": "parent_1259_1739__481",
+          "children": []
+        },
+        {
+          "title": "منع اللقطة من ربها حتى يأخذ النفقة",
+          "chunk_id": "parent_1259_1740__482",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب الإباق",
+      "chunk_id": "parent_1259_1743__483",
+      "children": [
+        {
+          "title": "رد الآبق لأقل من ثلاثة أيام",
+          "chunk_id": "parent_1259_1745__484",
+          "children": []
+        },
+        {
+          "title": "المأذون المديون لو أبق",
+          "chunk_id": "parent_1259_1747__485",
+          "children": []
+        },
+        {
+          "title": "نفقة الآبق",
+          "chunk_id": "parent_1259_1747__486",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب المفقود",
+      "chunk_id": "parent_1259_1748__487",
+      "children": [
+        {
+          "title": "ولا يرث المفقود من أحد مات أي قبل الحكم بموته",
+          "chunk_id": "parent_1259_1750__488",
+          "children": []
+        },
+        {
+          "title": "كان مع المفقود وارث يحجب به",
+          "chunk_id": "parent_1259_1750__489",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب الشركة",
+      "chunk_id": "parent_1259_1751__490",
+      "children": [
+        {
+          "title": "شركة الملك",
+          "chunk_id": "parent_1259_1752__491",
+          "children": []
+        },
+        {
+          "title": "شركة العقد",
+          "chunk_id": "parent_1259_1754__492",
+          "children": []
+        },
+        {
+          "title": "شركة المفاوضة بين ومسلم وكافر",
+          "chunk_id": "parent_1259_1754__493",
+          "children": []
+        },
+        {
+          "title": "شركة المفاوضة بملك العرض",
+          "chunk_id": "parent_1259_1757__494",
+          "children": []
+        },
+        {
+          "title": "شركة مفاوضة وعنان بغير النقدين والتبر والفلوس",
+          "chunk_id": "parent_1259_1757__495",
+          "children": []
+        },
+        {
+          "title": "باع كل عرضه بنصف عرض الآخر وعقدا الشركة",
+          "chunk_id": "parent_1259_1759__496",
+          "children": []
+        },
+        {
+          "title": "شركة العنان",
+          "chunk_id": "parent_1259_1759__497",
+          "children": []
+        },
+        {
+          "title": "شركة العنان وإن لم يخلطا المالين",
+          "chunk_id": "parent_1259_1761__498",
+          "children": [
+            {
+              "title": "اشترى أحدهما بماله وهلك مال الآخر في شركة العنان",
+              "chunk_id": "parent_1259_1762__499",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "لكل من شريكي العنان والمفاوضة أن يبضع ويستأجر",
+          "chunk_id": "parent_1259_1763__500",
+          "children": []
+        },
+        {
+          "title": "ما تبطل به شركة العنان",
+          "chunk_id": "parent_1259_1763__501",
+          "children": []
+        },
+        {
+          "title": "اشترك خياط وصباغ على أن يتقبلا الأعمال ويكون الكسب بينهما",
+          "chunk_id": "parent_1259_1767__502",
+          "children": []
+        },
+        {
+          "title": "اشتركا بلا مال على أن يشتريا بوجوههما ويبيعا",
+          "chunk_id": "parent_1259_1769__503",
+          "children": []
+        },
+        {
+          "title": "فصل في الشركة الفاسدة",
+          "chunk_id": "parent_1259_1769__504",
+          "children": [
+            {
+              "title": "الربح في الشركة الفاسدة",
+              "chunk_id": "parent_1259_1770__505",
+              "children": []
+            },
+            {
+              "title": "وتبطل الشركة بموت أحدهما",
+              "chunk_id": "parent_1259_1771__506",
+              "children": []
+            },
+            {
+              "title": "أذن أحد المتفاوضين بشراء أمة ليطأ ففعل",
+              "chunk_id": "parent_1259_1774__507",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "كتاب الوقف",
+      "chunk_id": "parent_1259_1774__508",
+      "children": [
+        {
+          "title": "شرائط الوقف",
+          "chunk_id": "parent_1259_1774__509",
+          "children": []
+        },
+        {
+          "title": "وقف المجوسي ضيعة على فقراء المجوس",
+          "chunk_id": "parent_1259_1776__510",
+          "children": []
+        },
+        {
+          "title": "ركن الوقف",
+          "chunk_id": "parent_1259_1777__511",
+          "children": []
+        },
+        {
+          "title": "صفة الوقف",
+          "chunk_id": "parent_1259_1778__512",
+          "children": []
+        },
+        {
+          "title": "ملك العين الموقوفة",
+          "chunk_id": "parent_1259_1778__513",
+          "children": []
+        },
+        {
+          "title": "حكم الوقف",
+          "chunk_id": "parent_1259_1778__514",
+          "children": []
+        },
+        {
+          "title": "وقف في مرض موته",
+          "chunk_id": "parent_1259_1782__515",
+          "children": []
+        },
+        {
+          "title": "وقف مالا لبناء القناطر أو لإصلاح الطريق أو لحفر القبور",
+          "chunk_id": "parent_1259_1786__516",
+          "children": []
+        },
+        {
+          "title": "وقف العقار ببقره وأكرته",
+          "chunk_id": "parent_1259_1788__517",
+          "children": []
+        },
+        {
+          "title": "وقف المشاع",
+          "chunk_id": "parent_1259_1790__518",
+          "children": []
+        },
+        {
+          "title": "وقف المنقول",
+          "chunk_id": "parent_1259_1790__519",
+          "children": []
+        },
+        {
+          "title": "وقف البناء بدون الأرض",
+          "chunk_id": "parent_1259_1792__520",
+          "children": []
+        },
+        {
+          "title": "غرس شجرة ووقفها أو غرس في أرض موقوفة على الرباط",
+          "chunk_id": "parent_1259_1792__521",
+          "children": []
+        },
+        {
+          "title": "لا يقسم الموقوف بين مستحقيه",
+          "chunk_id": "parent_1259_1796__522",
+          "children": []
+        },
+        {
+          "title": "وقف ضيعة على مواليه ومات",
+          "chunk_id": "parent_1259_1797__523",
+          "children": []
+        },
+        {
+          "title": "الاستدانة لأجل العمارة في الوقف",
+          "chunk_id": "parent_1259_1799__524",
+          "children": []
+        },
+        {
+          "title": "وقف المسجد أيجوز أن يبنى من غلته منارة",
+          "chunk_id": "parent_1259_1805__525",
+          "children": []
+        },
+        {
+          "title": "جعل الواقف غلة الوقف لنفسه أو جعل الولاية إليه",
+          "chunk_id": "parent_1259_1811__526",
+          "children": []
+        },
+        {
+          "title": "الناظر بالشرط في الوقف",
+          "chunk_id": "parent_1259_1821__527",
+          "children": []
+        },
+        {
+          "title": "تصرفات الناظر في الوقف",
+          "chunk_id": "parent_1259_1827__528",
+          "children": []
+        },
+        {
+          "title": "وقف ضيعة على فقراء قرابته أو فقراء قريته وجعل آخره للمساكين",
+          "chunk_id": "parent_1259_1832__529",
+          "children": []
+        },
+        {
+          "title": "شروط الواقفين",
+          "chunk_id": "parent_1259_1837__530",
+          "children": []
+        },
+        {
+          "title": "فصل اختص المسجد بأحكام تخالف أحكام مطلق الوقف",
+          "chunk_id": "parent_1259_1840__531",
+          "children": [
+            {
+              "title": "قال وقفته مسجدا ولم يأذن بالصلاة فيه ولم يصل فيه أحد",
+              "chunk_id": "parent_1259_1841__532",
+              "children": []
+            },
+            {
+              "title": "كان إلى المسجد مدخل من دار موقوفة",
+              "chunk_id": "parent_1259_1842__533",
+              "children": []
+            },
+            {
+              "title": "جعل مسجدا تحته سرداب أو فوقه بيت وجعل بابه إلى الطريق",
+              "chunk_id": "parent_1259_1844__534",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "كتاب البيع",
+      "chunk_id": "parent_1259_1848__535",
+      "children": [
+        {
+          "title": "شرط العقد",
+          "chunk_id": "parent_1259_1851__536",
+          "children": []
+        },
+        {
+          "title": "شرائط البيع",
+          "chunk_id": "parent_1259_1851__537",
+          "children": [
+            {
+              "title": "شرائط النفاذ",
+              "chunk_id": "parent_1259_1852__538",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "أنواع البيع",
+          "chunk_id": "parent_1259_1855__539",
+          "children": []
+        },
+        {
+          "title": "تعدد الإيجاب في البيع",
+          "chunk_id": "parent_1259_1858__540",
+          "children": []
+        },
+        {
+          "title": "صدر الإيجاب والقبول معا في البيع",
+          "chunk_id": "parent_1259_1860__541",
+          "children": []
+        },
+        {
+          "title": "البيع بالتعاطي",
+          "chunk_id": "parent_1259_1864__542",
+          "children": []
+        },
+        {
+          "title": "الأعواض في البيع",
+          "chunk_id": "parent_1259_1871__543",
+          "children": [
+            {
+              "title": "دفع إلى بقال ثمنا ليشتري به شيئا فوزنه فضاع منه شيء قبل الفراغ منه",
+              "chunk_id": "parent_1259_1872__544",
+              "children": []
+            },
+            {
+              "title": "له على آخر ألف من ثمن مبيع فقال أعطه كل شهر مائة درهم",
+              "chunk_id": "parent_1259_1874__545",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "مسائل متعلقة بالثمن",
+          "chunk_id": "parent_1259_1875__546",
+          "children": [
+            {
+              "title": "بيع الحنطة بالحنطة مجازفة",
+              "chunk_id": "parent_1259_1877__547",
+              "children": []
+            },
+            {
+              "title": "تزوج امرأة على ألف وفي البلد نقود مختلفة",
+              "chunk_id": "parent_1259_1877__548",
+              "children": []
+            },
+            {
+              "title": "بيع الحنطة في سنبلها مكايلة أو موازنة",
+              "chunk_id": "parent_1259_1878__549",
+              "children": []
+            },
+            {
+              "title": "بيع الحنطة بالدراهم وزنا",
+              "chunk_id": "parent_1259_1878__550",
+              "children": []
+            },
+            {
+              "title": "المشتري إذا قال بعني هذا الكر الحنطة فباعه",
+              "chunk_id": "parent_1259_1878__551",
+              "children": []
+            },
+            {
+              "title": "اشترى حنطة رجل قبل أن تحصد مكايلة",
+              "chunk_id": "parent_1259_1878__552",
+              "children": []
+            },
+            {
+              "title": "اشترى بوزن هذا الحجر ذهبا ثم علم به",
+              "chunk_id": "parent_1259_1879__553",
+              "children": []
+            },
+            {
+              "title": "باع صبرة كل صاع بدرهم",
+              "chunk_id": "parent_1259_1879__554",
+              "children": []
+            },
+            {
+              "title": "رجل له زرع قد استحصد فباع حنطته",
+              "chunk_id": "parent_1259_1879__555",
+              "children": []
+            },
+            {
+              "title": "اشترى على أنه كر فابتل قبل القبض أو جف وأمضى",
+              "chunk_id": "parent_1259_1880__556",
+              "children": []
+            },
+            {
+              "title": "قال كلما اشتريت هذا الثوب أو ثوبا فهو صدقة",
+              "chunk_id": "parent_1259_1880__557",
+              "children": []
+            },
+            {
+              "title": "قال كلما أكلت اللحم فعلي درهم",
+              "chunk_id": "parent_1259_1880__558",
+              "children": []
+            },
+            {
+              "title": "رجل في يده كران فباع أحدهما من رجل ولم يسلم حتى باع من آخر كرا",
+              "chunk_id": "parent_1259_1881__559",
+              "children": []
+            },
+            {
+              "title": "باع ثلة أو ثوبا كل شاة بدرهم أو كل ذراع بدرهم",
+              "chunk_id": "parent_1259_1882__560",
+              "children": []
+            },
+            {
+              "title": "اشترى طستا على أنه عشرة أمناء فبان بعد القبض أنه خمسة أمناء",
+              "chunk_id": "parent_1259_1883__561",
+              "children": []
+            },
+            {
+              "title": "اشترى عنب كرم على أنه ألف من فظهر أنه تسعمائة",
+              "chunk_id": "parent_1259_1883__562",
+              "children": []
+            },
+            {
+              "title": "اشترى كرا على أنه عشرة أقفزة فكاله فوجده أكثر من عشرة",
+              "chunk_id": "parent_1259_1884__563",
+              "children": []
+            },
+            {
+              "title": "اشترى زق زيت بما فيه على أنهما مائة رطل فإذا الزق أثقل من المعتاد",
+              "chunk_id": "parent_1259_1884__564",
+              "children": []
+            },
+            {
+              "title": "اشتراه على أنه كاتب فوجده غير كاتب",
+              "chunk_id": "parent_1259_1885__565",
+              "children": []
+            },
+            {
+              "title": "اشترى ثوبين هرويين فإذا أحدهما مروي",
+              "chunk_id": "parent_1259_1886__566",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "بيع الشائع",
+          "chunk_id": "parent_1259_1887__567",
+          "children": [
+            {
+              "title": "اشترى عدلا على أنه عشرة أثواب فنقص أو زاد",
+              "chunk_id": "parent_1259_1888__568",
+              "children": []
+            },
+            {
+              "title": "باع أرضا على أن فيها كذا كذا نخلة فوجدها المشتري ناقصة",
+              "chunk_id": "parent_1259_1888__569",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "فصل يدخل البناء والمفاتيح في بيع الدار",
+          "chunk_id": "parent_1259_1889__570",
+          "children": [
+            {
+              "title": "اشترى ثوبا على أنه عشرة أذرع كل ذراع بدرهم",
+              "chunk_id": "parent_1259_1889__571",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "تتمة لباب البيع",
+          "chunk_id": "parent_1259_1901__572",
+          "children": [
+            {
+              "title": "بيع بر في سنبله وباقلا في قشره",
+              "chunk_id": "parent_1259_1901__573",
+              "children": []
+            },
+            {
+              "title": "اشترى تراب الصواغين بعرض",
+              "chunk_id": "parent_1259_1902__574",
+              "children": []
+            },
+            {
+              "title": "لو باع حنطة في سنبلها لزم البائع الدرس والتذرية",
+              "chunk_id": "parent_1259_1902__575",
+              "children": []
+            },
+            {
+              "title": "قطع العنب المشترى جزافا على البائع",
+              "chunk_id": "parent_1259_1902__576",
+              "children": []
+            },
+            {
+              "title": "وأجرة نقد الثمن ووزنه على المشتري",
+              "chunk_id": "parent_1259_1903__577",
+              "children": []
+            },
+            {
+              "title": "قال للبائع بعها أو طأها أو كل الطعام ففعل",
+              "chunk_id": "parent_1259_1904__578",
+              "children": []
+            },
+            {
+              "title": "اشترى دهنا ودفع قارورة ليزنه فيها فوزنه فيها بحضرة المشتري",
+              "chunk_id": "parent_1259_1904__579",
+              "children": []
+            },
+            {
+              "title": "المشتري إذا قبض المبيع قبل نقد الثمن والبائع يراه ولم يمنعه من القبض",
+              "chunk_id": "parent_1259_1904__580",
+              "children": []
+            },
+            {
+              "title": "باع حنطة في سنبلها فسلمها كذلك",
+              "chunk_id": "parent_1259_1905__581",
+              "children": []
+            },
+            {
+              "title": "دفع المفتاح في بيع الدار تسليم",
+              "chunk_id": "parent_1259_1905__582",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب خيار الشرط",
+          "chunk_id": "parent_1259_1906__583",
+          "children": [
+            {
+              "title": "عشرة أشياء لو فعلها البائع بإذن المشتري كان قابضا",
+              "chunk_id": "parent_1259_1906__584",
+              "children": []
+            },
+            {
+              "title": "قبض المشتري بلا إذن البائع قبل نقد الثمن وبنى أو غرس أو ثوبا فصبغه",
+              "chunk_id": "parent_1259_1907__585",
+              "children": []
+            },
+            {
+              "title": "تعليق خيار الشرط بالشرط",
+              "chunk_id": "parent_1259_1912__586",
+              "children": []
+            },
+            {
+              "title": "خيار البائع يمنع خروج المبيع عن ملكه",
+              "chunk_id": "parent_1259_1914__587",
+              "children": []
+            },
+            {
+              "title": "كان الخيار للمشتري وقبض المبيع وهلك في يده",
+              "chunk_id": "parent_1259_1920__588",
+              "children": []
+            },
+            {
+              "title": "اشترى زوجته بالخيار",
+              "chunk_id": "parent_1259_1921__589",
+              "children": []
+            },
+            {
+              "title": "أجاز من له الخيار بغيبة صاحبه",
+              "chunk_id": "parent_1259_1924__590",
+              "children": []
+            },
+            {
+              "title": "شرط المشتري الخيار لغيره",
+              "chunk_id": "parent_1259_1927__591",
+              "children": []
+            },
+            {
+              "title": "باع عبدين على أنه بالخيار في أحدهما",
+              "chunk_id": "parent_1259_1928__592",
+              "children": []
+            },
+            {
+              "title": "اشترى عبدا على أنه خباز أو كاتب فكان بخلافه",
+              "chunk_id": "parent_1259_1930__593",
+              "children": []
+            },
+            {
+              "title": "اشتريا على أنهما بالخيار فرضي أحدهما",
+              "chunk_id": "parent_1259_1931__594",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب خيار الرؤية",
+          "chunk_id": "parent_1259_1933__595",
+          "children": [
+            {
+              "title": "يبطل خيار الرؤية بما يبطل به خيار الشرط",
+              "chunk_id": "parent_1259_1935__596",
+              "children": []
+            },
+            {
+              "title": "عقد الأعمى أي بيعه وشراؤه وسائر عقوده",
+              "chunk_id": "parent_1259_1939__597",
+              "children": []
+            },
+            {
+              "title": "لا يورث خيار الرؤية كخيار الشرط",
+              "chunk_id": "parent_1259_1941__598",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب خيار العيب",
+          "chunk_id": "parent_1259_1943__599",
+          "children": [
+            {
+              "title": "وجد بالمبيع عيبا",
+              "chunk_id": "parent_1259_1944__600",
+              "children": []
+            },
+            {
+              "title": "ما أوجب نقصان الثمن عند التجار فهو عيب",
+              "chunk_id": "parent_1259_1947__601",
+              "children": []
+            },
+            {
+              "title": "السرقة من العيوب في العبد والجارية",
+              "chunk_id": "parent_1259_1951__602",
+              "children": []
+            },
+            {
+              "title": "اشترى ثوبا فقطعه فوجد به عيبا",
+              "chunk_id": "parent_1259_1958__603",
+              "children": []
+            },
+            {
+              "title": "اشترى بيضا أو قثاء أو جوزا فوجده فاسدا ينتفع به",
+              "chunk_id": "parent_1259_1964__604",
+              "children": []
+            },
+            {
+              "title": "باع المبيع فرد عليه بعيب بقضاء",
+              "chunk_id": "parent_1259_1965__605",
+              "children": []
+            },
+            {
+              "title": "قبض المشتري المبيع وادعى عيبا",
+              "chunk_id": "parent_1259_1968__606",
+              "children": []
+            },
+            {
+              "title": "اشترى عبدين صفقة فقبض أحدهما ووجد بأحدهما عيبا",
+              "chunk_id": "parent_1259_1974__607",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب البيع الفاسد",
+          "chunk_id": "parent_1259_1979__608",
+          "children": [
+            {
+              "title": "فصل في أحكام البيع الفاسد",
+              "chunk_id": "parent_1259_2004__609",
+              "children": []
+            },
+            {
+              "title": "شرائط صحة الإقالة",
+              "chunk_id": "parent_1259_2015__611",
+              "children": []
+            },
+            {
+              "title": "صفة الإقالة",
+              "chunk_id": "parent_1259_2015__612",
+              "children": []
+            },
+            {
+              "title": "حكم الإقالة",
+              "chunk_id": "parent_1259_2015__613",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب الإقالة",
+          "chunk_id": "parent_1259_2015__610",
+          "children": [
+            {
+              "title": "ركن الإقالة",
+              "chunk_id": "parent_1259_2015__614",
+              "children": []
+            },
+            {
+              "title": "من يملك الإقالة ومن لا يملكها",
+              "chunk_id": "parent_1259_2016__615",
+              "children": []
+            },
+            {
+              "title": "إقالة الإقالة",
+              "chunk_id": "parent_1259_2017__616",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب المرابحة والتولية",
+          "chunk_id": "parent_1259_2021__617",
+          "children": [
+            {
+              "title": "شرط المرابحة والتولية",
+              "chunk_id": "parent_1259_2023__618",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "فصل في بيان التصرف في المبيع والثمن قبل قبضه",
+          "chunk_id": "parent_1259_2031__619",
+          "children": []
+        },
+        {
+          "title": "باب الربا",
+          "chunk_id": "parent_1259_2040__620",
+          "children": [
+            {
+              "title": "علة الربا",
+              "chunk_id": "parent_1259_2043__621",
+              "children": []
+            },
+            {
+              "title": "بيع المكيل كالبر والشعير والتمر والملح والموزون كالنقدين",
+              "chunk_id": "parent_1259_2045__622",
+              "children": []
+            },
+            {
+              "title": "بيع اللحم بالحيوان",
+              "chunk_id": "parent_1259_2049__623",
+              "children": []
+            },
+            {
+              "title": "بيع البر بالدقيق أو بالسويق",
+              "chunk_id": "parent_1259_2051__624",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب الحقوق",
+          "chunk_id": "parent_1259_2053__625",
+          "children": []
+        },
+        {
+          "title": "باب الاستحقاق",
+          "chunk_id": "parent_1259_2056__626",
+          "children": []
+        },
+        {
+          "title": "فصل في بيع الفضولي",
+          "chunk_id": "parent_1259_2065__627",
+          "children": []
+        },
+        {
+          "title": "باب السلم",
+          "chunk_id": "parent_1259_2073__628",
+          "children": [
+            {
+              "title": "السلم في المذروعات",
+              "chunk_id": "parent_1259_2076__629",
+              "children": []
+            },
+            {
+              "title": "السلم في الشيء المنقطع",
+              "chunk_id": "parent_1259_2077__630",
+              "children": []
+            },
+            {
+              "title": "السلم في السمك",
+              "chunk_id": "parent_1259_2077__631",
+              "children": []
+            },
+            {
+              "title": "السلم في اللحم",
+              "chunk_id": "parent_1259_2077__632",
+              "children": []
+            },
+            {
+              "title": "أقل أجل السلم",
+              "chunk_id": "parent_1259_2079__633",
+              "children": []
+            },
+            {
+              "title": "أسلم مائتي درهم في كر بر مائة دينا عليه ومائة نقدا",
+              "chunk_id": "parent_1259_2083__634",
+              "children": []
+            },
+            {
+              "title": "اشترى المسلم إليه كرا وأمر رب السلم بقبضه قضاء",
+              "chunk_id": "parent_1259_2086__635",
+              "children": []
+            },
+            {
+              "title": "أسلم أمة في كر وقبضت الأمة فتقايلا وماتت أو ماتت قبل الإقالة",
+              "chunk_id": "parent_1259_2088__636",
+              "children": []
+            },
+            {
+              "title": "السلم والاستصناع في نحو خف وطست",
+              "chunk_id": "parent_1259_2090__637",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب مسائل متفرقة في البيع",
+          "chunk_id": "parent_1259_2092__638",
+          "children": []
+        },
+        {
+          "title": "فروع متعلقة بالتصرف في مال الغائب",
+          "chunk_id": "parent_1259_2095__639",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب الصرف",
+      "chunk_id": "parent_1259_2113__640",
+      "children": [
+        {
+          "title": "التصرف في ثمن الصرف قبل قبضه",
+          "chunk_id": "parent_1259_2116__641",
+          "children": []
+        },
+        {
+          "title": "باع أمة مع طوق قيمة كل ألف بألفين ونقد من الثمن ألفا",
+          "chunk_id": "parent_1259_2117__642",
+          "children": []
+        },
+        {
+          "title": "باع سيفا حليته خمسون بمائة ونقد خمسين",
+          "chunk_id": "parent_1259_2117__643",
+          "children": []
+        },
+        {
+          "title": "باع إناء فضة وقبض بعض ثمنه وافترقا",
+          "chunk_id": "parent_1259_2119__644",
+          "children": []
+        },
+        {
+          "title": "بيع درهمين ودينار بدرهم ودينارين وكر بر وشعير بضعفهما",
+          "chunk_id": "parent_1259_2120__645",
+          "children": []
+        },
+        {
+          "title": "البيع بالفلوس النافقة",
+          "chunk_id": "parent_1259_2125__646",
+          "children": []
+        },
+        {
+          "title": "أعطى صيرفيا درهما فقال أعطني به نصف درهم فلوس ونصفا إلا حبة",
+          "chunk_id": "parent_1259_2126__648",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب الكفالة",
+      "chunk_id": "parent_1259_2126__647",
+      "children": [
+        {
+          "title": "تبطل الكفالة بموت المطلوب والكفيل لا الطالب",
+          "chunk_id": "parent_1259_2135__649",
+          "children": []
+        },
+        {
+          "title": "الكفالة بالنفس في حد وقود",
+          "chunk_id": "parent_1259_2139__650",
+          "children": []
+        },
+        {
+          "title": "الكفالة بالمال",
+          "chunk_id": "parent_1259_2140__651",
+          "children": []
+        },
+        {
+          "title": "الكفالة بالمجهول",
+          "chunk_id": "parent_1259_2143__652",
+          "children": []
+        },
+        {
+          "title": "كفل بماله عليه فبرهن على ألف",
+          "chunk_id": "parent_1259_2147__653",
+          "children": []
+        },
+        {
+          "title": "كفل بغير أمره",
+          "chunk_id": "parent_1259_2149__654",
+          "children": []
+        },
+        {
+          "title": "لا يطالب الكفيل بالمال قبل أن يؤدي عنه",
+          "chunk_id": "parent_1259_2149__655",
+          "children": []
+        },
+        {
+          "title": "يبرأ الكفيل بأداء الأصيل",
+          "chunk_id": "parent_1259_2151__656",
+          "children": []
+        },
+        {
+          "title": "صالح الأصيل أو الكفيل الطالب على نصف الدين",
+          "chunk_id": "parent_1259_2153__657",
+          "children": []
+        },
+        {
+          "title": "تعليق البراءة من الكفالة بالشرط",
+          "chunk_id": "parent_1259_2154__658",
+          "children": []
+        },
+        {
+          "title": "الكفالة بالمبيع والمرهون",
+          "chunk_id": "parent_1259_2155__659",
+          "children": []
+        },
+        {
+          "title": "الكفالة بلا قبول الطالب في مجلس الإيجاب",
+          "chunk_id": "parent_1259_2157__660",
+          "children": []
+        },
+        {
+          "title": "الكفالة بحمل دابة",
+          "chunk_id": "parent_1259_2157__661",
+          "children": []
+        },
+        {
+          "title": "الكفالة بالعهدة",
+          "chunk_id": "parent_1259_2159__662",
+          "children": []
+        },
+        {
+          "title": "الكفالة بالخلاص",
+          "chunk_id": "parent_1259_2159__663",
+          "children": []
+        },
+        {
+          "title": "الكفالة عن ميت مفلس",
+          "chunk_id": "parent_1259_2159__664",
+          "children": []
+        },
+        {
+          "title": "فصل أعطى المطلوب الكفيل قبل أن يعطي الكفيل الطالب",
+          "chunk_id": "parent_1259_2160__665",
+          "children": []
+        },
+        {
+          "title": "كفالة الشريك لشريكه",
+          "chunk_id": "parent_1259_2160__666",
+          "children": []
+        },
+        {
+          "title": "باب كفالة الرجلين والعبدين",
+          "chunk_id": "parent_1259_2167__667",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب الحوالة",
+      "chunk_id": "parent_1259_2171__668",
+      "children": [
+        {
+          "title": "أحاله بما له عند زيد وديعة",
+          "chunk_id": "parent_1259_2179__669",
+          "children": []
+        },
+        {
+          "title": "فروع مهمة في الحوالة",
+          "chunk_id": "parent_1259_2181__671",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب القضاء",
+      "chunk_id": "parent_1259_2181__670",
+      "children": [
+        {
+          "title": "أهل القضاء",
+          "chunk_id": "parent_1259_2188__672",
+          "children": [
+            {
+              "title": "تقليد الفاسق القضاء",
+              "chunk_id": "parent_1259_2189__673",
+              "children": []
+            },
+            {
+              "title": "كان القاضي عدلا ففسق",
+              "chunk_id": "parent_1259_2189__674",
+              "children": []
+            },
+            {
+              "title": "أخذ القضاء بالرشوة",
+              "chunk_id": "parent_1259_2190__675",
+              "children": []
+            },
+            {
+              "title": "الفاسق يصلح مفتيا",
+              "chunk_id": "parent_1259_2191__676",
+              "children": []
+            },
+            {
+              "title": "فرع للمفتي أن يغلظ للزجر متأولا",
+              "chunk_id": "parent_1259_2195__677",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "فصل في المستفتي",
+          "chunk_id": "parent_1259_2195__678",
+          "children": []
+        },
+        {
+          "title": "فصل في المفتي",
+          "chunk_id": "parent_1259_2196__679",
+          "children": []
+        },
+        {
+          "title": "فصل تقليد من شاء من المجتهدين للإفتاء",
+          "chunk_id": "parent_1259_2197__680",
+          "children": []
+        },
+        {
+          "title": "طلب القضاء",
+          "chunk_id": "parent_1259_2202__681",
+          "children": [
+            {
+              "title": "ما يفعله القاضي إذا تقلد القضاء",
+              "chunk_id": "parent_1259_2204__682",
+              "children": []
+            },
+            {
+              "title": "تقليد القضاء من السلطان العادل والجائر ومن أهل البغي",
+              "chunk_id": "parent_1259_2205__683",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "فصل في الحبس",
+          "chunk_id": "parent_1259_2212__684",
+          "children": []
+        },
+        {
+          "title": "باب كتاب القاضي إلى القاضي وغيره",
+          "chunk_id": "parent_1259_2222__685",
+          "children": [
+            {
+              "title": "يبطل كتاب القاضي إلي القاضي بموت الكاتب وعزله",
+              "chunk_id": "parent_1259_2225__687",
+              "children": []
+            },
+            {
+              "title": "القضاء بشهادة الزور في العقود والفسوخ",
+              "chunk_id": "parent_1259_2234__688",
+              "children": []
+            },
+            {
+              "title": "القضاء على خصم غير حاضر",
+              "chunk_id": "parent_1259_2237__689",
+              "children": []
+            },
+            {
+              "title": "القضاء على المسخر",
+              "chunk_id": "parent_1259_2240__690",
+              "children": []
+            },
+            {
+              "title": "شرط التحكيم",
+              "chunk_id": "parent_1259_2244__692",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب التحكيم",
+          "chunk_id": "parent_1259_2244__691",
+          "children": [
+            {
+              "title": "حكم المحكم لأبويه وولده",
+              "chunk_id": "parent_1259_2248__693",
+              "children": []
+            },
+            {
+              "title": "مسائل شتى من كتاب القضاء",
+              "chunk_id": "parent_1259_2249__694",
+              "children": []
+            },
+            {
+              "title": "ادعى دارا في يد رجل أنه وهبها له في وقت فسئل البينة فقال جحدنيها",
+              "chunk_id": "parent_1259_2254__695",
+              "children": []
+            },
+            {
+              "title": "قال لآخر لك علي ألف فرده ثم صدقه",
+              "chunk_id": "parent_1259_2258__696",
+              "children": []
+            },
+            {
+              "title": "ادعى دارا إرثا لنفسه ولأخ له غائب وبرهن عليه",
+              "chunk_id": "parent_1259_2266__697",
+              "children": []
+            },
+            {
+              "title": "أوصى إليه ولم يعلم بالوصية",
+              "chunk_id": "parent_1259_2269__698",
+              "children": []
+            },
+            {
+              "title": "قال قاض عزل لرجل أخذت منك ألفا ودفعته إلى زيد قضيت به عليك فقال الرجل أخذته ظلما",
+              "chunk_id": "parent_1259_2274__699",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "كتاب الشهادات",
+      "chunk_id": "parent_1259_2275__700",
+      "children": [
+        {
+          "title": "ستر الشهادة في الحدود",
+          "chunk_id": "parent_1259_2280__701",
+          "children": []
+        },
+        {
+          "title": "شرط في الشهادة على الزنا أربعة رجال",
+          "chunk_id": "parent_1259_2280__702",
+          "children": []
+        },
+        {
+          "title": "شرط لجميع أنواعها لفظ أشهد بالمضارع الشهادة",
+          "chunk_id": "parent_1259_2283__703",
+          "children": []
+        },
+        {
+          "title": "والواحد يكفي للتزكية والرسالة والترجمة الشهادة",
+          "chunk_id": "parent_1259_2287__704",
+          "children": []
+        },
+        {
+          "title": "لا يعمل شاهد وقاض وراو بالخط إن لم يتذكروا",
+          "chunk_id": "parent_1259_2292__705",
+          "children": []
+        },
+        {
+          "title": "باب من تقبل شهادته ومن لا تقبل",
+          "chunk_id": "parent_1259_2297__706",
+          "children": [
+            {
+              "title": "فروع شهد الوصي بعد العزل للميت",
+              "chunk_id": "parent_1259_2319__707",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب الاختلاف في الشهادة",
+          "chunk_id": "parent_1259_2323__708",
+          "children": [
+            {
+              "title": "يعتبر اتفاق الشاهدين لفظا ومعنى",
+              "chunk_id": "parent_1259_2329__709",
+              "children": []
+            },
+            {
+              "title": "شهدا بقرض ألف وشهد أحدهما أنه قضاه",
+              "chunk_id": "parent_1259_2333__710",
+              "children": []
+            },
+            {
+              "title": "شهد لرجل أنه اشترى عبد فلان بألف وشهد آخر بألف وخمسمائة",
+              "chunk_id": "parent_1259_2336__711",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب الشهادة على الشهادة",
+          "chunk_id": "parent_1259_2340__712",
+          "children": [
+            {
+              "title": "صيغة الإشهاد على الشهادة",
+              "chunk_id": "parent_1259_2341__713",
+              "children": []
+            },
+            {
+              "title": "لا شهادة للفرع إلا بموت أصله أو مرضه أو سفره",
+              "chunk_id": "parent_1259_2341__714",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب الرجوع عن الشهادة",
+          "chunk_id": "parent_1259_2347__715",
+          "children": [
+            {
+              "title": "شهد رجل وامرأتان فرجعت امرأة",
+              "chunk_id": "parent_1259_2352__716",
+              "children": []
+            },
+            {
+              "title": "شهدا على شهادة أربعة وآخران على شهادة شاهدين وقضي ثم رجعوا",
+              "chunk_id": "parent_1259_2357__717",
+              "children": []
+            },
+            {
+              "title": "شهود الإحصان لا ضمان عليهم",
+              "chunk_id": "parent_1259_2358__718",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "كتاب الوكالة",
+      "chunk_id": "parent_1259_2359__719",
+      "children": [
+        {
+          "title": "شرائط الوكالة",
+          "chunk_id": "parent_1259_2360__720",
+          "children": []
+        },
+        {
+          "title": "حكم الوكالة",
+          "chunk_id": "parent_1259_2361__721",
+          "children": []
+        },
+        {
+          "title": "صفة الوكالة",
+          "chunk_id": "parent_1259_2362__722",
+          "children": []
+        },
+        {
+          "title": "التوكيل بإيفاء جميع الحقوق واستيفائها",
+          "chunk_id": "parent_1259_2366__723",
+          "children": []
+        },
+        {
+          "title": "باب الوكالة بالبيع والشراء",
+          "chunk_id": "parent_1259_2373__724",
+          "children": [
+            {
+              "title": "مفارقة الوكيل في الصرف والسلم",
+              "chunk_id": "parent_1259_2377__725",
+              "children": []
+            },
+            {
+              "title": "أمره بشراء عبدين معينين ولم يسم ثمنا فاشترى له أحدهما",
+              "chunk_id": "parent_1259_2383__726",
+              "children": []
+            },
+            {
+              "title": "فصل الوكيل بالبيع والشراء لا يعقد مع من ترد شهادته له",
+              "chunk_id": "parent_1259_2386__727",
+              "children": [
+                {
+                  "title": "رد المشتري المبيع على الوكيل بالعيب",
+                  "chunk_id": "parent_1259_2390__728",
+                  "children": []
+                },
+                {
+                  "title": "تصرف أحد الوكيلين وحده",
+                  "chunk_id": "parent_1259_2394__729",
+                  "children": []
+                },
+                {
+                  "title": "زوج عبد أو مكاتب أو كافر صغيرته الحرة المسلمة",
+                  "chunk_id": "parent_1259_2397__730",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "باب الوكالة بالخصومة والقبض",
+          "chunk_id": "parent_1259_2398__731",
+          "children": [
+            {
+              "title": "وكله بقبض ماله فادعى الغريم أن رب المال أخذه",
+              "chunk_id": "parent_1259_2405__732",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب عزل الوكيل",
+          "chunk_id": "parent_1259_2407__733",
+          "children": [
+            {
+              "title": "افتراق الشريكين هل يبطل الوكالة",
+              "chunk_id": "parent_1259_2410__734",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "كتاب الدعوى",
+      "chunk_id": "parent_1259_2411__735",
+      "children": [
+        {
+          "title": "باب التحالف",
+          "chunk_id": "parent_1259_2438__736",
+          "children": [
+            {
+              "title": "فصل يعني في دفع الدعوى",
+              "chunk_id": "parent_1259_2448__737",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب دعوى الرجلين",
+          "chunk_id": "parent_1259_2454__738",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب الإقرار",
+      "chunk_id": "parent_1259_2469__739",
+      "children": [
+        {
+          "title": "باب الاستثناء في الإقرار",
+          "chunk_id": "parent_1259_2472__740",
+          "children": []
+        },
+        {
+          "title": "باب إقرار المريض",
+          "chunk_id": "parent_1259_2474__741",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب الصلح",
+      "chunk_id": "parent_1259_2475__742",
+      "children": [
+        {
+          "title": "فصل الصلح عن دعوى المال",
+          "chunk_id": "parent_1259_2476__743",
+          "children": []
+        },
+        {
+          "title": "باب الصلح في الدين",
+          "chunk_id": "parent_1259_2479__744",
+          "children": [
+            {
+              "title": "فصل في الدين المشترك",
+              "chunk_id": "parent_1259_2480__745",
+              "children": []
+            },
+            {
+              "title": "فصل في صلح الورثة",
+              "chunk_id": "parent_1259_2481__746",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "كتاب المضاربة",
+      "chunk_id": "parent_1259_2483__747",
+      "children": [
+        {
+          "title": "فروع ادعى أرضا أنها وقف ولا بينة له فصالحه المنكر لقطع الخصومة",
+          "chunk_id": "parent_1259_2484__748",
+          "children": []
+        },
+        {
+          "title": "باب المضارب يضارب",
+          "chunk_id": "parent_1259_2486__749",
+          "children": [
+            {
+              "title": "فصل دفع مال المضاربة إلى المالك بضاعة",
+              "chunk_id": "parent_1259_2488__750",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "كتاب الوديعة",
+      "chunk_id": "parent_1259_2493__751",
+      "children": [
+        {
+          "title": "للمودع أن يحفظ الوديعة بنفسه وبعياله",
+          "chunk_id": "parent_1259_2494__752",
+          "children": []
+        },
+        {
+          "title": "طلب الوديعة ربها فحبسها قادرا على تسليمها فمنعها",
+          "chunk_id": "parent_1259_2496__753",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب العارية",
+      "chunk_id": "parent_1259_2499__754",
+      "children": [
+        {
+          "title": "هلكت العارية بلا تعد",
+          "chunk_id": "parent_1259_2501__755",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب الهبة",
+      "chunk_id": "parent_1259_2504__756",
+      "children": [
+        {
+          "title": "مؤنة رد الوديعة على المالك",
+          "chunk_id": "parent_1259_2504__757",
+          "children": []
+        },
+        {
+          "title": "هبة الأب لطفلة",
+          "chunk_id": "parent_1259_2508__758",
+          "children": []
+        },
+        {
+          "title": "قبض زوج الصغيرة ما وهب بعد الزفاف",
+          "chunk_id": "parent_1259_2509__759",
+          "children": []
+        },
+        {
+          "title": "باب الرجوع في الهبة",
+          "chunk_id": "parent_1259_2510__760",
+          "children": []
+        },
+        {
+          "title": "فصل مسائل شتى في الهبة",
+          "chunk_id": "parent_1259_2515__761",
+          "children": []
+        },
+        {
+          "title": "الرقبى",
+          "chunk_id": "parent_1259_2517__762",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "كتاب الإجارة",
+      "chunk_id": "parent_1259_2517__763",
+      "children": [
+        {
+          "title": "لرب الدار والأرض طلب الأجر كل يوم",
+          "chunk_id": "parent_1259_2521__764",
+          "children": []
+        },
+        {
+          "title": "استأجره ليجيء بعياله فمات بعضهم فجاء بما بقي",
+          "chunk_id": "parent_1259_2523__765",
+          "children": []
+        },
+        {
+          "title": "باب ما يجوز من الإجارة وما يكون خلافا فيها",
+          "chunk_id": "parent_1259_2524__766",
+          "children": []
+        },
+        {
+          "title": "الزرع يترك بأجر المثل إلى أن يدرك إذا انقضت مدة الإجارة",
+          "chunk_id": "parent_1259_2527__767",
+          "children": []
+        },
+        {
+          "title": "باب الإجارة الفاسدة",
+          "chunk_id": "parent_1259_2531__768",
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "تكملة البحر الرائق للطوري",
+      "chunk_id": null,
+      "children": [
+        {
+          "title": "كتاب الإجارة",
+          "chunk_id": "parent_1259_2533__769",
+          "children": [
+            {
+              "title": "باب ما يجوز من الإجارة وما يكون خلافا فيها",
+              "chunk_id": "parent_1259_2541__770",
+              "children": []
+            },
+            {
+              "title": "باب الإجارة الفاسدة",
+              "chunk_id": "parent_1259_2550__771",
+              "children": [
+                {
+                  "title": "أخذ أجرة الحمام",
+                  "chunk_id": "parent_1259_2552__772",
+                  "children": []
+                },
+                {
+                  "title": "أخذ أجرة الحجام",
+                  "chunk_id": "parent_1259_2552__773",
+                  "children": []
+                },
+                {
+                  "title": "استئجار الظئر بأجرة معلومة",
+                  "chunk_id": "parent_1259_2555__774",
+                  "children": []
+                },
+                {
+                  "title": "استأجر أحد الشريكين صاحبه لحمل طعام بينهما",
+                  "chunk_id": "parent_1259_2559__775",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "title": "باب ضمان الأجير",
+              "chunk_id": "parent_1259_2561__776",
+              "children": [
+                {
+                  "title": "ولا يضمن الأجير حجام أو فصاد أو بزاغ لم يتعد الموضع المعتاد",
+                  "chunk_id": "parent_1259_2564__777",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "title": "باب فسخ الإجارة",
+              "chunk_id": "parent_1259_2571__778",
+              "children": [
+                {
+                  "title": "تفسخ الإجارة بموت أحد المتعاقدين إن عقد لنفسه",
+                  "chunk_id": "parent_1259_2572__779",
+                  "children": []
+                },
+                {
+                  "title": "تفسخ الإجارة بخيار الشرط",
+                  "chunk_id": "parent_1259_2572__780",
+                  "children": []
+                },
+                {
+                  "title": "تفسخ بخيار الرؤية أي الإجارة",
+                  "chunk_id": "parent_1259_2573__781",
+                  "children": []
+                },
+                {
+                  "title": "استأجر دابة للسفر فبدا له منه رأي لا للمكاري",
+                  "chunk_id": "parent_1259_2574__782",
+                  "children": []
+                },
+                {
+                  "title": "أقعد خياط أو صباغ في حانوته من يطرح عليه العمل بالنصف",
+                  "chunk_id": "parent_1259_2574__783",
+                  "children": []
+                },
+                {
+                  "title": "المزارعة بالإضافة إلى المستقبل",
+                  "chunk_id": "parent_1259_2575__784",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "كتاب المكاتب",
+          "chunk_id": "parent_1259_2576__785",
+          "children": [
+            {
+              "title": "ألفاظ الكتابة",
+              "chunk_id": "parent_1259_2576__786",
+              "children": []
+            },
+            {
+              "title": "باب ما يجوز للمكاتب أن يفعله وما لا يجوز",
+              "chunk_id": "parent_1259_2582__787",
+              "children": []
+            },
+            {
+              "title": "فصل ولدت مكاتبة من سيدها",
+              "chunk_id": "parent_1259_2589__788",
+              "children": [
+                {
+                  "title": "دبر مكاتبه",
+                  "chunk_id": "parent_1259_2591__789",
+                  "children": []
+                },
+                {
+                  "title": "فروع اختلف المولى والعبد فقال العبد كاتبتني على ألف وقال على ألفين",
+                  "chunk_id": "parent_1259_2592__790",
+                  "children": []
+                },
+                {
+                  "title": "المريض إذا كاتب عبده على ألفين إلى سنة وقيمته ألف درهم فمات المولى",
+                  "chunk_id": "parent_1259_2592__791",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "title": "باب كتابة العبد المشترك",
+              "chunk_id": "parent_1259_2595__792",
+              "children": [
+                {
+                  "title": "أمة بينهما كاتباها فوطئها أحدهما فولدت فادعاه ثم وطئ الآخر فولدت فادعاه",
+                  "chunk_id": "parent_1259_2597__793",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "title": "باب موت المكاتب وعجزه وموت المولى",
+              "chunk_id": "parent_1259_2599__794",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "كتاب الولاء",
+          "chunk_id": "parent_1259_2604__795",
+          "children": [
+            {
+              "title": "فصل ولاء الموالاة",
+              "chunk_id": "parent_1259_2608__796",
+              "children": []
+            },
+            {
+              "title": "ليس للمعتق أن يوالي أحدا",
+              "chunk_id": "parent_1259_2610__797",
+              "children": [
+                {
+                  "title": "فروع عبد لحربي خرج مستأمنا في تجارة لمولاه فأسلم",
+                  "chunk_id": "parent_1259_2610__798",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "كتاب الإكراه",
+          "chunk_id": "parent_1259_2610__799",
+          "children": [
+            {
+              "title": "شرط الإكراه",
+              "chunk_id": "parent_1259_2611__800",
+              "children": []
+            },
+            {
+              "title": "هلك المبيع في يد المشتري وهو غير مكره والبائع مكره",
+              "chunk_id": "parent_1259_2613__801",
+              "children": []
+            },
+            {
+              "title": "أكل لحم خنزير وميتة ودم وشرب خمر بحبس أو ضرب أو قيد مكرها",
+              "chunk_id": "parent_1259_2613__802",
+              "children": []
+            },
+            {
+              "title": "القصاص من المكره",
+              "chunk_id": "parent_1259_2615__803",
+              "children": []
+            },
+            {
+              "title": "أكره على قطع يد إنسان يقطع يده",
+              "chunk_id": "parent_1259_2619__804",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "باب الحجر",
+          "chunk_id": "parent_1259_2619__805",
+          "children": [
+            {
+              "title": "تصرف المجنون المغلوب",
+              "chunk_id": "parent_1259_2620__806",
+              "children": []
+            },
+            {
+              "title": "إقرار الصبي والمجنون",
+              "chunk_id": "parent_1259_2621__807",
+              "children": []
+            },
+            {
+              "title": "بيع السفيه",
+              "chunk_id": "parent_1259_2623__808",
+              "children": []
+            },
+            {
+              "title": "بلغ رشيدا ثم صار سفيها",
+              "chunk_id": "parent_1259_2623__809",
+              "children": []
+            },
+            {
+              "title": "يخرج الزكاة عن مال السفيه",
+              "chunk_id": "parent_1259_2624__810",
+              "children": []
+            },
+            {
+              "title": "أوصى السفيه بوصايا في القرب وأبواب الخير",
+              "chunk_id": "parent_1259_2624__811",
+              "children": []
+            },
+            {
+              "title": "أقر المديون في حال حجره بمال",
+              "chunk_id": "parent_1259_2626__812",
+              "children": []
+            },
+            {
+              "title": "فصل في حد البلوغ",
+              "chunk_id": "parent_1259_2627__813",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "كتاب المأذون",
+          "chunk_id": "parent_1259_2627__814",
+          "children": [
+            {
+              "title": "رأى عبده يشتري شيئا ويبيع في حانوته فسكت",
+              "chunk_id": "parent_1259_2630__815",
+              "children": []
+            },
+            {
+              "title": "اشترى المأذون جارية بألف درهم وقبضها ووهب البائع ثمنها من العبد",
+              "chunk_id": "parent_1259_2633__816",
+              "children": []
+            },
+            {
+              "title": "باع المأذون عبده فقال المشتري إنه حر وصدقه المأذون",
+              "chunk_id": "parent_1259_2635__817",
+              "children": []
+            },
+            {
+              "title": "شريكان أذنا لعبدهما في التجارة",
+              "chunk_id": "parent_1259_2639__818",
+              "children": []
+            },
+            {
+              "title": "حجر على المأذون وله ديون على الناس",
+              "chunk_id": "parent_1259_2641__819",
+              "children": []
+            },
+            {
+              "title": "الأمة المأذون لها تصير محجورة باستيلاد المولى",
+              "chunk_id": "parent_1259_2642__820",
+              "children": []
+            },
+            {
+              "title": "عبد عليه دين إلى أجل فباعه مولاه",
+              "chunk_id": "parent_1259_2644__821",
+              "children": []
+            },
+            {
+              "title": "أقرض المولى عبده المأذون المديون ألفا",
+              "chunk_id": "parent_1259_2646__822",
+              "children": []
+            },
+            {
+              "title": "لا تباع رقبة المأذون المديون إلا بحضرة المولى",
+              "chunk_id": "parent_1259_2650__823",
+              "children": []
+            },
+            {
+              "title": "دخل رجل بعبده من السوق وقال هذا عبدي وقد أذنت له في التجارة",
+              "chunk_id": "parent_1259_2652__824",
+              "children": []
+            },
+            {
+              "title": "فصل غير الأب والجد لا يتولى طرفي عقد المعاوضة المالية",
+              "chunk_id": "parent_1259_2653__825",
+              "children": []
+            },
+            {
+              "title": "باع صبي محجور عبده بألف درهم",
+              "chunk_id": "parent_1259_2653__826",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "كتاب الغصب",
+          "chunk_id": "parent_1259_2653__827",
+          "children": [
+            {
+              "title": "غصب عقارا وهلك في يده",
+              "chunk_id": "parent_1259_2657__828",
+              "children": []
+            },
+            {
+              "title": "ذبح المغصوب شاة أو خرق ثوبا فاحشا",
+              "chunk_id": "parent_1259_2663__829",
+              "children": []
+            },
+            {
+              "title": "فصل غيب المغصوب وضمن قيمته",
+              "chunk_id": "parent_1259_2666__830",
+              "children": [
+                {
+                  "title": "والقول في القيمة للغاصب مع يمينه والبينة للمالك",
+                  "chunk_id": "parent_1259_2667__831",
+                  "children": []
+                },
+                {
+                  "title": "منافع الغصب",
+                  "chunk_id": "parent_1259_2670__832",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "كتاب الشفعة",
+          "chunk_id": "parent_1259_2673__833",
+          "children": [
+            {
+              "title": "الشفعة بالبيع",
+              "chunk_id": "parent_1259_2676__834",
+              "children": []
+            },
+            {
+              "title": "باب طلب الشفعة",
+              "chunk_id": "parent_1259_2677__835",
+              "children": [
+                {
+                  "title": "للشفيع خيار الرؤية والعيب",
+                  "chunk_id": "parent_1259_2681__836",
+                  "children": []
+                },
+                {
+                  "title": "الشفيع إذا أخذ الأرض بالشفعة فبنى أو غرس ثم استحقت",
+                  "chunk_id": "parent_1259_2686__837",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "title": "باب ما يجب فيه الشفعة وما لا يجب",
+              "chunk_id": "parent_1259_2687__838",
+              "children": []
+            },
+            {
+              "title": "ما يبطل الشفعة",
+              "chunk_id": "parent_1259_2691__839",
+              "children": []
+            },
+            {
+              "title": "ابتاع أو ابتيع له فله الشفعة",
+              "chunk_id": "parent_1259_2692__840",
+              "children": []
+            },
+            {
+              "title": "الحيلة لإسقاط الشفعة والزكاة",
+              "chunk_id": "parent_1259_2696__841",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "كتاب القسمة",
+          "chunk_id": "parent_1259_2698__842",
+          "children": [
+            {
+              "title": "طلب بعض الشركاء القسمة",
+              "chunk_id": "parent_1259_2699__843",
+              "children": []
+            },
+            {
+              "title": "كيف يقسم سفل له علو وسفل مجرد وعلو مجرد",
+              "chunk_id": "parent_1259_2706__844",
+              "children": [
+                {
+                  "title": "فروع لأحدهما شجرة أغصانها مطلة على قسمة الآخر",
+                  "chunk_id": "parent_1259_2712__845",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "كتاب المزارعة",
+          "chunk_id": "parent_1259_2712__846",
+          "children": [
+            {
+              "title": "تبطل المزارعة بموت أحدهما",
+              "chunk_id": "parent_1259_2716__847",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "كتاب المساقاة",
+          "chunk_id": "parent_1259_2717__848",
+          "children": [
+            {
+              "title": "تبطل المساقاة بالموت",
+              "chunk_id": "parent_1259_2719__849",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "كتاب الذبائح",
+          "chunk_id": "parent_1259_2721__850",
+          "children": [
+            {
+              "title": "ذبيحة مسلم وكتابي",
+              "chunk_id": "parent_1259_2722__851",
+              "children": []
+            },
+            {
+              "title": "ذبيحة المجوسي والوثني والمرتد والمحرم وتارك التسمية عمدا",
+              "chunk_id": "parent_1259_2722__852",
+              "children": []
+            },
+            {
+              "title": "ما يقوله عند الذبح",
+              "chunk_id": "parent_1259_2723__853",
+              "children": []
+            },
+            {
+              "title": "كيفية الذبح",
+              "chunk_id": "parent_1259_2724__854",
+              "children": []
+            },
+            {
+              "title": "ما يكره في الذبح",
+              "chunk_id": "parent_1259_2725__855",
+              "children": []
+            },
+            {
+              "title": "فصل فيما يحل ولا يحل من الذبائح",
+              "chunk_id": "parent_1259_2726__856",
+              "children": []
+            },
+            {
+              "title": "أكل غراب الزرع",
+              "chunk_id": "parent_1259_2726__857",
+              "children": []
+            },
+            {
+              "title": "أكل الأرنب",
+              "chunk_id": "parent_1259_2727__858",
+              "children": []
+            },
+            {
+              "title": "ذبح شاة فتحركت أو خرج الدم",
+              "chunk_id": "parent_1259_2727__859",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "كتاب الأضحية",
+          "chunk_id": "parent_1259_2728__860",
+          "children": [
+            {
+              "title": "الأضحية بالجماء",
+              "chunk_id": "parent_1259_2731__861",
+              "children": []
+            },
+            {
+              "title": "الأضحية من الإبل والبقر والغنم",
+              "chunk_id": "parent_1259_2732__862",
+              "children": []
+            },
+            {
+              "title": "الأكل من لحم الأضحية",
+              "chunk_id": "parent_1259_2734__863",
+              "children": []
+            },
+            {
+              "title": "أجرة الجزار هل تأخذ من الأضحية",
+              "chunk_id": "parent_1259_2734__864",
+              "children": []
+            },
+            {
+              "title": "ذبح الكتابي في الأضحية",
+              "chunk_id": "parent_1259_2735__865",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "كتاب الكراهية",
+          "chunk_id": "parent_1259_2735__866",
+          "children": [
+            {
+              "title": "تعريف الإيمان",
+              "chunk_id": "parent_1259_2736__867",
+              "children": []
+            },
+            {
+              "title": "صفات الله تعالى هل قديمة كلها",
+              "chunk_id": "parent_1259_2736__868",
+              "children": []
+            },
+            {
+              "title": "تتمة هل على الصبي حفظة يكتبون له",
+              "chunk_id": "parent_1259_2737__869",
+              "children": []
+            },
+            {
+              "title": "فصل في الأكل والشرب",
+              "chunk_id": "parent_1259_2738__870",
+              "children": [
+                {
+                  "title": "غسل اليدين قبل الطعام",
+                  "chunk_id": "parent_1259_2739__871",
+                  "children": []
+                },
+                {
+                  "title": "الأكل من طعام الظلمة",
+                  "chunk_id": "parent_1259_2740__872",
+                  "children": []
+                },
+                {
+                  "title": "الأكل والشرب متكئا أو واضعا شماله على يمينه أو مستندا",
+                  "chunk_id": "parent_1259_2741__873",
+                  "children": []
+                },
+                {
+                  "title": "دعي إلى وليمة وثمة لعب وغناء",
+                  "chunk_id": "parent_1259_2745__874",
+                  "children": []
+                },
+                {
+                  "title": "رأى رجلا سرق مال إنسان",
+                  "chunk_id": "parent_1259_2746__875",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "title": "فصل في اللبس",
+              "chunk_id": "parent_1259_2746__876",
+              "children": [
+                {
+                  "title": "توسده وافتراشه أي الحرير",
+                  "chunk_id": "parent_1259_2746__877",
+                  "children": []
+                },
+                {
+                  "title": "لبس ما سداه حرير ولحمته قطن أو خز",
+                  "chunk_id": "parent_1259_2747__878",
+                  "children": []
+                },
+                {
+                  "title": "الأفضل لغير السلطان والقاضي ترك التختم",
+                  "chunk_id": "parent_1259_2748__879",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "title": "فصل في النظر واللمس",
+              "chunk_id": "parent_1259_2748__880",
+              "children": [
+                {
+                  "title": "لا ينظر من اشتهى إلى وجهها إلا الحاكم",
+                  "chunk_id": "parent_1259_2749__881",
+                  "children": []
+                },
+                {
+                  "title": "ينظر الرجل إلى الرجل إلا العورة",
+                  "chunk_id": "parent_1259_2750__882",
+                  "children": []
+                },
+                {
+                  "title": "ينظر الرجل إلى فرج أمته وزوجته",
+                  "chunk_id": "parent_1259_2751__883",
+                  "children": []
+                },
+                {
+                  "title": "فروع تقبيل غيره ومعانقته",
+                  "chunk_id": "parent_1259_2752__884",
+                  "children": []
+                },
+                {
+                  "title": "لا تعرض الأمة إذا بلغت في إزار واحد للبيع",
+                  "chunk_id": "parent_1259_2753__885",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "title": "فصل في الاستبراء وغيره",
+              "chunk_id": "parent_1259_2753__886",
+              "children": []
+            },
+            {
+              "title": "فروع تتعلق بالنساء",
+              "chunk_id": "parent_1259_2754__887",
+              "children": [
+                {
+                  "title": "له أمتان أختان قبلهما بشهوة",
+                  "chunk_id": "parent_1259_2756__888",
+                  "children": []
+                },
+                {
+                  "title": "تقبيل الرجل ومعانقته في إزار واحد",
+                  "chunk_id": "parent_1259_2756__889",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "title": "فصل في البيع",
+              "chunk_id": "parent_1259_2757__890",
+              "children": [
+                {
+                  "title": "احتكار قوت الآدميين والبهائم في بلد لم يضر بأهلها",
+                  "chunk_id": "parent_1259_2760__891",
+                  "children": []
+                },
+                {
+                  "title": "بيع العصير من خمار",
+                  "chunk_id": "parent_1259_2761__892",
+                  "children": []
+                },
+                {
+                  "title": "حمل خمر الذمي بأجر",
+                  "chunk_id": "parent_1259_2762__893",
+                  "children": []
+                },
+                {
+                  "title": "بيع بناء بيوت مكة أو أراضيها",
+                  "chunk_id": "parent_1259_2762__894",
+                  "children": []
+                },
+                {
+                  "title": "خصي البهائم",
+                  "chunk_id": "parent_1259_2763__895",
+                  "children": []
+                },
+                {
+                  "title": "إنزاء الحمير على الخيل",
+                  "chunk_id": "parent_1259_2765__896",
+                  "children": []
+                },
+                {
+                  "title": "والدعاء بمعقد العز من عرشك",
+                  "chunk_id": "parent_1259_2765__897",
+                  "children": []
+                },
+                {
+                  "title": "واللعب بالشطرنج والنرد",
+                  "chunk_id": "parent_1259_2766__898",
+                  "children": []
+                },
+                {
+                  "title": "رزق القاضي من بيت المال",
+                  "chunk_id": "parent_1259_2768__899",
+                  "children": []
+                },
+                {
+                  "title": "سفر الأمة وأم الولد بلا محرم",
+                  "chunk_id": "parent_1259_2768__900",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "كتاب إحياء الموات",
+          "chunk_id": "parent_1259_2769__901",
+          "children": [
+            {
+              "title": "إحياء ما قرب من العامر الأرض الموات",
+              "chunk_id": "parent_1259_2771__902",
+              "children": []
+            },
+            {
+              "title": "ما عدل عنه الفرات ولم يحتمل عوده إليه فهو موات",
+              "chunk_id": "parent_1259_2772__903",
+              "children": []
+            },
+            {
+              "title": "مسائل الشرب",
+              "chunk_id": "parent_1259_2773__904",
+              "children": [
+                {
+                  "title": "لا كراء على أهل الشفعة",
+                  "chunk_id": "parent_1259_2775__905",
+                  "children": []
+                },
+                {
+                  "title": "نهر بين قوم اختصموا في الشرب",
+                  "chunk_id": "parent_1259_2775__906",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "كتاب الأشربة",
+          "chunk_id": "parent_1259_2777__907",
+          "children": [
+            {
+              "title": "الأشربة المحرمة من ماء الزبيب",
+              "chunk_id": "parent_1259_2779__908",
+              "children": []
+            },
+            {
+              "title": "المثلث من أنواع الخمر",
+              "chunk_id": "parent_1259_2779__909",
+              "children": []
+            },
+            {
+              "title": "خل الخمر",
+              "chunk_id": "parent_1259_2780__910",
+              "children": []
+            },
+            {
+              "title": "شرب دردي الخمر",
+              "chunk_id": "parent_1259_2780__911",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "كتاب الصيد",
+          "chunk_id": "parent_1259_2781__912",
+          "children": [
+            {
+              "title": "الصيد بالكلب المعلم والفهد والبازي وسائر الجوارح المعلمة",
+              "chunk_id": "parent_1259_2781__913",
+              "children": []
+            },
+            {
+              "title": "شروط حل الصيد",
+              "chunk_id": "parent_1259_2782__914",
+              "children": []
+            },
+            {
+              "title": "التسمية عند الإرسال ومن الجرح في الصيد",
+              "chunk_id": "parent_1259_2783__915",
+              "children": []
+            },
+            {
+              "title": "أرسل مسلم كلبه فزجره مجوسي فانزجر",
+              "chunk_id": "parent_1259_2786__916",
+              "children": []
+            },
+            {
+              "title": "رمى صيدا فوقع في ماء أو على سطح",
+              "chunk_id": "parent_1259_2790__917",
+              "children": []
+            },
+            {
+              "title": "قوما من المجوس رموا سهامهم فأقبل الصيد نحو مسلم",
+              "chunk_id": "parent_1259_2791__918",
+              "children": []
+            },
+            {
+              "title": "رمى صيدا فقطع عضوا منه",
+              "chunk_id": "parent_1259_2792__919",
+              "children": []
+            },
+            {
+              "title": "صيد المجوسي والوثني والمرتد",
+              "chunk_id": "parent_1259_2793__920",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "كتاب الرهن",
+          "chunk_id": "parent_1259_2794__921",
+          "children": [
+            {
+              "title": "باب ما يجوز ارتهانه والارتهان به وما لا يجوز",
+              "chunk_id": "parent_1259_2806__922",
+              "children": [
+                {
+                  "title": "فصل ارتهن قلب فضة وزنه خمسون بكر سلم أو قرض وقيمته من الدين سواء",
+                  "chunk_id": "parent_1259_2817__923",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "title": "باب الرهن يوضع على يد عدل",
+              "chunk_id": "parent_1259_2821__924",
+              "children": []
+            },
+            {
+              "title": "باب التصرف في الرهن والجناية عليه وجنايته على غيره",
+              "chunk_id": "parent_1259_2829__925",
+              "children": [
+                {
+                  "title": "فصل أعار ثوبا ليرهنه",
+                  "chunk_id": "parent_1259_2836__926",
+                  "children": []
+                },
+                {
+                  "title": "المسائل على أربعة أقسام",
+                  "chunk_id": "parent_1259_2848__927",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "title": "فصل بمنزلة المتفرقة المذكورة في أواخر الكتب",
+              "chunk_id": "parent_1259_2851__928",
+              "children": [
+                {
+                  "title": "مسائله على فصول",
+                  "chunk_id": "parent_1259_2854__929",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "كتاب الجنايات",
+          "chunk_id": "parent_1259_2857__930",
+          "children": [
+            {
+              "title": "باب ما يوجب القصاص وما لا يوجبه",
+              "chunk_id": "parent_1259_2865__931",
+              "children": []
+            },
+            {
+              "title": "باب القصاص فيما دون النفس",
+              "chunk_id": "parent_1259_2876__932",
+              "children": []
+            },
+            {
+              "title": "فصل الصلح",
+              "chunk_id": "parent_1259_2884__933",
+              "children": []
+            },
+            {
+              "title": "فصل الجنايات المتعددة",
+              "chunk_id": "parent_1259_2889__934",
+              "children": []
+            },
+            {
+              "title": "باب الشهادة في القتل",
+              "chunk_id": "parent_1259_2895__935",
+              "children": []
+            },
+            {
+              "title": "باب في بيان اعتبار حالة القتل",
+              "chunk_id": "parent_1259_2902__936",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "كتاب الديات",
+          "chunk_id": "parent_1259_2903__937",
+          "children": [
+            {
+              "title": "فصل في بيان ما يلحق بدية النفس",
+              "chunk_id": "parent_1259_2906__938",
+              "children": []
+            },
+            {
+              "title": "فصل في الشجاج",
+              "chunk_id": "parent_1259_2911__939",
+              "children": []
+            },
+            {
+              "title": "فصل في الجنين",
+              "chunk_id": "parent_1259_2920__940",
+              "children": []
+            },
+            {
+              "title": "باب ما يحدث الرجل في الطريق",
+              "chunk_id": "parent_1259_2926__941",
+              "children": [
+                {
+                  "title": "فصل في الحائط المائل",
+                  "chunk_id": "parent_1259_2933__942",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "title": "باب جناية البهيمة والجناية عليها وغير ذلك",
+              "chunk_id": "parent_1259_2937__943",
+              "children": []
+            },
+            {
+              "title": "باب جناية المملوك والجناية عليه",
+              "chunk_id": "parent_1259_2945__944",
+              "children": [
+                {
+                  "title": "فصل بيان أحكام الجناية على العبد",
+                  "chunk_id": "parent_1259_2966__945",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "title": "باب غصب العبد والمدبر والصبي والجناية في ذلك",
+              "chunk_id": "parent_1259_2972__946",
+              "children": []
+            },
+            {
+              "title": "باب القسامة",
+              "chunk_id": "parent_1259_2976__947",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "كتاب المعاقل",
+          "chunk_id": "parent_1259_2985__948",
+          "children": []
+        },
+        {
+          "title": "كتاب الوصايا",
+          "chunk_id": "parent_1259_2990__949",
+          "children": [
+            {
+              "title": "باب الوصية بثلث المال",
+              "chunk_id": "parent_1259_2997__950",
+              "children": []
+            },
+            {
+              "title": "باب العتق في المرض والوصية بالعتق",
+              "chunk_id": "parent_1259_3019__951",
+              "children": []
+            },
+            {
+              "title": "باب الوصية للأقارب وغيرهم",
+              "chunk_id": "parent_1259_3036__952",
+              "children": []
+            },
+            {
+              "title": "باب الوصية بالخدمة والسكنى والثمرة",
+              "chunk_id": "parent_1259_3044__953",
+              "children": []
+            },
+            {
+              "title": "باب وصية الذمي",
+              "chunk_id": "parent_1259_3049__954",
+              "children": []
+            },
+            {
+              "title": "باب الوصي وما يملكه",
+              "chunk_id": "parent_1259_3051__955",
+              "children": []
+            },
+            {
+              "title": "فصل في الشهادة",
+              "chunk_id": "parent_1259_3066__956",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "كتاب الخنثى",
+          "chunk_id": "parent_1259_3069__957",
+          "children": []
+        },
+        {
+          "title": "مسائل شتى",
+          "chunk_id": "parent_1259_3075__958",
+          "children": [
+            {
+              "title": "إيماء الأخرس وكتابته ومسائل متفرقة تتعلق بالكتابة والشهادة",
+              "chunk_id": "parent_1259_3075__959",
+              "children": []
+            },
+            {
+              "title": "مسائل متفرقة في التحري في الذكاة والنجاسة",
+              "chunk_id": "parent_1259_3076__960",
+              "children": []
+            },
+            {
+              "title": "مسائل متفرقة في الخراج والعشر",
+              "chunk_id": "parent_1259_3077__961",
+              "children": []
+            },
+            {
+              "title": "مسائل متفرقة في قضاء الصيام والصلاة",
+              "chunk_id": "parent_1259_3078__962",
+              "children": []
+            },
+            {
+              "title": "قتل بعض الحاج عذر في ترك الحج",
+              "chunk_id": "parent_1259_3078__963",
+              "children": []
+            },
+            {
+              "title": "مسائل متفرقة في انعقاد النكاح والنشوز",
+              "chunk_id": "parent_1259_3079__964",
+              "children": []
+            },
+            {
+              "title": "مسائل متفرقة في الطلاق",
+              "chunk_id": "parent_1259_3079__965",
+              "children": []
+            },
+            {
+              "title": "مسائل متفرقة في البيع",
+              "chunk_id": "parent_1259_3081__966",
+              "children": []
+            },
+            {
+              "title": "قضى القاضي في حادثة ببينة ثم قال رجعت عن قضائي أو بدا لي غير ذلك",
+              "chunk_id": "parent_1259_3081__967",
+              "children": []
+            },
+            {
+              "title": "مسائل متفرقة في الإقرار والدعوى",
+              "chunk_id": "parent_1259_3081__968",
+              "children": []
+            },
+            {
+              "title": "مسائل متفرقة في الوكالة",
+              "chunk_id": "parent_1259_3082__969",
+              "children": []
+            },
+            {
+              "title": "مسائل متفرقة في الصلح",
+              "chunk_id": "parent_1259_3083__970",
+              "children": []
+            },
+            {
+              "title": "مسائل متفرقة في تصرفات السلطان",
+              "chunk_id": "parent_1259_3083__971",
+              "children": []
+            },
+            {
+              "title": "مسائل متفرقة في الإكراه",
+              "chunk_id": "parent_1259_3083__972",
+              "children": []
+            },
+            {
+              "title": "أحالت إنسانا على الزوج بالمهر، ثم وهبت المهر للزوج",
+              "chunk_id": "parent_1259_3084__973",
+              "children": []
+            },
+            {
+              "title": "اتخذ بئرا في ملكه أو بالوعة فنز منها حائط جاره فطلب تحويله",
+              "chunk_id": "parent_1259_3084__974",
+              "children": []
+            },
+            {
+              "title": "عمر دار زوجته بماله بإذنها فالعمارة لها والنفقة دين عليها",
+              "chunk_id": "parent_1259_3084__975",
+              "children": []
+            },
+            {
+              "title": "أخذ غريمه فنزعه إنسان من يده لم يضمن",
+              "chunk_id": "parent_1259_3084__976",
+              "children": []
+            },
+            {
+              "title": "في يده مال إنسان فقال له سلطان ادفع إلى هذا المال",
+              "chunk_id": "parent_1259_3084__977",
+              "children": []
+            },
+            {
+              "title": "وضع منجلا في الصحراء ليصيد به حمار وحش وسمى عليه فجاء في اليوم الثاني ووجدا الحمار مجروحا ميتا",
+              "chunk_id": "parent_1259_3084__978",
+              "children": []
+            },
+            {
+              "title": "يكره من الشاة الحياء والخصية والغدة والمثانة والمرارة والدم المسفوح والذكر",
+              "chunk_id": "parent_1259_3084__979",
+              "children": []
+            },
+            {
+              "title": "للقاضي أن يقرض مال الغائب والطفل واللقطة",
+              "chunk_id": "parent_1259_3084__980",
+              "children": []
+            },
+            {
+              "title": "مسائل في الختان والتداوي والزينة",
+              "chunk_id": "parent_1259_3084__981",
+              "children": []
+            },
+            {
+              "title": "مسائل في المسابقة والقمار",
+              "chunk_id": "parent_1259_3085__982",
+              "children": []
+            },
+            {
+              "title": "مسائل في الصلاة على النبي وغيره والدعاء بالرحمة والمغفرة",
+              "chunk_id": "parent_1259_3086__983",
+              "children": []
+            },
+            {
+              "title": "والإعطاء باسم النيروز والمهرجان لا يجوز",
+              "chunk_id": "parent_1259_3086__984",
+              "children": []
+            },
+            {
+              "title": "مسائل متفرقة في اللباس",
+              "chunk_id": "parent_1259_3086__985",
+              "children": []
+            },
+            {
+              "title": "للشاب العالم أن يتقدم على الشيخ الجاهل",
+              "chunk_id": "parent_1259_3087__986",
+              "children": []
+            },
+            {
+              "title": "ولحافظ القرآن أن يختم في كل أربعين يوما",
+              "chunk_id": "parent_1259_3087__987",
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "كتاب الفرائض",
+          "chunk_id": "parent_1259_3087__988",
+          "children": [
+            {
+              "title": "أصناف الوارثين",
+              "chunk_id": "parent_1259_3087__989",
+              "children": []
+            },
+            {
+              "title": "ما يحرم به الميراث",
+              "chunk_id": "parent_1259_3087__990",
+              "children": []
+            },
+            {
+              "title": "الوقت الذي يجري فيه الإرث",
+              "chunk_id": "parent_1259_3088__991",
+              "children": []
+            },
+            {
+              "title": "ما يستحق به الإرث وما يحرم به",
+              "chunk_id": "parent_1259_3088__992",
+              "children": []
+            },
+            {
+              "title": "يبدأ من تركة الميت بتجهيزه",
+              "chunk_id": "parent_1259_3088__993",
+              "children": []
+            },
+            {
+              "title": "ميراث أصحاب الفروض",
+              "chunk_id": "parent_1259_3089__994",
+              "children": []
+            },
+            {
+              "title": "أنواع الحجب",
+              "chunk_id": "parent_1259_3091__995",
+              "children": []
+            },
+            {
+              "title": "ميراث ذوي الأرحام",
+              "chunk_id": "parent_1259_3108__996",
+              "children": []
+            },
+            {
+              "title": "فصل في بيان ميراث من له قرابتان من أولاد البنات",
+              "chunk_id": "parent_1259_3112__997",
+              "children": []
+            },
+            {
+              "title": "الفروض المقدرة في كتاب الله",
+              "chunk_id": "parent_1259_3116__998",
+              "children": []
+            },
+            {
+              "title": "العول",
+              "chunk_id": "parent_1259_3117__999",
+              "children": []
+            },
+            {
+              "title": "الرد",
+              "chunk_id": "parent_1259_3119__1000",
+              "children": []
+            },
+            {
+              "title": "المناسخة",
+              "chunk_id": "parent_1259_3120__1001",
+              "children": []
+            },
+            {
+              "title": "التصحيح",
+              "chunk_id": "parent_1259_3121__1002",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "خاتمة",
+      "chunk_id": "parent_1259_3122__1003",
+      "children": []
+    }
+  ]
+}

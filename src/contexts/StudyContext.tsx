@@ -45,6 +45,7 @@ export interface ChunkMetadata {
   total_parts?: number | string
   part?: number | string
   page_id?: number | string
+  end_page?: number | string
   source_url?: string
   hierarchy?: Record<string, string | string[]>
 }
@@ -54,6 +55,17 @@ export interface TreeNode {
   chunk_id?: string
   is_new?: boolean
   children?: TreeNode[]
+  is_book?: boolean
+  is_loaded?: boolean
+  children_count?: number
+  book_file?: string
+  turath_id?: number
+  author?: string
+  is_turath?: boolean
+  page?: number
+  toc_id?: string
+  next_toc_id?: string
+  next_title?: string
 }
 
 interface StudyContextType {
