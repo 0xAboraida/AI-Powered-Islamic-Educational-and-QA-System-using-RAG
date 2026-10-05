@@ -688,9 +688,11 @@ export function formatTurathLiveText(
         const hasPoetry = lines.some((l: string) => isPoetryLine(l) !== null)
 
         if (!hasPoetry) {
-          // Pure prose block: lines flow naturally with <br /> and standard comfortable line-height
-          const formattedLines = lines.map(highlightLineStartMarkers)
-          return `<p style="margin-bottom: 0.9em; line-height: 1.8; font-size: 1.08em; text-align: justify;">${formattedLines.join('<br />')}</p>`
+          // Render each distinct prose line as an independent paragraph with classical spacious margins and comfortable line-height
+          return lines.map(line => {
+            const formatted = highlightLineStartMarkers(line)
+            return `<p class="turath-paragraph" style="margin-bottom: 1.6em; line-height: 2.1; font-size: 1.1em; text-align: justify;">${formatted}</p>`
+          }).join('\n')
         }
 
         // Mixed block with poetry verses: group prose lines and separate poetry verses
@@ -699,7 +701,9 @@ export function formatTurathLiveText(
 
         const flushProse = () => {
           if (proseAccumulator.length > 0) {
-            elements.push(`<p style="margin-bottom: 0.75em; line-height: 1.8; font-size: 1.08em; text-align: justify;">${proseAccumulator.join('<br />')}</p>`)
+            proseAccumulator.forEach(pLine => {
+              elements.push(`<p class="turath-paragraph" style="margin-bottom: 1.6em; line-height: 2.1; font-size: 1.1em; text-align: justify;">${pLine}</p>`)
+            })
             proseAccumulator = []
           }
         }
