@@ -392,7 +392,7 @@ export function StudyDocument({
                   />
 
                   {/* Turath Book Authentic Page Navigator (Floating on bottom edges) */}
-                  {currentChunkId?.startsWith('turath_') && viewMode === 'paged' && onPageChange && (
+                  {currentChunkId?.startsWith('turath_') && viewMode === 'paged' && onPageChange && !chunkText?.includes('turath-empty-parent-notice') && (
                     <div className="absolute -bottom-[17px] left-0 right-0 flex items-center justify-between px-8 pointer-events-none z-20">
                       <button
                         type="button"

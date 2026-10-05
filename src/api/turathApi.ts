@@ -154,26 +154,57 @@ function normalizeArabicHeading(text: string): string {
     .trim()
 }
 
-function filterFootnotesByBody(body: string, footnotesText: string): string {
+function filterFootnotesByBody(body: string, footnotesText: string, isPageSliced: boolean = false): string {
   if (!footnotesText || !footnotesText.trim()) return ''
   const bodyFnNums = new Set<string>()
+
+  // 1. Footnote markers in parentheses or brackets: (1), [1], (^1)
   const refRegex = /[\(\[]\s*\^?([١٢٣٤٥٦٧٨٩٠\d]+)\^?\s*[\)\]]/g
   let rm: RegExpExecArray | null
   while ((rm = refRegex.exec(body)) !== null) {
     bodyFnNums.add(rm[1].trim())
   }
 
-  // If body has zero footnote references, return empty footnotes!
-  if (bodyFnNums.size === 0) {
-    return ''
+  // 2. Extract potential footnote numbers from footnotesText first
+  const fnAvailableNums = new Set<string>()
+  const lines = footnotesText.split('\n')
+  for (const line of lines) {
+    const fnStartMatch = line.match(/^\s*(?:[\(\[]\s*\^?([١٢٣٤٥٦٧٨٩٠\d]+)\^?\s*[\)\]]|([١٢٣٤٥٦٧٨٩٠\d]{1,2})(?:[\.\-:،]\s*|\s+(?=[^\d\s])))/)
+    if (fnStartMatch) {
+      const num = (fnStartMatch[1] || fnStartMatch[2] || '').trim()
+      if (num) fnAvailableNums.add(num)
+    }
   }
 
-  const lines = footnotesText.split('\n')
+  // 3. For any footnote numbers found in footnotes, check if they exist bare in body:
+  // e.g. "ضعفيهم ۲ إذا كان"
+  if (fnAvailableNums.size > 0) {
+    const reservedWords = 'سنة|عام|توفي|ت|ولد|ص|صـ|ج|جـ|الآية|رقم|قاعدة|مسألة|فقرة|حديث|ح|ط|طبعة|الباب|باب'
+    for (const num of fnAvailableNums) {
+      const escapedNum = num.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      const barePattern = new RegExp(`(?<!(?:${reservedWords})\\s*)(?:^|(?<=[\\u0621-\\u064A\\u0671-\\u06D3\\s]))${escapedNum}(?=(?:\\s+|$|[،.؛:!؟«»"\\(\\)\\[\\]]))(?![-–—])`, 'u')
+      if (barePattern.test(body)) {
+        bodyFnNums.add(num)
+      }
+    }
+  }
+
+  // If the page was SLICED (i.e. other chapters begin or end on this page)
+  // and this chapter has ZERO references to footnotes on this page:
+  // Then the footnotes belong to the OTHER chapter that was cut away! Do NOT attach them!
+  if (bodyFnNums.size === 0) {
+    if (isPageSliced) {
+      return ''
+    }
+    // If the page was NOT sliced (it's a full page belonging entirely to this lesson), preserve footnotes
+    return footnotesText.trim()
+  }
+
   const matchedLines: string[] = []
   let capturing = false
 
   for (const line of lines) {
-    const fnStartMatch = line.match(/^\s*(?:[\(\[]\s*\^?([١٢٣٤٥٦٧٨٩٠\d]+)\^?\s*[\)\]]|([١٢٣٤٥٦٧٨٩٠\d]{1,2})\s*[-–—.:،])/)
+    const fnStartMatch = line.match(/^\s*(?:[\(\[]\s*\^?([١٢٣٤٥٦٧٨٩٠\d]+)\^?\s*[\)\]]|([١٢٣٤٥٦٧٨٩٠\d]{1,2})(?:[\.\-:،]\s*|\s+(?=[^\d\s])))/)
     if (fnStartMatch) {
       const fnNum = (fnStartMatch[1] || fnStartMatch[2] || '').trim()
       capturing = bodyFnNums.has(fnNum)
@@ -183,7 +214,7 @@ function filterFootnotesByBody(body: string, footnotesText: string): string {
     }
   }
 
-  return matchedLines.length > 0 ? matchedLines.join('\n').trim() : footnotesText.trim()
+  return matchedLines.length > 0 ? matchedLines.join('\n').trim() : (isPageSliced ? '' : footnotesText.trim())
 }
 
 /**
@@ -210,6 +241,7 @@ export function sliceChapterPages(
 
     const { pg, text } = pagesList[idx]
     const isStartPage = idx === 0
+    let pageWasSliced = false
 
     // Separate body from footnotes so footnotes are preserved and not truncated
     const fnParts = text.split(footnoteSeparatorRegex)
@@ -309,6 +341,7 @@ export function sliceChapterPages(
           }
         }
         body = body.slice(startMatchIdx)
+        pageWasSliced = true
       }
     }
 
@@ -323,7 +356,12 @@ export function sliceChapterPages(
         if (m && m.index !== undefined) {
           const beforeMatch = body.slice(0, m.index)
           const lastNl = beforeMatch.lastIndexOf('\n')
-          endMatchIdx = lastNl === -1 ? 0 : lastNl
+          const lineTextBeforeMatch = beforeMatch.slice(lastNl === -1 ? 0 : lastNl + 1)
+          if (lastNl !== -1 && !/<span\s+[^>]*data-type\s*=\s*["']?title["']?/i.test(lineTextBeforeMatch)) {
+            endMatchIdx = lastNl
+          } else {
+            endMatchIdx = m.index
+          }
           chapterEnded = true
         }
       }
@@ -345,7 +383,12 @@ export function sliceChapterPages(
             )) {
               const beforeMatch = body.slice(0, sm.index)
               const lastNl = beforeMatch.lastIndexOf('\n')
-              endMatchIdx = lastNl === -1 ? 0 : lastNl
+              const lineTextBeforeMatch = beforeMatch.slice(lastNl === -1 ? 0 : lastNl + 1)
+              if (lastNl !== -1 && !/<span\s+[^>]*data-type\s*=\s*["']?title["']?/i.test(lineTextBeforeMatch)) {
+                endMatchIdx = lastNl
+              } else {
+                endMatchIdx = sm.index
+              }
               chapterEnded = true
               break
             }
@@ -380,6 +423,7 @@ export function sliceChapterPages(
 
       if (endMatchIdx !== -1) {
         body = body.slice(0, endMatchIdx).trim()
+        pageWasSliced = true
       }
     }
 
@@ -390,7 +434,7 @@ export function sliceChapterPages(
     }
 
     // Reassemble with footnotes if present, filtering out footnotes not referenced in body
-    const validFootnotes = filterFootnotesByBody(body, footnotes)
+    const validFootnotes = filterFootnotesByBody(body, footnotes, pageWasSliced)
     let finalPageText = body
     if (validFootnotes) {
       finalPageText += '\n_________\n' + validFootnotes
@@ -513,7 +557,7 @@ export function convertTurathHeadingsToTree(
 
     const node: TreeNode = {
       title: h.title ? h.title.trim() : `فصل صفحة ${startPage}`,
-      chunk_id: `turath_${turathId}_pg_${startPage}_to_${endPage}_toc_${startTocIndex}_next_${endTocIndex}_v3`,
+      chunk_id: `turath_${turathId}_pg_${startPage}_to_${endPage}_toc_${startTocIndex}_next_${endTocIndex}_v5`,
       turath_id: turathId,
       page: startPage,
       toc_id: `toc-${startTocIndex}`,

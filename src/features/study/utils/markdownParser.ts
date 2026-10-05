@@ -280,6 +280,15 @@ export function formatTurathLiveText(
 ): TurathLiveTextResult {
   if (!text) return { __html: '', pages: [], continuationNotice: '' }
 
+  // 0. If the content is an injected UI notice card (e.g. parent section notice), return directly without book text parsing
+  if (text.includes('turath-empty-parent-notice')) {
+    return {
+      __html: text,
+      pages: [{ pgNum: defaultPage ? String(defaultPage) : '', html: text }],
+      continuationNotice: ''
+    }
+  }
+
   // 1. Check for continuation notices at the very end
   let continuationNotice = ''
   let cleanText = text.replace(/<div class="turath-continuation-notice"[\s\S]*?<\/div>/gi, (match) => {
@@ -326,7 +335,7 @@ export function formatTurathLiveText(
       const rawLines = rawFnSection.split('\n')
       for (const line of rawLines) {
         if (/^[-–—]$/.test(line.trim())) continue
-        const fnMatch = line.match(/^[\s\n]*(?:\(\^?([١٢٣٤٥٦٧٨٩٠\d]+)\^?\)|\[([١٢٣٤٥٦٧٨٩٠\d]+)\]|([١٢٣٤٥٦٧٨٩٠\d]{1,2})[\.\-:،]\s+)(.*)$/)
+        const fnMatch = line.match(/^[\s\n]*(?:\(\^?([١٢٣٤٥٦٧٨٩٠\d]+)\^?\)|\[([١٢٣٤٥٦٧٨٩٠\d]+)\]|([١٢٣٤٥٦٧٨٩٠\d]{1,2})(?:[\.\-:،]\s*|\s+(?=[^\d\s])))(.*)$/)
         if (fnMatch) {
           const rawNum = (fnMatch[1] || fnMatch[2] || fnMatch[3] || '').trim()
           if (rawNum) {
@@ -338,9 +347,16 @@ export function formatTurathLiveText(
 
     // Helper to format citation numbers into interactive badges
     const replaceCitationsWithBadges = (str: string): string => {
-      return str.replace(
+      let res = str.replace(
         /\((\^?[١٢٣٤٥٦٧٨٩٠\d]+\^?)\)/g,
-        (fullMatch, inner) => {
+        (fullMatch, inner, offset, allText) => {
+          // Do not replace if inside ANY HTML tag or attribute
+          const lastOpen = allText.lastIndexOf('<', offset)
+          const lastClose = allText.lastIndexOf('>', offset)
+          if (lastOpen !== -1 && (lastClose === -1 || lastOpen > lastClose)) {
+            return fullMatch
+          }
+
           const hasCaret = inner.includes('^')
           const cleanNum = inner.replace(/\^/g, '').trim()
           const normNum = normalizeNumeral(cleanNum)
@@ -356,9 +372,47 @@ export function formatTurathLiveText(
           return `<a href="#${fnId}" id="${refId}" class="turath-citation-ref" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; margin:0 3px; font-family:'Amiri','Noto Naskh Arabic',serif; vertical-align:super; font-size:0.85em; font-weight:700; color:${isDark ? '#38bdf8' : '#0284c7'
             }; background:${isDark ? 'rgba(56,189,248,0.1)' : 'rgba(2,132,199,0.08)'
             }; border:1px solid ${isDark ? 'rgba(56,189,248,0.3)' : 'rgba(2,132,199,0.25)'
-            }; padding:0 5px; min-width:20px; height:20px; line-height:20px; border-radius:9999px; cursor:pointer; transition:all 0.2s; box-shadow: ${isDark ? '0 1px 4px rgba(56,189,248,0.1)' : 'none'};" title="انتقل إلى الحاشية ${cleanNum}" onmouseover="this.style.boxShadow='${isDark ? '0 2px 8px rgba(56,189,248,0.3)' : '0 2px 4px rgba(2,132,199,0.2)'}'; this.style.backgroundColor='${isDark ? 'rgba(56,189,248,0.2)' : 'rgba(2,132,199,0.15)'}'; this.style.borderColor='${isDark ? 'rgba(56,189,248,0.5)' : 'rgba(2,132,199,0.4)'}';" onmouseout="this.style.boxShadow='${isDark ? '0 1px 4px rgba(56,189,248,0.1)' : 'none'}'; this.style.backgroundColor='${isDark ? 'rgba(56,189,248,0.1)' : 'rgba(2,132,199,0.08)'}'; this.style.borderColor='${isDark ? 'rgba(56,189,248,0.3)' : 'rgba(2,132,199,0.25)'}';" onclick="event.preventDefault(); event.stopPropagation(); const target = document.getElementById('${fnId}'); if(target) { target.scrollIntoView({behavior:'smooth', block:'center'}); target.style.transition='background 0.5s'; target.style.backgroundColor='${isDark ? 'rgba(56,189,248,0.22)' : 'rgba(2,132,199,0.15)'}'; setTimeout(() => target.style.backgroundColor='transparent', 1500); }">${cleanNum}</a>`
+            }; padding:0 5px; min-width:20px; height:20px; line-height:20px; border-radius:9999px; cursor:pointer; transition:all 0.2s;" title="انتقل إلى الحاشية ${cleanNum}" onclick="event.preventDefault(); event.stopPropagation(); const target = document.getElementById('${fnId}'); if(target) { target.scrollIntoView({behavior:'smooth', block:'center'}); target.style.transition='background 0.5s'; target.style.backgroundColor='${isDark ? 'rgba(56,189,248,0.22)' : 'rgba(2,132,199,0.15)'}'; setTimeout(() => target.style.backgroundColor='transparent', 1500); }">${cleanNum}</a>`
         }
       )
+
+      // Also support bare unparenthesized footnote numbers ONLY IF they strictly match an actual footnote in validFootnoteNumbers!
+      if (validFootnoteNumbers.size > 0) {
+        const reservedWords = 'سنة|عام|توفي|ت|ولد|ص|صـ|ج|جـ|الآية|رقم|قاعدة|مسألة|فقرة|حديث|ح|ط|طبعة|الباب|باب'
+        const bareRefRegex = new RegExp(`(?<!(?:${reservedWords})\\s*)(?:^|(?<=[\\u0621-\\u064A\\u0671-\\u06D3\\s]))([١٢٣٤٥٦٧٨٩٠\\d]{1,2})(?=(?:\\s+|$|[،.؛:!؟«»"\\(\\)\\[\\]]))(?![-–—])`, 'gu')
+
+        res = res.replace(bareRefRegex, (fullMatch, rawNum, offset, allText) => {
+          // CRITICAL: Do not replace if inside ANY HTML tag or attribute!
+          const lastOpen = allText.lastIndexOf('<', offset)
+          const lastClose = allText.lastIndexOf('>', offset)
+          if (lastOpen !== -1 && (lastClose === -1 || lastOpen > lastClose)) {
+            return fullMatch
+          }
+
+          const normNum = normalizeNumeral(rawNum)
+          // CRITICAL: Must be a known footnote on this page!
+          if (!validFootnoteNumbers.has(normNum)) {
+            return fullMatch
+          }
+
+          // Check if this number is at the beginning of a line (e.g. paragraph number like "۲۲-")
+          const lineStart = allText.lastIndexOf('\n', offset)
+          const textBeforeOnLine = allText.slice(lineStart === -1 ? 0 : lineStart + 1, offset).trim()
+          if (!textBeforeOnLine) {
+            return fullMatch
+          }
+
+          const safePg = pgNum || '1'
+          const refId = `turath-ref-${safePg}-${normNum}`
+          const fnId = `turath-fn-${safePg}-${normNum}`
+          return `<a href="#${fnId}" id="${refId}" class="turath-citation-ref" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; margin:0 3px; font-family:'Amiri','Noto Naskh Arabic',serif; vertical-align:super; font-size:0.85em; font-weight:700; color:${isDark ? '#38bdf8' : '#0284c7'
+            }; background:${isDark ? 'rgba(56,189,248,0.1)' : 'rgba(2,132,199,0.08)'
+            }; border:1px solid ${isDark ? 'rgba(56,189,248,0.3)' : 'rgba(2,132,199,0.25)'
+            }; padding:0 5px; min-width:20px; height:20px; line-height:20px; border-radius:9999px; cursor:pointer; transition:all 0.2s;" title="انتقل إلى الحاشية ${rawNum}" onclick="event.preventDefault(); event.stopPropagation(); const target = document.getElementById('${fnId}'); if(target) { target.scrollIntoView({behavior:'smooth', block:'center'}); target.style.transition='background 0.5s'; target.style.backgroundColor='${isDark ? 'rgba(56,189,248,0.22)' : 'rgba(2,132,199,0.15)'}'; setTimeout(() => target.style.backgroundColor='transparent', 1500); }">${rawNum}</a>`
+        })
+      }
+
+      return res
     }
 
     // 0. Extract semantic titles FIRST THING directly from untouched rawContent!
@@ -710,7 +764,7 @@ export function formatTurathLiveText(
 
       for (const line of rawLines) {
         if (/^[-–—]$/.test(line)) continue
-        const fnMatch = line.match(/^[\s\n]*(?:\(\^?([١٢٣٤٥٦٧٨٩٠\d]+)\^?\)|\[([١٢٣٤٥٦٧٨٩٠\d]+)\]|([١٢٣٤٥٦٧٨٩٠\d]{1,2})[\.\-:،]\s+)(.*)$/)
+        const fnMatch = line.match(/^[\s\n]*(?:\(\^?([١٢٣٤٥٦٧٨٩٠\d]+)\^?\)|\[([١٢٣٤٥٦٧٨٩٠\d]+)\]|([١٢٣٤٥٦٧٨٩٠\d]{1,2})(?:[\.\-:،]\s*|\s+(?=[^\d\s])))(.*)$/)
         if (fnMatch) {
           if (currentGroup) {
             groups.push(currentGroup)

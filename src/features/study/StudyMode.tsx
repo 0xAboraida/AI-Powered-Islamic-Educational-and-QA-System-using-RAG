@@ -505,7 +505,7 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
         const cached = await idbGetTurathBookTree(turathId)
         if (cached && cached.children && cached.children.length > 0) {
           const isFallback = cached.children.length === 1 && cached.children[0].title === 'قراءة الكتاب (من البداية)'
-          const isOldFormat = Boolean(!cached.children[0].toc_id || !cached.children[0].chunk_id?.includes('_v3'))
+          const isOldFormat = Boolean(!cached.children[0].toc_id || !cached.children[0].chunk_id?.includes('_v5'))
           if (!isFallback && !isOldFormat) {
             setTreeData(prev => updateBookInTree(prev, bookNode.title, cached.children, turathId))
             return cached.children
@@ -673,7 +673,7 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
         const parts = chunkId.split('_')
         const turathId = parseInt(parts[1], 10)
         const startPage = parseInt(parts[3], 10) || 1
-        const endPage = parts[5] ? parseInt(parts[5], 10) : startPage
+        let endPage = parts[5] ? parseInt(parts[5], 10) : startPage
         let startTocIndex = parts[7] ? parseInt(parts[7], 10) : undefined
         let endTocIndex = parts[9] ? parseInt(parts[9], 10) : undefined
 
@@ -681,6 +681,17 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
         let resolvedStartTocId = selectedNode?.toc_id || (startTocIndex ? `toc-${startTocIndex}` : undefined)
         let resolvedEndTocId = selectedNode?.next_toc_id || (endTocIndex && endTocIndex > 0 ? `toc-${endTocIndex}` : undefined)
         let nextChapterTitle = selectedNode?.next_title
+
+        // CRITICAL: If this node is a parent folder that has sub-chapters (children):
+        // Its boundary MUST stop at its very first child! It never encompasses all its children or the next main book!
+        if (selectedNode?.children && selectedNode.children.length > 0) {
+          const firstChild = selectedNode.children[0]
+          if (firstChild) {
+            endPage = Math.max(startPage, firstChild.page || startPage)
+            if (firstChild.toc_id) resolvedEndTocId = firstChild.toc_id
+            if (firstChild.title) nextChapterTitle = firstChild.title
+          }
+        }
 
         // Fallback: If not passed as selectedNode, locate in cached chapters
         if (!resolvedStartTocId || !resolvedEndTocId) {
@@ -733,7 +744,10 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
             .trim()
 
           // If a parent folder has no body text between its heading and the next heading
-          if (cleanRawText.length < 15 && selectedNode?.children && selectedNode.children.length > 0) {
+          const normalizedTitle = title.replace(/[^\u0621-\u064A\u0671-\u06D3\w]/g, '').trim()
+          const isOnlyHeading = cleanRawText.length < 15 || cleanRawText === normalizedTitle || (cleanRawText.startsWith(normalizedTitle) && cleanRawText.length - normalizedTitle.length < 15)
+
+          if (isOnlyHeading && selectedNode?.children && selectedNode.children.length > 0) {
             const firstChild = selectedNode.children[0]
             const nextHeadingName = firstChild?.title || nextChapterTitle || 'الدرس الأول'
             const noticeHtml = `
