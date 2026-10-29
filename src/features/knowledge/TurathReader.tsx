@@ -491,13 +491,15 @@ const VolumeCard = ({
   isActive,
   onSelect,
   readerTheme = 'light',
-  accentColor = 'amber'
+  accentColor = 'amber',
+  index = 0
 }: {
   volumeNode: TreeNode;
   isActive: boolean;
   onSelect: (vol: string) => void;
   readerTheme?: 'light' | 'dark' | 'sepia';
   accentColor?: string;
+  index?: number;
 }) => {
   const getContainerStyle = () => {
     if (isActive) {
@@ -554,7 +556,8 @@ const VolumeCard = ({
   return (
     <div
       onClick={() => onSelect(volumeNode.volName || '1')}
-      className={`w-full flex items-center justify-between py-2.5 px-3 rounded-xl transition-all duration-150 cursor-pointer select-none group/vol ${getContainerStyle()}`}
+      style={{ animationDelay: `${Math.min(index, 20) * 30}ms` }}
+      className={`w-full flex items-center justify-between py-2.5 px-3 rounded-xl transition-all duration-150 cursor-pointer select-none group/vol animate-toc-entrance ${getContainerStyle()}`}
     >
       <div className="flex items-center gap-3 min-w-0">
         <div className={`p-1 rounded-lg transition-transform duration-200 group-hover/vol:scale-110 shrink-0 ${getIconColor()}`}>
@@ -588,7 +591,8 @@ const TocNode = ({
   activeTocIndex,
   activeAncestorIndices,
   selectedTocIndex,
-  readerTheme = 'light'
+  readerTheme = 'light',
+  index = 0
 }: {
   node: TreeNode,
   expandedNodes: Set<number>,
@@ -599,7 +603,8 @@ const TocNode = ({
   activeTocIndex: number,
   activeAncestorIndices?: Set<number>,
   selectedTocIndex?: number | null,
-  readerTheme?: 'light' | 'dark' | 'sepia'
+  readerTheme?: 'light' | 'dark' | 'sepia',
+  index?: number
 }) => {
   const { accentColor } = useTheme();
   const isExpanded = expandedNodes.has(node.originalIndex);
@@ -765,7 +770,10 @@ const TocNode = ({
   };
 
   return (
-    <div className="flex flex-col">
+    <div
+      className="flex flex-col animate-toc-entrance"
+      style={{ animationDelay: `${Math.min(index, 25) * 35}ms` }}
+    >
       <div
         data-toc-active={isExactActive ? "true" : undefined}
         className={`w-full flex items-center justify-between py-2.5 px-3 text-sm rounded-xl transition-all duration-300 group cursor-pointer border ${getContainerStyles()}`}
@@ -810,10 +818,11 @@ const TocNode = ({
       {hasChildren && isExpanded && (
         <div className="mt-1 transition-all duration-200">
           <div className={`overflow-hidden pr-2.5 border-r-2 mr-1 space-y-1 transition-colors ${getTreeLineBorderClass()}`}>
-            {node.children.map(child => (
+            {node.children.map((child, childIdx) => (
               <TocNode
                 key={child.originalIndex}
                 node={child}
+                index={childIdx}
                 expandedNodes={expandedNodes}
                 toggleExpand={toggleExpand}
                 currentPage={currentPage}
@@ -5662,24 +5671,20 @@ export default function TurathReader({
               <div className="flex items-center gap-2 min-w-0">
                 {sidebarTab === 'toc' && (
                   availableVolumes.length > 1 && selectedVolumeForToc ? (
-                    <div className="flex items-center gap-2 min-w-0">
+                    <div className="flex items-center gap-1.5 min-w-0">
                       <button
                         type="button"
                         onClick={() => {
                           setHasUserNavigatedToAllVolumes(true);
                           setSelectedVolumeForToc(null);
                         }}
-                        className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all active:scale-95 cursor-pointer ${
-                          readerTheme === 'dark'
-                            ? 'bg-white/10 hover:bg-white/15 text-white'
-                            : 'bg-black/5 hover:bg-black/10 text-slate-800'
-                        }`}
-                        title="الرجوع إلى قائمة المجلدات"
+                        className="flex items-center gap-1.5 font-bold text-sm sm:text-base text-inherit hover:opacity-75 transition-opacity cursor-pointer p-0 bg-transparent border-0 shrink-0"
+                        title="الرجوع إلى فهرس المحتوى"
                       >
-                        <ArrowRight className="h-4 w-4" strokeWidth={2.5} />
-                        <span>المجلدات</span>
+                        <ArrowRight className="h-4 w-4 shrink-0" strokeWidth={2.5} />
+                        <span>فهرس المحتوى</span>
                       </button>
-                      <span className="text-muted-foreground/30 font-light text-sm">/</span>
+                      <span className="text-muted-foreground/40 font-normal text-sm sm:text-base shrink-0">/</span>
                       <h3 className="font-bold text-sm sm:text-base truncate">
                         {formatVolumeTitle(selectedVolumeForToc)}
                       </h3>
@@ -5899,8 +5904,8 @@ export default function TurathReader({
                     <div className="space-y-1">
                       {/* Content: List of Volumes (Master View) OR Selected Volume Chapters (Detail View) */}
                       {availableVolumes.length > 1 && !selectedVolumeForToc ? (
-                        <div className="space-y-1 animate-in fade-in duration-150">
-                          {volumeNodes.map(volNode => (
+                        <div key="all-volumes" className="space-y-1">
+                          {volumeNodes.map((volNode, idx) => (
                             <VolumeCard
                               key={volNode.volName}
                               volumeNode={volNode}
@@ -5911,11 +5916,12 @@ export default function TurathReader({
                               }}
                               readerTheme={readerTheme}
                               accentColor={accentColor}
+                              index={idx}
                             />
                           ))}
                         </div>
                       ) : (
-                        <div className="space-y-1 animate-in fade-in duration-200">
+                        <div key={selectedVolumeForToc || 'chapters'} className="space-y-1">
                           {tocTree.length === 0 ? (
                             <div className={`p-6 text-center text-xs rounded-xl ${
                               readerTheme === 'dark' ? 'bg-white/[0.02] text-white/50' : 'bg-slate-50 text-slate-500'
@@ -5923,10 +5929,11 @@ export default function TurathReader({
                               لا توجد أبواب مفهرسة في هذا المجلد
                             </div>
                           ) : (
-                            tocTree.map(node => (
+                            tocTree.map((node, idx) => (
                               <TocNode
-                                key={node.originalIndex}
+                                key={`${selectedVolumeForToc}-${node.originalIndex}`}
                                 node={node}
+                                index={idx}
                                 expandedNodes={expandedNodes}
                                 toggleExpand={toggleExpand}
                                 currentPage={currentPage}
