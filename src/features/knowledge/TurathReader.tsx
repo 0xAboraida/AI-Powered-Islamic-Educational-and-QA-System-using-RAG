@@ -1140,6 +1140,17 @@ export function parseIslamicTypography(text: string): string {
   return parsed;
 }
 
+/**
+ * إزالة التشكيل وحركات الإعراب مع الحفاظ التام على وسوم HTML وعناصر الصفحة
+ */
+export function stripArabicDiacritics(html: string): string {
+  if (!html) return '';
+  return html.replace(/(<[^>]+>)|([\u064B-\u065F\u0670\u06D6-\u06ED])/gu, (match, tag) => {
+    if (tag) return tag;
+    return '';
+  });
+}
+
 export interface ProcessedContent {
   main: string;
   matn: string;
@@ -1418,12 +1429,14 @@ const RenderFootnotes = ({
   footnoteText,
   readerTheme,
   fontFamily,
-  fontSize
+  fontSize,
+  showTashkeel = true
 }: {
   footnoteText: string;
   readerTheme: 'light' | 'dark' | 'sepia';
   fontFamily: string;
   fontSize: number;
+  showTashkeel?: boolean;
 }) => {
   const { accentColor } = useTheme();
   const items = useMemo(() => parseFootnoteItems(footnoteText), [footnoteText]);
@@ -1548,7 +1561,11 @@ const RenderFootnotes = ({
               <div
                 className={`turath-content flex-1 leading-[1.85] opacity-90 ${fontFamily}`}
                 style={{ fontSize: `${Math.max(12, fontSize - 5)}px` }}
-                dangerouslySetInnerHTML={{ __html: parseIslamicTypography(replaceIslamicLigatures(item.text)) }}
+                dangerouslySetInnerHTML={{
+                  __html: showTashkeel
+                    ? parseIslamicTypography(replaceIslamicLigatures(item.text))
+                    : stripArabicDiacritics(parseIslamicTypography(replaceIslamicLigatures(item.text)))
+                }}
               />
             </div>
           ))}
@@ -1557,7 +1574,11 @@ const RenderFootnotes = ({
         <div
           className={`turath-content prose max-w-none leading-relaxed opacity-85 px-1 ${fontFamily}`}
           style={{ fontSize: `${Math.max(12, fontSize - 5)}px` }}
-          dangerouslySetInnerHTML={{ __html: parseIslamicTypography(footnoteText) }}
+          dangerouslySetInnerHTML={{
+            __html: showTashkeel
+              ? parseIslamicTypography(footnoteText)
+              : stripArabicDiacritics(parseIslamicTypography(footnoteText))
+          }}
         />
       )}
     </div>
@@ -1638,6 +1659,27 @@ export default function TurathReader({
       localStorage.setItem('turath_reader_font_size', String(fontSize));
     } catch { }
   }, [fontSize]);
+
+  // Tashkeel state: Show or hide Arabic diacritics
+  const [showTashkeel, setShowTashkeel] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem('turath_show_tashkeel');
+      return saved !== null ? saved === 'true' : true;
+    } catch {
+      return true;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('turath_show_tashkeel', String(showTashkeel));
+    } catch { }
+  }, [showTashkeel]);
+
+  const renderContentHtml = useCallback((html: string | undefined) => {
+    if (!html) return '';
+    return showTashkeel ? html : stripArabicDiacritics(html);
+  }, [showTashkeel]);
 
   useEffect(() => {
     if (globalFontSize) {
@@ -1864,7 +1906,7 @@ export default function TurathReader({
     }
     switch (accentColor) {
       case 'amber':
-        return `${base} text-amber-600 dark:text-[#dfbf83] font-bold bg-[#c59b58]/18 dark:bg-[#c59b58]/25`;
+        return `${base} text-[#8e682d] dark:text-[#dfbf83] font-bold bg-[#c59b58]/18 dark:bg-[#c59b58]/25`;
       case 'emerald':
         return `${base} text-teal-700 dark:text-teal-300 font-bold bg-teal-500/18 dark:bg-teal-500/25`;
       case 'blue':
@@ -1877,10 +1919,10 @@ export default function TurathReader({
 
   const getBottomNavIndicatorClass = () => {
     switch (accentColor) {
-      case 'amber': return 'bg-amber-500';
-      case 'emerald': return 'bg-teal-500';
-      case 'blue': return 'bg-blue-500';
-      case 'purple': default: return 'bg-purple-500';
+      case 'amber': return 'bg-gradient-to-r from-[#8e682d] to-[#c59b58] text-white';
+      case 'emerald': return 'bg-teal-500 text-white';
+      case 'blue': return 'bg-blue-500 text-white';
+      case 'purple': default: return 'bg-brand-magenta text-white';
     }
   };
 
@@ -2046,6 +2088,207 @@ export default function TurathReader({
       : accentColor === 'blue'
         ? 'selection:bg-blue-400/30 selection:text-blue-950 dark:selection:text-blue-100'
         : 'selection:bg-brand-magenta/30 selection:text-brand-deep dark:selection:text-white';
+
+  const getHighlightHeaderIconClass = () => {
+    switch (accentColor) {
+      case 'amber':
+        return readerTheme === 'dark' ? 'text-[#dfbf83]' : 'text-[#b88d46]';
+      case 'emerald':
+        return readerTheme === 'dark' ? 'text-teal-400' : 'text-teal-600';
+      case 'blue':
+        return readerTheme === 'dark' ? 'text-blue-400' : 'text-blue-600';
+      case 'purple':
+      default:
+        return readerTheme === 'dark' ? 'text-purple-400' : 'text-brand-magenta';
+    }
+  };
+
+  const getHighlightsCountBadgeStyle = () => {
+    if (readerTheme === 'dark') {
+      switch (accentColor) {
+        case 'amber':
+          return 'bg-[#dfbf83]/15 border-[#dfbf83]/30 text-[#dfbf83]';
+        case 'emerald':
+          return 'bg-teal-500/15 border-teal-500/30 text-teal-300';
+        case 'blue':
+          return 'bg-blue-500/15 border-blue-500/30 text-blue-300';
+        case 'purple':
+        default:
+          return 'bg-brand-magenta/15 border-brand-magenta/30 text-purple-300';
+      }
+    }
+    if (readerTheme === 'sepia') {
+      switch (accentColor) {
+        case 'amber':
+          return 'bg-[#eedbb2]/70 border-[#dfbf83] text-[#78531b]';
+        case 'emerald':
+          return 'bg-teal-100/70 border-teal-300 text-teal-800';
+        case 'blue':
+          return 'bg-blue-100/70 border-blue-300 text-blue-800';
+        case 'purple':
+        default:
+          return 'bg-purple-100/70 border-purple-300 text-purple-900';
+      }
+    }
+    // Light
+    switch (accentColor) {
+      case 'amber':
+        return 'bg-[#dfbf83]/20 border-[#dfbf83]/70 text-[#8e682d]';
+      case 'emerald':
+        return 'bg-teal-50 border-teal-200 text-teal-700';
+      case 'blue':
+        return 'bg-blue-50 border-blue-200 text-blue-700';
+      case 'purple':
+      default:
+        return 'bg-purple-50 border-purple-200 text-brand-magenta';
+    }
+  };
+
+  const getHighlightEmptyIconStyle = () => {
+    if (readerTheme === 'dark') {
+      switch (accentColor) {
+        case 'amber':
+          return 'bg-[#dfbf83]/15 text-[#dfbf83] border border-[#dfbf83]/30 shadow-[0_0_15px_rgba(223,191,131,0.2)]';
+        case 'emerald':
+          return 'bg-teal-500/15 text-teal-300 border border-teal-500/30 shadow-[0_0_15px_rgba(45,212,191,0.2)]';
+        case 'blue':
+          return 'bg-blue-500/15 text-blue-300 border border-blue-500/30 shadow-[0_0_15px_rgba(96,165,250,0.2)]';
+        case 'purple':
+        default:
+          return 'bg-brand-magenta/15 text-purple-300 border border-brand-magenta/30 shadow-[0_0_15px_rgba(192,132,252,0.2)]';
+      }
+    }
+    if (readerTheme === 'sepia') {
+      switch (accentColor) {
+        case 'amber':
+          return 'bg-[#eedbb2]/60 text-[#8e682d] border border-[#dfbf83] shadow-xs';
+        case 'emerald':
+          return 'bg-teal-100/60 text-teal-800 border border-teal-300 shadow-xs';
+        case 'blue':
+          return 'bg-blue-100/60 text-blue-800 border border-blue-300 shadow-xs';
+        case 'purple':
+        default:
+          return 'bg-purple-100/60 text-purple-900 border border-purple-300 shadow-xs';
+      }
+    }
+    // Light
+    switch (accentColor) {
+      case 'amber':
+        return 'bg-gradient-to-br from-[#dfbf83]/25 via-amber-50 to-[#faf0de] text-[#8e682d] border border-[#dfbf83]/70 shadow-sm';
+      case 'emerald':
+        return 'bg-gradient-to-br from-teal-50 to-emerald-100/60 text-teal-700 border border-teal-200 shadow-sm';
+      case 'blue':
+        return 'bg-gradient-to-br from-blue-50 to-indigo-100/60 text-blue-700 border border-blue-200 shadow-sm';
+      case 'purple':
+      default:
+        return 'bg-gradient-to-br from-purple-50 to-fuchsia-100/60 text-brand-magenta border border-purple-200 shadow-sm';
+    }
+  };
+
+  const getHighlightActiveCardStyle = (isCurrentPage: boolean) => {
+    if (!isCurrentPage) {
+      return readerTheme === 'dark'
+        ? 'bg-white/[0.03] border-white/10 hover:bg-white/[0.06] hover:border-white/15'
+        : readerTheme === 'sepia'
+          ? 'bg-[#f7efe1]/70 border-[#e4d5be] hover:bg-[#f7efe1] hover:border-[#d4c1a5]'
+          : 'bg-slate-50/80 border-slate-200/80 hover:bg-white hover:border-slate-300 hover:shadow-xs';
+    }
+    if (readerTheme === 'dark') {
+      switch (accentColor) {
+        case 'amber':
+          return 'bg-[#dfbf83]/12 border-[#dfbf83]/50 text-[#eed9b0] shadow-md shadow-amber-950/40 ring-1 ring-[#dfbf83]/30';
+        case 'emerald':
+          return 'bg-teal-500/15 border-teal-500/50 text-teal-200 shadow-md shadow-teal-950/40 ring-1 ring-teal-500/30';
+        case 'blue':
+          return 'bg-blue-500/15 border-blue-500/50 text-blue-200 shadow-md shadow-blue-950/40 ring-1 ring-blue-500/30';
+        case 'purple':
+        default:
+          return 'bg-brand-magenta/15 border-brand-magenta/50 text-purple-200 shadow-md shadow-purple-950/40 ring-1 ring-brand-magenta/30';
+      }
+    }
+    if (readerTheme === 'sepia') {
+      switch (accentColor) {
+        case 'amber':
+          return 'bg-[#eedbb2]/40 border-[#c59b58] text-[#543b20] shadow-sm';
+        case 'emerald':
+          return 'bg-teal-50/60 border-teal-400 text-teal-950 shadow-sm';
+        case 'blue':
+          return 'bg-blue-50/60 border-blue-400 text-blue-950 shadow-sm';
+        case 'purple':
+        default:
+          return 'bg-purple-50/60 border-purple-400 text-purple-950 shadow-sm';
+      }
+    }
+    // Light
+    switch (accentColor) {
+      case 'amber':
+        return 'bg-gradient-to-br from-amber-50/90 via-[#fcf8f0] to-[#f6ecdb]/80 border-[#dfbf83] text-stone-950 shadow-sm';
+      case 'emerald':
+        return 'bg-gradient-to-br from-teal-50/90 via-[#f0fdf4] to-teal-100/50 border-teal-300 text-teal-950 shadow-sm';
+      case 'blue':
+        return 'bg-gradient-to-br from-blue-50/90 via-[#f0f7ff] to-blue-100/50 border-blue-300 text-blue-950 shadow-sm';
+      case 'purple':
+      default:
+        return 'bg-gradient-to-br from-purple-50/90 via-[#faf5ff] to-purple-100/50 border-purple-300 text-purple-950 shadow-sm';
+    }
+  };
+
+  const getHighlightBadgeStyle = (isCurrentPage: boolean) => {
+    if (!isCurrentPage) {
+      return readerTheme === 'dark'
+        ? 'bg-white/10 text-white/80'
+        : 'bg-slate-200/80 text-slate-700';
+    }
+    if (readerTheme === 'dark') {
+      switch (accentColor) {
+        case 'amber':
+          return 'bg-[#dfbf83] text-stone-950 font-black shadow-xs';
+        case 'emerald':
+          return 'bg-teal-400 text-teal-950 font-black shadow-xs';
+        case 'blue':
+          return 'bg-blue-400 text-blue-950 font-black shadow-xs';
+        case 'purple':
+        default:
+          return 'bg-brand-magenta text-white font-black shadow-xs';
+      }
+    }
+    switch (accentColor) {
+      case 'amber':
+        return 'bg-gradient-to-r from-[#8e682d] to-[#c59b58] text-white font-black shadow-xs';
+      case 'emerald':
+        return 'bg-teal-600 text-white font-black shadow-xs';
+      case 'blue':
+        return 'bg-blue-600 text-white font-black shadow-xs';
+      case 'purple':
+      default:
+        return 'bg-brand-magenta text-white font-black shadow-xs';
+    }
+  };
+
+  const getHighlightsBtnActiveStyle = () => {
+    switch (accentColor) {
+      case 'amber':
+        return 'bg-[#dfbf83]/25 border-[#dfbf83] text-[#8e682d] dark:text-[#dfbf83] shadow-[0_0_15px_rgba(223,191,131,0.35)] scale-105';
+      case 'emerald':
+        return 'bg-teal-500/20 border-teal-500 text-teal-600 dark:text-teal-400 shadow-[0_0_15px_rgba(20,184,166,0.35)] scale-105';
+      case 'blue':
+        return 'bg-blue-500/20 border-blue-500 text-blue-600 dark:text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.35)] scale-105';
+      case 'purple':
+      default:
+        return 'bg-brand-magenta/20 border-brand-magenta text-brand-magenta shadow-[0_0_15px_rgba(149,11,196,0.35)] scale-105';
+    }
+  };
+
+  const getHighlightsDropdownBorder = () => {
+    if (readerTheme === 'dark') return 'border-white/10 shadow-black/80';
+    if (readerTheme === 'sepia') return 'border-[#E2D6C0]';
+    switch (accentColor) {
+      case 'amber': return 'border-[#dfbf83]/60 shadow-amber-950/10 ring-1 ring-[#dfbf83]/30';
+      case 'emerald': return 'border-teal-200 shadow-teal-950/10 ring-1 ring-teal-400/20';
+      case 'blue': return 'border-blue-200 shadow-blue-950/10 ring-1 ring-blue-400/20';
+      case 'purple': default: return 'border-purple-200 shadow-purple-950/10 ring-1 ring-purple-400/20';
+    }
+  };
 
   const [distractionFree, setDistractionFree] = useState(false)
   const [readingMode, setReadingMode] = useState<'paged' | 'continuous'>('paged')
@@ -4520,18 +4763,18 @@ export default function TurathReader({
                 setShowSettings(false);
               }}
               className={`hidden md:flex w-10 h-10 rounded-xl justify-center items-center transition-all duration-300 backdrop-blur-md border shadow-sm relative ${showHighlightsMenu
-                ? 'bg-amber-500/20 border-amber-500 text-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.35)] scale-105'
+                ? getHighlightsBtnActiveStyle()
                 : readerTheme === 'dark'
                   ? 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white hover:shadow-md hover:scale-105'
                   : 'bg-white/50 border-gray-200/60 text-slate-500 hover:bg-white/80 hover:text-slate-900 hover:shadow-md hover:scale-105'
                 }`}
-              title={`النصوص المظللة (${highlights.length})`}
+              title={`النصوص المظللة (${toEasternArabicNumerals(highlights.length)})`}
               aria-label="قائمة النصوص المظللة"
             >
               <Highlighter className="h-5 w-5" />
               {highlights.length > 0 && (
-                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-amber-500 text-slate-950 font-black text-[10px] rounded-full flex items-center justify-center shadow-md border border-white/20">
-                  {highlights.length > 99 ? '+99' : highlights.length}
+                <span className={`absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 font-black text-[10px] rounded-full flex items-center justify-center shadow-md border border-white/20 ${getBottomNavIndicatorClass()}`}>
+                  {highlights.length > 99 ? '+99' : toEasternArabicNumerals(highlights.length)}
                 </span>
               )}
             </button>
@@ -4540,21 +4783,31 @@ export default function TurathReader({
             {showHighlightsMenu && (
               <div
                 onClick={(e) => e.stopPropagation()}
-                className={`fixed inset-x-3 top-16 md:absolute md:top-full md:left-0 md:inset-x-auto mt-2 w-auto md:w-80 backdrop-blur-2xl border rounded-3xl shadow-2xl p-3 z-50 animate-in fade-in slide-in-from-top-2 duration-200 ${readerTheme === 'dark'
-                  ? 'bg-[#0d071a]/98 border-amber-500/30 shadow-[0_16px_50px_rgba(0,0,0,0.85)] text-white'
-                  : readerTheme === 'sepia'
-                    ? 'bg-[#FAF5ED]/98 border-[#E2D6C0] shadow-2xl text-[#3D2C1D]'
-                    : 'bg-white/98 border-amber-200 shadow-2xl text-slate-900 ring-1 ring-amber-400/20'
-                  }`}
+                className={`fixed inset-x-3 top-16 md:absolute md:top-full md:left-0 md:inset-x-auto mt-2 w-auto md:w-80 backdrop-blur-2xl border rounded-3xl shadow-2xl p-3 z-50 animate-in fade-in slide-in-from-top-2 duration-200 ${
+                  readerTheme === 'dark'
+                    ? 'bg-[#0d071a]/98 text-white'
+                    : readerTheme === 'sepia'
+                      ? 'bg-[#FAF5ED]/98 text-[#3D2C1D]'
+                      : 'bg-white/98 text-slate-900'
+                } ${getHighlightsDropdownBorder()}`}
               >
                 <div className="flex items-center justify-between pb-2 mb-2 border-b border-border/50 px-1">
                   <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-lg bg-amber-500/15 text-amber-500 flex items-center justify-center">
+                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${getHighlightEmptyIconStyle()}`}>
                       <Highlighter className="w-4 h-4" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-xs">النصوص المظللة</h3>
-                      <p className="text-[10px] text-muted-foreground">في كامل الكتاب ({highlights.length})</p>
+                      <div className="flex items-center gap-1.5">
+                        <h3 className="font-bold text-xs">النصوص المظللة</h3>
+                        {highlights.length > 0 && (
+                          <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded-full border ${getHighlightsCountBadgeStyle()}`}>
+                            {toEasternArabicNumerals(highlights.length)}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[10px] text-muted-foreground">
+                        {highlights.length > 0 ? 'في كامل الكتاب' : 'لا توجد تظليلات حالياً'}
+                      </p>
                     </div>
                   </div>
 
@@ -4583,8 +4836,8 @@ export default function TurathReader({
                 {/* Highlights List */}
                 <div className="max-h-80 overflow-y-auto custom-scrollbar flex flex-col gap-2 p-1">
                   {highlights.length === 0 ? (
-                    <div className="py-8 px-4 text-center flex flex-col items-center justify-center gap-2 opacity-60">
-                      <div className="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-500">
+                    <div className="py-8 px-4 text-center flex flex-col items-center justify-center gap-2 opacity-70">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${getHighlightEmptyIconStyle()}`}>
                         <Highlighter className="w-5 h-5" />
                       </div>
                       <p className="text-xs font-bold">لا توجد نصوص ملونة بعد</p>
@@ -4599,24 +4852,12 @@ export default function TurathReader({
                         <div
                           key={h.id}
                           onClick={() => handleJumpToHighlight(h)}
-                          className={`group relative p-3 rounded-2xl border transition-all duration-200 cursor-pointer text-right flex flex-col gap-1.5 ${isCurrentPage
-                            ? readerTheme === 'dark'
-                              ? 'bg-amber-500/15 border-amber-500/40 shadow-sm'
-                              : 'bg-amber-50/80 border-amber-300 shadow-sm'
-                            : readerTheme === 'dark'
-                              ? 'bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/15'
-                              : 'bg-slate-50/80 border-slate-200/80 hover:bg-white hover:border-slate-300 hover:shadow-sm'
-                            }`}
+                          className={`group relative p-3 rounded-2xl border transition-all duration-200 cursor-pointer text-right flex flex-col gap-1.5 ${getHighlightActiveCardStyle(isCurrentPage)}`}
                         >
                           {/* Card Header: Page Badge + Color Dot + Delete Button */}
                           <div className="flex items-center justify-between">
-                            <span className={`text-[11px] font-black px-2 py-0.5 rounded-lg flex items-center gap-1 ${isCurrentPage
-                              ? 'bg-amber-500 text-slate-950 shadow-xs'
-                              : readerTheme === 'dark'
-                                ? 'bg-white/10 text-white/80'
-                                : 'bg-slate-200/80 text-slate-700'
-                              }`}>
-                              <span>صفحة {h.page}</span>
+                            <span className={`text-[11px] font-black px-2 py-0.5 rounded-lg flex items-center gap-1 ${getHighlightBadgeStyle(isCurrentPage)}`}>
+                              <span>صفحة {toEasternArabicNumerals(h.page)}</span>
                               {isCurrentPage && <span className="text-[9px] font-bold opacity-80">(الحالية)</span>}
                             </span>
 
@@ -4874,7 +5115,7 @@ export default function TurathReader({
 
           {/* Settings Dropdown (Pops out below) */}
           {showSettings && (
-            <div className={`fixed inset-x-3 top-16 md:absolute md:top-full md:left-0 md:inset-x-auto mt-2 w-auto md:w-[300px] max-h-[85vh] overflow-y-auto backdrop-blur-2xl border rounded-3xl shadow-2xl p-5 z-50 animate-in fade-in slide-in-from-top-4 duration-300 origin-top-left ${readerTheme === 'dark' ? 'bg-[#0d071a]/95 border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.7)] text-white' : 'bg-white/95 border-gray-200 shadow-xl text-slate-800'}`}>
+            <div className={`fixed inset-x-3 top-16 md:absolute md:top-full md:left-0 md:inset-x-auto mt-2 w-auto md:w-[300px] max-h-[85vh] overflow-y-auto backdrop-blur-2xl border rounded-2xl shadow-2xl p-5 z-50 animate-in fade-in slide-in-from-top-4 duration-300 origin-top-left ${readerTheme === 'dark' ? 'bg-[#0d071a]/95 border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.7)] text-white' : 'bg-white/95 border-gray-200 shadow-xl text-slate-800'}`}>
 
               {/* Reading Mode */}
               <div className="mb-6">
@@ -4887,6 +5128,50 @@ export default function TurathReader({
                   <button onClick={() => handleSetReadingMode('continuous')} className={`flex-1 py-2.5 rounded-2xl border transition-all duration-300 ${readingMode === 'continuous' ? 'border-brand-blue bg-brand-blue/10 text-brand-blue shadow-sm scale-105' : readerTheme === 'dark' ? 'border-white/10 hover:bg-white/10 text-white/60 hover:text-white hover:border-white/20' : 'border-black/10 hover:bg-black/5 text-slate-600 hover:text-slate-900'} flex flex-col items-center justify-center gap-1.5`}>
                     <AlignJustify className="h-5 w-5" />
                     <span className="text-[10px] font-bold">تصفح متصل</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Tashkeel Toggle */}
+              <div className="mb-6">
+                <div className="flex items-center justify-between mb-2">
+                  <label className={`text-[11px] font-bold block uppercase tracking-wider ${readerTheme === 'dark' ? 'text-white/50' : 'text-slate-400'}`}>
+                    علامات التشكيل
+                  </label>
+                  <span className={`text-[10px] font-bold ${getAccentTextClass()}`}>
+                    {showTashkeel ? 'مُشَكَّل' : 'بدون تشكيل'}
+                  </span>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowTashkeel(true);
+                      setShowSettings(false);
+                    }}
+                    className={`flex-1 py-2 rounded-xl border transition-all text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer ${
+                      showTashkeel
+                        ? getActiveAccentClass()
+                        : 'border-border/50 hover:bg-black/5 dark:hover:bg-white/5 text-muted-foreground'
+                    }`}
+                  >
+                    <span className="font-amiri text-base font-black leading-none">عَـ</span>
+                    <span>إظهار التشكيل</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowTashkeel(false);
+                      setShowSettings(false);
+                    }}
+                    className={`flex-1 py-2 rounded-xl border transition-all text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer ${
+                      !showTashkeel
+                        ? getActiveAccentClass()
+                        : 'border-border/50 hover:bg-black/5 dark:hover:bg-white/5 text-muted-foreground'
+                    }`}
+                  >
+                    <span className="font-amiri text-base font-black leading-none">عـ</span>
+                    <span>إخفاء التشكيل</span>
                   </button>
                 </div>
               </div>
@@ -5074,7 +5359,7 @@ export default function TurathReader({
                         ease: [0.16, 1, 0.3, 1]
                       }}
                       onClick={(e) => e.stopPropagation()}
-                      className={`fixed inset-x-0 bottom-0 z-[100] max-h-[82vh] flex flex-col rounded-t-2xl border-t shadow-2xl backdrop-blur-2xl overflow-hidden ${
+                      className={`fixed inset-x-0 bottom-0 z-[100] h-[88vh] max-h-[92vh] flex flex-col rounded-t-xl border-t shadow-2xl backdrop-blur-2xl overflow-hidden ${
                         readerTheme === 'dark'
                           ? 'bg-[#0f1422]/95 border-white/15 text-white shadow-black/80'
                           : readerTheme === 'sepia'
@@ -5093,9 +5378,17 @@ export default function TurathReader({
                         <button
                           type="button"
                           onClick={() => setIsMobileMenuOpen(false)}
-                          className="p-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 text-muted-foreground cursor-pointer"
+                          className={`w-7.5 h-7.5 rounded-full border flex items-center justify-center transition-all cursor-pointer active:scale-95 shadow-2xs ${
+                            readerTheme === 'dark'
+                              ? 'border-white/15 bg-white/5 text-white/70 hover:bg-white/15 hover:text-white hover:border-white/25'
+                              : readerTheme === 'sepia'
+                                ? 'border-[#E2D6C0] bg-[#FAF5ED] text-[#7A401A] hover:bg-[#F2E5D0] hover:text-[#5C3012] hover:border-[#D4C0A2]'
+                                : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900 hover:border-slate-300'
+                          }`}
+                          aria-label="إغلاق الإعدادات"
+                          title="إغلاق"
                         >
-                          <X className="w-4 h-4" />
+                          <X className="w-4 h-4" strokeWidth={2.2} />
                         </button>
                       </div>
                     </div>
@@ -5290,7 +5583,51 @@ export default function TurathReader({
                         </div>
                       </div>
 
-                      {/* 5. نمط الإضاءة */}
+                      {/* 5. علامات التشكيل */}
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <label className={`text-[11px] font-bold block uppercase tracking-wider ${readerTheme === 'dark' ? 'text-white/50' : 'text-slate-400'}`}>
+                            علامات التشكيل
+                          </label>
+                          <span className={`text-[10px] font-bold ${getAccentTextClass()}`}>
+                            {showTashkeel ? 'مُشَكَّل' : 'بدون تشكيل'}
+                          </span>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setShowTashkeel(true);
+                              setIsMobileMenuOpen(false);
+                            }}
+                            className={`flex-1 py-2.5 rounded-xl border transition-all text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer ${
+                              showTashkeel
+                                ? getActiveAccentClass()
+                                : 'border-border/50 hover:bg-black/5 dark:hover:bg-white/5 text-muted-foreground'
+                            }`}
+                          >
+                            <span className="font-amiri text-base font-black leading-none">عَـ</span>
+                            <span>إظهار التشكيل</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setShowTashkeel(false);
+                              setIsMobileMenuOpen(false);
+                            }}
+                            className={`flex-1 py-2.5 rounded-xl border transition-all text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer ${
+                              !showTashkeel
+                                ? getActiveAccentClass()
+                                : 'border-border/50 hover:bg-black/5 dark:hover:bg-white/5 text-muted-foreground'
+                            }`}
+                          >
+                            <span className="font-amiri text-base font-black leading-none">عـ</span>
+                            <span>إخفاء التشكيل</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* 6. نمط الإضاءة */}
                       <div>
                         <label className={`text-[11px] font-bold mb-2 block uppercase tracking-wider ${isDark ? 'text-white/50' : 'text-slate-400'}`}>
                           نمط الإضاءة
@@ -5708,8 +6045,17 @@ export default function TurathReader({
                 )}
                 {sidebarTab === 'search' && <h3 className="font-bold text-base flex items-center gap-2"><Search className={`h-4 w-4 ${accentColor === 'amber' ? 'text-[#b88d46]' : accentColor === 'emerald' ? 'text-teal-600' : accentColor === 'blue' ? 'text-blue-600' : 'text-brand-magenta'}`} /> البحث في نصوص الكتاب</h3>}
                 {sidebarTab === 'hadiths' && <h3 className="font-bold text-base flex items-center gap-2"><Hash className="h-4 w-4 text-amber-500" /> {numberedItemsLabel.full}</h3>}
-                {sidebarTab === 'chat' && <h3 className="font-bold text-base flex items-center gap-2">{renderZadLogo('h-4.5 w-4.5')} مساعد زاد</h3>}
-                {sidebarTab === 'highlights' && <h3 className="font-bold text-base flex items-center gap-2"><Highlighter className="h-4 w-4 text-amber-500" /> النصوص المظللة ({highlights.length})</h3>}
+                {sidebarTab === 'highlights' && (
+                  <h3 className="font-bold text-base flex items-center gap-2">
+                    <Highlighter className={`h-4 w-4 ${getHighlightHeaderIconClass()}`} />
+                    <span>النصوص المظللة</span>
+                    {highlights.length > 0 && (
+                      <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full border ${getHighlightsCountBadgeStyle()}`}>
+                        {toEasternArabicNumerals(highlights.length)}
+                      </span>
+                    )}
+                  </h3>
+                )}
               </div>
               <div className="flex items-center gap-2">
                 {sidebarTab === 'highlights' && highlights.length > 0 && (
@@ -6381,9 +6727,9 @@ export default function TurathReader({
               <div className={`absolute inset-0 flex flex-col transition-all duration-300 ${sidebarTab === 'highlights' ? 'opacity-100 translate-x-0 z-10' : 'opacity-0 translate-x-4 pointer-events-none -z-10'}`}>
                 <div className="flex-1 overflow-y-auto p-4 custom-scrollbar flex flex-col gap-2">
                   {highlights.length === 0 ? (
-                    <div className="py-16 px-4 text-center flex flex-col items-center justify-center gap-3 opacity-60">
-                      <div className="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-500">
-                        <Highlighter className="w-6 h-6" />
+                    <div className="py-16 px-4 text-center flex flex-col items-center justify-center gap-3 opacity-70">
+                      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all ${getHighlightEmptyIconStyle()}`}>
+                        <Highlighter className="w-7 h-7" />
                       </div>
                       <p className="text-sm font-bold">لا توجد نصوص ملونة بعد</p>
                       <p className="text-xs leading-relaxed text-muted-foreground max-w-xs">
@@ -6402,25 +6748,11 @@ export default function TurathReader({
                               setSidebarTab('none');
                             }
                           }}
-                          className={`group relative p-3 rounded-2xl border transition-all duration-200 cursor-pointer text-right flex flex-col gap-1.5 ${
-                            isCurrentPage
-                              ? readerTheme === 'dark'
-                                ? 'bg-amber-500/15 border-amber-500/40 shadow-sm'
-                                : 'bg-amber-50/80 border-amber-300 shadow-sm'
-                              : readerTheme === 'dark'
-                                ? 'bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/15'
-                                : 'bg-slate-50/80 border-slate-200/80 hover:bg-white hover:border-slate-300 hover:shadow-sm'
-                          }`}
+                          className={`group relative p-3 rounded-2xl border transition-all duration-200 cursor-pointer text-right flex flex-col gap-1.5 ${getHighlightActiveCardStyle(isCurrentPage)}`}
                         >
                           <div className="flex items-center justify-between">
-                            <span className={`text-[11px] font-black px-2 py-0.5 rounded-lg flex items-center gap-1 ${
-                              isCurrentPage
-                                ? 'bg-amber-500 text-slate-950 shadow-xs'
-                                : readerTheme === 'dark'
-                                  ? 'bg-white/10 text-white/80'
-                                  : 'bg-slate-200/80 text-slate-700'
-                            }`}>
-                              <span>صفحة {h.page}</span>
+                            <span className={`text-[11px] font-black px-2 py-0.5 rounded-lg flex items-center gap-1 ${getHighlightBadgeStyle(isCurrentPage)}`}>
+                              <span>صفحة {toEasternArabicNumerals(h.page)}</span>
                               {isCurrentPage && <span className="text-[9px] font-bold opacity-80">(الحالية)</span>}
                             </span>
 
@@ -6548,17 +6880,60 @@ export default function TurathReader({
 
 
           {/* Floating Exit Zen Mode Button (زر أيقونة للتصغير والخروج من ملء الشاشة في الجانب العلوي الأيسر) */}
-          {distractionFree && (
-            <button
-              type="button"
-              onClick={() => setDistractionFree(false)}
-              className="fixed top-3.5 left-3.5 z-50 h-10 w-10 rounded-full bg-black/80 dark:bg-black/90 text-white backdrop-blur-xl border border-white/20 shadow-2xl hover:scale-110 active:scale-95 transition-all flex items-center justify-center cursor-pointer group animate-in fade-in zoom-in-95"
-              title="إنهاء تكبير الشاشة"
-              aria-label="إنهاء تكبير الشاشة"
-            >
-              <Minimize className="w-5 h-5 text-amber-400 group-hover:rotate-90 transition-transform" />
-            </button>
-          )}
+          {distractionFree && (() => {
+            const getZenButtonStyles = () => {
+              if (readerTheme === 'dark') {
+                switch (accentColor) {
+                  case 'amber':
+                    return 'bg-stone-900/90 hover:bg-stone-800 border-[#dfbf83]/30 hover:border-[#dfbf83]/60 text-amber-400 shadow-xl shadow-black/50';
+                  case 'emerald':
+                    return 'bg-slate-900/90 hover:bg-slate-800 border-teal-500/30 hover:border-teal-500/60 text-teal-400 shadow-xl shadow-black/50';
+                  case 'blue':
+                    return 'bg-slate-900/90 hover:bg-slate-850 border-blue-500/30 hover:border-blue-500/60 text-blue-400 shadow-xl shadow-black/50';
+                  case 'purple':
+                  default:
+                    return 'bg-stone-900/90 hover:bg-stone-800 border-purple-500/30 hover:border-purple-500/60 text-brand-magenta shadow-xl shadow-black/50';
+                }
+              }
+              if (readerTheme === 'sepia') {
+                switch (accentColor) {
+                  case 'amber':
+                    return 'bg-[#F4ECD8]/95 hover:bg-[#ebdcc0] border-[#C8B89E] hover:border-[#b88d46]/60 text-[#78531b] shadow-lg shadow-amber-950/15';
+                  case 'emerald':
+                    return 'bg-[#F4ECD8]/95 hover:bg-[#ebdcc0] border-[#C8B89E] hover:border-teal-600/60 text-teal-800 shadow-lg shadow-teal-950/15';
+                  case 'blue':
+                    return 'bg-[#F4ECD8]/95 hover:bg-[#ebdcc0] border-[#C8B89E] hover:border-blue-600/60 text-blue-800 shadow-lg shadow-blue-950/15';
+                  case 'purple':
+                  default:
+                    return 'bg-[#F4ECD8]/95 hover:bg-[#ebdcc0] border-[#C8B89E] hover:border-purple-600/60 text-purple-900 shadow-lg shadow-purple-950/15';
+                }
+              }
+              // Light Mode
+              switch (accentColor) {
+                case 'amber':
+                  return 'bg-white/95 hover:bg-amber-50/80 border-[#dfbf83]/40 hover:border-[#dfbf83] text-[#8e682d] hover:text-[#78531b] shadow-lg shadow-amber-950/10';
+                case 'emerald':
+                  return 'bg-white/95 hover:bg-teal-50/80 border-teal-200 hover:border-teal-400 text-teal-600 hover:text-teal-700 shadow-lg shadow-teal-950/10';
+                case 'blue':
+                  return 'bg-white/95 hover:bg-blue-50/80 border-blue-200 hover:border-blue-400 text-blue-600 hover:text-blue-700 shadow-lg shadow-blue-950/10';
+                case 'purple':
+                default:
+                  return 'bg-white/95 hover:bg-purple-50/80 border-purple-200 hover:border-purple-400 text-brand-magenta hover:text-purple-700 shadow-lg shadow-purple-950/10';
+              }
+            };
+
+            return (
+              <button
+                type="button"
+                onClick={() => setDistractionFree(false)}
+                className={`fixed top-3.5 left-3.5 z-50 h-10 w-10 rounded-full backdrop-blur-xl border transition-all duration-200 flex items-center justify-center cursor-pointer group animate-in fade-in zoom-in-95 active:scale-95 hover:scale-110 ${getZenButtonStyles()}`}
+                title="إنهاء وضع ملء الشاشة (تصغير)"
+                aria-label="إنهاء وضع ملء الشاشة"
+              >
+                <Minimize className="w-5 h-5 transition-transform duration-200 group-hover:scale-90" strokeWidth={2.2} />
+              </button>
+            );
+          })()}
 
           {/* Reading Progress Line */}
           {!distractionFree && (
@@ -6578,9 +6953,9 @@ export default function TurathReader({
             onTouchEnd={handleTouchEnd}
             data-selectable="true"
             data-library-content="true"
-            className={`library-reader-content selectable-content flex-1 overflow-y-auto ${readingMode === 'continuous' ? 'px-3 sm:px-6 md:px-8 lg:px-12' : 'px-3.5 sm:px-6 md:px-12 lg:px-24'} pb-6 md:pb-32 pt-3 sm:pt-4 md:pt-8 custom-scrollbar relative flex justify-center transition-all duration-500`}
+            className={`library-reader-content selectable-content flex-1 overflow-y-auto ${readingMode === 'continuous' ? 'px-2.5 sm:px-6 md:px-8 lg:px-12 max-sm:no-scrollbar' : 'px-3.5 sm:px-6 md:px-12 lg:px-24'} pb-6 md:pb-32 pt-3 sm:pt-4 md:pt-8 custom-scrollbar relative flex justify-center transition-all duration-500`}
           >
-            <div className={`w-full ${readingMode === 'continuous' ? 'max-w-7xl' : 'max-w-4xl'} min-h-full transition-all duration-500`}>
+            <div className={`w-full ${readingMode === 'continuous' ? 'max-w-7xl' : 'max-w-4xl'} min-h-full transition-all duration-500 mx-auto`}>
               {loadingPage ? (
                 <div className="h-[60vh] flex flex-col items-center justify-center opacity-70 gap-5">
                   <div className="relative">
@@ -7305,7 +7680,7 @@ export default function TurathReader({
                           data-library-content="true"
                           className={`turath-content library-reader-content selectable-content prose prose-lg max-w-none leading-[2.4] ${selectionClass} ${fontFamily} prose-headings:m-0 prose-headings:leading-tight prose-p:my-1`}
                           style={{ fontSize: `${fontSize}px` }}
-                          dangerouslySetInnerHTML={{ __html: pageText?.matn || pageText?.main || '' }}
+                          dangerouslySetInnerHTML={{ __html: renderContentHtml(pageText?.matn || pageText?.main || '') }}
                         />
 
                         {/* Sharh Section with Divider */}
@@ -7318,7 +7693,7 @@ export default function TurathReader({
                               data-library-content="true"
                               className={`turath-content library-reader-content selectable-content prose prose-lg max-w-none leading-[2.4] ${selectionClass} ${fontFamily} prose-headings:m-0 prose-headings:leading-tight prose-p:my-1`}
                               style={{ fontSize: `${fontSize}px` }}
-                              dangerouslySetInnerHTML={{ __html: pageText.sharh }}
+                              dangerouslySetInnerHTML={{ __html: renderContentHtml(pageText.sharh) }}
                             />
                           </div>
                         )}
@@ -7330,6 +7705,7 @@ export default function TurathReader({
                             readerTheme={readerTheme}
                             fontFamily={fontFamily}
                             fontSize={fontSize}
+                            showTashkeel={showTashkeel}
                           />
                         )}
                       </>
@@ -7344,7 +7720,7 @@ export default function TurathReader({
                         )}
 
                         {continuousPages.map((p, idx) => (
-                          <div key={p.page} data-page={p.page} className={`relative p-6 md:p-10 pl-16 rounded-[2rem] border ${readerTheme === 'dark' ? 'border-white/10 bg-[#181825]/40' : readerTheme === 'sepia' ? 'border-[#E2D6C0] bg-[#FFFDF9]' : 'border-gray-200 bg-white/40'} shadow-sm transition-all duration-300 hover:shadow-md group`}>
+                          <div key={p.page} data-page={p.page} className={`w-full relative px-3.5 py-5 sm:px-8 sm:py-8 md:py-9 md:pr-10 md:pl-16 rounded-xl sm:rounded-2xl border ${readerTheme === 'dark' ? 'border-white/10 bg-[#181825]/40' : readerTheme === 'sepia' ? 'border-[#E2D6C0] bg-[#FFFDF9]' : 'border-gray-200 bg-white/40'} shadow-sm transition-all duration-300 hover:shadow-md group`}>
                             <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 rounded-full px-6 py-1.5 text-sm font-bold shadow-sm border backdrop-blur-md ${readerTheme === 'dark' ? 'bg-[#0d071a] border-white/10 text-white/70' : readerTheme === 'sepia' ? 'bg-[#FAF5ED] border-[#E2D6C0] text-[#7A401A]' : 'bg-white border-gray-200 text-gray-500'}`}>
                               صفحة {p.page}
                             </div>
@@ -7429,7 +7805,7 @@ export default function TurathReader({
                               data-library-content="true"
                               className={`turath-content library-reader-content selectable-content prose prose-lg max-w-none leading-[2.4] ${selectionClass} ${fontFamily} prose-headings:m-0 prose-headings:leading-tight prose-p:my-1`}
                               style={{ fontSize: `${fontSize}px` }}
-                              dangerouslySetInnerHTML={{ __html: p.matn || p.text }}
+                              dangerouslySetInnerHTML={{ __html: renderContentHtml(p.matn || p.text) }}
                             />
 
                             {/* Sharh Section with Divider */}
@@ -7442,7 +7818,7 @@ export default function TurathReader({
                                   data-library-content="true"
                                   className={`turath-content library-reader-content selectable-content prose prose-lg max-w-none leading-[2.4] ${selectionClass} ${fontFamily} prose-headings:m-0 prose-headings:leading-tight prose-p:my-1`}
                                   style={{ fontSize: `${fontSize}px` }}
-                                  dangerouslySetInnerHTML={{ __html: p.sharh }}
+                                  dangerouslySetInnerHTML={{ __html: renderContentHtml(p.sharh) }}
                                 />
                               </div>
                             )}
@@ -7454,6 +7830,7 @@ export default function TurathReader({
                                 readerTheme={readerTheme}
                                 fontFamily={fontFamily}
                                 fontSize={fontSize}
+                                showTashkeel={showTashkeel}
                               />
                             )}
                           </div>
