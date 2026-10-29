@@ -1,5 +1,13 @@
 export const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://abourida-zad-backend.hf.space'
 
+export function getAvatarUrl(url?: string | null): string | undefined {
+  if (!url) return undefined
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('blob:') || url.startsWith('data:')) {
+    return url
+  }
+  return `${BASE_URL}${url.startsWith('/') ? url : `/${url}`}`
+}
+
 interface FetchOptions extends RequestInit {
   requireAuth?: boolean
 }
@@ -24,8 +32,12 @@ export async function apiClient<T>(endpoint: string, options: FetchOptions = {})
   }
 
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
     ...(customHeaders as Record<string, string>),
+  }
+
+  // Do not set Content-Type for FormData so the browser automatically sets multipart/form-data with boundary
+  if (!(customOptions.body instanceof FormData) && !headers['Content-Type']) {
+    headers['Content-Type'] = 'application/json'
   }
 
   if (requireAuth) {

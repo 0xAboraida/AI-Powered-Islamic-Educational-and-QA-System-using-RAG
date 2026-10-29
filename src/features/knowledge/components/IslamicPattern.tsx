@@ -6,6 +6,7 @@ interface IslamicPatternProps {
   strokeColor?: string;
   fillColor?: string;
   scale?: number;
+  isFixed?: boolean;
 }
 
 /**
@@ -17,18 +18,22 @@ export default function IslamicPattern({
   opacity = 0.08,
   strokeColor = 'currentColor',
   fillColor = 'none',
-  scale = 1
+  scale = 1,
+  isFixed = false
 }: IslamicPatternProps) {
+  const rawId = React.useId();
+  const patternId = `islamic-girih-${rawId.replace(/[^a-zA-Z0-9-_]/g, '')}`;
+
   return (
     <div 
-      className={`absolute inset-0 pointer-events-none overflow-hidden transition-opacity duration-300 ${className}`} 
+      className={`${isFixed ? 'fixed' : 'absolute'} inset-0 pointer-events-none overflow-hidden transition-opacity duration-300 ${className}`} 
       style={{ opacity }}
       aria-hidden="true"
     >
       <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <pattern
-            id="islamic-girih-pattern"
+            id={patternId}
             width={120 * scale}
             height={120 * scale}
             patternUnits="userSpaceOnUse"
@@ -133,7 +138,7 @@ export default function IslamicPattern({
             </g>
           </pattern>
         </defs>
-        <rect width="100%" height="100%" fill="url(#islamic-girih-pattern)" />
+        <rect width="100%" height="100%" fill={`url(#${patternId})`} />
       </svg>
     </div>
   );

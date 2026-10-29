@@ -7,12 +7,12 @@ type StarStyle = CSSProperties & Record<string, string | number>
  * portion of the section; a couple of shooting stars streak across occasionally.
  * Purely visual — hidden from assistive tech and paused via reduced-motion.
  */
-export default function Starfield({ count = 70 }: { count?: number }) {
+export default function Starfield({ count = 20 }: { count?: number }) {
   const stars = useMemo(() => {
     return Array.from({ length: count }, () => {
       const size = Math.random() * 2 + 1
       return {
-        top: Math.random() * 60, // keep them in the sky area
+        top: Math.random() * 40, // keep them in the sky area
         left: Math.random() * 92 + 8,
         size,
         style: {

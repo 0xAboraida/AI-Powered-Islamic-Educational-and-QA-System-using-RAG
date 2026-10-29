@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { TurathBookItem, ClusterInfo, KaggleJobStatusResponse } from '../types';
 import { COMMON_TURATH_CATEGORIES } from '../collectionsData';
+import { MAIN_CATEGORIES, resolveMainCategory } from '../taxonomy';
 import {
   launchKaggleJob,
   getKaggleJobStatus,
@@ -83,8 +84,8 @@ export const IngestionDrawer: React.FC<IngestionDrawerProps> = ({
   // Navigation: 'matrix' (Step 1) -> 'execution' (Step 2)
   const [currentStep, setCurrentStep] = useState<'matrix' | 'execution'>('matrix');
 
-  // Book Configs Map: book_id -> { clusterId, collection, category }
-  const [bookConfigs, setBookConfigs] = useState<Record<number, { clusterId: string; collection: string; category: string }>>({});
+  // Book Configs Map: book_id -> { clusterId, collection, category, sub_category }
+  const [bookConfigs, setBookConfigs] = useState<Record<number, { clusterId: string; collection: string; category: string; sub_category?: string }>>({});
 
   // Batch Apply State
   const [batchCluster, setBatchCluster] = useState<string>('cluster_1');
@@ -141,7 +142,7 @@ export const IngestionDrawer: React.FC<IngestionDrawerProps> = ({
       const defaultClusterId = clusters[0]?.id || 'cluster_1';
       setBatchCluster(defaultClusterId);
 
-      const initialMap: Record<number, { clusterId: string; collection: string; category: string }> = {};
+      const initialMap: Record<number, { clusterId: string; collection: string; category: string; sub_category?: string }> = {};
       selectedBooks.forEach((book) => {
         const bId = Number(book.turath_id);
         const suggestedColl = resolveCollectionForBook(book.category || '', book.title);
@@ -153,10 +154,14 @@ export const IngestionDrawer: React.FC<IngestionDrawerProps> = ({
           ? suggestedColl
           : clusterObj?.collections[0]?.name || suggestedColl;
 
+        const subCat = book.category || 'عام';
+        const mainCat = resolveMainCategory(subCat);
+
         initialMap[bId] = {
           clusterId: clusterObj?.id || defaultClusterId,
           collection: finalColl,
-          category: book.category || 'عام'
+          category: mainCat,
+          sub_category: subCat
         };
       });
 
@@ -286,13 +291,14 @@ export const IngestionDrawer: React.FC<IngestionDrawerProps> = ({
       setJobStatusMsg('جاري إرسال المهمة المجمعة إلى Kaggle Cloud T4 GPU عبر Kaggle API...');
 
       // Build books metadata map with custom verified categories
-      const booksMetadata: Record<number, { title: string; category: string; collection: string; clusterId: string; shamela_category?: string }> = {};
+      const booksMetadata: Record<number, { title: string; category: string; sub_category?: string; collection: string; clusterId: string; shamela_category?: string }> = {};
       selectedBooks.forEach((b) => {
         const bId = Number(b.turath_id);
         const cfg = bookConfigs[bId];
         booksMetadata[bId] = {
           title: b.title,
-          category: cfg?.category?.trim() || b.category || '',
+          category: cfg?.category?.trim() || resolveMainCategory(b.category || ''),
+          sub_category: cfg?.sub_category?.trim() || b.category || '',
           collection: cfg?.collection || targetColl,
           clusterId: cfg?.clusterId || targetClust,
           shamela_category: b.category || ''

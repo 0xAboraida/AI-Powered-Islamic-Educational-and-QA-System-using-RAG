@@ -42,6 +42,9 @@ export function TextSelectionToolbar({ dark = true }: TextSelectionToolbarProps)
   const [showVoiceMenu, setShowVoiceMenu] = useState(false)
 
   const toolbarRef = useRef<HTMLDivElement>(null)
+  const isInteractingRef = useRef(false)
+  const collapseTimerRef = useRef<number | null>(null)
+  const scrollAnimFrameRef = useRef<number | null>(null)
 
   const [isLibrarySelection, setIsLibrarySelection] = useState(false)
   const [hasHighlightSelected, setHasHighlightSelected] = useState(false)
@@ -53,6 +56,7 @@ export function TextSelectionToolbar({ dark = true }: TextSelectionToolbarProps)
       const highlightSpan = target?.closest('[data-user-highlight="true"]') as HTMLElement | null
       if (highlightSpan) {
         e.stopPropagation()
+        const removedText = highlightSpan.textContent || ''
         const parent = highlightSpan.parentNode
         if (parent) {
           while (highlightSpan.firstChild) {
@@ -61,6 +65,9 @@ export function TextSelectionToolbar({ dark = true }: TextSelectionToolbarProps)
           parent.removeChild(highlightSpan)
           parent.normalize()
         }
+        window.dispatchEvent(new CustomEvent('textHighlightRemoved', {
+          detail: { text: removedText }
+        }))
         window.getSelection()?.removeAllRanges()
         setPosition(null)
         setSelectedText('')
@@ -74,25 +81,57 @@ export function TextSelectionToolbar({ dark = true }: TextSelectionToolbarProps)
   }, [])
 
   useEffect(() => {
+    const computePosition = (range: Range): { top: number; left: number } | null => {
+      const rect = range.getBoundingClientRect()
+      if (rect.width === 0 || rect.height === 0) return null
+
+      // Check if scrolled completely out of screen bounds
+      if (rect.bottom < 15 || rect.top > window.innerHeight + 15) {
+        return null
+      }
+
+      // Safe top clamp (keeps toolbar visible even near top header)
+      const top = rect.top < 65 ? Math.max(50, rect.bottom + 8) : rect.top - 52
+      const left = Math.max(16, Math.min(window.innerWidth - 260, rect.left + rect.width / 2 - 110))
+      return { top, left }
+    }
+
     const handleSelectionChange = () => {
       const selection = window.getSelection()
       if (!selection || selection.isCollapsed) {
-        if (!isPlaying && !isPaused && !isLoading) {
-          setPosition(null)
-          setSelectedText('')
-          setIsLibrarySelection(false)
-          setHasHighlightSelected(false)
+        if (!isPlaying && !isPaused && !isLoading && !isInteractingRef.current) {
+          if (collapseTimerRef.current) clearTimeout(collapseTimerRef.current)
+          collapseTimerRef.current = window.setTimeout(() => {
+            const currentSel = window.getSelection()
+            if ((!currentSel || currentSel.isCollapsed) && !isInteractingRef.current) {
+              setPosition(null)
+              setSelectedText('')
+              setIsLibrarySelection(false)
+              setHasHighlightSelected(false)
+            }
+          }, 140)
         }
         return
       }
 
+      // Valid active selection - cancel any pending collapse
+      if (collapseTimerRef.current) {
+        clearTimeout(collapseTimerRef.current)
+      }
+
       const text = selection.toString().trim()
       if (text.length < 2) {
-        if (!isPlaying && !isPaused && !isLoading) {
-          setPosition(null)
-          setSelectedText('')
-          setIsLibrarySelection(false)
-          setHasHighlightSelected(false)
+        if (!isPlaying && !isPaused && !isLoading && !isInteractingRef.current) {
+          if (collapseTimerRef.current) clearTimeout(collapseTimerRef.current)
+          collapseTimerRef.current = window.setTimeout(() => {
+            const currentSel = window.getSelection()
+            if ((!currentSel || currentSel.toString().trim().length < 2) && !isInteractingRef.current) {
+              setPosition(null)
+              setSelectedText('')
+              setIsLibrarySelection(false)
+              setHasHighlightSelected(false)
+            }
+          }, 140)
         }
         return
       }
@@ -111,10 +150,13 @@ export function TextSelectionToolbar({ dark = true }: TextSelectionToolbarProps)
                                targetElement?.closest('.selectable-content') ||
                                targetElement?.closest('.ai-response-bubble') ||
                                targetElement?.closest('.library-reader-content') ||
-                               targetElement?.closest('.study-reader-content');
+                               targetElement?.closest('.study-reader-content') ||
+                               targetElement?.closest('.turath-content') ||
+                               range.startContainer.parentElement?.closest('[data-selectable="true"]') ||
+                               range.endContainer.parentElement?.closest('[data-selectable="true"]')
 
       if (!selectableParent) {
-        if (!isPlaying && !isPaused && !isLoading) {
+        if (!isPlaying && !isPaused && !isLoading && !isInteractingRef.current) {
           setPosition(null)
           setSelectedText('')
           setIsLibrarySelection(false)
@@ -126,36 +168,54 @@ export function TextSelectionToolbar({ dark = true }: TextSelectionToolbarProps)
       // Check if selection is within Library reader specifically (to show "اشرح لي")
       const isLibrary = targetElement?.closest('[data-library-content="true"]') !== null ||
                         targetElement?.closest('.library-reader-content') !== null ||
-                        targetElement?.closest('.study-reader-content') !== null;
+                        targetElement?.closest('.study-reader-content') !== null ||
+                        targetElement?.closest('.turath-content') !== null ||
+                        selectableParent?.closest('[data-library-content="true"]') !== null
 
       setIsLibrarySelection(isLibrary)
 
       // Check if selection contains or is inside a highlight
       const isHighlighted = targetElement?.closest('[data-user-highlight="true"]') !== null ||
-                            targetElement?.querySelector('[data-user-highlight="true"]') !== null;
+                            targetElement?.querySelector('[data-user-highlight="true"]') !== null
       setHasHighlightSelected(isHighlighted)
 
-      const rect = range.getBoundingClientRect()
-      if (rect.width === 0 || rect.height === 0) return
+      const newPos = computePosition(range)
+      if (newPos) {
+        setSelectedText(text)
+        setPosition(newPos)
+      }
+    }
 
-      // Fixed positioning is relative to viewport (no window.scrollY needed)
-      const top = rect.top < 60 ? rect.bottom + 8 : rect.top - 52
-      const left = Math.max(16, Math.min(window.innerWidth - 260, rect.left + rect.width / 2 - 110))
-
-      setSelectedText(text)
-      setPosition({ top, left })
+    const handleScroll = () => {
+      if (scrollAnimFrameRef.current) {
+        cancelAnimationFrame(scrollAnimFrameRef.current)
+      }
+      scrollAnimFrameRef.current = window.requestAnimationFrame(() => {
+        const selection = window.getSelection()
+        if (selection && !selection.isCollapsed && selection.rangeCount > 0) {
+          const range = selection.getRangeAt(0)
+          const newPos = computePosition(range)
+          if (newPos) {
+            setPosition(newPos)
+          }
+        }
+      })
     }
 
     document.addEventListener('selectionchange', handleSelectionChange)
     document.addEventListener('mouseup', handleSelectionChange)
     document.addEventListener('touchend', handleSelectionChange)
     document.addEventListener('keyup', handleSelectionChange)
+    window.addEventListener('scroll', handleScroll, { passive: true, capture: true })
 
     return () => {
+      if (collapseTimerRef.current) clearTimeout(collapseTimerRef.current)
+      if (scrollAnimFrameRef.current) cancelAnimationFrame(scrollAnimFrameRef.current)
       document.removeEventListener('selectionchange', handleSelectionChange)
       document.removeEventListener('mouseup', handleSelectionChange)
       document.removeEventListener('touchend', handleSelectionChange)
       document.removeEventListener('keyup', handleSelectionChange)
+      window.removeEventListener('scroll', handleScroll, { capture: true })
     }
   }, [isPlaying, isPaused, isLoading])
 
@@ -194,26 +254,32 @@ export function TextSelectionToolbar({ dark = true }: TextSelectionToolbarProps)
     try {
       const selection = window.getSelection()
       if (!selection || selection.rangeCount === 0) return
-      
+
       const range = selection.getRangeAt(0)
-      const span = document.createElement('span')
-      span.style.backgroundColor = color
-      span.style.color = '#0e0e0e' // dark text for readability
-      span.style.borderRadius = '4px'
-      span.style.padding = '2px 4px'
-      span.className = 'transition-all duration-300 cursor-pointer'
-      span.setAttribute('data-user-highlight', 'true')
-      span.setAttribute('title', 'انقر مرتين لإزالة التظليل')
-      
-      const content = range.extractContents()
-      span.appendChild(content)
-      range.insertNode(span)
-      
+      let containerNode: Node | null = range.commonAncestorContainer
+      if (containerNode.nodeType === Node.TEXT_NODE) {
+        containerNode = containerNode.parentElement
+      }
+      const pageEl = (containerNode as HTMLElement | null)?.closest('[data-page]')
+      const pageNum = pageEl?.getAttribute('data-page') ? parseInt(pageEl.getAttribute('data-page')!, 10) : undefined
+
+      const textHighlighted = selectedText
+      const highlightId = `hl_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`
+
+      window.dispatchEvent(new CustomEvent('textHighlightCreated', {
+        detail: {
+          text: textHighlighted,
+          color,
+          page: pageNum,
+          id: highlightId
+        }
+      }))
+
       selection.removeAllRanges()
       setPosition(null)
       setHasHighlightSelected(false)
     } catch (err) {
-      console.warn("Could not highlight across multiple nodes.", err)
+      console.warn("Could not highlight text.", err)
     }
   }
 
@@ -238,6 +304,10 @@ export function TextSelectionToolbar({ dark = true }: TextSelectionToolbarProps)
       if (highlightSpans) highlightSpans.forEach(s => spansToRemove.add(s as HTMLElement))
 
       spansToRemove.forEach(span => {
+        const text = span.textContent || ''
+        window.dispatchEvent(new CustomEvent('textHighlightRemoved', {
+          detail: { text }
+        }))
         const parent = span.parentNode
         if (parent) {
           while (span.firstChild) {
@@ -375,6 +445,12 @@ export function TextSelectionToolbar({ dark = true }: TextSelectionToolbarProps)
   return (
     <div
       ref={toolbarRef}
+      onMouseDown={(e) => { e.preventDefault(); isInteractingRef.current = true; }}
+      onPointerDown={(e) => { e.preventDefault(); isInteractingRef.current = true; }}
+      onTouchStart={(e) => { e.preventDefault(); isInteractingRef.current = true; }}
+      onMouseUp={() => { setTimeout(() => { isInteractingRef.current = false; }, 120); }}
+      onPointerUp={() => { setTimeout(() => { isInteractingRef.current = false; }, 120); }}
+      onTouchEnd={() => { setTimeout(() => { isInteractingRef.current = false; }, 120); }}
       style={{ top: `${position.top}px`, left: `${position.left}px` }}
       className="fixed z-[9999] animate-in fade-in zoom-in-95 duration-150 select-none"
     >
@@ -482,11 +558,47 @@ export function TextSelectionToolbar({ dark = true }: TextSelectionToolbarProps)
           <div className="flex items-center gap-1">
             {/* Highlights */}
             <div className="flex items-center gap-2 px-3 py-1.5 border-l border-r border-transparent">
-              <button onClick={(e) => applyHighlight('#fde047', e)} className="w-5 h-5 rounded-full bg-yellow-300 hover:scale-110 hover:shadow-md transition-all shadow-sm border border-yellow-400" title="تمييز باللون الأصفر" />
-              <button onClick={(e) => applyHighlight('#86efac', e)} className="w-5 h-5 rounded-full bg-green-300 hover:scale-110 hover:shadow-md transition-all shadow-sm border border-green-400" title="تمييز باللون الأخضر" />
-              <button onClick={(e) => applyHighlight('#f9a8d4', e)} className="w-5 h-5 rounded-full bg-pink-300 hover:scale-110 hover:shadow-md transition-all shadow-sm border border-pink-400" title="تمييز باللون الوردي" />
+              <button
+                type="button"
+                onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                onClick={(e) => applyHighlight('#ffb36b', e)}
+                style={{ backgroundColor: '#ffb36b', borderColor: '#e5a160' }}
+                className="w-5 h-5 rounded-full hover:scale-115 hover:shadow-md transition-all shadow-xs border"
+                title="تمييز باللون البرتقالي الهادئ"
+              />
+              <button
+                type="button"
+                onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                onClick={(e) => applyHighlight('#78beff', e)}
+                style={{ backgroundColor: '#78beff', borderColor: '#5ea4ec' }}
+                className="w-5 h-5 rounded-full hover:scale-115 hover:shadow-md transition-all shadow-xs border"
+                title="تمييز باللون الأزرق الهادئ"
+              />
+              <button
+                type="button"
+                onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                onClick={(e) => applyHighlight('#78dc8c', e)}
+                style={{ backgroundColor: '#78dc8c', borderColor: '#5bc571' }}
+                className="w-5 h-5 rounded-full hover:scale-115 hover:shadow-md transition-all shadow-xs border"
+                title="تمييز باللون الأخضر الهادئ"
+              />
+              <button
+                type="button"
+                onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                onClick={(e) => applyHighlight('#ffdc50', e)}
+                style={{ backgroundColor: '#ffdc50', borderColor: '#e5c648' }}
+                className="w-5 h-5 rounded-full hover:scale-115 hover:shadow-md transition-all shadow-xs border"
+                title="تمييز باللون الأصفر الهادئ"
+              />
               {hasHighlightSelected && (
                 <button
+                  type="button"
+                  onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                  onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
                   onClick={(e) => removeHighlight(e)}
                   className={`p-1 rounded-lg transition-all hover:scale-110 ${
                     dark ? 'text-rose-400 hover:bg-rose-500/20' : 'text-rose-600 hover:bg-rose-100'
@@ -504,11 +616,13 @@ export function TextSelectionToolbar({ dark = true }: TextSelectionToolbarProps)
             {isLibrarySelection && (
               <>
                 <button
+                  type="button"
+                  onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                  onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
                   onClick={(e) => {
                     e.stopPropagation();
                     window.dispatchEvent(new CustomEvent('explainSelectedText', { detail: selectedText }));
                   }}
-                  type="button"
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm ${
                     dark
                       ? 'text-emerald-300 bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/30'
@@ -524,8 +638,10 @@ export function TextSelectionToolbar({ dark = true }: TextSelectionToolbarProps)
 
             {/* Listen to Selection Button */}
             <button
-              onClick={() => handleStartOrToggleSpeech()}
               type="button"
+              onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+              onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+              onClick={() => handleStartOrToggleSpeech()}
               disabled={isLoading}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all shadow-sm ${
                 dark
@@ -545,8 +661,10 @@ export function TextSelectionToolbar({ dark = true }: TextSelectionToolbarProps)
 
             {/* Copy Selection Button */}
             <button
-              onClick={handleCopy}
               type="button"
+              onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+              onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+              onClick={handleCopy}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
                 dark
                   ? 'text-slate-300 hover:text-white hover:bg-white/10'

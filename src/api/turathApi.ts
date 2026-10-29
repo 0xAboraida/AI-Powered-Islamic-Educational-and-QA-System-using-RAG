@@ -13,14 +13,43 @@ export interface TurathBookIndexesResponse {
     author_id?: number
     cat_id?: number
     info?: string
+    info_long?: string
     version?: string
     author_page_start?: number
+    pdf_links?: {
+      root?: string
+      files?: string[]
+    }
   }
   indexes?: {
     headings?: TurathHeading[]
     volumes?: string[]
+    volume_bounds?: Record<string, [number, number]>
     print_pg_to_pg?: Record<string, number>
+    page_map?: (string | null)[]
+    hadiths?: Record<string, number>
+    numbers?: Record<string, number>
+    pdf_base?: string
+    pdfs?: Record<string, string>
   }
+}
+
+export interface TurathSearchHit {
+  page: number
+  vol?: string
+  page_id: number
+  book_id?: number
+  book_name: string
+  author_name: string
+  headings?: string[]
+  snippet: string
+  snip?: string
+  text?: string
+}
+
+export interface TurathSearchResponse {
+  count: number
+  data: TurathSearchHit[]
 }
 
 export interface TurathPageResponse {
@@ -49,9 +78,11 @@ async function fetchTurathJson(endpointWithQuery: string): Promise<any> {
     try {
       const res = await fetch(`${TURATH_PROXY_URL}${endpointWithQuery}`)
       if (res.ok) {
-        const contentType = res.headers.get('content-type') || ''
-        if (contentType.includes('application/json') || contentType.includes('text/plain')) {
+        try {
           return await res.json()
+        } catch {
+          const text = await res.text()
+          try { return JSON.parse(text) } catch { }
         }
       }
     } catch {
@@ -62,9 +93,11 @@ async function fetchTurathJson(endpointWithQuery: string): Promise<any> {
     try {
       const res = await fetch(`${TURATH_EDGE_URL}${endpointWithQuery}`)
       if (res.ok) {
-        const contentType = res.headers.get('content-type') || ''
-        if (contentType.includes('application/json') || contentType.includes('text/plain')) {
+        try {
           return await res.json()
+        } catch {
+          const text = await res.text()
+          try { return JSON.parse(text) } catch { }
         }
       }
     } catch {
@@ -76,9 +109,11 @@ async function fetchTurathJson(endpointWithQuery: string): Promise<any> {
   try {
     const res = await fetch(`${TURATH_DIRECT_URL}${endpointWithQuery}`)
     if (res.ok) {
-      const contentType = res.headers.get('content-type') || ''
-      if (contentType.includes('application/json') || contentType.includes('text/plain')) {
+      try {
         return await res.json()
+      } catch {
+        const text = await res.text()
+        try { return JSON.parse(text) } catch { }
       }
     }
   } catch {
@@ -104,10 +139,49 @@ async function fetchTurathJson(endpointWithQuery: string): Promise<any> {
  */
 export async function fetchTurathBookIndexes(turathId: number): Promise<TurathBookIndexesResponse | null> {
   const data = await fetchTurathJson(`/book?id=${turathId}&include=indexes&ver=3`)
-  if (data && data.indexes) {
+  if (data && (data.indexes || data.meta)) {
     return data
   }
   return null
+}
+
+/**
+ * Fetch direct Turath PDF download/view URL dynamically for any book
+ */
+export async function fetchTurathBookPdfUrl(turathId: number): Promise<string | null> {
+  try {
+    const data = await fetchTurathBookIndexes(turathId)
+    if (!data) return null
+
+    // 1. Check meta.pdf_links (Official Turath API format)
+    const pdfLinks = data.meta?.pdf_links
+    if (pdfLinks && Array.isArray(pdfLinks.files) && pdfLinks.files.length > 0) {
+      let file = pdfLinks.files[0]
+      if (file) {
+        file = file.split('|')[0].trim().replace(/^\/+/, '')
+        const root = (pdfLinks.root || '').trim().replace(/^\/+|\/+$/g, '')
+        let fullPath = root ? `${root}/${file}` : file
+        if (fullPath.includes('archive.org')) {
+          fullPath = 'archive/' + fullPath.replace('https://archive.org/download/', '').replace('/', '_=_')
+        }
+        return `https://files.turath.io/pdf/${encodeURIComponent(fullPath).replace(/%2F/g, '/')}`
+      }
+    }
+
+    // 2. Fallback to indexes.pdfs
+    const pdfs = data.indexes?.pdfs
+    if (pdfs && Object.keys(pdfs).length > 0) {
+      const firstKey = Object.keys(pdfs)[0]
+      const filePath = pdfs[firstKey]
+      const pdfBase = (data.indexes?.pdf_base || 'https://files.turath.io/pdf/').replace(/\/+$/, '')
+      return `${pdfBase}/${filePath.replace(/^\/+/, '')}`
+    }
+
+    return null
+  } catch (err) {
+    console.error('Failed to resolve Turath PDF URL for book', turathId, err)
+    return null
+  }
 }
 
 /**
@@ -120,6 +194,135 @@ export async function fetchTurathPage(turathId: number, page: number): Promise<T
   }
   return null
 }
+
+/**
+ * Search full text across Islamic corpus or inside a specific book/author/category
+ */
+export async function searchTurathCorpus(
+  query: string,
+  options?: { book?: number; author?: number; category?: number; page?: number }
+): Promise<TurathSearchResponse | null> {
+  if (!query || !query.trim()) return null;
+  const params = new URLSearchParams({
+    q: query.trim(),
+    ver: '3'
+  });
+  if (options?.book) params.append('book', String(options.book));
+  if (options?.author) params.append('author', String(options.author));
+  if (options?.category) params.append('cat_id', String(options.category));
+  if (options?.page) params.append('page', String(options.page));
+
+  const res = await fetchTurathJson(`/search?${params.toString()}`);
+  if (res && Array.isArray(res.data)) {
+    const parsedData: TurathSearchHit[] = res.data.map((item: any) => {
+      let meta: any = {};
+      if (typeof item.meta === 'string') {
+        try { meta = JSON.parse(item.meta); } catch {}
+      } else if (item.meta && typeof item.meta === 'object') {
+        meta = item.meta;
+      }
+      const rawPageId = Number(meta.page_id ?? item.page_id);
+      const rawPage = Number(meta.page ?? meta.pg ?? item.page ?? item.pg);
+      const resolvedPageId = !isNaN(rawPageId) && rawPageId > 0 ? rawPageId : (!isNaN(rawPage) && rawPage > 0 ? rawPage : 1);
+      const resolvedPrintPage = !isNaN(rawPage) && rawPage > 0 ? rawPage : resolvedPageId;
+
+      const snipText = (item.snip || item.snippet || '').trim();
+      const fullText = (item.text || '').trim();
+
+      return {
+        page: resolvedPrintPage,
+        vol: meta.vol ?? item.vol ?? '1',
+        page_id: resolvedPageId,
+        book_id: options?.book ?? item.book_id,
+        book_name: meta.book_name ?? item.book_name ?? '',
+        author_name: meta.author_name ?? item.author_name ?? '',
+        headings: meta.headings ?? [],
+        snippet: snipText || fullText.replace(/\s+/g, ' ').slice(0, 300),
+        snip: snipText,
+        text: fullText
+      };
+    });
+    return {
+      count: res.count ?? parsedData.length,
+      data: parsedData
+    };
+  }
+  return null;
+}
+
+// -------------------------------------------------------------
+// Turath Narrators (رواة الحديث - 18,989 راوٍ)
+// -------------------------------------------------------------
+
+export interface TurathNarratorItem {
+  id: number;
+  name: string;
+  full_name: string;
+  death: number | null;
+  death_text: string;
+  rank: string;
+}
+
+export interface TurathNarratorsResponse {
+  count: number;
+  page: number;
+  data: TurathNarratorItem[];
+}
+
+export interface TurathNarratorDetail {
+  id: number;
+  name: string;
+  full_name: string;
+  death: number | null;
+  death_text: string;
+  rank: string;
+  summary?: [string, string][];
+  notes?: string;
+  evaluations?: [string, string][];
+  benefits?: string[];
+}
+
+/**
+ * Fetch list of narrators with optional search query and pagination from Turath API
+ */
+export async function fetchTurathNarrators(
+  page: number = 1,
+  limit: number = 50,
+  query?: string
+): Promise<TurathNarratorsResponse | null> {
+  const params = new URLSearchParams({
+    page: String(page),
+    limit: String(limit)
+  });
+  if (query && query.trim()) {
+    params.append('q', query.trim());
+  }
+
+  const res = await fetchTurathJson(`/narrators?${params.toString()}`);
+  if (res && Array.isArray(res.data)) {
+    return {
+      count: res.count ?? res.data.length,
+      page: res.page ?? page,
+      data: res.data
+    };
+  }
+  return null;
+}
+
+/**
+ * Fetch full narrator biography, jarh wa ta'dil, and metadata
+ */
+export async function fetchTurathNarratorDetails(
+  narratorId: number
+): Promise<TurathNarratorDetail | null> {
+  if (!narratorId) return null;
+  const res = await fetchTurathJson(`/narrator?id=${narratorId}`);
+  if (res && res.name) {
+    return res as TurathNarratorDetail;
+  }
+  return null;
+}
+
 
 export interface ChapterSliceOptions {
   startTocId?: string

@@ -7,6 +7,7 @@
   --font-sans: 'Cairo', ui-sans-serif, system-ui, sans-serif;
   --font-display: 'Aref Ruqaa', 'Cairo', serif;
   --font-amiri: 'Amiri', serif;
+  --font-scheherazade: 'Scheherazade New', 'Amiri', serif;
 
   --color-background: #faf7ff;
   --color-foreground: #2b1b3d;
@@ -45,11 +46,346 @@
   --color-secondary: #2b1b3d;
   --color-secondary-foreground: #e9d5ff;
   --color-muted: #231042;
-  --color-muted-foreground: #a78bfa;
+  --color-muted-foreground: #cbd5e1;
   --color-accent: #950bc4;
   --color-accent-foreground: #ffffff;
   --color-border: #3d2459;
   --color-ring: #ad46ff;
+}
+
+/* ========================================================
+   THEME ACCENT OVERRIDES (Emerald / Amber / Blue)
+   ======================================================== */
+
+/* Islamic Turquoise / Persian Teal Accent Theme (فيروزي إسلامي) */
+[data-accent="emerald"] {
+  --color-background: #f0fdfa;
+  --color-foreground: #0f172a;
+  --color-card: #ffffff;
+  --color-card-foreground: #0f172a;
+  --color-muted: #e6f7f4;
+  --color-muted-foreground: #475569;
+  --color-primary: #0d9488;
+  --color-accent: #14b8a6;
+  --color-ring: #2dd4bf;
+  --color-brand-deep: #134e4a;
+  --color-brand-mid: #0d9488;
+  --color-brand-magenta: #14b8a6;
+  --color-brand-blue: #0284c7;
+  --color-secondary: #f0fdfa;
+  --color-secondary-foreground: #115e59;
+  --color-border: #99f6e4;
+}
+[data-accent="emerald"].dark,
+.dark[data-accent="emerald"],
+[data-accent="emerald"] .dark {
+  --color-background: #041413;
+  --color-foreground: #f0fdfa;
+  --color-card: #092624;
+  --color-card-foreground: #f0fdfa;
+  --color-muted: #0d3330;
+  --color-muted-foreground: #99f6e4;
+  --color-primary: #14b8a6;
+  --color-accent: #2dd4bf;
+  --color-ring: #2dd4bf;
+  --color-brand-deep: #134e4a;
+  --color-brand-mid: #0d9488;
+  --color-brand-magenta: #2dd4bf;
+  --color-brand-blue: #38bdf8;
+  --color-secondary: #134e4a;
+  --color-secondary-foreground: #99f6e4;
+  --color-border: #115e59;
+}
+[data-accent="emerald"] .brand-gradient {
+  background-image: linear-gradient(135deg, #134e4a 0%, #0d9488 50%, #14b8a6 100%) !important;
+}
+[data-accent="emerald"] .brand-text-gradient {
+  background-image: linear-gradient(120deg, #0d9488 0%, #14b8a6 55%, #2dd4bf 100%) !important;
+}
+[data-accent="emerald"] .gradient-border,
+[data-accent="emerald"] .gradient-border-card {
+  background-image: linear-gradient(120deg, #134e4a, #0d9488, #14b8a6, #2dd4bf, #0284c7, #0d9488, #134e4a) !important;
+}
+[data-accent="emerald"] .bg-purple-600,
+[data-accent="emerald"] .bg-purple-700,
+[data-accent="emerald"] .bg-\[\#53177d\] {
+  background-color: #0d9488 !important;
+}
+[data-accent="emerald"] .hover\:bg-purple-600\/95:hover,
+[data-accent="emerald"] .hover\:bg-\[\#431265\]:hover,
+[data-accent="emerald"] .hover\:bg-\[\#681c9c\]:hover {
+  background-color: #0f766e !important;
+}
+[data-accent="emerald"] .text-purple-400,
+[data-accent="emerald"] .text-purple-300 {
+  color: #2dd4bf !important;
+}
+[data-accent="emerald"] .border-purple-500\/40,
+[data-accent="emerald"] .border-purple-500\/30,
+[data-accent="emerald"] .border-purple-500\/25,
+[data-accent="emerald"] .border-purple-500\/20,
+[data-accent="emerald"] .border-purple-500 {
+  border-color: rgba(20, 184, 166, 0.35) !important;
+}
+[data-accent="emerald"] .bg-purple-950\/40,
+[data-accent="emerald"] .bg-purple-950\/20 {
+  background-color: rgba(19, 78, 74, 0.25) !important;
+}
+[data-accent="emerald"] .from-purple-600,
+[data-accent="emerald"] .from-purple-700 {
+  --tw-gradient-from: #0f766e var(--tw-gradient-from-position) !important;
+}
+[data-accent="emerald"] .via-purple-600,
+[data-accent="emerald"] .via-fuchsia-600,
+[data-accent="emerald"] .via-fuchsia-500 {
+  --tw-gradient-via: #0d9488 var(--tw-gradient-via-position) !important;
+}
+[data-accent="emerald"] .to-purple-800,
+[data-accent="emerald"] .to-purple-600,
+[data-accent="emerald"] .to-purple-700 {
+  --tw-gradient-to: #14b8a6 var(--tw-gradient-to-position) !important;
+}
+
+/* Islamic Cream / Warm Parchment Gold Accent Theme (عاجي إسلامي / كريمي أندلسي) */
+[data-accent="amber"] {
+  --color-background: #fbf8f0;
+  --color-foreground: #2d2215;
+  --color-card: #ffffff;
+  --color-card-foreground: #2d2215;
+  --color-muted: #f4ecdc;
+  --color-muted-foreground: #6e573b;
+  --color-primary: #b88d46;
+  --color-accent: #dfbf83;
+  --color-ring: #dfbf83;
+  --color-brand-deep: #5e431a;
+  --color-brand-mid: #b88d46;
+  --color-brand-magenta: #dfbf83;
+  --color-brand-blue: #936f33;
+  --color-secondary: #fbf8f0;
+  --color-secondary-foreground: #5e431a;
+  --color-border: #ebd9b5;
+}
+[data-accent="amber"].dark,
+.dark[data-accent="amber"],
+[data-accent="amber"] .dark {
+  --color-background: #120d06;
+  --color-foreground: #fdfaf3;
+  --color-card: #1d150a;
+  --color-card-foreground: #fdfaf3;
+  --color-muted: #291e0e;
+  --color-muted-foreground: #edd8ae;
+  --color-primary: #dfbf83;
+  --color-accent: #edd8ae;
+  --color-ring: #dfbf83;
+  --color-brand-deep: #5e431a;
+  --color-brand-mid: #b88d46;
+  --color-brand-magenta: #dfbf83;
+  --color-brand-blue: #dfbf83;
+  --color-secondary: #24190b;
+  --color-secondary-foreground: #edd8ae;
+  --color-border: #755523;
+}
+[data-accent="amber"] .brand-gradient {
+  background-image: linear-gradient(135deg, #6c4e20 0%, #b88d46 50%, #dfbf83 100%) !important;
+}
+[data-accent="amber"] .brand-text-gradient {
+  background-image: linear-gradient(120deg, #c59b58 0%, #dfbf83 55%, #edd8ae 100%) !important;
+}
+[data-accent="amber"] .gradient-border,
+[data-accent="amber"] .gradient-border-card {
+  background-image: linear-gradient(120deg, #6c4e20, #b88d46, #dfbf83, #edd8ae, #dfbf83, #b88d46, #6c4e20) !important;
+}
+[data-accent="amber"] .bg-purple-600,
+[data-accent="amber"] .bg-purple-700,
+[data-accent="amber"] .bg-\[\#53177d\] {
+  background-color: #b88d46 !important;
+}
+[data-accent="amber"] .hover\:bg-purple-600\/95:hover,
+[data-accent="amber"] .hover\:bg-\[\#431265\]:hover,
+[data-accent="amber"] .hover\:bg-\[\#681c9c\]:hover {
+  background-color: #936f33 !important;
+}
+[data-accent="amber"] .text-purple-400,
+[data-accent="amber"] .text-purple-300 {
+  color: #dfbf83 !important;
+}
+[data-accent="amber"] .border-purple-500\/40,
+[data-accent="amber"] .border-purple-500\/30,
+[data-accent="amber"] .border-purple-500\/25,
+[data-accent="amber"] .border-purple-500\/20,
+[data-accent="amber"] .border-purple-500 {
+  border-color: rgba(223, 191, 131, 0.3) !important;
+}
+[data-accent="amber"] .bg-purple-950\/40,
+[data-accent="amber"] .bg-purple-950\/20 {
+  background-color: rgba(36, 25, 11, 0.35) !important;
+}
+[data-accent="amber"] .from-purple-600,
+[data-accent="amber"] .from-purple-700 {
+  --tw-gradient-from: #8a652a var(--tw-gradient-from-position) !important;
+}
+[data-accent="amber"] .via-purple-600,
+[data-accent="amber"] .via-fuchsia-600,
+[data-accent="amber"] .via-fuchsia-500 {
+  --tw-gradient-via: #b88d46 var(--tw-gradient-via-position) !important;
+}
+[data-accent="amber"] .to-purple-800,
+[data-accent="amber"] .to-purple-600,
+[data-accent="amber"] .to-purple-700 {
+  --tw-gradient-to: #dfbf83 var(--tw-gradient-to-position) !important;
+}
+
+/* Sapphire Blue Accent Theme (أزرق ياقوتي) */
+[data-accent="blue"] {
+  --color-background: #f0f7ff;
+  --color-foreground: #0f172a;
+  --color-card: #ffffff;
+  --color-card-foreground: #0f172a;
+  --color-muted: #e0f0fe;
+  --color-muted-foreground: #475569;
+  --color-primary: #2563eb;
+  --color-accent: #3b82f6;
+  --color-ring: #60a5fa;
+  --color-brand-deep: #1e3a8a;
+  --color-brand-mid: #2563eb;
+  --color-brand-magenta: #3b82f6;
+  --color-brand-blue: #0284c7;
+  --color-secondary: #eff6ff;
+  --color-secondary-foreground: #1e40af;
+  --color-border: #bfdbfe;
+}
+[data-accent="blue"].dark,
+.dark[data-accent="blue"],
+[data-accent="blue"] .dark {
+  --color-background: #050d1a;
+  --color-foreground: #f8fafc;
+  --color-card: #0a1932;
+  --color-card-foreground: #f8fafc;
+  --color-muted: #0f2244;
+  --color-muted-foreground: #93c5fd;
+  --color-primary: #3b82f6;
+  --color-accent: #60a5fa;
+  --color-accent-foreground: #050d1a;
+  --color-ring: #60a5fa;
+  --color-brand-deep: #1e3a8a;
+  --color-brand-mid: #2563eb;
+  --color-brand-magenta: #3b82f6;
+  --color-brand-blue: #38bdf8;
+  --color-secondary: #1e3a8a;
+  --color-secondary-foreground: #bfdbfe;
+  --color-border: #1e40af;
+}
+[data-accent="blue"] .brand-gradient {
+  background-image: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #38bdf8 100%) !important;
+}
+[data-accent="blue"] .brand-text-gradient {
+  background-image: linear-gradient(120deg, #2563eb 0%, #3b82f6 55%, #38bdf8 100%) !important;
+}
+[data-accent="blue"] .gradient-border,
+[data-accent="blue"] .gradient-border-card {
+  background-image: linear-gradient(120deg, #1e3a8a, #2563eb, #3b82f6, #60a5fa, #38bdf8, #2563eb, #1e3a8a) !important;
+}
+[data-accent="blue"] .bg-purple-600,
+[data-accent="blue"] .bg-purple-700,
+[data-accent="blue"] .bg-\[\#53177d\] {
+  background-color: #2563eb !important;
+}
+[data-accent="blue"] .hover\:bg-purple-600\/95:hover,
+[data-accent="blue"] .hover\:bg-\[\#431265\]:hover,
+[data-accent="blue"] .hover\:bg-\[\#681c9c\]:hover {
+  background-color: #1d4ed8 !important;
+}
+[data-accent="blue"] .text-purple-400,
+[data-accent="blue"] .text-purple-300 {
+  color: #60a5fa !important;
+}
+[data-accent="blue"] .border-purple-500\/40,
+[data-accent="blue"] .border-purple-500\/30,
+[data-accent="blue"] .border-purple-500\/25,
+[data-accent="blue"] .border-purple-500\/20,
+[data-accent="blue"] .border-purple-500 {
+  border-color: rgba(59, 130, 246, 0.35) !important;
+}
+[data-accent="blue"] .bg-purple-950\/40,
+[data-accent="blue"] .bg-purple-950\/20 {
+  background-color: rgba(30, 58, 138, 0.25) !important;
+}
+[data-accent="blue"] .from-purple-600,
+[data-accent="blue"] .from-purple-700 {
+  --tw-gradient-from: #1d4ed8 var(--tw-gradient-from-position) !important;
+}
+[data-accent="blue"] .via-purple-600,
+[data-accent="blue"] .via-fuchsia-600,
+[data-accent="blue"] .via-fuchsia-500 {
+  --tw-gradient-via: #2563eb var(--tw-gradient-via-position) !important;
+}
+[data-accent="blue"] .to-purple-800,
+[data-accent="blue"] .to-purple-600,
+[data-accent="blue"] .to-purple-700 {
+  --tw-gradient-to: #60a5fa var(--tw-gradient-to-position) !important;
+}
+
+/* Custom Slim Scrollbars for modals and panels */
+.slim-scrollbar {
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(168, 85, 247, 0.45) transparent !important;
+}
+.slim-scrollbar::-webkit-scrollbar {
+  width: 6px !important;
+  height: 6px !important;
+}
+.slim-scrollbar::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+.slim-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(168, 85, 247, 0.45) !important;
+  border-radius: 9999px !important;
+}
+.slim-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(168, 85, 247, 0.7) !important;
+}
+
+html:not(.dark) .slim-scrollbar {
+  scrollbar-color: rgba(168, 85, 247, 0.4) transparent !important;
+}
+html:not(.dark) .slim-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(168, 85, 247, 0.4) !important;
+}
+
+[data-accent="emerald"] .slim-scrollbar,
+html:not(.dark)[data-accent="emerald"] .slim-scrollbar {
+  scrollbar-color: rgba(16, 185, 129, 0.5) transparent !important;
+}
+[data-accent="emerald"] .slim-scrollbar::-webkit-scrollbar-thumb,
+html:not(.dark)[data-accent="emerald"] .slim-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(16, 185, 129, 0.5) !important;
+}
+[data-accent="emerald"] .slim-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(16, 185, 129, 0.8) !important;
+}
+
+[data-accent="amber"] .slim-scrollbar,
+html:not(.dark)[data-accent="amber"] .slim-scrollbar {
+  scrollbar-color: rgba(223, 191, 131, 0.5) transparent !important;
+}
+[data-accent="amber"] .slim-scrollbar::-webkit-scrollbar-thumb,
+html:not(.dark)[data-accent="amber"] .slim-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(223, 191, 131, 0.5) !important;
+}
+[data-accent="amber"] .slim-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(223, 191, 131, 0.8) !important;
+}
+
+[data-accent="blue"] .slim-scrollbar,
+html:not(.dark)[data-accent="blue"] .slim-scrollbar {
+  scrollbar-color: rgba(59, 130, 246, 0.5) transparent !important;
+}
+[data-accent="blue"] .slim-scrollbar::-webkit-scrollbar-thumb,
+html:not(.dark)[data-accent="blue"] .slim-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(59, 130, 246, 0.5) !important;
+}
+[data-accent="blue"] .slim-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(59, 130, 246, 0.8) !important;
 }
 
 html {
@@ -80,6 +416,26 @@ body {
   font-family: var(--font-display);
 }
 
+@font-face {
+  font-family: 'Kitab';
+  src: url('/fonts/kitab-base.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Kitab';
+  src: url('/fonts/kitab-base-bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+.font-kitab {
+  font-family: 'Kitab', 'Amiri', 'Traditional Arabic', serif;
+}
+
 .font-read,
 .font-amiri {
   font-family: 'Amiri', 'Traditional Arabic', serif;
@@ -90,7 +446,7 @@ body {
 }
 
 .font-noto-naskh {
-  font-family: 'Noto Naskh Arabic', 'Amiri', serif;
+  font-family: 'Noto Naskh Arabic', 'Kitab', 'Amiri', serif;
 }
 
 .font-cairo {
@@ -127,6 +483,19 @@ body {
   }
 }
 
+@utility gradient-border {
+  background-image: linear-gradient(120deg,
+      #5b0e9c,
+      #8a17c9,
+      #c020f0,
+      #ad46ff,
+      #2b7fff,
+      #8a17c9,
+      #5b0e9c);
+  background-size: 300% 300%;
+  animation: borderShift 5s ease-in-out infinite;
+}
+
 .gradient-border {
   background-image: linear-gradient(120deg,
       #5b0e9c,
@@ -139,6 +508,7 @@ body {
   background-size: 300% 300%;
   animation: borderShift 5s ease-in-out infinite;
 }
+
 
 .gradient-border-card {
   background-image: linear-gradient(135deg,
@@ -425,6 +795,15 @@ li .strong-vertical-dash {
   display: none !important;
 }
 
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 /* Custom Scrollbar for sidebars and specific panels */
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
@@ -450,4 +829,190 @@ li .strong-vertical-dash {
 
 .dark .custom-scrollbar:hover::-webkit-scrollbar-thumb {
   background-color: rgba(149, 11, 196, 0.8);
+}
+
+/* Emerald Accent Scrollbar */
+[data-accent="emerald"] .custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(13, 148, 136, 0.45) !important;
+}
+[data-accent="emerald"] .custom-scrollbar:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(13, 148, 136, 0.75) !important;
+}
+.dark[data-accent="emerald"] .custom-scrollbar::-webkit-scrollbar-thumb,
+[data-accent="emerald"] .dark .custom-scrollbar::-webkit-scrollbar-thumb,
+[data-accent="emerald"].dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(20, 184, 166, 0.45) !important;
+}
+.dark[data-accent="emerald"] .custom-scrollbar:hover::-webkit-scrollbar-thumb,
+[data-accent="emerald"] .dark .custom-scrollbar:hover::-webkit-scrollbar-thumb,
+[data-accent="emerald"].dark .custom-scrollbar:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(45, 212, 191, 0.8) !important;
+}
+
+/* Amber Accent Scrollbar */
+[data-accent="amber"] .custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(184, 141, 70, 0.45) !important;
+}
+[data-accent="amber"] .custom-scrollbar:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(184, 141, 70, 0.75) !important;
+}
+.dark[data-accent="amber"] .custom-scrollbar::-webkit-scrollbar-thumb,
+[data-accent="amber"] .dark .custom-scrollbar::-webkit-scrollbar-thumb,
+[data-accent="amber"].dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(223, 191, 131, 0.45) !important;
+}
+.dark[data-accent="amber"] .custom-scrollbar:hover::-webkit-scrollbar-thumb,
+[data-accent="amber"] .dark .custom-scrollbar:hover::-webkit-scrollbar-thumb,
+[data-accent="amber"].dark .custom-scrollbar:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(237, 216, 174, 0.8) !important;
+}
+
+/* Blue Accent Scrollbar */
+[data-accent="blue"] .custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(37, 99, 235, 0.45) !important;
+}
+[data-accent="blue"] .custom-scrollbar:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(37, 99, 235, 0.75) !important;
+}
+.dark[data-accent="blue"] .custom-scrollbar::-webkit-scrollbar-thumb,
+[data-accent="blue"] .dark .custom-scrollbar::-webkit-scrollbar-thumb,
+[data-accent="blue"].dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(59, 130, 246, 0.45) !important;
+}
+.dark[data-accent="blue"] .custom-scrollbar:hover::-webkit-scrollbar-thumb,
+[data-accent="blue"] .dark .custom-scrollbar:hover::-webkit-scrollbar-thumb,
+[data-accent="blue"].dark .custom-scrollbar:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(96, 165, 250, 0.8) !important;
+}
+
+/* Premium Glassmorphic Scrollbar for Study Document Reader */
+.study-document-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(2, 132, 199, 0.35) transparent;
+}
+
+.dark .study-document-scrollbar {
+  scrollbar-color: rgba(56, 189, 248, 0.3) transparent;
+}
+
+.study-document-scrollbar::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+.study-document-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 8px 0;
+}
+
+.study-document-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(2, 132, 199, 0.3) 0%, rgba(126, 34, 206, 0.3) 100%);
+  border-radius: 9999px;
+  border: 1px solid rgba(2, 132, 199, 0.15);
+  transition: all 0.25s ease;
+}
+
+.study-document-scrollbar:hover::-webkit-scrollbar-thumb,
+.study-document-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(2, 132, 199, 0.65) 0%, rgba(126, 34, 206, 0.65) 100%);
+  box-shadow: 0 0 10px rgba(2, 132, 199, 0.35);
+}
+
+.dark .study-document-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(56, 189, 248, 0.25) 0%, rgba(192, 132, 252, 0.25) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+.dark .study-document-scrollbar:hover::-webkit-scrollbar-thumb,
+.dark .study-document-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(56, 189, 248, 0.6) 0%, rgba(192, 132, 252, 0.6) 100%);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+}
+
+@keyframes borderShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.desktop-moving-border {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .desktop-moving-border {
+    display: block;
+    position: absolute;
+    inset: -1.5px;
+    border-radius: 24px;
+    padding: 2px;
+    background-size: 300% 300%;
+    animation: borderShift 4.5s ease-in-out infinite;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    -webkit-mask-composite: destination-out;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 20;
+  }
+}
+
+[data-accent="emerald"] .desktop-moving-border {
+  background-image: linear-gradient(115deg, #0d9488, #14b8a6, #2dd4bf, #38bdf8, #2dd4bf, #14b8a6, #0d9488);
+}
+[data-accent="amber"] .desktop-moving-border {
+  background-image: linear-gradient(115deg, #8e682d, #b88d46, #dfbf83, #eedbb2, #dfbf83, #c59b58, #8e682d);
+}
+[data-accent="blue"] .desktop-moving-border {
+  background-image: linear-gradient(115deg, #1d4ed8, #2563eb, #3b82f6, #60a5fa, #38bdf8, #2563eb, #1d4ed8);
+}
+[data-accent="purple"] .desktop-moving-border,
+.desktop-moving-border {
+  background-image: linear-gradient(115deg, #7c3aed, #9333ea, #c026d3, #e879f9, #38bdf8, #9333ea, #7c3aed);
+}
+
+.dark[data-accent="emerald"] .desktop-moving-border,
+[data-accent="emerald"] .dark .desktop-moving-border {
+  filter: drop-shadow(0 0 8px rgba(45, 212, 191, 0.4));
+}
+.dark[data-accent="amber"] .desktop-moving-border,
+[data-accent="amber"] .dark .desktop-moving-border {
+  filter: drop-shadow(0 0 8px rgba(223, 191, 131, 0.4));
+}
+.dark[data-accent="blue"] .desktop-moving-border,
+[data-accent="blue"] .dark .desktop-moving-border {
+  filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.4));
+}
+.dark[data-accent="purple"] .desktop-moving-border,
+[data-accent="purple"] .dark .desktop-moving-border {
+  filter: drop-shadow(0 0 8px rgba(192, 38, 211, 0.4));
+}
+
+/* ========================================================
+   STAGGERED CARD ENTRANCE ANIMATION (ظهور البطاقات التدريجي الانسيابي الهادئ)
+   ======================================================== */
+@keyframes libraryCardEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(32px) scale(0.94);
+  }
+  50% {
+    opacity: 0.65;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-card-entrance {
+  animation: libraryCardEntrance 1.15s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: opacity, transform;
 }

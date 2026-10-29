@@ -138,19 +138,7 @@ export const getCollectionDetails = (name: string, customMeta?: Record<string, a
   };
 };
 
-export const COMMON_TURATH_CATEGORIES: string[] = [
-  'الفقه الحنبلي',
-  'الفقه الشافعي',
-  'الفقه المالكي',
-  'الفقه الحنفي',
-  'الفقه العام',
-  'أصول الفقه والقواعد الفقهية',
-  'العقيدة وأصول الدين',
-  'التفسير وعلوم القرآن',
-  'الحديث النبوي وشروحه',
-  'السيرة والشمائل المحمدية',
-  'التاريخ والتراجم والطبقات',
-  'علوم اللغة والنحو والمعاجم',
-  'الزهد والرقائق والآداب',
-  'الفتاوى والبحوث الفقهية'
-];
+import { ALL_SUB_CATEGORIES } from './taxonomy';
+
+export const COMMON_TURATH_CATEGORIES: string[] = ALL_SUB_CATEGORIES as string[];
+

@@ -31,6 +31,7 @@ import {
   RotateCcw
 } from 'lucide-react';
 import { COMMON_TURATH_CATEGORIES } from '../collectionsData';
+import { MAIN_CATEGORIES, resolveMainCategory, CATEGORY_DESCRIPTIONS, TAXONOMY, MainCategory } from '../taxonomy';
 import {
   TurathBookItem,
   ClusterInfo,
@@ -111,7 +112,10 @@ export const BookSteppedIngestModal: React.FC<BookSteppedIngestModalProps> = ({
   // --- Step 1: Target Destination State ---
   const [selectedClusterId, setSelectedClusterId] = useState<string>(initialClusterId || 'cluster_1');
   const [selectedCollection, setSelectedCollection] = useState<string>(initialCollection || '');
-  const [customCategory, setCustomCategory] = useState<string>(book?.category || '');
+  const [selectedSubCategory, setSelectedSubCategory] = useState<string>(book?.category || '');
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    book?.category ? resolveMainCategory(book.category) : 'فقه'
+  );
   const [showCreateCollModal, setShowCreateCollModal] = useState(false);
   const [newCollName, setNewCollName] = useState('');
   const [newCollArabic, setNewCollArabic] = useState('');
@@ -130,6 +134,7 @@ export const BookSteppedIngestModal: React.FC<BookSteppedIngestModalProps> = ({
   const [chunkSearchQuery, setChunkSearchQuery] = useState('');
   const [selectedChunkForDetail, setSelectedChunkForDetail] = useState<ChunkPreviewItem | null>(null);
   const [showOriginalModal, setShowOriginalModal] = useState<boolean>(false);
+  const [step2Tab, setStep2Tab] = useState<'chunks' | 'headings'>('chunks');
 
   // --- Step 3: Kaggle GPU Cloud State ---
   const [kaggleKernelSlug, setKaggleKernelSlug] = useState<string | null>(initialKernelSlug || null);
@@ -173,8 +178,9 @@ export const BookSteppedIngestModal: React.FC<BookSteppedIngestModalProps> = ({
     if (isOpening || isBookChanged) {
       prevBookIdRef.current = currentBookId;
       const stepToUse = initialStep || 1;
-      setCurrentStep(stepToUse);
-      setCustomCategory(book.category || '');
+      const subCat = book.category || '';
+      setSelectedSubCategory(subCat);
+      setSelectedCategory(resolveMainCategory(subCat));
       setInspectionData(null);
       setChunksData(null);
       setTestResults([]);
@@ -286,7 +292,8 @@ export const BookSteppedIngestModal: React.FC<BookSteppedIngestModalProps> = ({
         {
           [bId]: {
             title: book.title,
-            category: customCategory.trim() || book.category || '',
+            category: selectedCategory,
+            sub_category: selectedSubCategory.trim() || book.category || '',
             collection: selectedCollection,
             clusterId: selectedClusterId,
             shamela_category: book.category || ''
@@ -480,6 +487,13 @@ export const BookSteppedIngestModal: React.FC<BookSteppedIngestModalProps> = ({
     return chunksData.chunks.filter((c) => c.child_content.toLowerCase().includes(q) || c.chapter_title.toLowerCase().includes(q));
   }, [chunksData, chunkSearchQuery]);
 
+  // Auto-select first chunk when chunks load
+  useEffect(() => {
+    if (!selectedChunkForDetail && filteredChunks.length > 0) {
+      setSelectedChunkForDetail(filteredChunks[0]);
+    }
+  }, [filteredChunks, selectedChunkForDetail]);
+
   const activeClusterObj = clusters.find((c) => c.id === selectedClusterId) || clusters[0];
 
   if (!isOpen || !book) return null;
@@ -598,98 +612,132 @@ export const BookSteppedIngestModal: React.FC<BookSteppedIngestModalProps> = ({
                 </div>
               </div>
 
-              {/* CATEGORY CUSTOMIZATION CARD */}
+              {/* CATEGORY & SUB-CATEGORY DUAL TAXONOMY CARD */}
               <div className="p-5 rounded-2xl border border-amber-500/30 bg-amber-950/20 backdrop-blur-md space-y-4">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="flex items-center gap-2.5">
                     <Tag className="h-5 w-5 text-amber-400" />
                     <div>
                       <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                        <span>التصنيف المعتمد للكتاب في Qdrant</span>
-                        {customCategory && book.category && customCategory.trim() !== book.category.trim() ? (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold">
-                            تخصيص يدوي
-                          </span>
-                        ) : (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] bg-white/10 text-white/60 border border-white/10">
-                            مطابق للشاملة
-                          </span>
-                        )}
+                        <span>التصنيف الشرعي للكتاب (Category & Sub-Category)</span>
+                        <span className="px-2 py-0.5 rounded-full text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold">
+                          {selectedCategory}
+                        </span>
                       </h4>
                       <p className="text-xs text-white/50 mt-0.5">
-                        يمكنك تعديل التصنيف أو اختياره من القائمة قبل الاستدخال السحابي
+                        يتم تحديد المجال العام تلقائياً، مع إمكانية تعديل المجال والتخصص الدقيق بحرية
                       </p>
                     </div>
                   </div>
 
-                  {customCategory && book.category && customCategory.trim() !== book.category.trim() && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setCustomCategory(book.category || '');
-                        const suggestedColl = resolveCollectionForBook(book.category || '', book.title);
-                        const targetClusterObj = clusters.find((c) => c.id === selectedClusterId) || clusters[0];
-                        if (targetClusterObj?.collections.some((col) => col.name === suggestedColl)) {
-                          setSelectedCollection(suggestedColl);
-                        }
-                      }}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-xs text-white/70 hover:text-white transition-colors cursor-pointer"
-                    >
-                      <RotateCcw className="h-3.5 w-3.5" />
-                      <span>استعادة تصنيف الشاملة</span>
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const orig = book.category || '';
+                      setSelectedSubCategory(orig);
+                      setSelectedCategory(resolveMainCategory(orig));
+                      const suggestedColl = resolveCollectionForBook(orig, book.title);
+                      const targetClusterObj = clusters.find((c) => c.id === selectedClusterId) || clusters[0];
+                      if (targetClusterObj?.collections.some((col) => col.name === suggestedColl)) {
+                        setSelectedCollection(suggestedColl);
+                      }
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-xs text-white/70 hover:text-white transition-colors cursor-pointer"
+                  >
+                    <RotateCcw className="h-3.5 w-3.5" />
+                    <span>استعادة الأصل من تراث</span>
+                  </button>
                 </div>
 
-                <div className="space-y-3">
-                  <div className="relative">
-                    <input
-                      type="text"
-                      list="single-modal-cats-list"
-                      value={customCategory}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Tier 1: Primary Category */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-amber-300 flex items-center justify-between">
+                      <span>المجال الشرعي العام (category)</span>
+                      <span className="text-[10px] text-white/40 font-normal">8 مجالات كبرى</span>
+                    </label>
+                    <select
+                      value={selectedCategory}
                       onChange={(e) => {
-                        const newCat = e.target.value;
-                        setCustomCategory(newCat);
-                        const suggestedColl = resolveCollectionForBook(newCat, book.title);
+                        const newMain = e.target.value;
+                        setSelectedCategory(newMain);
+                        const suggestedColl = resolveCollectionForBook(newMain, book.title);
                         const targetClusterObj = clusters.find((c) => c.id === selectedClusterId) || clusters[0];
                         if (targetClusterObj?.collections.some((col) => col.name === suggestedColl)) {
                           setSelectedCollection(suggestedColl);
                         }
                       }}
-                      placeholder="اكتب أو اختر التصنيف المعتمد..."
-                      className="w-full rounded-xl border border-white/15 bg-black/60 px-4 py-2.5 text-xs text-amber-200 placeholder-white/30 focus:border-amber-400 focus:outline-none"
-                    />
-                    <datalist id="single-modal-cats-list">
-                      {COMMON_TURATH_CATEGORIES.map((cat) => (
-                        <option key={cat} value={cat} />
+                      className="w-full rounded-xl border border-white/15 bg-black/60 px-4 py-2.5 text-xs font-bold text-amber-200 focus:border-amber-400 focus:outline-none cursor-pointer"
+                    >
+                      {MAIN_CATEGORIES.map((cat) => (
+                        <option key={cat} value={cat} className="bg-[#1a0a2a] text-white py-1">
+                          {cat}
+                        </option>
                       ))}
-                    </datalist>
+                    </select>
+                    <p className="text-[10px] text-white/40 leading-relaxed">
+                      {CATEGORY_DESCRIPTIONS[selectedCategory as MainCategory] || ''}
+                    </p>
                   </div>
 
-                  {/* Quick Category Suggestion Pills */}
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    <span className="text-[11px] text-white/40 ml-1">اقتراحات سريعة:</span>
-                    {COMMON_TURATH_CATEGORIES.slice(0, 8).map((cat) => (
-                      <button
-                        key={cat}
-                        type="button"
-                        onClick={() => {
-                          setCustomCategory(cat);
-                          const suggestedColl = resolveCollectionForBook(cat, book.title);
+                  {/* Tier 2: Sub-Category */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-white/80 flex items-center justify-between">
+                      <span>التصنيف الفرعي / التخصص (sub_category)</span>
+                      <span className="text-[10px] text-white/40 font-normal">من تراث / الشاملة</span>
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        list="single-modal-subcats-list"
+                        value={selectedSubCategory}
+                        onChange={(e) => {
+                          const newSub = e.target.value;
+                          setSelectedSubCategory(newSub);
+                          const autoMain = resolveMainCategory(newSub);
+                          setSelectedCategory(autoMain);
+                          const suggestedColl = resolveCollectionForBook(newSub, book.title);
                           const targetClusterObj = clusters.find((c) => c.id === selectedClusterId) || clusters[0];
                           if (targetClusterObj?.collections.some((col) => col.name === suggestedColl)) {
                             setSelectedCollection(suggestedColl);
                           }
                         }}
-                        className={`text-[11px] px-2.5 py-1 rounded-lg border transition-all cursor-pointer ${
-                          customCategory === cat
-                            ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 font-bold'
-                            : 'bg-white/5 text-white/60 border-white/10 hover:bg-white/10 hover:text-white'
-                        }`}
-                      >
-                        {cat}
-                      </button>
-                    ))}
+                        placeholder="اكتب أو اختر التصنيف الفرعي..."
+                        className="w-full rounded-xl border border-white/15 bg-black/60 px-4 py-2.5 text-xs text-white placeholder-white/30 focus:border-amber-400 focus:outline-none"
+                      />
+                      <datalist id="single-modal-subcats-list">
+                        {(TAXONOMY[selectedCategory as MainCategory] || COMMON_TURATH_CATEGORIES).map((cat) => (
+                          <option key={cat} value={cat} />
+                        ))}
+                      </datalist>
+                    </div>
+
+                    {/* Quick Category Suggestion Pills */}
+                    <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                      <span className="text-[10px] text-white/40 ml-1">أقسام {selectedCategory}:</span>
+                      {(TAXONOMY[selectedCategory as MainCategory] || []).map((cat) => (
+                        <button
+                          key={cat}
+                          type="button"
+                          onClick={() => {
+                            setSelectedSubCategory(cat);
+                            setSelectedCategory(resolveMainCategory(cat));
+                            const suggestedColl = resolveCollectionForBook(cat, book.title);
+                            const targetClusterObj = clusters.find((c) => c.id === selectedClusterId) || clusters[0];
+                            if (targetClusterObj?.collections.some((col) => col.name === suggestedColl)) {
+                              setSelectedCollection(suggestedColl);
+                            }
+                          }}
+                          className={`text-[10px] px-2 py-0.5 rounded-lg border transition-all cursor-pointer ${
+                            selectedSubCategory === cat
+                              ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 font-bold'
+                              : 'bg-white/5 text-white/60 border-white/10 hover:bg-white/10 hover:text-white'
+                          }`}
+                        >
+                          {cat}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -831,36 +879,220 @@ export const BookSteppedIngestModal: React.FC<BookSteppedIngestModalProps> = ({
                 </div>
               )}
 
-              {/* INSPECTED DATA HEADINGS */}
-              {inspectionData && (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                      <FileText className="h-4 w-4 text-sky-400" />
-                      <span>شجرة أبواب الكتاب ({inspectionData.headings_count} باب وفصل فقهي)</span>
-                    </h3>
-                    <div className="relative w-60">
-                      <Search className="absolute right-3 top-2.5 h-3.5 w-3.5 text-white/40" />
-                      <input
-                        type="text"
-                        value={headingSearchQuery}
-                        onChange={(e) => setHeadingSearchQuery(e.target.value)}
-                        placeholder="ابحث في الأبواب..."
-                        className="w-full rounded-xl border border-white/10 bg-black/40 pr-8 pl-3 py-1.5 text-xs text-white"
-                      />
+              {/* STEP 2 SUB-TABS: CHUNKS PREVIEW vs HEADINGS */}
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setStep2Tab('chunks')}
+                    className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                      step2Tab === 'chunks'
+                        ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40 shadow-sm shadow-sky-500/20'
+                        : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10 border border-transparent'
+                    }`}
+                  >
+                    <Layers className="h-3.5 w-3.5 text-sky-400" />
+                    <span>معاينة النصوص والقطع ({chunksData?.chunks?.length || 0})</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setStep2Tab('headings')}
+                    className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                      step2Tab === 'headings'
+                        ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40 shadow-sm shadow-sky-500/20'
+                        : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10 border border-transparent'
+                    }`}
+                  >
+                    <FileText className="h-3.5 w-3.5 text-sky-400" />
+                    <span>شجرة الأبواب ({inspectionData?.headings_count || 0})</span>
+                  </button>
+                </div>
+
+                <div className="relative w-64">
+                  <Search className="absolute right-3 top-2.5 h-3.5 w-3.5 text-white/40" />
+                  {step2Tab === 'chunks' ? (
+                    <input
+                      type="text"
+                      value={chunkSearchQuery}
+                      onChange={(e) => setChunkSearchQuery(e.target.value)}
+                      placeholder="ابحث في نصوص القطع..."
+                      className="w-full rounded-xl border border-white/10 bg-black/40 pr-8 pl-3 py-1.5 text-xs text-white placeholder-white/40 focus:border-sky-500 focus:outline-none"
+                    />
+                  ) : (
+                    <input
+                      type="text"
+                      value={headingSearchQuery}
+                      onChange={(e) => setHeadingSearchQuery(e.target.value)}
+                      placeholder="ابحث في الأبواب..."
+                      className="w-full rounded-xl border border-white/10 bg-black/40 pr-8 pl-3 py-1.5 text-xs text-white placeholder-white/40 focus:border-sky-500 focus:outline-none"
+                    />
+                  )}
+                </div>
+              </div>
+
+              {/* TAB 1: CHUNKS & TEXT PREVIEW */}
+              {step2Tab === 'chunks' && (
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-4 h-[390px]">
+                  {/* RIGHT COLUMN: CHUNKS LIST (5 cols) */}
+                  <div className="md:col-span-5 flex flex-col h-full rounded-2xl border border-white/10 bg-black/30 overflow-hidden">
+                    <div className="p-2.5 border-b border-white/10 bg-white/[0.02] flex items-center justify-between text-xs text-white/60">
+                      <span>القطع الفقهية (~400 كلمة)</span>
+                      <span className="font-mono text-[11px] text-sky-400 font-bold">{filteredChunks.length} قطعة</span>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto p-2 space-y-1.5">
+                      {filteredChunks.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center h-full text-center p-4 text-white/40 text-xs">
+                          {loadingChunks ? (
+                            <div className="flex items-center gap-2">
+                              <RefreshCw className="h-4 w-4 animate-spin text-sky-400" />
+                              <span>جاري تقطيع وتجهيز النصوص...</span>
+                            </div>
+                          ) : (
+                            <span>لا توجد قطع مطابقة</span>
+                          )}
+                        </div>
+                      ) : (
+                        filteredChunks.map((chunk) => {
+                          const isSelected = selectedChunkForDetail?.chunk_id === chunk.chunk_id;
+                          return (
+                            <div
+                              key={chunk.chunk_id}
+                              onClick={() => {
+                                setSelectedChunkForDetail(chunk);
+                                setShowOriginalModal(false);
+                              }}
+                              className={`p-2.5 rounded-xl border transition-all cursor-pointer text-xs space-y-1 ${
+                                isSelected
+                                  ? 'bg-sky-500/20 border-sky-500/50 shadow-sm'
+                                  : 'bg-white/[0.02] border-white/5 hover:bg-white/[0.06] hover:border-white/10'
+                              }`}
+                            >
+                              <div className="flex items-center justify-between">
+                                <span className="font-semibold text-white truncate max-w-[200px]">
+                                  {chunk.chapter_title}
+                                </span>
+                                <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-white/10 font-mono text-sky-300">
+                                  #{chunk.child_index}/{chunk.total_children}
+                                </span>
+                              </div>
+                              <p className="text-[11px] text-white/60 line-clamp-2 leading-relaxed">
+                                {chunk.child_content}
+                              </p>
+                              <div className="flex items-center justify-between text-[10px] text-white/40 pt-0.5">
+                                <span>ص {chunk.start_page} إلى {chunk.end_page}</span>
+                                <span className="font-mono">{chunk.words_count} كلمة</span>
+                              </div>
+                            </div>
+                          );
+                        })
+                      )}
                     </div>
                   </div>
 
-                  <div className="max-h-60 overflow-y-auto space-y-1.5 rounded-2xl border border-white/10 bg-black/30 p-3">
-                    {filteredHeadings.slice(0, 50).map((h) => (
-                      <div
-                        key={h.index}
-                        className="flex items-center justify-between p-2.5 rounded-xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.04] text-xs"
-                      >
-                        <span className="font-semibold text-white">{h.title}</span>
-                        <span className="text-[11px] text-white/50 font-mono">ص {h.start_page} إلى {h.end_page}</span>
+                  {/* LEFT COLUMN: DETAILED TEXT VIEWER (7 cols) */}
+                  <div className="md:col-span-7 flex flex-col h-full rounded-2xl border border-white/10 bg-black/40 overflow-hidden">
+                    {selectedChunkForDetail ? (
+                      <>
+                        <div className="p-3 border-b border-white/10 bg-white/[0.02] flex items-center justify-between gap-3">
+                          <div className="min-w-0">
+                            <h4 className="text-xs font-bold text-white truncate">
+                              {selectedChunkForDetail.chapter_title}
+                            </h4>
+                            <p className="text-[10px] text-white/40 truncate mt-0.5">
+                              {selectedChunkForDetail.hierarchy?.join(' › ') || selectedChunkForDetail.chapter_title}
+                            </p>
+                          </div>
+
+                          <div className="flex items-center gap-2 shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => setShowOriginalModal(!showOriginalModal)}
+                              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold border transition-all cursor-pointer ${
+                                showOriginalModal
+                                  ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                                  : 'bg-white/5 text-white/70 border-white/10 hover:text-white hover:bg-white/10'
+                              }`}
+                            >
+                              <Eye className="h-3 w-3" />
+                              <span>{showOriginalModal ? 'عرض المقطع المقصوص' : 'عرض الباب كاملاً'}</span>
+                            </button>
+
+                            {selectedChunkForDetail.turath_url && (
+                              <a
+                                href={selectedChunkForDetail.turath_url}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 text-sky-300 border border-sky-500/30 text-[11px] transition-colors"
+                              >
+                                <ExternalLink className="h-3 w-3" />
+                                <span>تراث</span>
+                              </a>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="px-3 py-1.5 bg-sky-950/30 border-b border-white/5 flex items-center gap-2 text-[10px] text-sky-200/80">
+                          <Tag className="h-3 w-3 text-sky-400 shrink-0" />
+                          <span className="truncate font-mono">{selectedChunkForDetail.context_header}</span>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto p-4 text-xs leading-loose text-white/90 select-text whitespace-pre-wrap">
+                          {showOriginalModal ? (
+                            <div className="space-y-2">
+                              <div className="text-[11px] text-amber-300 font-semibold mb-2 p-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                                📖 النص الكامل للباب من صفحات الكتاب (ص {selectedChunkForDetail.start_page} إلى {selectedChunkForDetail.end_page}):
+                              </div>
+                              {selectedChunkForDetail.original_chapter_text || 'لا يتوفر النص الأصلي للباب'}
+                            </div>
+                          ) : (
+                            selectedChunkForDetail.child_content
+                          )}
+                        </div>
+                      </>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center h-full text-center p-6 text-white/40 text-xs">
+                        <BookOpen className="h-8 w-8 text-white/20 mb-2" />
+                        <span>اختر قطعة فقهية من القائمة على اليمين لمعاينة نصها وسياقها</span>
                       </div>
-                    ))}
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 2: HEADINGS TOC TREE */}
+              {step2Tab === 'headings' && inspectionData && (
+                <div className="space-y-3">
+                  <div className="max-h-[390px] overflow-y-auto space-y-1.5 rounded-2xl border border-white/10 bg-black/30 p-3">
+                    {filteredHeadings.length === 0 ? (
+                      <p className="text-center text-xs text-white/40 py-8">لا توجد أبواب مطابقة للبحث</p>
+                    ) : (
+                      filteredHeadings.map((h) => (
+                        <div
+                          key={h.index}
+                          className="flex items-center justify-between p-2.5 rounded-xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.04] text-xs"
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className="w-6 text-center text-[10px] font-mono text-white/30">#{h.index + 1}</span>
+                            <span className="font-semibold text-white">{h.title}</span>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <span className="text-[11px] text-white/50 font-mono">ص {h.start_page} إلى {h.end_page}</span>
+                            {h.turath_url && (
+                              <a
+                                href={h.turath_url}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-sky-400 hover:text-sky-300 p-1"
+                              >
+                                <ExternalLink className="h-3 w-3" />
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      ))
+                    )}
                   </div>
                 </div>
               )}

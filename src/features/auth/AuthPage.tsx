@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Globe, Moon, Sun, ArrowLeft } from 'lucide-react'
-import bgDark from '@/assets/images/image.webp'
+import bgDark from '@/assets/images/authPageBackgroundDark.webp'
 import bgLight from '@/assets/images/authPageBackgroundLight.webp'
 import Starfield from '../../components/layout/Starfield'
 import Login from './Login'
@@ -55,11 +55,10 @@ export default function AuthPage({ initialMode = 'login', onBack, onSuccess }: {
             type="button"
             aria-label={dark ? 'الوضع النهاري' : 'الوضع الليلي'}
             onClick={toggleTheme}
-            className={`flex h-11 w-11 items-center justify-center rounded-full text-lg transition-all ${
-              dark
-                ? 'bg-[#a855f7]/15 backdrop-blur-md border border-[#a855f7]/30 hover:bg-[#a855f7]/25 hover:shadow-[0_0_20px_rgba(168,85,247,0.4)] text-purple-100'
-                : 'bg-primary/10 border border-primary/20 hover:bg-primary/20 text-primary'
-            }`}
+            className={`flex h-11 w-11 items-center justify-center rounded-full text-lg transition-all ${dark
+              ? 'bg-[#a855f7]/15 backdrop-blur-md border border-[#a855f7]/30 hover:bg-[#a855f7]/25 hover:shadow-[0_0_20px_rgba(168,85,247,0.4)] text-purple-100'
+              : 'bg-primary/10 border border-primary/20 hover:bg-primary/20 text-primary'
+              }`}
           >
             <div className={`transition-all duration-700 ${dark ? 'rotate-0' : 'rotate-[360deg] scale-110'}`}>
               {dark ? <Moon size={22} strokeWidth={2.5} /> : <Sun size={22} strokeWidth={2.5} />}
@@ -69,11 +68,10 @@ export default function AuthPage({ initialMode = 'login', onBack, onSuccess }: {
           <button
             type="button"
             onClick={onBack}
-            className={`flex h-11 w-11 items-center justify-center rounded-full text-lg transition-all ${
-              dark
-                ? 'bg-[#a855f7]/15 backdrop-blur-md border border-[#a855f7]/30 hover:bg-[#a855f7]/25 hover:shadow-[0_0_20px_rgba(168,85,247,0.4)] text-purple-100'
-                : 'bg-primary/10 border border-primary/20 hover:bg-primary/20 text-primary'
-            }`}
+            className={`flex h-11 w-11 items-center justify-center rounded-full text-lg transition-all ${dark
+              ? 'bg-[#a855f7]/15 backdrop-blur-md border border-[#a855f7]/30 hover:bg-[#a855f7]/25 hover:shadow-[0_0_20px_rgba(168,85,247,0.4)] text-purple-100'
+              : 'bg-primary/10 border border-primary/20 hover:bg-primary/20 text-primary'
+              }`}
           >
             <ArrowLeft size={22} strokeWidth={2.5} />
           </button>
@@ -83,11 +81,10 @@ export default function AuthPage({ initialMode = 'login', onBack, onSuccess }: {
 
         {/* Single Fixed Form Container */}
         <div
-          className={`fixed right-6 sm:right-12 lg:right-16 xl:right-24 top-[5vh] z-10 w-[calc(100%-3rem)] sm:w-full max-w-[420px] max-h-[85vh] flex flex-col rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] border backdrop-blur-md overflow-hidden transition-colors duration-1000 ${
-            dark 
-              ? 'border-white/10 border-t-white/20 border-l-white/20 bg-white/5' 
-              : 'border-primary/10 border-t-primary/20 border-l-primary/20 bg-white/40 shadow-[0_8px_32px_0_rgba(122,23,201,0.1)]'
-          }`}
+          className={`fixed right-6 sm:right-12 lg:right-16 xl:right-24 top-[5vh] z-10 w-[calc(100%-3rem)] sm:w-full max-w-[420px] max-h-[85vh] flex flex-col rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] border backdrop-blur-md overflow-hidden transition-colors duration-1000 ${dark
+            ? 'border-white/10 border-t-white/20 border-l-white/20 bg-white/5'
+            : 'border-primary/10 border-t-primary/20 border-l-primary/20 bg-white/40 shadow-[0_8px_32px_0_rgba(122,23,201,0.1)]'
+            }`}
           style={{
             backdropFilter: 'blur(16px)',
             WebkitBackdropFilter: 'blur(16px)'
@@ -101,7 +98,7 @@ export default function AuthPage({ initialMode = 'login', onBack, onSuccess }: {
                 alt="شعار زاد"
                 className="w-28 sm:w-20 h-auto auth-logo drop-shadow-[0_0_30px_rgba(255,255,255,0.15)]"
               />
-          </div>
+            </div>
 
             <div className="w-full mt-0">
               <h1 className={`auth-title text-center text-[24px] sm:text-[28px] leading-[1.4] font-bold mb-1 ${dark ? 'text-white' : 'text-primary'}`}>

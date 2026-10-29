@@ -10,23 +10,86 @@ import zadDarkLogo from '@/assets/images/ZadDarkLogo.png'
 import type { Message, CitationDTO } from '../data'
 import { exportMessageToPdf } from '@/utils/pdfExporter'
 import { useStudy } from '@/contexts/StudyContext'
+import { useTheme } from '@/contexts/ThemeContext'
 import { AudioReaderButton } from '@/components/common/AudioReaderButton'
 
 function AvatarLogo({ dark }: { dark: boolean }) {
+  const { accentColor } = useTheme();
+
+  const getGradient = () => {
+    switch (accentColor) {
+      case 'amber':
+        return 'conic-gradient(from 0deg, transparent 0%, rgba(223,191,131,0.8) 40%, rgba(245,158,11,0.9) 60%, transparent 100%)';
+      case 'emerald':
+        return 'conic-gradient(from 0deg, transparent 0%, rgba(45,212,191,0.8) 40%, rgba(13,148,136,0.9) 60%, transparent 100%)';
+      case 'blue':
+        return 'conic-gradient(from 0deg, transparent 0%, rgba(96,165,250,0.8) 40%, rgba(37,99,235,0.9) 60%, transparent 100%)';
+      case 'purple':
+      default:
+        return 'conic-gradient(from 0deg, transparent 0%, rgba(192,32,240,0.8) 40%, rgba(168,85,247,0.9) 60%, transparent 100%)';
+    }
+  };
+
+  const getShadowStyle = () => {
+    switch (accentColor) {
+      case 'amber': return '0 0 12px rgba(223,191,131, 0.55)';
+      case 'emerald': return '0 0 12px rgba(45,212,191, 0.55)';
+      case 'blue': return '0 0 12px rgba(96,165,250, 0.55)';
+      case 'purple':
+      default: return '0 0 12px rgba(168,85,247, 0.55)';
+    }
+  };
+
+  const getBorderClass = () => {
+    if (dark) return 'border-white/20';
+    switch (accentColor) {
+      case 'amber': return 'border-amber-300';
+      case 'emerald': return 'border-teal-300';
+      case 'blue': return 'border-blue-300';
+      case 'purple':
+      default: return 'border-primary/20';
+    }
+  };
+
+  const getLogoColor = () => {
+    switch (accentColor) {
+      case 'amber': return dark ? '#dfbf83' : '#b88d46';
+      case 'emerald': return dark ? '#2dd4bf' : '#0d9488';
+      case 'blue': return dark ? '#60a5fa' : '#2563eb';
+      case 'purple':
+      default: return dark ? '#c084fc' : '#950bc4';
+    }
+  };
+
   return (
     <div className="relative flex h-9 w-9 sm:h-12 sm:w-12 shrink-0 items-center justify-center -mt-1 sm:-mt-2">
       <span
-        className="absolute inset-0 rounded-full blur-[7px] opacity-90"
+        className="absolute inset-0 rounded-full blur-[7px] opacity-90 transition-all duration-300"
         style={{
-          background: 'conic-gradient(from 0deg, transparent 0%, rgba(192,32,240,0.8) 40%, rgba(168,85,247,0.9) 60%, transparent 100%)',
+          background: getGradient(),
         }}
       />
       <div
-        className={`relative flex h-full w-full items-center justify-center rounded-full z-10 ${dark ? 'bg-[#0f041c]/80 backdrop-blur-xl border border-white/20' : 'bg-white border border-primary/20'
-          }`}
-        style={{ boxShadow: '0 0 12px rgba(168,85,247, 0.55)' }}
+        className={`relative flex h-full w-full items-center justify-center rounded-full z-10 transition-all duration-300 ${
+          dark ? 'bg-[#0f041c]/80 backdrop-blur-xl border border-white/20' : `bg-white border ${getBorderClass()}`
+        }`}
+        style={{ boxShadow: getShadowStyle() }}
       >
-        <img src={dark ? whiteLogo : zadDarkLogo} alt="Zad" className="h-5 w-5 sm:h-7 sm:w-7 object-contain drop-shadow-md" />
+        <div
+          className="h-5 w-5 sm:h-7 sm:w-7 transition-colors duration-200"
+          style={{
+            backgroundColor: getLogoColor(),
+            WebkitMaskImage: `url(${whiteLogo})`,
+            maskImage: `url(${whiteLogo})`,
+            WebkitMaskSize: 'contain',
+            maskSize: 'contain',
+            WebkitMaskRepeat: 'no-repeat',
+            maskRepeat: 'no-repeat',
+            WebkitMaskPosition: 'center',
+            maskPosition: 'center',
+          }}
+          aria-hidden="true"
+        />
       </div>
     </div>
   )

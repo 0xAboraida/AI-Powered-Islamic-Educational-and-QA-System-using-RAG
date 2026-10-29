@@ -1,5 +1,5 @@
 import StoreBadges from '../ui/StoreBadges'
-import whiteLogo from '@/assets/images/WhiteLogo.png'
+import whiteLogo from '@/assets/images/WhiteLogo.webp'
 
 export default function CTA({ onTryChat }: { onTryChat: () => void }) {
   return (

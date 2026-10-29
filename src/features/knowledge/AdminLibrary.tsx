@@ -1,6 +1,52 @@
-import React, { useState, useEffect } from 'react';
-import { Book, Folder, CheckCircle, Plus, Search, Loader2, Trash2, ChevronDown, AlertTriangle, Sparkles } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  Book, Folder, CheckCircle, Plus, Search, Loader2, Trash2, ChevronDown,
+  AlertTriangle, Sparkles, Image as ImageIcon, Eye, Save, Star, RefreshCw, Check, ExternalLink,
+  ArrowUp, ArrowDown, Tag, SlidersHorizontal, Layers, GripVertical, Download, Upload
+} from 'lucide-react';
 import { idbGet, idbSet } from '../../utils/indexedDbStorage';
+import {
+  getAdminCoverOverrides,
+  saveAdminCoverOverride,
+  removeAdminCoverOverride,
+  resolveCoverSource,
+  reorderShowcaseBooks,
+  getDeletedShowcaseIds,
+  clearDeletedShowcaseIds,
+  unmarkShowcaseBookDeleted,
+  clearAllAdminCoverOverrides,
+  setAllAdminCoverOverrides,
+  AdminCoverOverride
+} from './services/bookCoverService';
+import { FEATURED_CLASSICAL_BOOKS } from './data/curatedClassicalBooks';
+
+// Helper functions for tracking permanently deleted platform books (so they never resurrect on refresh)
+const getDeletedPlatformBookIds = (): Set<number> => {
+  try {
+    const raw = typeof window !== 'undefined' ? localStorage.getItem('zad_deleted_library_book_ids') : null;
+    if (raw) {
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr)) return new Set(arr.map(Number));
+    }
+  } catch (e) { }
+  return new Set();
+};
+
+const markPlatformBookDeleted = (bookId: number) => {
+  const set = getDeletedPlatformBookIds();
+  set.add(Number(bookId));
+  try {
+    localStorage.setItem('zad_deleted_library_book_ids', JSON.stringify(Array.from(set)));
+  } catch (e) { }
+};
+
+const unmarkPlatformBookDeleted = (bookId: number) => {
+  const set = getDeletedPlatformBookIds();
+  set.delete(Number(bookId));
+  try {
+    localStorage.setItem('zad_deleted_library_book_ids', JSON.stringify(Array.from(set)));
+  } catch (e) { }
+};
 
 interface TurathBook {
   id: number;
@@ -24,7 +70,7 @@ interface AdminLibraryProps {
 }
 
 export default function AdminLibrary({ onExit, onNavigateToIngestion }: AdminLibraryProps) {
-  const [activeTab, setActiveTab] = useState<'add' | 'manage' | 'featured'>('add');
+  const [activeTab, setActiveTab] = useState<'add' | 'manage' | 'featured' | 'covers'>('covers');
   const [categories, setCategories] = useState<TurathCategory[]>([]);
   const [publishedBooksList, setPublishedBooksList] = useState<TurathBook[]>([]);
   const [categoryBooksMap, setCategoryBooksMap] = useState<Record<number, TurathBook[]>>({});
@@ -44,6 +90,21 @@ export default function AdminLibrary({ onExit, onNavigateToIngestion }: AdminLib
   const [authorsList, setAuthorsList] = useState<string[]>([]);
   const [catFilter, setCatFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
+  const allCatalogBooksRef = useRef<TurathBook[]>([]);
+
+  // Covers & Showcase Management State
+  const [coverOverrides, setCoverOverrides] = useState<Record<number, AdminCoverOverride>>(() => getAdminCoverOverrides());
+  const [coverSearchInput, setCoverSearchInput] = useState('');
+  const [selectedBookForCover, setSelectedBookForCover] = useState<TurathBook | null>(null);
+  const [coverSourceInput, setCoverSourceInput] = useState('');
+  const [isShowcaseInput, setIsShowcaseInput] = useState(true);
+  const [customCategoryInput, setCustomCategoryInput] = useState('');
+  const [orderIndexInput, setOrderIndexInput] = useState<number>(1);
+  const [coverTabFilter, setCoverTabFilter] = useState<'all' | 'showcase' | 'hidden'>('all');
+  const [previewCoverUrl, setPreviewCoverUrl] = useState('');
+  const [isPreviewLoading, setIsPreviewLoading] = useState(false);
+  const [isSavingCover, setIsSavingCover] = useState(false);
+
   const [featuredBooksSet, setFeaturedBooksSet] = useState<Set<number | string>>(() => {
     try {
       const saved = localStorage.getItem('zad_featured_book_ids');
@@ -97,7 +158,7 @@ export default function AdminLibrary({ onExit, onNavigateToIngestion }: AdminLib
   useEffect(() => {
     const timer = setTimeout(() => {
       setSearchQuery(searchInput);
-    }, 300);
+    }, 200);
     return () => clearTimeout(timer);
   }, [searchInput]);
 
@@ -119,6 +180,11 @@ export default function AdminLibrary({ onExit, onNavigateToIngestion }: AdminLib
 
       if (cachedCats && cachedCats.length > 0) {
         setCategories(cachedCats);
+        allCatalogBooksRef.current = cachedCats.flatMap(c => c.books || []);
+        const bMap: Record<number, TurathBook[]> = {};
+        cachedCats.forEach(c => { bMap[c.cat_id] = c.books || []; });
+        setCategoryBooksMap(bMap);
+
         if (cachedPubBooks) {
           setPublishedBooksList(cachedPubBooks);
           setLibraryBooks(new Set(cachedPubBooks.map((b: any) => b.id)));
@@ -126,46 +192,71 @@ export default function AdminLibrary({ onExit, onNavigateToIngestion }: AdminLib
         if (cachedAuthors && cachedAuthors.length > 0) {
           setAuthorsList(cachedAuthors);
         }
-        setLoading(false); // Instant rendering in 0ms!
+        setLoading(false);
       }
     } catch (e) {
       console.warn("IndexedDB cache read error:", e);
     }
 
-    // 2. Fresh Network Sync from MongoDB Atlas in background
+    // 2. Load Local Static Catalog (/data/turath_catalog.json) instantly
     try {
-      const baseUrl = getIngestionBaseUrl();
-      const [catsRes, libRes, authorsRes] = await Promise.all([
-        fetch(`${baseUrl}/api/v1/data-ingestion/admin/turath-categories`),
-        fetch(`${baseUrl}/api/v1/data-ingestion/admin/library-books`),
-        fetch(`${baseUrl}/api/v1/data-ingestion/admin/turath-authors`).catch(() => null)
-      ]);
+      const catRes = await fetch('/data/turath_catalog.json');
+      if (catRes.ok) {
+        const rawCatalog = await catRes.json();
+        if (Array.isArray(rawCatalog) && rawCatalog.length > 0) {
+          const parsedCats: TurathCategory[] = rawCatalog.map((cat: any, idx: number) => {
+            const catId = idx + 1;
+            const bks: TurathBook[] = (cat.children || []).map((b: any) => ({
+              id: Number(b.turath_id),
+              name: b.title,
+              author_name: b.author,
+              cat_id: catId,
+              cat_name: cat.title
+            }));
+            return {
+              cat_id: catId,
+              name: cat.title,
+              count: cat.children_count || bks.length,
+              books: bks
+            };
+          });
 
-      if (catsRes && catsRes.ok && libRes && libRes.ok) {
-        const catsData = await catsRes.json();
-        const libData = await libRes.json();
-        const freshCats = catsData.categories || [];
-        setCategories(freshCats);
+          setCategories(parsedCats);
+          allCatalogBooksRef.current = parsedCats.flatMap(c => c.books || []);
+          const bMap: Record<number, TurathBook[]> = {};
+          parsedCats.forEach(c => { bMap[c.cat_id] = c.books || []; });
+          setCategoryBooksMap(bMap);
 
-        const freshPubBooks: TurathBook[] = libData.books || [];
-        setPublishedBooksList(freshPubBooks);
-        setLibraryBooks(new Set(freshPubBooks.map((b: any) => b.id)));
+          const allAuthors = Array.from(new Set(allCatalogBooksRef.current.map(b => b.author_name).filter(Boolean) as string[])).sort();
+          setAuthorsList(allAuthors);
 
-        // Update IndexedDB silently for future visits
-        idbSet('admin_turath_categories', freshCats);
-        idbSet('admin_published_books', freshPubBooks);
-      }
-
-      if (authorsRes && authorsRes.ok) {
-        const authorsData = await authorsRes.json();
-        const freshAuthors: string[] = authorsData.authors || [];
-        if (freshAuthors.length > 0) {
-          setAuthorsList(freshAuthors);
-          idbSet('admin_turath_authors', freshAuthors);
+          idbSet('admin_turath_categories', parsedCats);
+          idbSet('admin_turath_authors', allAuthors);
         }
       }
+    } catch (e) {
+      console.warn("Could not load local turath_catalog.json:", e);
+    }
+
+    // 3. Sync published books list from MongoDB backend
+    try {
+      const baseUrl = getIngestionBaseUrl();
+      const libRes = await fetch(`${baseUrl}/api/v1/data-ingestion/admin/library-books`);
+      if (libRes.ok) {
+        const libData = await libRes.json();
+        const freshPubBooks: TurathBook[] = libData.books || [];
+        const deletedIds = getDeletedPlatformBookIds();
+        const filteredFresh = freshPubBooks.filter(b => !deletedIds.has(b.id));
+        setPublishedBooksList(filteredFresh);
+        setLibraryBooks(new Set(filteredFresh.map((b: any) => b.id)));
+
+        idbSet('admin_published_books', filteredFresh);
+        localStorage.setItem('zad_cached_library_books_v7', JSON.stringify(filteredFresh));
+        localStorage.setItem('zad_library_synced', 'true');
+        window.dispatchEvent(new Event('zad_library_books_changed'));
+      }
     } catch (err) {
-      console.error("Error fetching admin data:", err);
+      console.error("Error fetching published books from backend:", err);
     } finally {
       setLoading(false);
     }
@@ -191,10 +282,8 @@ export default function AdminLibrary({ onExit, onNavigateToIngestion }: AdminLib
     const allSelected = unaddedBooks.every(b => selectedBooks.some(sb => sb.id === b.id));
 
     if (allSelected) {
-      // Deselect all in this category
       setSelectedBooks(prev => prev.filter(sb => !unaddedBooks.some(ub => ub.id === sb.id)));
     } else {
-      // Select all unadded books in this category
       setSelectedBooks(prev => {
         const newSelection = [...prev];
         unaddedBooks.forEach(ub => {
@@ -218,8 +307,16 @@ export default function AdminLibrary({ onExit, onNavigateToIngestion }: AdminLib
         body: JSON.stringify({ books: selectedBooks })
       });
       if (res.ok) {
-        // Refresh data & cache
-        await fetchData();
+        // Unmark any previously deleted flags
+        selectedBooks.forEach(b => unmarkPlatformBookDeleted(b.id));
+        const newPublishedList = [...publishedBooksList, ...selectedBooks];
+        setPublishedBooksList(newPublishedList);
+        setLibraryBooks(new Set(newPublishedList.map(b => b.id)));
+        idbSet('admin_published_books', newPublishedList);
+        localStorage.setItem('zad_cached_library_books_v7', JSON.stringify(newPublishedList));
+        localStorage.setItem('zad_library_synced', 'true');
+        window.dispatchEvent(new Event('zad_library_books_changed'));
+
         setSelectedBooks([]);
         showToast(`تمت إضافة ${selectedBooks.length} كتاب بنجاح إلى المكتبة!`, 'success');
       }
@@ -231,27 +328,8 @@ export default function AdminLibrary({ onExit, onNavigateToIngestion }: AdminLib
     }
   };
 
-  const toggleCategory = async (catId: number) => {
-    if (expandedCategory === catId) {
-      setExpandedCategory(null);
-      return;
-    }
-    setExpandedCategory(catId);
-    if (!categoryBooksMap[catId]) {
-      setLoadingCategory(catId);
-      try {
-        const baseUrl = getIngestionBaseUrl();
-        const res = await fetch(`${baseUrl}/api/v1/data-ingestion/admin/turath-categories/${catId}/books`);
-        if (res.ok) {
-          const data = await res.json();
-          setCategoryBooksMap(prev => ({ ...prev, [catId]: data.books || [] }));
-        }
-      } catch (err) {
-        console.error("Error fetching category books:", err);
-      } finally {
-        setLoadingCategory(null);
-      }
-    }
+  const toggleCategory = (catId: number) => {
+    setExpandedCategory(prev => (prev === catId ? null : catId));
   };
 
   const handleRemoveBook = (bookId: number, e: React.MouseEvent) => {
@@ -263,27 +341,31 @@ export default function AdminLibrary({ onExit, onNavigateToIngestion }: AdminLib
       type: 'warning',
       onConfirm: async () => {
         setRemovingId(bookId);
+        // 1. Mark as permanently deleted locally so it never resurrects
+        markPlatformBookDeleted(bookId);
+
+        // 2. Instant optimistic UI update
+        const updated = publishedBooksList.filter(b => b.id !== bookId);
+        setLibraryBooks(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(bookId);
+          return newSet;
+        });
+        setPublishedBooksList(updated);
+        idbSet('admin_published_books', updated);
+        localStorage.setItem('zad_cached_library_books_v7', JSON.stringify(updated));
+        localStorage.setItem('zad_library_synced', 'true');
+        window.dispatchEvent(new Event('zad_library_books_changed'));
+        showToast('تمت إزالة الكتاب من المنصة بنجاح', 'info');
+
+        // 3. Background server sync
         try {
           const baseUrl = getIngestionBaseUrl();
-          const res = await fetch(`${baseUrl}/api/v1/data-ingestion/admin/library-books/${bookId}`, {
+          await fetch(`${baseUrl}/api/v1/data-ingestion/admin/library-books/${bookId}`, {
             method: 'DELETE'
           });
-          if (res.ok) {
-            setLibraryBooks(prev => {
-              const newSet = new Set(prev);
-              newSet.delete(bookId);
-              return newSet;
-            });
-            setPublishedBooksList(prev => {
-              const updated = prev.filter(b => b.id !== bookId);
-              idbSet('admin_published_books', updated);
-              return updated;
-            });
-            showToast('تمت إزالة الكتاب من المنصة بنجاح', 'info');
-          }
         } catch (err) {
-          console.error("Error removing book:", err);
-          showToast('حدث خطأ أثناء الإزالة', 'error');
+          console.warn("Backend remove warning (kept removed locally):", err);
         } finally {
           setRemovingId(null);
         }
@@ -300,61 +382,55 @@ export default function AdminLibrary({ onExit, onNavigateToIngestion }: AdminLib
       message: `تحذير خطير: هل أنت متأكد من مسح جميع الكتب من المنصة بالكامل؟ (العدد: ${libraryBooks.size} كتاب)`,
       type: 'danger',
       onConfirm: async () => {
+        // Mark all as deleted locally
+        libraryBooks.forEach(id => markPlatformBookDeleted(id));
+
+        // Optimistically clear immediately
+        setLibraryBooks(new Set());
+        setPublishedBooksList([]);
+        idbSet('admin_published_books', []);
+        localStorage.setItem('zad_cached_library_books_v7', JSON.stringify([]));
+        localStorage.setItem('zad_library_synced', 'true');
+        window.dispatchEvent(new Event('zad_library_books_changed'));
+        showToast('تم مسح جميع الكتب من المكتبة بنجاح', 'success');
+
         try {
           const baseUrl = getIngestionBaseUrl();
-          const res = await fetch(`${baseUrl}/api/v1/data-ingestion/admin/library-books`, {
+          await fetch(`${baseUrl}/api/v1/data-ingestion/admin/library-books`, {
             method: 'DELETE'
           });
-          if (res.ok) {
-            setLibraryBooks(new Set());
-            setPublishedBooksList([]);
-            idbSet('admin_published_books', []);
-            showToast('تم مسح جميع الكتب من المكتبة نهائياً', 'success');
-          }
         } catch (err) {
-          console.error("Error clearing books:", err);
-          showToast('حدث خطأ أثناء إزالة جميع الكتب', 'error');
+          console.warn("Backend clear books warning (kept cleared locally):", err);
         }
       }
     });
   };
 
-  // Cloud Search Effect directly from MongoDB Atlas
+  // High-speed In-Memory Search over Local Catalog
   useEffect(() => {
-    const q = searchQuery.trim();
+    const q = searchQuery.trim().toLowerCase();
     if (!q && authorFilter === "all" && catFilter === "all") {
       setSearchResults([]);
       setSearching(false);
       return;
     }
 
-    let isCancelled = false;
-    const executeSearch = async () => {
-      setSearching(true);
-      try {
-        const baseUrl = getIngestionBaseUrl();
-        const searchParam = q || (authorFilter !== "all" ? authorFilter : "");
-        let url = `${baseUrl}/api/v1/data-ingestion/admin/turath-search?q=${encodeURIComponent(searchParam)}`;
-        if (catFilter !== "all") url += `&cat_id=${catFilter}`;
-
-        const res = await fetch(url);
-        if (res.ok && !isCancelled) {
-          const data = await res.json();
-          let results: TurathBook[] = data.data || [];
-          if (authorFilter !== "all" && authorFilter !== "") {
-            results = results.filter(b => b.author_name?.includes(authorFilter));
-          }
-          setSearchResults(results);
-        }
-      } catch (e) {
-        console.error("Search error:", e);
-      } finally {
-        if (!isCancelled) setSearching(false);
-      }
-    };
-
-    executeSearch();
-    return () => { isCancelled = true; };
+    setSearching(true);
+    let results = allCatalogBooksRef.current;
+    if (q) {
+      results = results.filter(b =>
+        (b.name && b.name.toLowerCase().includes(q)) ||
+        (b.author_name && b.author_name.toLowerCase().includes(q))
+      );
+    }
+    if (authorFilter !== "all" && authorFilter !== "") {
+      results = results.filter(b => b.author_name?.includes(authorFilter));
+    }
+    if (catFilter !== "all" && catFilter !== "") {
+      results = results.filter(b => b.cat_id?.toString() === catFilter);
+    }
+    setSearchResults(results);
+    setSearching(false);
   }, [searchQuery, catFilter, authorFilter]);
 
   const uniqueAuthors = authorsList.length > 0
@@ -919,6 +995,864 @@ export default function AdminLibrary({ onExit, onNavigateToIngestion }: AdminLib
     );
   };
 
+  // -------------------------------------------------------------
+  // Covers & Showcase Management Handlers & UI Tab
+  // -------------------------------------------------------------
+  const handleSelectBookForCover = async (book: TurathBook) => {
+    setSelectedBookForCover(book);
+    const existing = coverOverrides[book.id];
+    const defaultCat = book.cat_name || 'عام';
+
+    if (existing) {
+      setCoverSourceInput(existing.coverSource || '');
+      setIsShowcaseInput(existing.isShowcase ?? true);
+      setCustomCategoryInput(existing.category || defaultCat);
+      setOrderIndexInput(existing.orderIndex ?? (Object.values(coverOverrides).filter(o => o.isShowcase).length + 1));
+      setPreviewCoverUrl(existing.resolvedCoverUrl || '');
+    } else {
+      const defaultSource = String(book.id);
+      setCoverSourceInput(defaultSource);
+      setIsShowcaseInput(true);
+      setCustomCategoryInput(defaultCat);
+      const currentShowcaseCount = Object.values(coverOverrides).filter(o => o.isShowcase).length;
+      setOrderIndexInput(currentShowcaseCount + 1);
+      setIsPreviewLoading(true);
+      try {
+        const url = await resolveCoverSource(defaultSource, book.name);
+        setPreviewCoverUrl(url);
+      } catch {
+        setPreviewCoverUrl('');
+      } finally {
+        setIsPreviewLoading(false);
+      }
+    }
+  };
+
+  const handleTestPreviewCover = async () => {
+    if (!coverSourceInput.trim()) {
+      showToast('يرجى إدخال معرّف أو رابط الغلاف أولاً', 'error');
+      return;
+    }
+    setIsPreviewLoading(true);
+    try {
+      const url = await resolveCoverSource(coverSourceInput.trim(), selectedBookForCover?.name);
+      if (url) {
+        setPreviewCoverUrl(url);
+        showToast('تم فحص الغلاف بنجاح! تفقد صندوق المعاينة', 'success');
+      } else {
+        showToast('تعذر العثور على غلاف بهذا المعرّف، تأكد من الرقم أو كود الأرشيف', 'error');
+      }
+    } catch (e) {
+      showToast('حدث خطأ أثناء فحص الغلاف', 'error');
+    } finally {
+      setIsPreviewLoading(false);
+    }
+  };
+
+  const handleSaveCoverConfig = async () => {
+    if (!selectedBookForCover) {
+      showToast('يرجى اختيار كتاب أولاً', 'error');
+      return;
+    }
+    if (!coverSourceInput.trim()) {
+      showToast('يرجى تحديد معرّف أو مصدر الغلاف', 'error');
+      return;
+    }
+
+    setIsSavingCover(true);
+    try {
+      const resolvedUrl = previewCoverUrl || (await resolveCoverSource(coverSourceInput.trim(), selectedBookForCover.name));
+      const finalCategory = customCategoryInput.trim() || selectedBookForCover.cat_name || 'عام';
+
+      await saveAdminCoverOverride({
+        bookId: selectedBookForCover.id,
+        bookTitle: selectedBookForCover.name,
+        bookAuthor: selectedBookForCover.author_name,
+        category: finalCategory,
+        defaultCategory: selectedBookForCover.cat_name || 'عام',
+        coverSource: coverSourceInput.trim(),
+        resolvedCoverUrl: resolvedUrl,
+        isShowcase: isShowcaseInput,
+        orderIndex: Number(orderIndexInput) || 1
+      });
+
+      setCoverOverrides({ ...getAdminCoverOverrides() });
+      showToast(`تم حفظ وتطبيق غلاف "${selectedBookForCover.name}" في مجال (${finalCategory}) بنجاح! 🎉`, 'success');
+    } catch (e) {
+      showToast('حدث خطأ أثناء حفظ الغلاف', 'error');
+    } finally {
+      setIsSavingCover(false);
+    }
+  };
+
+  const handleRemoveCoverOverride = (bookId: number, bookName?: string) => {
+    setConfirmDialog({
+      isOpen: true,
+      title: 'حذف الكتاب من القائمة والواجهة',
+      message: `هل أنت متأكد من حذف كتاب "${bookName || bookId}" من قائمة الكتب وأبرز كتب الواجهة؟ لن يظهر في الصفحة الرئيسية مجدداً.`,
+      type: 'danger',
+      onConfirm: () => {
+        removeAdminCoverOverride(bookId);
+        setCoverOverrides({ ...getAdminCoverOverrides() });
+        if (selectedBookForCover?.id === bookId) {
+          setSelectedBookForCover(null);
+          setCoverSourceInput('');
+          setPreviewCoverUrl('');
+        }
+        showToast('تم حذف الكتاب من القائمة والواجهة بنجاح', 'success');
+      }
+    });
+  };
+
+  // Builds list of books: when customized by admin, returns ONLY what admin added/kept
+  const getMergedShowcaseBooks = (): AdminCoverOverride[] => {
+    const isCustomized = typeof window !== 'undefined' && (
+      localStorage.getItem('zad_showcase_customized') === 'true' ||
+      Object.keys(coverOverrides).length > 0
+    );
+
+    if (isCustomized) {
+      // ONLY return books explicitly in coverOverrides
+      return Object.values(coverOverrides)
+        .sort((a, b) => (a.orderIndex ?? 9999) - (b.orderIndex ?? 9999));
+    }
+
+    // Default first-time fallback only:
+    const deletedIds = getDeletedShowcaseIds();
+    return FEATURED_CLASSICAL_BOOKS
+      .filter(cb => !deletedIds.has(cb.id))
+      .map((cb, idx) => ({
+        bookId: cb.id,
+        bookTitle: cb.title,
+        bookAuthor: cb.author,
+        category: cb.categoryLabel || cb.category,
+        defaultCategory: cb.categoryLabel || cb.category,
+        coverSource: String(cb.id),
+        resolvedCoverUrl: cb.coverUrl,
+        isShowcase: true,
+        orderIndex: idx + 1
+      }));
+  };
+
+  // Quick Move Up / Move Down Handlers for Showcase Books
+  const handleMoveShowcaseBook = async (bookId: number, direction: 'up' | 'down') => {
+    const allMerged = getMergedShowcaseBooks();
+    const showcaseBooks = allMerged
+      .filter(o => o.isShowcase)
+      .sort((a, b) => (a.orderIndex ?? 9999) - (b.orderIndex ?? 9999));
+
+    const index = showcaseBooks.findIndex(b => b.bookId === bookId);
+    if (index === -1) return;
+
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= showcaseBooks.length) return;
+
+    const newOrderedList = [...showcaseBooks];
+    const temp = newOrderedList[index];
+    newOrderedList[index] = newOrderedList[targetIndex];
+    newOrderedList[targetIndex] = temp;
+
+    await reorderShowcaseBooks(newOrderedList);
+    setCoverOverrides({ ...getAdminCoverOverrides() });
+    showToast('تم تحديث ترتيب ظهور الكتب بالواجهة بنجاح ✨', 'success');
+  };
+
+  const handleToggleShowcaseDirect = async (override: AdminCoverOverride) => {
+    const newStatus = !override.isShowcase;
+    const allMerged = getMergedShowcaseBooks();
+    const currentShowcaseCount = allMerged.filter(o => o.isShowcase).length;
+    await saveAdminCoverOverride({
+      ...override,
+      isShowcase: newStatus,
+      orderIndex: newStatus ? (currentShowcaseCount + 1) : undefined
+    });
+    setCoverOverrides({ ...getAdminCoverOverrides() });
+    showToast(newStatus ? 'تم تفعيل ظهور الكتاب في الصفحة الرئيسية ⭐' : 'تم إخفاء الكتاب من الصفحة الرئيسية (مخفي للزوار)', 'info');
+  };
+
+  const handleExportShowcaseConfig = () => {
+    const allBooks = getMergedShowcaseBooks();
+    const configMap: Record<number, AdminCoverOverride> = {};
+    allBooks.forEach(b => {
+      configMap[b.bookId] = b;
+    });
+
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(configMap, null, 2));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", "showcase_config.json");
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+    showToast('تم تصدير ملف showcase_config.json للـ Deploy بنجاح! 💾', 'success');
+  };
+
+  const handleImportShowcaseConfig = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (evt) => {
+      try {
+        const parsed = JSON.parse(evt.target?.result as string);
+        if (parsed && typeof parsed === 'object') {
+          const arr = Object.values(parsed) as AdminCoverOverride[];
+          arr.forEach(b => unmarkShowcaseBookDeleted(b.bookId));
+          await reorderShowcaseBooks(arr);
+          setCoverOverrides({ ...getAdminCoverOverrides() });
+          showToast(`تم استيراد وتطبيق ${arr.length} كتاب بنجاح! 🎉`, 'success');
+        }
+      } catch (err) {
+        showToast('فشل قراءة ملف الـ JSON، تأكد من سلامة الملف', 'error');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
+  const handleRestoreDeletedShowcaseBooks = () => {
+    clearDeletedShowcaseIds();
+    setCoverOverrides({ ...getAdminCoverOverrides() });
+    showToast('تمت استعادة جميع الكتب المحذوفة بنجاح ✨', 'success');
+  };
+
+  const handleClearAllShowcaseBooks = () => {
+    setConfirmDialog({
+      isOpen: true,
+      title: 'إفراغ قائمة كتب الواجهة',
+      message: 'هل أنت متأكد من مسح جميع كتب الواجهة؟ ستصبح القائمة فارغة تماماً لتضيف كتبك الخاصة فقط.',
+      type: 'danger',
+      onConfirm: () => {
+        clearAllAdminCoverOverrides();
+        setCoverOverrides({});
+        setSelectedBookForCover(null);
+        showToast('تم إفراغ قائمة الواجهة بنجاح ✨ أضف كتبك الآن من شريط البحث', 'success');
+      }
+    });
+  };
+
+  const handleLoadDefaultClassicalBooks = () => {
+    setConfirmDialog({
+      isOpen: true,
+      title: 'تحميل الكتب الكلاسيكية الافتراضية',
+      message: 'هل تريد تحميل الـ 25 كتاب كلاسيكي الافتراضي إلى قائمتك لتعديلها أو حذف ما لا تريده؟',
+      type: 'warning',
+      onConfirm: () => {
+        const defaultMap: Record<number, AdminCoverOverride> = {};
+        FEATURED_CLASSICAL_BOOKS.forEach((cb, idx) => {
+          defaultMap[cb.id] = {
+            bookId: cb.id,
+            bookTitle: cb.title,
+            bookAuthor: cb.author,
+            category: cb.categoryLabel || cb.category,
+            defaultCategory: cb.categoryLabel || cb.category,
+            coverSource: String(cb.id),
+            resolvedCoverUrl: cb.coverUrl,
+            isShowcase: true,
+            orderIndex: idx + 1
+          };
+        });
+        setAllAdminCoverOverrides(defaultMap);
+        setCoverOverrides(defaultMap);
+        showToast('تم تحميل الكتب الكلاسيكية الافتراضية بنجاح! يمكنك الآن تعديل أي كتاب أو حذفه', 'success');
+      }
+    });
+  };
+
+  const handleResetSelectedBookCustomization = () => {
+    if (!selectedBookForCover) return;
+    const bookId = selectedBookForCover.id;
+    removeAdminCoverOverride(bookId);
+    setCoverOverrides({ ...getAdminCoverOverrides() });
+    setCoverSourceInput(String(bookId));
+    setPreviewCoverUrl('');
+    setCustomCategoryInput(selectedBookForCover.cat_name || 'عام');
+    setIsShowcaseInput(true);
+    showToast(`تم مسح تخصيص كتاب "${selectedBookForCover.name}" والبدء من جديد`, 'info');
+  };
+
+  const renderCoversTab = () => {
+    const catalogPool = (allCatalogBooksRef.current && allCatalogBooksRef.current.length > 0)
+      ? allCatalogBooksRef.current
+      : publishedBooksList;
+
+    const searchHits = coverSearchInput.trim().length >= 2
+      ? catalogPool.filter(b => {
+        const q = coverSearchInput.trim().toLowerCase();
+        return (b.name || '').toLowerCase().includes(q) || (b.author_name || '').toLowerCase().includes(q) || String(b.id) === q;
+      }).slice(0, 10)
+      : [];
+
+    const allManagedBooks = getMergedShowcaseBooks();
+    const showcaseList = allManagedBooks
+      .filter(o => o.isShowcase)
+      .sort((a, b) => (a.orderIndex ?? 9999) - (b.orderIndex ?? 9999));
+    const hiddenList = allManagedBooks.filter(o => !o.isShowcase);
+
+    const displayedBooks = coverTabFilter === 'showcase' 
+      ? showcaseList 
+      : coverTabFilter === 'hidden'
+      ? hiddenList
+      : allManagedBooks;
+
+    // Distinct popular categories suggestions
+    const popularCategoriesSuggestions = [
+      'الحديث الشريف', 'الفقه وأصوله', 'العقيدة الإسلامية',
+      'علوم القرآن والتفسير', 'السيرة والتاريخ', 'الرقائق والآداب',
+      'المعاجم واللغة', 'أصول الفقه المقارن', 'القواعد الفقهية'
+    ];
+
+    return (
+      <div className="space-y-8 pb-20 animate-in fade-in duration-300">
+        {/* Header */}
+        <div className="border-b border-slate-200 dark:border-white/10 pb-6">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+              <ImageIcon className="h-6 w-6" />
+            </div>
+            <h2 className="text-3xl font-bold text-slate-800 dark:text-white">إدارة وتخصيص أغلفة الكتب والواجهة</h2>
+          </div>
+          <p className="text-muted-foreground text-sm leading-relaxed">
+            تحكم كامل في الكتب المعروضة في واجهة "أبرز كتب المكتبة"، ترتيب ظهورها الدقيق، تخصيص أسماء المجالات والأقسام مع اعتماد القسم الأصلي للكتاب كافتراضي، وربط الأغلفة بمعرّفات التراث أو الوقفية أو الروابط المباشرة.
+          </p>
+        </div>
+
+        {/* Step 1: Book Selection Search */}
+        <div className="bg-white dark:bg-[#121826] p-6 rounded-3xl border border-slate-200 dark:border-white/10 shadow-sm space-y-4">
+          <label className="block text-sm font-bold text-slate-700 dark:text-slate-200">
+            1. ابحث واختر كتاباً لتخصيص غلافه ومجاله وترتيبه:
+          </label>
+          <div className="relative">
+            <Search className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
+            <input
+              type="text"
+              placeholder="ابحث باسم الكتاب أو مؤلفه أو رقمه (مثال: المغني، عمدة الفقه، صحيح البخاري، 6910)..."
+              value={coverSearchInput}
+              onChange={(e) => setCoverSearchInput(e.target.value)}
+              className="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-2xl py-3.5 pr-12 pl-4 text-sm font-semibold outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all placeholder:text-muted-foreground"
+            />
+            {coverSearchInput && (
+              <button
+                onClick={() => setCoverSearchInput('')}
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground"
+              >
+                مسح
+              </button>
+            )}
+          </div>
+
+          {/* Autocomplete Search Results Dropdown/List */}
+          {searchHits.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 pt-2 max-h-72 overflow-y-auto">
+              {searchHits.map((b) => {
+                const isSelected = selectedBookForCover?.id === b.id;
+                const hasCustomCover = !!coverOverrides[b.id];
+                return (
+                  <button
+                    key={b.id}
+                    onClick={() => {
+                      handleSelectBookForCover(b);
+                      setCoverSearchInput('');
+                    }}
+                    className={`flex items-center justify-between p-3.5 rounded-2xl border text-right transition-all ${
+                      isSelected
+                        ? 'border-emerald-500 bg-emerald-500/10 shadow-sm'
+                        : 'border-slate-200 dark:border-white/5 hover:border-emerald-500/40 hover:bg-slate-50 dark:hover:bg-white/5'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-white/10 flex items-center justify-center shrink-0 text-slate-500">
+                        <Book className="h-4 w-4" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-bold text-sm text-slate-800 dark:text-slate-100 truncate">{b.name}</p>
+                        <p className="text-xs text-muted-foreground truncate">{b.author_name || 'مؤلف غير معروف'} • ID: {b.id} • {b.cat_name || 'عام'}</p>
+                      </div>
+                    </div>
+                    {hasCustomCover && (
+                      <span className="text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-md font-bold shrink-0 mr-2">
+                        مخصص
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Step 2: Cover Configuration Panel (Active Book) */}
+        {selectedBookForCover ? (
+          <div className="bg-white dark:bg-[#121826] p-6 sm:p-8 rounded-3xl border-2 border-emerald-500/30 shadow-xl space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-white/10 pb-4">
+              <div>
+                <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full">
+                  الكتاب المحدد حالياً للتعديل
+                </span>
+                <h3 className="text-2xl font-bold text-slate-800 dark:text-white mt-1">{selectedBookForCover.name}</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  المؤلف: <span className="font-semibold text-slate-700 dark:text-slate-300">{selectedBookForCover.author_name || 'غير معروف'}</span> • 
+                  القسم الأصلي: <span className="font-semibold text-emerald-600 dark:text-emerald-400">{selectedBookForCover.cat_name || 'عام'}</span> • 
+                  معرّف الكتاب (ID): <span className="font-mono font-bold text-slate-700 dark:text-slate-300">{selectedBookForCover.id}</span>
+                </p>
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
+                {coverOverrides[selectedBookForCover.id] && (
+                  <button
+                    type="button"
+                    onClick={handleResetSelectedBookCustomization}
+                    className="text-xs bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 px-3 py-1.5 rounded-xl border border-red-500/20 font-bold transition-all flex items-center gap-1"
+                    title="مسح تخصيص هذا الكتاب والبدء من جديد"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>مسح تخصيص هذا الكتاب</span>
+                  </button>
+                )}
+                <button
+                  onClick={() => setSelectedBookForCover(null)}
+                  className="text-xs text-muted-foreground hover:text-red-500 self-start sm:self-center font-semibold"
+                >
+                  إلغاء التحديد &times;
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              {/* Form Controls (7 cols) */}
+              <div className="lg:col-span-7 space-y-5">
+                {/* 1. Cover ID / Source */}
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-1.5">
+                    1. معرّف أو مصدر الغلاف (Turath ID / Archive ID / Image URL):
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="مثال: 6910 أو 01-86049 أو WAQmogni أو رابط صورة https://..."
+                    value={coverSourceInput}
+                    onChange={(e) => setCoverSourceInput(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-2xl py-3 px-4 text-sm font-mono font-semibold outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all placeholder:text-muted-foreground"
+                  />
+                  <div className="flex flex-wrap items-center gap-2 mt-2">
+                    <span className="text-xs text-muted-foreground">اختصارات:</span>
+                    <button
+                      type="button"
+                      onClick={() => setCoverSourceInput(String(selectedBookForCover.id))}
+                      className="text-xs bg-slate-100 dark:bg-white/5 hover:bg-emerald-500/10 hover:text-emerald-500 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-white/10 transition-colors font-mono"
+                    >
+                      استخدام ID الكتاب ({selectedBookForCover.id})
+                    </button>
+                  </div>
+                </div>
+
+                {/* 2. Custom Domain / Category Name */}
+                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 space-y-2.5">
+                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                    <label className="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1.5">
+                      <Tag className="w-4 h-4 text-emerald-500" />
+                      <span>2. اسم المجال / القسم العلمي للكتاب:</span>
+                    </label>
+                    {customCategoryInput !== selectedBookForCover.cat_name && (
+                      <button
+                        type="button"
+                        onClick={() => setCustomCategoryInput(selectedBookForCover.cat_name || 'عام')}
+                        className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline font-semibold flex items-center gap-1"
+                        title="إعادة تعيين للمجال الأصلي"
+                      >
+                        <RefreshCw className="w-3 h-3" />
+                        <span>استعادة المجال الأصلي ({selectedBookForCover.cat_name || 'عام'})</span>
+                      </button>
+                    )}
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="اكتب اسم المجال المخصص أو اختر من المقترحات أدناه..."
+                    value={customCategoryInput}
+                    onChange={(e) => setCustomCategoryInput(e.target.value)}
+                    className="w-full bg-white dark:bg-[#121826] border border-slate-200 dark:border-white/10 rounded-xl py-2.5 px-3 text-sm font-semibold outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all placeholder:text-muted-foreground"
+                  />
+                  <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                    <span className="text-[11px] text-muted-foreground ml-1">مقترحات شائعة:</span>
+                    {popularCategoriesSuggestions.slice(0, 5).map((catName) => (
+                      <button
+                        key={catName}
+                        type="button"
+                        onClick={() => setCustomCategoryInput(catName)}
+                        className={`text-[11px] px-2.5 py-1 rounded-lg border transition-all ${
+                          customCategoryInput === catName
+                            ? 'bg-emerald-500 text-white border-emerald-500 shadow-xs'
+                            : 'bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:border-emerald-500/40'
+                        }`}
+                      >
+                        {catName}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 3. Display Order Index */}
+                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 flex items-center justify-between gap-4">
+                  <div className="space-y-0.5">
+                    <label className="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1.5">
+                      <SlidersHorizontal className="w-4 h-4 text-emerald-500" />
+                      <span>3. ترتيب ظهور الكتاب بالواجهة:</span>
+                    </label>
+                    <p className="text-xs text-muted-foreground">
+                      الرقم 1 يظهر كأول كتاب في شبكة أبرز الكتب بالصفحة الرئيسية، يليه 2، 3 وهكذا.
+                    </p>
+                  </div>
+                  <input
+                    type="number"
+                    min="1"
+                    max="999"
+                    value={orderIndexInput}
+                    onChange={(e) => setOrderIndexInput(Math.max(1, parseInt(e.target.value, 10) || 1))}
+                    className="w-20 bg-white dark:bg-[#121826] border border-slate-200 dark:border-white/10 rounded-xl py-2 px-3 text-center text-sm font-bold font-mono outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+                  />
+                </div>
+
+                {/* 4. Showcase Switch */}
+                <div className="flex items-center justify-between p-4 rounded-2xl bg-amber-500/5 border border-amber-500/20">
+                  <div className="flex items-center gap-3">
+                    <Star className={`h-5 w-5 ${isShowcaseInput ? 'fill-amber-500 text-amber-500' : 'text-slate-400'}`} />
+                    <div>
+                      <p className="text-sm font-bold text-slate-800 dark:text-slate-200">تثبيت في "أبرز كتب المكتبة"</p>
+                      <p className="text-xs text-muted-foreground">يظهر الكتاب في الصفحة الرئيسية بالمجال المحدد وترتيب الظهور المعين.</p>
+                    </div>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={isShowcaseInput}
+                    onChange={(e) => setIsShowcaseInput(e.target.checked)}
+                    className="w-5 h-5 accent-amber-500 rounded cursor-pointer"
+                  />
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex items-center gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={handleTestPreviewCover}
+                    disabled={isPreviewLoading || !coverSourceInput.trim()}
+                    className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 font-bold text-sm text-slate-700 dark:text-slate-200 transition-all disabled:opacity-50"
+                  >
+                    {isPreviewLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Eye className="h-4 w-4" />}
+                    <span>معاينة وفحص الغلاف</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleSaveCoverConfig}
+                    disabled={isSavingCover || !coverSourceInput.trim()}
+                    className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-sm shadow-lg shadow-emerald-600/20 transition-all disabled:opacity-50"
+                  >
+                    {isSavingCover ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                    <span>حفظ وتطبيق التعديلات</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Live Preview Box (5 cols) */}
+              <div className="lg:col-span-5 flex flex-col items-center">
+                <span className="text-xs font-bold text-muted-foreground mb-2 flex items-center gap-1.5">
+                  <Eye className="h-3.5 w-3.5" /> المعاينة الحية للغلاف
+                </span>
+                <div className="w-full max-w-[220px] aspect-[1/1.4] rounded-2xl overflow-hidden shadow-2xl border border-slate-300 dark:border-white/10 bg-stone-100 dark:bg-black/40 flex items-center justify-center relative p-1.5">
+                  {isPreviewLoading ? (
+                    <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
+                      <Loader2 className="h-8 w-8 animate-spin text-emerald-500" />
+                      <span className="text-xs font-semibold">جاري جلب الغلاف...</span>
+                    </div>
+                  ) : previewCoverUrl ? (
+                    <img
+                      src={previewCoverUrl}
+                      alt={selectedBookForCover.name}
+                      className="w-full h-full object-contain rounded-xl shadow-inner"
+                      onError={() => {
+                        setPreviewCoverUrl('');
+                        showToast('فشل تحميل صورة الغلاف من هذا الرابط/المعرف', 'error');
+                      }}
+                    />
+                  ) : (
+                    <div className="text-center p-4 text-muted-foreground">
+                      <ImageIcon className="h-10 w-10 mx-auto mb-2 opacity-30" />
+                      <p className="text-xs font-bold">لا يوجد غلاف معروض حالياً</p>
+                      <p className="text-[10px] mt-1 opacity-70">أدخل معرّف تراث أو رابط الغلاف واضغط "معاينة"</p>
+                    </div>
+                  )}
+                </div>
+                {previewCoverUrl && (
+                  <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold mt-2 flex items-center gap-1">
+                    <CheckCircle className="h-3.5 w-3.5" /> الغلاف جاهز ومعتمد
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="border-2 border-dashed border-slate-200 dark:border-white/10 rounded-3xl p-10 text-center bg-white/40 dark:bg-black/10">
+            <ImageIcon className="h-12 w-12 mx-auto text-emerald-500/40 mb-3" />
+            <h4 className="text-lg font-bold text-slate-700 dark:text-slate-200 mb-1">لم يتم اختيار أي كتاب للتعديل بعد</h4>
+            <p className="text-xs text-muted-foreground max-w-md mx-auto">
+              استخدم شريط البحث أعلاه أو انقر على زر "تعديل" لأي كتاب من القائمة أدناه للتحكم في غلافه ومجاله وترتيبه.
+            </p>
+          </div>
+        )}
+
+        {/* Step 3: Customized & Showcase Books Table/Grid */}
+        <div className="space-y-4">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+            <h3 className="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
+              <span>قائمة الكتب والتحكم في الترتيب</span>
+              <span className="text-xs bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2.5 py-0.5 rounded-full font-mono">
+                {displayedBooks.length}
+              </span>
+            </h3>
+
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Filter Pills: All vs Showcase vs Hidden */}
+              <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-white/5 p-1 rounded-xl border border-slate-200 dark:border-white/10">
+                <button
+                  type="button"
+                  onClick={() => setCoverTabFilter('all')}
+                  className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${
+                    coverTabFilter === 'all'
+                      ? 'bg-emerald-600 text-white shadow-xs'
+                      : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
+                  }`}
+                >
+                  <Layers className="w-3.5 h-3.5" />
+                  <span>جميع الكتب ({allManagedBooks.length})</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCoverTabFilter('showcase')}
+                  className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${
+                    coverTabFilter === 'showcase'
+                      ? 'bg-amber-500 text-white shadow-xs'
+                      : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
+                  }`}
+                >
+                  <Star className="w-3.5 h-3.5 fill-current" />
+                  <span>معروض بالواجهة ({showcaseList.length})</span>
+                </button>
+                {hiddenList.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setCoverTabFilter('hidden')}
+                    className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${
+                      coverTabFilter === 'hidden'
+                        ? 'bg-slate-700 text-white shadow-xs'
+                        : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
+                    }`}
+                  >
+                    <span>مخفي ({hiddenList.length})</span>
+                  </button>
+                )}
+              </div>
+
+              {/* Clear All, Load Defaults, Export, Import */}
+              <div className="flex items-center gap-1.5 flex-wrap">
+                {allManagedBooks.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={handleClearAllShowcaseBooks}
+                    className="px-3 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/20 font-bold text-xs flex items-center gap-1.5 transition-all shadow-xs"
+                    title="مسح جميع كتب الواجهة والبدء من الصفر"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>إفراغ القائمة</span>
+                  </button>
+                )}
+
+                {allManagedBooks.length === 0 && (
+                  <button
+                    type="button"
+                    onClick={handleLoadDefaultClassicalBooks}
+                    className="px-3 py-1.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/20 font-bold text-xs flex items-center gap-1.5 transition-all shadow-xs"
+                    title="تحميل الكتب الكلاسيكية الـ 25 الافتراضية"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span>تحميل الافتراضيات (25 كتاب)</span>
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={handleExportShowcaseConfig}
+                  className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-white/5 hover:bg-emerald-500/15 hover:text-emerald-600 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/10 font-bold text-xs flex items-center gap-1.5 transition-all shadow-xs"
+                  title="تصدير ملف showcase_config.json لحفظه في المشروع للـ Deploy"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>تصدير للـ Deploy</span>
+                </button>
+
+                <label
+                  className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-white/5 hover:bg-blue-500/15 hover:text-blue-600 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/10 font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
+                  title="استيراد ملف showcase_config.json"
+                >
+                  <Upload className="w-3.5 h-3.5" />
+                  <span>استيراد</span>
+                  <input
+                    type="file"
+                    accept=".json"
+                    onChange={handleImportShowcaseConfig}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Explanation banner for Reordering */}
+          {coverTabFilter === 'showcase' && showcaseList.length > 0 && (
+            <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-800 dark:text-amber-300 text-xs flex items-center gap-2 font-semibold">
+              <span className="text-base">💡</span>
+              <span>يمكنك تحريك أي كتاب لأعلى (⬆️) أو لأسفل (⬇️) لتقديم أو تأخير ظهوره في شبكة الصفحة الرئيسية فوراً.</span>
+            </div>
+          )}
+
+          {displayedBooks.length === 0 ? (
+            <div className="text-center py-12 border border-slate-200 dark:border-white/10 rounded-2xl bg-white dark:bg-[#121826] text-muted-foreground text-sm">
+              {allManagedBooks.length === 0
+                ? 'القائمة فارغة حالياً. ابحث عن أي كتاب من شريط البحث أعلاه لإضافته، أو اضغط "تحميل الافتراضيات".'
+                : 'لا توجد كتب تطابق هذا التبويب.'}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {displayedBooks.map((ov, index) => {
+                const isCustomDomain = ov.category && ov.defaultCategory && ov.category !== ov.defaultCategory;
+
+                return (
+                  <div
+                    key={ov.bookId}
+                    className="bg-white dark:bg-[#121826] border border-slate-200 dark:border-white/10 rounded-2xl p-4 flex flex-col justify-between shadow-xs hover:shadow-md transition-all gap-3 relative group"
+                  >
+                    {/* Top Row: Rank indicator + Up/Down arrows */}
+                    <div className="flex items-center justify-between gap-2 border-b border-slate-100 dark:border-white/5 pb-2">
+                      <div className="flex items-center gap-1.5">
+                        {ov.isShowcase ? (
+                          <>
+                            <span className="text-xs font-mono font-black bg-gradient-to-r from-amber-500 to-amber-600 text-white px-2 py-0.5 rounded-md shadow-xs">
+                              #{ov.orderIndex ?? (index + 1)}
+                            </span>
+                            <span className="text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded font-bold border border-emerald-500/20">
+                              معروض بالواجهة
+                            </span>
+                          </>
+                        ) : (
+                          <span className="text-[10px] bg-slate-500/10 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded font-bold border border-slate-500/20">
+                            مخفي من الواجهة
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Reorder Buttons (Move Up / Move Down) */}
+                      {ov.isShowcase && (
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => handleMoveShowcaseBook(ov.bookId, 'up')}
+                            disabled={index === 0}
+                            className="p-1 rounded-lg bg-slate-100 dark:bg-white/5 hover:bg-amber-500/20 hover:text-amber-600 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                            title="تقديم الكتاب للأمام (تحريك لأعلى)"
+                          >
+                            <ArrowUp className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleMoveShowcaseBook(ov.bookId, 'down')}
+                            disabled={index === displayedBooks.length - 1}
+                            className="p-1 rounded-lg bg-slate-100 dark:bg-white/5 hover:bg-amber-500/20 hover:text-amber-600 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                            title="تأخير الكتاب للخلف (تحريك لأسفل)"
+                          >
+                            <ArrowDown className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Book Metadata & Cover */}
+                    <div className="flex items-start gap-3">
+                      <div className="w-16 aspect-[1/1.4] rounded-lg overflow-hidden bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-white/10 shrink-0 flex items-center justify-center p-0.5 shadow-sm">
+                        {ov.resolvedCoverUrl ? (
+                          <img src={ov.resolvedCoverUrl} alt={ov.bookTitle} className="w-full h-full object-contain rounded" />
+                        ) : (
+                          <Book className="h-6 w-6 text-slate-400" />
+                        )}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-bold text-sm text-slate-800 dark:text-slate-100 line-clamp-2">{ov.bookTitle || `كتاب رقم ${ov.bookId}`}</p>
+                        <p className="text-xs text-muted-foreground truncate mt-0.5">{ov.bookAuthor || 'مؤلف غير معروف'}</p>
+                        
+                        {/* Domain Tag */}
+                        <div className="mt-2 flex items-center gap-1 flex-wrap">
+                          <span className="text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded font-bold border border-emerald-500/20 flex items-center gap-1 truncate">
+                            <Tag className="w-2.5 h-2.5" />
+                            <span>{ov.category || 'عام'}</span>
+                          </span>
+                          {isCustomDomain && (
+                            <span className="text-[9px] bg-purple-500/10 text-purple-600 dark:text-purple-400 px-1.5 py-0.5 rounded font-bold">
+                              مخصص
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Bottom Actions */}
+                    <div className="pt-2 border-t border-slate-100 dark:border-white/5 flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const target = catalogPool.find(b => b.id === ov.bookId) || {
+                              id: ov.bookId,
+                              name: ov.bookTitle || `كتاب ${ov.bookId}`,
+                              author_name: ov.bookAuthor,
+                              cat_name: ov.defaultCategory || ov.category
+                            };
+                            handleSelectBookForCover(target);
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                          }}
+                          className="text-emerald-600 dark:text-emerald-400 font-bold hover:underline"
+                        >
+                          تعديل
+                        </button>
+                        <span className="text-slate-300 dark:text-slate-700">•</span>
+                        <button
+                          type="button"
+                          onClick={() => handleToggleShowcaseDirect(ov)}
+                          className={`font-semibold transition-colors ${
+                            ov.isShowcase
+                              ? 'text-slate-500 hover:text-amber-600'
+                              : 'text-emerald-600 hover:text-emerald-700 font-bold'
+                          }`}
+                          title={ov.isShowcase ? 'إخفاء من الصفحة الرئيسية للزوار' : 'إظهار في الصفحة الرئيسية للزوار'}
+                        >
+                          {ov.isShowcase ? 'إخفاء من الواجهة' : 'إظهار بالواجهة'}
+                        </button>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveCoverOverride(ov.bookId, ov.bookTitle)}
+                        className="text-red-500 hover:text-red-700 font-semibold flex items-center gap-1"
+                        title="حذف الكتاب نهائياً من القائمة"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>حذف نهائي</span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div dir="rtl" className="min-h-screen bg-slate-50 dark:bg-[#0a0514] text-slate-900 dark:text-slate-100 font-sans flex">
 
@@ -1037,6 +1971,23 @@ export default function AdminLibrary({ onExit, onNavigateToIngestion }: AdminLib
             </span>
           </button>
 
+          <button
+            onClick={() => setActiveTab('covers')}
+            className={`w-full flex items-center justify-between p-3.5 rounded-xl transition-all font-semibold ${activeTab === 'covers'
+                ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md'
+                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5'
+              }`}
+          >
+            <div className="flex items-center gap-3">
+              <ImageIcon className="h-5 w-5 text-emerald-400" />
+              تخصيص الأغلفة والواجهة
+            </div>
+            <span className={`text-xs px-2.5 py-1 rounded-full ${activeTab === 'covers' ? 'bg-white/20 text-white' : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+              }`}>
+              {getMergedShowcaseBooks().filter(b => b.isShowcase).length}
+            </span>
+          </button>
+
           {onNavigateToIngestion && (
             <button
               onClick={onNavigateToIngestion}
@@ -1066,7 +2017,7 @@ export default function AdminLibrary({ onExit, onNavigateToIngestion }: AdminLib
       {/* Main Content Area */}
       <main className="flex-1 h-screen overflow-y-auto p-8 relative scroll-smooth">
         <div className="max-w-5xl mx-auto">
-          {activeTab === 'add' ? renderAddTab() : activeTab === 'manage' ? renderManageTab() : renderFeaturedTab()}
+          {activeTab === 'add' ? renderAddTab() : activeTab === 'manage' ? renderManageTab() : activeTab === 'featured' ? renderFeaturedTab() : renderCoversTab()}
         </div>
       </main>
     </div>

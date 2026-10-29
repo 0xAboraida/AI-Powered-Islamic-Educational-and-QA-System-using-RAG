@@ -156,6 +156,15 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
   }, [])
 
   const handleSelectSavedSession = async (sess: StudySessionDto) => {
+    if (sess.chunkId && sess.chunkId.startsWith('turath_')) {
+      await executeChunkSelect(
+        sess.chunkId,
+        sess.sectionTitle || sess.bookTitle,
+        sess.domain || sess.bookTitle
+      )
+      return
+    }
+
     setCurrentChunkId(sess.chunkId)
     setChunkTitle(sess.bookTitle || 'جلسة دراسية')
     setHeaderSubtitle(sess.sectionTitle || sess.domain || '')
@@ -525,8 +534,8 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
 
         if (headings && headings.length > 0) {
           const chapters = convertTurathHeadingsToTree(headings, turathId, bookNode.title)
-          // 3. Cache in IndexedDB with authentic headings AND metadata!
-          await idbSetTurathBookTree(turathId, { children: chapters, meta: data?.meta })
+          // 3. Cache in IndexedDB with authentic headings, indexes, AND metadata!
+          await idbSetTurathBookTree(turathId, { children: chapters, meta: data?.meta, indexes: data?.indexes })
           // 4. Update state in memory tree
           setTreeData(prev => updateBookInTree(prev, bookNode.title, chapters, turathId))
           return chapters
@@ -703,7 +712,7 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
               if (cachedBookData?.children && cachedBookData.children.length > 0) {
                 bookChapters = cachedBookData.children
               }
-            } catch {}
+            } catch { }
           }
           if (bookChapters) {
             const flattenNodes = (nodes: TreeNode[]): TreeNode[] => {
@@ -854,6 +863,48 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
             hierarchy: resolvedHierarchy,
             source_url: sourceUrl
           })
+
+          // Start or resume session in Backend SQL database so it's recorded in Study History
+          try {
+            const session = await studyApi.startSession(
+              chunkId,
+              resolvedBookTitle,
+              resolvedDomain || fullPath,
+              title
+            )
+            if (session && session.id) {
+              setActiveSessionId(session.id)
+
+              // Load existing chat messages for this session if any
+              const savedMessages = await studyApi.getSessionMessages(session.id).catch(() => [])
+              if (savedMessages && savedMessages.length > 0) {
+                const uiMsgs = savedMessages.map(m => {
+                  let cleanText = m.content
+                  if (m.role === 'user') {
+                    if (cleanText.includes('ملاحظات حتمية للعمل') || cleanText.includes('أنا كطالب أود البدء في دراسة درس')) {
+                      cleanText = 'أود الحصول على خطة تفاعلية لمذاكرة هذا الدرس.'
+                    } else if (cleanText.includes('أنا كطالب أود الحصول على تلخيص مركز وشامل لدرس')) {
+                      cleanText = 'أود الحصول على تلخيص مركز ومُتوازن لهذا الدرس (لا إفراط ولا تفريط).'
+                    } else if (cleanText.includes('مرحباً يا زاد، أود فتح باب النقاش المباشر والأسئلة حول درس')) {
+                      cleanText = 'أود بدء التحاور المباشر مع زاد وطرح أسئلتي في هذا الدرس.'
+                    }
+                  } else {
+                    const { cleanText: parsed } = studyPlanManager.parseLLMResponse(cleanText, session.id, true)
+                    cleanText = parsed
+                  }
+                  return {
+                    id: m.id.toString(),
+                    role: (m.role === 'user' ? 'user' : 'tutor') as 'user' | 'tutor',
+                    text: cleanText
+                  }
+                })
+                setMessages(uiMsgs)
+                setChatHistory(savedMessages.map(m => ({ role: m.role, content: m.content })))
+              }
+            }
+          } catch (err) {
+            console.warn('Backend study session start for Turath failed:', err)
+          }
         } else {
           setChunkText('تعذر تحميل الفصل من مكتبة تراث، يرجى التحقق من الاتصال بالإنترنت.')
         }
@@ -872,7 +923,7 @@ export default function StudyMode({ onExit }: { onExit: () => void }) {
       // Start or resume session in Backend SQL database
       let currentSessionId: number | null = null
       try {
-        const session = await studyApi.startSession(chunkId, title, fullPath)
+        const session = await studyApi.startSession(chunkId, title, fullPath, title)
         if (session && session.id) {
           currentSessionId = session.id
           setActiveSessionId(session.id)
@@ -1774,7 +1825,7 @@ ${typesGuide.join('\n')}
               title={isDocumentOpen ? 'النص الأصلي' : 'فتح النص الأصلي'}
             >
               <BookOpen size={16} className="text-sky-500 shrink-0 stroke-[2.2]" />
-              <span>النص الأصلي</span>
+              <span>نص الدرس</span>
             </button>
 
             {/* 3. المحادثة */}

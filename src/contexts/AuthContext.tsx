@@ -6,6 +6,7 @@ export interface User {
   email: string
   name?: string
   role?: string
+  avatarUrl?: string
 }
 
 interface AuthContextType {
@@ -15,6 +16,7 @@ interface AuthContextType {
   isLoading: boolean
   login: (token: string, userData: User) => void
   logout: () => void
+  updateUser: (updatedData: Partial<User>) => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -44,6 +46,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (token) {
+      // Sync fresh user profile (avatar, name, role) from server
+      apiClient<User>('/api/user/profile')
+        .then((freshUser) => {
+          if (freshUser) {
+            updateUser({
+              name: freshUser.name,
+              avatarUrl: freshUser.avatarUrl,
+              role: freshUser.role,
+            })
+          }
+        })
+        .catch(() => {})
+
       // Prefetch sessions into cache for instant history loading without waiting
       apiClient('/api/Chat/sessions').catch(() => {})
       apiClient('/api/study/sessions').catch(() => {})
@@ -57,12 +72,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('zad_user', JSON.stringify(userData))
   }
 
+  const updateUser = (updatedData: Partial<User>) => {
+    setUser((prev) => {
+      if (!prev) return null
+      const updated = { ...prev, ...updatedData }
+      localStorage.setItem('zad_user', JSON.stringify(updated))
+      return updated
+    })
+  }
+
   const logout = () => {
     setToken(null)
     setUser(null)
     localStorage.removeItem('zad_token')
     localStorage.removeItem('zad_user')
-    // Optional: clear other study sessions if needed, but we might want to keep offline study data
   }
 
   return (
@@ -74,6 +97,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isLoading,
         login,
         logout,
+        updateUser,
       }}
     >
       {children}

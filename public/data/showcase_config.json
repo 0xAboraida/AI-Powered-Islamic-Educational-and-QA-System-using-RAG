@@ -1,0 +1,110 @@
+{
+  "587": {
+    "bookId": 587,
+    "bookTitle": "المدونة",
+    "bookAuthor": "مالك بن أنس",
+    "category": "الفقه المالكي",
+    "defaultCategory": "الفقه المالكي",
+    "coverSource": "587",
+    "resolvedCoverUrl": "https://archive.org/services/img/feqhmaliki05",
+    "isShowcase": true,
+    "orderIndex": 7,
+    "updatedAt": 1792339469442
+  },
+  "622": {
+    "bookId": 622,
+    "bookTitle": "كشاف القناع عن متن الإقناع - ط وزارة العدل",
+    "bookAuthor": "البهوتي",
+    "category": "الفقه الحنبلي",
+    "defaultCategory": "الفقه الحنبلي",
+    "coverSource": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRcwnxR30A1FHwjSxim_qkI-4XU2WViToP_AIXKAuQivA&s=10",
+    "resolvedCoverUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRcwnxR30A1FHwjSxim_qkI-4XU2WViToP_AIXKAuQivA&s=10",
+    "isShowcase": true,
+    "orderIndex": 12,
+    "updatedAt": 1792346147320
+  },
+  "1503": {
+    "bookId": 1503,
+    "bookTitle": "تفسير ابن كثير - ط ابن الجوزي",
+    "bookAuthor": "ابن كثير",
+    "category": "التفسير",
+    "defaultCategory": "التفسير",
+    "coverSource": "1503",
+    "resolvedCoverUrl": "https://archive.org/services/img/ibnkatheer_jawzee",
+    "isShowcase": true,
+    "orderIndex": 13,
+    "updatedAt": 1792346347477
+  },
+  "1655": {
+    "bookId": 1655,
+    "bookTitle": "الأم للشافعي - ط الفكر",
+    "bookAuthor": "الشافعي",
+    "category": "الفقه الشافعي",
+    "defaultCategory": "الفقه الشافعي",
+    "coverSource": "1655",
+    "resolvedCoverUrl": "https://archive.org/services/img/ommfikr",
+    "isShowcase": true,
+    "orderIndex": 3,
+    "updatedAt": 1792333162895
+  },
+  "2186": {
+    "bookId": 2186,
+    "bookTitle": "المجموع شرح المهذب - ط المنيرية",
+    "bookAuthor": "النووي",
+    "category": "الفقه الشافعي",
+    "defaultCategory": "الفقه الشافعي",
+    "coverSource": "2186",
+    "resolvedCoverUrl": "https://archive.org/services/img/mjmsbkmte",
+    "isShowcase": true,
+    "orderIndex": 9,
+    "updatedAt": 1792341969948
+  },
+  "8180": {
+    "bookId": 8180,
+    "bookTitle": "الرسالة للشافعي",
+    "bookAuthor": "الشافعي",
+    "category": "أصول الفقه",
+    "defaultCategory": "أصول الفقه",
+    "coverSource": "8180",
+    "resolvedCoverUrl": "https://archive.org/services/img/rslshfe",
+    "isShowcase": true,
+    "orderIndex": 11,
+    "updatedAt": 1792344414836
+  },
+  "8463": {
+    "bookId": 8463,
+    "bookTitle": "المغني لابن قدامة - ط مكتبة القاهرة",
+    "bookAuthor": "ابن قدامة",
+    "category": "الفقه الحنبلي",
+    "defaultCategory": "الفقه الحنبلي",
+    "coverSource": "https://cdn.salla.sa/YvENm/23615923-081e-4e77-bfd7-fe01511228d7-703x1000-Y1Sg9SGNMhmkoYWs7RIeefi3Tpf0la0In62JdVyP.jpg",
+    "resolvedCoverUrl": "https://cdn.salla.sa/YvENm/23615923-081e-4e77-bfd7-fe01511228d7-703x1000-Y1Sg9SGNMhmkoYWs7RIeefi3Tpf0la0In62JdVyP.jpg",
+    "isShowcase": true,
+    "orderIndex": 1,
+    "updatedAt": 1792328644092
+  },
+  "9783": {
+    "bookId": 9783,
+    "bookTitle": "تاريخ الطبري = تاريخ الرسل والملوك، وصلة تاريخ الطبري",
+    "bookAuthor": "ابن جرير الطبري",
+    "category": "التاريخ",
+    "defaultCategory": "التاريخ",
+    "coverSource": "9783",
+    "resolvedCoverUrl": "/covers/tabari_history.jpg",
+    "isShowcase": true,
+    "orderIndex": 14,
+    "updatedAt": 1792346452695
+  },
+  "11230": {
+    "bookId": 11230,
+    "bookTitle": "زاد المستقنع في اختصار المقنع - ت العسكر",
+    "bookAuthor": "الحجاوي",
+    "category": "الفقه الحنبلي",
+    "defaultCategory": "الفقه الحنبلي",
+    "coverSource": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCigxKsy3_QrqpEj56ggfwCGwMCNDAmJft6IHbyJlZww&s=10",
+    "resolvedCoverUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCigxKsy3_QrqpEj56ggfwCGwMCNDAmJft6IHbyJlZww&s=10",
+    "isShowcase": true,
+    "orderIndex": 15,
+    "updatedAt": 1792346500000
+  }
+}

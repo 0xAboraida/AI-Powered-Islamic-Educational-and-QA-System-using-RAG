@@ -25,7 +25,6 @@ import { useSpeechRecognition, type Status } from './hooks/useSpeechRecognition'
 import { ChatHistoryDrawer } from './components/ChatHistoryDrawer'
 import { ChatInput } from './components/ChatInput'
 import { Bubble, TypingBubble } from './components/ChatBubble'
-import { TextSelectionToolbar } from '@/components/common/TextSelectionToolbar'
 import { BookProfileCard, type BookMeta } from './components/BookProfileCard'
 
 const FONT_OPTIONS = [
@@ -719,8 +718,6 @@ export default function ChatScreen({
           </div>
         </div>
       )}
-      {/* Floating Text Selection Audio & Copy Toolbar */}
-      <TextSelectionToolbar dark={dark} />
     </div>
   )
 }

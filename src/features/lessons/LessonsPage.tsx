@@ -8,51 +8,71 @@ interface LessonsPageProps {
   onNavigateToScholar: (id: string) => void;
   onNavigateToImporter?: () => void;
   onBack?: () => void;
+  hideHeader?: boolean;
 }
 
 export const LessonsPage: React.FC<LessonsPageProps> = ({ 
   onNavigateToScholar, 
   onNavigateToImporter, 
-  onBack 
+  onBack,
+  hideHeader = false,
 }) => {
   const scholars = getScholars();
 
   return (
-    <div className="min-h-screen bg-black text-white relative overflow-hidden flex flex-col" dir="rtl">
-      {/* Authentic Islamic Geometric Pattern in Subtle White */}
-      <IslamicPattern className="text-white pointer-events-none" opacity={0.06} />
+    <div className="min-h-screen bg-background text-foreground relative overflow-hidden flex flex-col" dir="rtl">
+      {/* Authentic Islamic Geometric Pattern in Subtle Accent */}
+      <IslamicPattern className="text-accent pointer-events-none" opacity={0.075} />
 
-      {/* Top Navigation Bar */}
-      <header className="relative z-20 border-b border-neutral-800/80 bg-black/60 backdrop-blur-xl px-6 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            {onBack && (
-              <button
-                onClick={onBack}
-                className="flex items-center gap-2.5 px-4 py-2 rounded-xl bg-neutral-900 border border-neutral-800 text-neutral-300 hover:text-white hover:border-neutral-700 hover:bg-neutral-800 transition-all text-sm font-medium"
-              >
-                <ArrowRight size={18} />
-                <span>العودة للرئيسية</span>
-              </button>
-            )}
+      {/* Top Bar / Admin Sub-bar */}
+      {!hideHeader ? (
+        <header className="relative z-20 border-b border-border/80 bg-background/80 backdrop-blur-xl px-6 py-4">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              {onBack && (
+                <button
+                  onClick={onBack}
+                  className="flex items-center gap-2.5 px-4 py-2 rounded-xl bg-card border border-border text-foreground hover:bg-secondary transition-all text-sm font-medium"
+                >
+                  <ArrowRight size={18} />
+                  <span>العودة للرئيسية</span>
+                </button>
+              )}
 
-            {onNavigateToImporter && (
-              <button
-                onClick={onNavigateToImporter}
-                className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 hover:border-neutral-700 text-neutral-300 hover:text-white transition-all text-xs font-semibold shadow-sm"
-              >
-                <Settings size={14} />
-                <span>إدارة واستيراد الشيوخ</span>
-              </button>
-            )}
+              {onNavigateToImporter && (
+                <button
+                  onClick={onNavigateToImporter}
+                  className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-card hover:bg-secondary border border-border text-foreground transition-all text-xs font-semibold shadow-sm"
+                >
+                  <Settings size={14} />
+                  <span>إدارة واستيراد الشيوخ</span>
+                </button>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground bg-card/90 px-3 py-1.5 rounded-full border border-border">
+              <Sparkles size={14} className="text-accent" />
+              <span>زاد • دليل الشروحات المعتمدة</span>
+            </div>
           </div>
-
-          <div className="flex items-center gap-2 text-xs font-semibold text-neutral-400 bg-neutral-900/90 px-3 py-1.5 rounded-full border border-neutral-800">
-            <Sparkles size={14} className="text-neutral-300" />
+        </header>
+      ) : onNavigateToImporter ? (
+        <div className="relative z-20 max-w-7xl mx-auto w-full px-6 pt-24 pb-2 flex items-center justify-between">
+          <button
+            onClick={onNavigateToImporter}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-card hover:bg-secondary border border-border text-foreground transition-all text-xs font-semibold shadow-sm cursor-pointer"
+          >
+            <Settings size={14} />
+            <span>إدارة واستيراد الشيوخ</span>
+          </button>
+          <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground bg-card/90 px-3 py-1.5 rounded-full border border-border">
+            <Sparkles size={14} className="text-accent" />
             <span>زاد • دليل الشروحات المعتمدة</span>
           </div>
         </div>
-      </header>
+      ) : (
+        <div className="pt-20 md:pt-24" />
+      )}
 
       {/* Main Content Area */}
       <main className="relative z-10 flex-1 max-w-7xl w-full mx-auto px-6 py-16 md:py-24">

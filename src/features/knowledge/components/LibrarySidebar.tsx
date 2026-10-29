@@ -1,325 +1,509 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   X,
   Home,
   Layers,
-  User,
-  Sparkles,
-  Video,
+  Users,
+  ShieldCheck,
   Heart,
-  GraduationCap,
+  HardDriveDownload,
   Bookmark,
-  ArrowUpDown
+  Folder,
+  BookOpen,
+  User,
+  ChevronLeft
 } from 'lucide-react';
 import whiteLogo from '@/assets/images/WhiteLogo.png';
 import darkLogo from '@/assets/images/ZadDarkLogo.png';
-import { Settings, Sun, Moon, Image as ImageIcon, Layers as LayersIcon } from 'lucide-react';
-import { useAuth } from '../../../contexts/AuthContext';
+import { useTheme } from '../../../contexts/ThemeContext';
+import { MainTab } from '../types/bookTypes';
+export type { MainTab };
 
-export type MainTab = 'home' | 'categories' | 'authors' | 'featured' | 'media' | 'favorites' | 'courses';
+export interface LibraryCurrentContext {
+  type: 'reader' | 'category' | 'author' | 'narrator' | 'catalog';
+  category?: string;
+  bookTitle?: string;
+  authorName?: string;
+  narratorName?: string;
+}
 
 interface LibrarySidebarProps {
   isOpen: boolean;
   theme: string;
   activeMainTab: MainTab;
+  currentContext?: LibraryCurrentContext | null;
   counts: {
     domains: number;
     authors: number;
-    featured: number;
+    featured?: number;
     favorites: number;
+    narrators?: string | number;
+    downloads?: number;
   };
   recentBook: any | null;
   onClose: () => void;
   onSelectTab: (tab: MainTab) => void;
   onReadRecentBook: (book: any) => void;
-  // Filters for featured tab
+  onSelectCategory?: (category: string) => void;
+  onSelectAuthor?: (author: string) => void;
+  onSelectNarrator?: (narrator: string) => void;
+  // Optional / backward-compatible props
   selectedCentury?: string;
   onChangeCentury?: (c: string) => void;
   availableCenturies?: { century: number; name: string; count: number }[];
   sortAsc?: boolean;
   onToggleSort?: () => void;
-
-  // Settings props
-  toggleTheme?: () => void;
-  imageOpacity?: number;
-  overlayOpacity?: number;
-  onSettingsChange?: (imgOpacity: number, overOpacity: number) => void;
-  onOpenSettings: () => void;
+  onOpenSettings?: () => void;
 }
 
 export default function LibrarySidebar({
   isOpen,
   theme,
   activeMainTab,
+  currentContext,
   counts,
   recentBook,
   onClose,
   onSelectTab,
   onReadRecentBook,
-  selectedCentury = 'all',
-  onChangeCentury,
-  availableCenturies = [],
-  sortAsc = true,
-  onToggleSort,
-  onOpenSettings
+  onSelectCategory,
+  onSelectAuthor,
+  onSelectNarrator
 }: LibrarySidebarProps) {
-  const { user } = useAuth();
+  const { accentColor, isDark } = useTheme();
+
+  // هل النمط الفعلي للشريط هو داكن (مع مراعاة سمة القارئ العاجية أو الفاتحة)
+  const isDarkEffective = theme === 'dark' || (theme !== 'sepia' && theme !== 'light' && isDark);
+
+  const getActiveTabClass = () => {
+    switch (accentColor) {
+      case 'emerald':
+        return isDarkEffective
+          ? 'bg-teal-400/15 text-teal-300 border border-teal-400/25 font-bold shadow-xs'
+          : 'bg-teal-50 text-teal-900 border border-teal-200 font-extrabold shadow-xs';
+      case 'amber':
+        return isDarkEffective
+          ? 'bg-[#dfbf83]/15 text-[#f3dfb9] border border-[#dfbf83]/25 font-bold shadow-xs'
+          : 'bg-amber-50 text-[#7a5823] border border-amber-300 font-extrabold shadow-xs';
+      case 'blue':
+        return isDarkEffective
+          ? 'bg-blue-400/15 text-blue-300 border border-blue-400/25 font-bold shadow-xs'
+          : 'bg-blue-50 text-blue-900 border border-blue-200 font-extrabold shadow-xs';
+      case 'purple':
+      default:
+        return isDarkEffective
+          ? 'bg-brand-magenta/15 text-purple-300 border border-brand-magenta/25 font-bold shadow-xs'
+          : 'bg-purple-50 text-purple-950 border border-purple-200 font-extrabold shadow-xs';
+    }
+  };
+
+  const getActiveIconContainerClass = () => {
+    switch (accentColor) {
+      case 'emerald':
+        return isDarkEffective
+          ? 'bg-teal-500/20 text-teal-300'
+          : 'bg-teal-100 text-teal-800';
+      case 'amber':
+        return isDarkEffective
+          ? 'bg-[#b88d46]/20 text-[#f3dfb9]'
+          : 'bg-amber-100 text-[#7a5823]';
+      case 'blue':
+        return isDarkEffective
+          ? 'bg-blue-500/20 text-blue-300'
+          : 'bg-blue-100 text-blue-800';
+      case 'purple':
+      default:
+        return isDarkEffective
+          ? 'bg-brand-magenta/20 text-purple-300'
+          : 'bg-purple-100 text-purple-900';
+    }
+  };
+
+  const getActiveBadgeClass = () => {
+    switch (accentColor) {
+      case 'emerald':
+        return isDarkEffective
+          ? 'bg-teal-500/20 text-teal-200 border border-teal-500/25 font-bold'
+          : 'bg-teal-100 text-teal-900 border border-teal-300 font-bold';
+      case 'amber':
+        return isDarkEffective
+          ? 'bg-[#b88d46]/20 text-[#f3dfb9] border border-[#b88d46]/25 font-bold'
+          : 'bg-amber-100 text-[#7a5823] border border-amber-300 font-bold';
+      case 'blue':
+        return isDarkEffective
+          ? 'bg-blue-500/20 text-blue-200 border border-blue-500/25 font-bold'
+          : 'bg-blue-100 text-blue-900 border border-blue-300 font-bold';
+      case 'purple':
+      default:
+        return isDarkEffective
+          ? 'bg-brand-magenta/20 text-purple-200 border border-brand-magenta/25 font-bold'
+          : 'bg-purple-100 text-purple-900 border border-purple-300 font-bold';
+    }
+  };
+
+  const catalogItems: {
+    id: MainTab;
+    label: string;
+    icon: React.ReactNode;
+    badge?: string | number;
+  }[] = [
+    {
+      id: 'home',
+      label: 'الرئيسية',
+      icon: <Home className="w-4 h-4" />
+    },
+    {
+      id: 'categories',
+      label: 'الكتب والأقسام',
+      icon: <Layers className="w-4 h-4" />,
+      badge: counts.domains > 0 ? counts.domains : undefined
+    },
+    {
+      id: 'authors',
+      label: 'المؤلفون',
+      icon: <Users className="w-4 h-4" />,
+      badge: counts.authors > 0 ? counts.authors : undefined
+    },
+    {
+      id: 'narrators',
+      label: 'الرواة',
+      icon: <ShieldCheck className="w-4 h-4" />,
+      badge: counts.narrators || '18.9K'
+    }
+  ];
+
+  const myLibraryItems: {
+    id: MainTab;
+    label: string;
+    icon: React.ReactNode;
+    badge?: string | number;
+  }[] = [
+    {
+      id: 'favorites',
+      label: 'الكتب المفضلة',
+      icon: <Heart className="w-4 h-4" />,
+      badge: counts.favorites > 0 ? counts.favorites : undefined
+    },
+    {
+      id: 'downloads',
+      label: 'الكتب المحمّلة',
+      icon: <HardDriveDownload className="w-4 h-4" />,
+      badge: counts.downloads && counts.downloads > 0 ? counts.downloads : undefined
+    }
+  ];
 
   return (
     <>
       <aside
-        className={`fixed top-0 right-0 z-[70] h-screen w-80 sm:w-96 transition-all duration-300 ease-in-out flex flex-col border-l shadow-2xl ${isOpen
-          ? 'translate-x-0 pointer-events-auto visible opacity-100'
-          : 'translate-x-full pointer-events-none invisible opacity-0'
-          } ${theme === 'dark'
-            ? 'bg-[#120526]/98 border-purple-500/30 shadow-[-20px_0_60px_rgba(0,0,0,0.9)] backdrop-blur-2xl'
-            : 'bg-white/98 border-purple-200/80 shadow-[-15px_0_45px_rgba(122,23,201,0.18)] backdrop-blur-2xl'
-          }`}
+        dir="rtl"
+        aria-label="القائمة الجانبية للمكتبة"
+        className={`fixed top-0 right-0 z-[70] h-screen w-80 sm:w-96 transition-all duration-300 ease-in-out flex flex-col border-l ${
+          isOpen
+            ? 'translate-x-0 pointer-events-auto visible opacity-100'
+            : 'translate-x-full pointer-events-none invisible opacity-0'
+        } ${
+          isDarkEffective
+            ? 'bg-[#10131d] border-white/10 shadow-[-10px_0_35px_rgba(0,0,0,0.4)] text-white'
+            : 'bg-white border-slate-200/90 shadow-[-8px_0_30px_rgba(0,0,0,0.08)] text-slate-900'
+        }`}
       >
         {/* Sidebar Header */}
-        <div className="p-5 border-b border-slate-200/60 dark:border-white/10 flex items-center justify-between gap-3 shrink-0">
+        <div className={`p-4 sm:p-5 border-b flex items-center justify-between gap-3 shrink-0 ${
+          isDarkEffective ? 'border-white/10 bg-white/[0.02]' : 'border-slate-100 bg-white'
+        }`}>
           <div className="flex items-center gap-3 min-w-0">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-magenta/20 to-brand-blue/20 border border-brand-magenta/30 p-2 flex items-center justify-center shrink-0 shadow-inner">
-              <img src={theme === 'dark' ? whiteLogo : darkLogo} alt="زاد" className="w-full h-full object-contain" />
+              <img
+                src={isDarkEffective ? whiteLogo : darkLogo}
+                alt="زاد"
+                className="w-full h-full object-contain"
+              />
             </div>
             <div className="min-w-0">
-              <h2 className="text-lg font-black tracking-tight brand-text-gradient truncate">
+              <h2 className={`text-base sm:text-lg font-black tracking-tight truncate ${
+                isDarkEffective ? 'text-white' : 'text-slate-900'
+              }`}>
                 مكتبة زاد الإسلامية
               </h2>
-              <p className="text-[10px] text-muted-foreground truncate">القائمة الرئيسية والتصنيفات</p>
+              <p className={`text-[11px] truncate font-medium ${
+                isDarkEffective ? 'text-slate-400' : 'text-slate-500'
+              }`}>
+                فهرس وتصفح المكتبة
+              </p>
             </div>
           </div>
 
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
+            className={`w-8 h-8 rounded-full flex items-center justify-center border transition-all duration-200 active:scale-95 shadow-xs hover:scale-105 cursor-pointer ${
+              isDarkEffective
+                ? 'bg-white/10 border-white/20 text-white hover:bg-white/20'
+                : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200 hover:text-slate-900'
+            }`}
             title="إغلاق القائمة الجانبية"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" strokeWidth={2.5} />
           </button>
         </div>
 
         {/* Sidebar Body */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-3.5 sm:p-4 space-y-5 custom-scrollbar">
 
-          {/* GROUP 1: الاستكشاف والتصفح العام */}
-          <div>
-            <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-2.5 px-1">
-              الاستكشاف والمعرفة
+          {/* GROUP 1: فهرس المكتبة */}
+          <div className="space-y-1.5">
+            <div className={`text-[11px] font-extrabold tracking-wider px-2 pb-0.5 ${
+              isDarkEffective ? 'text-slate-400' : 'text-slate-600'
+            }`}>
+              فهرس المكتبة
             </div>
+
             <div className="space-y-1.5">
-              {/* 1. الرئيسية */}
-              <button
-                type="button"
-                onClick={() => {
-                  onSelectTab('home');
-                  onClose();
-                }}
-                className={`w-full flex items-center justify-between p-3 rounded-xl font-bold text-xs sm:text-sm transition-all ${activeMainTab === 'home'
-                  ? 'bg-gradient-to-r from-brand-magenta to-brand-deep text-white shadow-lg shadow-brand-magenta/30'
-                  : 'text-slate-800 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-purple-500/20'
-                  }`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <Home className="w-4 h-4 text-purple-400 shrink-0" />
-                  <span>الرئيسية</span>
-                </div>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-white/20">استكشاف</span>
-              </button>
+              {catalogItems.map((item) => {
+                const isActive = activeMainTab === item.id;
+                return (
+                  <div key={item.id} className="space-y-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onSelectTab(item.id);
+                        onClose();
+                      }}
+                      className={`w-full group flex items-center justify-between py-2 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all duration-200 cursor-pointer select-none ${
+                        isActive
+                          ? getActiveTabClass()
+                          : isDarkEffective
+                            ? 'border border-transparent text-slate-200 hover:bg-white/[0.06] hover:text-white'
+                            : 'border border-transparent text-slate-700 hover:bg-slate-100 hover:text-slate-950'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div
+                          className={`w-7.5 h-7.5 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+                            isActive
+                              ? getActiveIconContainerClass()
+                              : isDarkEffective
+                                ? 'bg-white/5 text-slate-400 group-hover:text-amber-400'
+                                : 'bg-slate-100 text-slate-600 group-hover:text-amber-600'
+                          }`}
+                        >
+                          {item.icon}
+                        </div>
+                        <span className="truncate">{item.label}</span>
+                      </div>
 
-              {/* 2. الأقسام */}
-              <button
-                type="button"
-                onClick={() => {
-                  onSelectTab('categories');
-                  onClose();
-                }}
-                className={`w-full flex items-center justify-between p-3 rounded-xl font-bold text-xs sm:text-sm transition-all ${activeMainTab === 'categories'
-                  ? 'bg-brand-magenta text-white shadow-lg shadow-brand-magenta/30'
-                  : 'text-slate-800 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-purple-500/20'
-                  }`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <Layers className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>الأقسام والتخصصات</span>
-                </div>
-                <span className="px-2 py-0.5 rounded-full text-[11px] font-mono bg-white/20">
-                  {counts.domains}
-                </span>
-              </button>
+                      {item.badge !== undefined && (
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-[10.5px] font-mono shrink-0 transition-colors ${
+                            isActive
+                              ? getActiveBadgeClass()
+                              : isDarkEffective
+                                ? 'bg-white/10 text-slate-300'
+                                : 'bg-slate-100 text-slate-700 border border-slate-200/80 font-bold'
+                          }`}
+                        >
+                          {item.badge}
+                        </span>
+                      )}
+                    </button>
 
-              {/* 3. المؤلفون */}
-              <button
-                type="button"
-                onClick={() => {
-                  onSelectTab('authors');
-                  onClose();
-                }}
-                className={`w-full flex items-center justify-between p-3 rounded-xl font-bold text-xs sm:text-sm transition-all ${activeMainTab === 'authors'
-                  ? 'bg-brand-blue text-white shadow-lg shadow-brand-blue/30'
-                  : 'text-slate-800 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-purple-500/20'
-                  }`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <User className="w-4 h-4 text-brand-blue shrink-0" />
-                  <span>أعلام ومؤلفو التراث</span>
-                </div>
-                <span className="px-2 py-0.5 rounded-full text-[11px] font-mono bg-white/20">
-                  {counts.authors}
-                </span>
-              </button>
+                    {/* الهيكل الهرمي التتبعي لتحديد الموقع بدقة */}
+                    {/* 1. تتبع الكتب والأقسام */}
+                    {item.id === 'categories' && currentContext && (currentContext.type === 'reader' || currentContext.type === 'category') && (
+                      <div className="mr-5 pr-3.5 my-2 border-r-2 border-amber-500/40 dark:border-[#dfbf83]/30 space-y-2 animate-in fade-in slide-in-from-top-1 duration-200">
+                        {/* المستوى الأول: القسم / الفن */}
+                        {currentContext.category && (
+                          <div
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onSelectCategory?.(currentContext.category!);
+                              onClose();
+                            }}
+                            className="flex items-center justify-between gap-2 text-xs font-bold p-1.5 rounded-lg transition-colors cursor-pointer group/cat hover:bg-slate-100 dark:hover:bg-white/5 text-slate-800 dark:text-slate-200 hover:text-amber-700 dark:hover:text-amber-300"
+                            title={`تصفح قسم: ${currentContext.category}`}
+                          >
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className="w-1.5 h-1.5 rounded-full bg-amber-600 shrink-0" />
+                              <Folder className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+                              <span className="truncate text-slate-900 dark:text-white font-bold">{currentContext.category}</span>
+                            </div>
+                            <ChevronLeft className="w-3.5 h-3.5 text-slate-400 group-hover/cat:text-amber-600 group-hover/cat:-translate-x-0.5 transition-all shrink-0" />
+                          </div>
+                        )}
 
-              {/* 4. الكتب المختارة */}
-              <button
-                type="button"
-                onClick={() => {
-                  onSelectTab('featured');
-                  onClose();
-                }}
-                className={`w-full flex items-center justify-between p-3 rounded-xl font-bold text-xs sm:text-sm transition-all ${activeMainTab === 'featured'
-                  ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg shadow-amber-500/30'
-                  : 'text-slate-800 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-purple-500/20'
-                  }`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
-                  <span>الكتب المختارة والمعتمدة</span>
-                </div>
-                <span className="px-2 py-0.5 rounded-full text-[11px] font-mono bg-white/20">
-                  {counts.featured}
-                </span>
-              </button>
+                        {/* المستوى الثاني: الكتاب والمؤلف */}
+                        {currentContext.bookTitle && (
+                          <div className={`mr-3 pr-3 border-r-2 border-amber-500/40 dark:border-amber-400/30 space-y-1 py-2 px-2.5 rounded-xl border shadow-xs ${
+                            isDarkEffective
+                              ? 'bg-white/[0.04] border-white/10'
+                              : 'bg-amber-50/70 border-amber-200'
+                          }`}>
+                            <div className="flex items-center justify-between gap-1.5">
+                              <div className="flex items-center gap-1.5 min-w-0">
+                                <BookOpen className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+                                <span className={`text-xs font-black truncate ${
+                                  isDarkEffective ? 'text-[#f3dfb9]' : 'text-slate-900'
+                                }`}>
+                                  {currentContext.bookTitle}
+                                </span>
+                              </div>
+                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 shrink-0">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                تقرأ الآن
+                              </span>
+                            </div>
+                            {currentContext.authorName && (
+                              <p className={`text-[11px] pr-5 truncate font-semibold ${
+                                isDarkEffective ? 'text-slate-400' : 'text-slate-600'
+                              }`}>
+                                {currentContext.authorName}
+                              </p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* 2. تتبع المؤلف المختار */}
+                    {item.id === 'authors' && currentContext && currentContext.type === 'author' && currentContext.authorName && (
+                      <div className="mr-5 pr-3.5 my-2 border-r-2 border-amber-500/40 dark:border-[#dfbf83]/30 space-y-1 animate-in fade-in slide-in-from-top-1 duration-200">
+                        <div className={`flex items-center justify-between gap-2 text-xs font-bold p-2 rounded-xl border shadow-xs ${
+                          isDarkEffective
+                            ? 'bg-white/[0.04] border-white/10 text-white'
+                            : 'bg-amber-50/70 border-amber-200 text-slate-900'
+                        }`}>
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-600 shrink-0" />
+                            <User className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+                            <span className="truncate font-black text-slate-900 dark:text-white">{currentContext.authorName}</span>
+                          </div>
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-500/30 shrink-0">
+                            المؤلف المختار
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 3. تتبع الراوي المختار */}
+                    {item.id === 'narrators' && currentContext && currentContext.type === 'narrator' && currentContext.narratorName && (
+                      <div className="mr-5 pr-3.5 my-2 border-r-2 border-amber-500/40 dark:border-[#dfbf83]/30 space-y-1 animate-in fade-in slide-in-from-top-1 duration-200">
+                        <div className={`flex items-center justify-between gap-2 text-xs font-bold p-2 rounded-xl border shadow-xs ${
+                          isDarkEffective
+                            ? 'bg-white/[0.04] border-white/10 text-white'
+                            : 'bg-amber-50/70 border-amber-200 text-slate-900'
+                        }`}>
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-600 shrink-0" />
+                            <ShieldCheck className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+                            <span className="truncate font-black text-slate-900 dark:text-white">{currentContext.narratorName}</span>
+                          </div>
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-500/30 shrink-0">
+                            الراوي المختار
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
 
-          {/* GROUP 2: الوسائط والتعلم */}
-          <div>
-            <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-2.5 px-1">
-              الوسائط والمسارات العلمية
+          {/* GROUP 2: مكتبتي */}
+          <div className={`space-y-1.5 pt-2 border-t ${
+            isDarkEffective ? 'border-white/10' : 'border-slate-100'
+          }`}>
+            <div className={`text-[11px] font-extrabold tracking-wider px-2 pb-0.5 ${
+              isDarkEffective ? 'text-slate-400' : 'text-slate-600'
+            }`}>
+              مكتبتي
             </div>
-            <div className="space-y-1.5">
-              {/* 5. الشروح المرئية والصوتية */}
-              <button
-                type="button"
-                onClick={() => {
-                  onSelectTab('media');
-                  onClose();
-                }}
-                className={`w-full flex items-center justify-between p-3 rounded-xl font-bold text-xs sm:text-sm transition-all ${activeMainTab === 'media'
-                  ? 'bg-gradient-to-r from-purple-600 to-brand-magenta text-white shadow-lg shadow-purple-600/30'
-                  : 'text-slate-800 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-purple-500/20'
-                  }`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <Video className="w-4 h-4 text-purple-400 shrink-0" />
-                  <span>الشروح المرئية والصوتية</span>
-                </div>
-              </button>
 
-              {/* 6. دورات حالية */}
-              <button
-                type="button"
-                onClick={() => {
-                  onSelectTab('courses');
-                  onClose();
-                }}
-                className={`w-full flex items-center justify-between p-3 rounded-xl font-bold text-xs sm:text-sm transition-all ${activeMainTab === 'courses'
-                  ? 'bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-lg shadow-teal-600/30'
-                  : 'text-slate-800 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-purple-500/20'
-                  }`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <GraduationCap className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>دورات حالية</span>
-                </div>
-              </button>
-            </div>
-          </div>
-
-          {/* GROUP 3: المساحة الشخصية */}
-          <div>
-            <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-2.5 px-1">
-              مساحتي العلمية
-            </div>
-            <div className="space-y-1.5">
-              {/* 7. الكتب المفضلة */}
-              <button
-                type="button"
-                onClick={() => {
-                  onSelectTab('favorites');
-                  onClose();
-                }}
-                className={`w-full flex items-center justify-between p-3 rounded-xl font-bold text-xs sm:text-sm transition-all ${activeMainTab === 'favorites'
-                  ? 'bg-gradient-to-r from-rose-500 to-pink-600 text-white shadow-lg shadow-rose-500/30'
-                  : 'text-slate-800 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-purple-500/20'
-                  }`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <Heart className="w-4 h-4 text-rose-400 shrink-0 fill-current" />
-                  <span>الكتب المفضلة</span>
-                </div>
-                <span className="px-2 py-0.5 rounded-full text-[11px] font-mono bg-white/20">
-                  {counts.favorites}
-                </span>
-              </button>
-            </div>
-          </div>
-
-          {/* Quick Filters when on Featured tab */}
-          {activeMainTab === 'featured' && onChangeCentury && (
-            <div className="pt-2 border-t border-slate-200/60 dark:border-white/10">
-              <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-2.5 px-1">
-                تصفية وحصر الفهرس
-              </div>
-              <div className="space-y-2.5">
-                <div>
-                  <label className="text-xs font-semibold text-muted-foreground mb-1 block">القرن الهجري:</label>
-                  <select
-                    value={selectedCentury}
-                    onChange={(e) => onChangeCentury(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-100 dark:bg-black/40 border border-slate-200/80 dark:border-white/10 text-xs font-bold outline-none focus:border-brand-magenta cursor-pointer text-foreground"
-                  >
-                    <option value="all">جميع القرون الهجرية</option>
-                    {availableCenturies.map(c => (
-                      <option key={c.century} value={c.century.toString()}>{c.name} ({c.count})</option>
-                    ))}
-                  </select>
-                </div>
-
-                {onToggleSort && (
+            <div className="space-y-1">
+              {myLibraryItems.map((item) => {
+                const isActive = activeMainTab === item.id;
+                return (
                   <button
+                    key={item.id}
                     type="button"
-                    onClick={onToggleSort}
-                    className="w-full p-2.5 rounded-xl bg-slate-100 dark:bg-black/40 border border-slate-200/80 dark:border-white/10 text-xs font-bold transition-all flex items-center justify-between"
+                    onClick={() => {
+                      onSelectTab(item.id);
+                      onClose();
+                    }}
+                    className={`w-full group flex items-center justify-between py-1.5 sm:py-2 px-2.5 sm:px-3 rounded-xl font-bold text-xs sm:text-sm transition-all duration-200 cursor-pointer select-none ${
+                      isActive
+                        ? getActiveTabClass()
+                        : isDarkEffective
+                          ? 'border border-transparent text-slate-200 hover:bg-white/[0.06] hover:text-white'
+                          : 'border border-transparent text-slate-700 hover:bg-slate-100 hover:text-slate-950'
+                    }`}
                   >
-                    <span className="flex items-center gap-1.5">
-                      <ArrowUpDown className="w-3.5 h-3.5 text-brand-magenta" />
-                      الترتيب الهجري:
-                    </span>
-                    <span className="text-brand-magenta">{sortAsc ? 'الأقدم وفاة ⏳' : 'الأحدث وفاة ⌛'}</span>
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div
+                        className={`w-7.5 h-7.5 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+                          isActive
+                            ? getActiveIconContainerClass()
+                            : isDarkEffective
+                              ? 'bg-white/5 text-slate-400 group-hover:text-rose-400'
+                              : 'bg-slate-100 text-slate-600 group-hover:text-rose-500'
+                        }`}
+                      >
+                        {item.icon}
+                      </div>
+                      <span className="truncate">{item.label}</span>
+                    </div>
+
+                    {item.badge !== undefined && (
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-[10.5px] font-mono shrink-0 transition-colors ${
+                          isActive
+                            ? getActiveBadgeClass()
+                            : isDarkEffective
+                              ? 'bg-white/10 text-slate-300'
+                              : 'bg-slate-100 text-slate-700 border border-slate-200/80 font-bold'
+                        }`}
+                      >
+                        {item.badge}
+                      </span>
+                    )}
                   </button>
-                )}
-              </div>
+                );
+              })}
             </div>
-          )}
+          </div>
 
           {/* Recent Book Shortcut (متابعة القراءة الأخيرة) */}
           {recentBook && (
-            <div className="p-3.5 rounded-2xl bg-brand-magenta/10 border border-brand-magenta/20">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-brand-magenta mb-1">
+            <div className={`p-3.5 rounded-2xl border space-y-2.5 shadow-xs ${
+              isDarkEffective
+                ? 'bg-white/[0.04] border-white/10 text-white'
+                : 'bg-slate-50 border-slate-200 text-slate-900'
+            }`}>
+              <div className="flex items-center gap-1.5 text-xs font-bold text-amber-600 dark:text-amber-400">
                 <Bookmark className="w-3.5 h-3.5" />
                 <span>متابعة القراءة الأخيرة</span>
               </div>
-              <h4 className="font-bold text-xs truncate text-foreground">{recentBook.title}</h4>
-              <p className="text-[10px] text-muted-foreground truncate mb-2">{recentBook.author}</p>
+              <h4 className={`font-bold text-xs truncate ${
+                isDarkEffective ? 'text-white' : 'text-slate-900'
+              }`}>
+                {recentBook.title}
+              </h4>
+              <p className={`text-[11px] truncate font-medium ${
+                isDarkEffective ? 'text-slate-400' : 'text-slate-600'
+              }`}>
+                {recentBook.author}
+              </p>
               <button
                 type="button"
                 onClick={() => {
                   onReadRecentBook(recentBook);
                   onClose();
                 }}
-                className="w-full py-1.5 rounded-lg bg-brand-magenta text-white font-bold text-xs hover:bg-brand-deep transition-colors shadow-sm"
+                className={`w-full py-2.5 rounded-xl font-bold text-xs transition-all shadow-xs cursor-pointer ${
+                  isDarkEffective
+                    ? 'bg-white text-slate-950 hover:bg-slate-100'
+                    : 'bg-slate-900 text-white hover:bg-slate-800'
+                }`}
               >
                 إكمال القراءة 📖
               </button>
@@ -328,42 +512,23 @@ export default function LibrarySidebar({
 
         </div>
 
-        {/* Sidebar Footer: Profile & Settings Button */}
-        <div className="p-4 border-t border-slate-200/60 dark:border-white/10 bg-slate-50/50 dark:bg-[#0c0319]/80 shrink-0">
-
-          <button
-            onClick={onOpenSettings}
-            className="w-full mb-4 flex items-center justify-between p-3 rounded-xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:border-brand-magenta dark:hover:border-brand-magenta transition-all shadow-sm group"
-          >
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-black/30 flex items-center justify-center text-slate-600 dark:text-slate-400 group-hover:text-brand-magenta group-hover:bg-brand-magenta/10 transition-colors">
-                <Settings className="w-4 h-4" />
-              </div>
-              <span className="text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-brand-magenta transition-colors">الإعدادات والمظهر</span>
-            </div>
-          </button>
-
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-brand-blue to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-md shrink-0">
-              {user?.name ? user.name.charAt(0) : 'ط'}
-            </div>
-            <div className="min-w-0 flex-1">
-              <h4 className="text-sm font-bold text-slate-900 dark:text-white truncate">
-                {user?.name || 'طالب علم'}
-              </h4>
-              <p className="text-xs text-muted-foreground truncate">
-                {user?.email || 'طالب@زاد.تراث'}
-              </p>
-            </div>
-          </div>
+        {/* Sidebar Footer */}
+        <div className={`p-4 border-t shrink-0 text-center ${
+          isDarkEffective ? 'border-white/10 bg-white/[0.02]' : 'border-slate-100 bg-white'
+        }`}>
+          <p className={`text-[11px] font-bold ${
+            isDarkEffective ? 'text-slate-400' : 'text-slate-500'
+          }`}>
+            مكتبة زاد • الإصدار الثاني
+          </p>
         </div>
       </aside>
 
-      {/* Overlay Backdrop */}
+      {/* Overlay Backdrop - زجاجي ناعم ومريح بدون تدرجات داكنة مزعجة */}
       {isOpen && (
         <div
           onClick={onClose}
-          className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 transition-opacity duration-300 animate-in fade-in cursor-pointer"
+          className="fixed inset-0 bg-slate-950/35 dark:bg-black/45 backdrop-blur-sm z-[65] transition-all duration-300 animate-in fade-in cursor-pointer"
           title="انقر للإغلاق"
         />
       )}

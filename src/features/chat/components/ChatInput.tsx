@@ -372,8 +372,8 @@ export function ChatInput({
                   aria-label="اسأل زاد"
                   disabled={disabled || !input.trim()}
                   className={`brand-gradient flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-full text-white shadow-lg shadow-primary/30 transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${(disabled || !input.trim())
-                      ? 'opacity-40 cursor-not-allowed pointer-events-none scale-95 shadow-none'
-                      : 'hover:-translate-y-0.5 active:scale-95'
+                    ? 'opacity-40 cursor-not-allowed pointer-events-none scale-95 shadow-none'
+                    : 'hover:-translate-y-0.5 active:scale-95'
                     }`}
                 >
                   <svg viewBox="0 0 24 24" fill="none" className="h-4 sm:h-5 w-4 sm:w-5 -scale-x-100">

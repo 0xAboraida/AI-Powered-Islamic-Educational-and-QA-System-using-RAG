@@ -1,4 +1,4 @@
-import darkLogo from '@/assets/images/ZadDarkLogo.png'
+import darkLogo from '@/assets/images/ZadDarkLogo.webp'
 
 type Props = { variant?: 'light' | 'dark' }
 
@@ -11,8 +11,8 @@ function Badge({ store, sub, variant, link }: { store: string; sub: string; vari
       rel="noopener noreferrer"
       className={`inline-flex items-center gap-3 rounded-2xl px-6 py-3 transition-all hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${
         isLight
-          ? 'border border-white/25 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20'
-          : 'border border-border bg-card text-card-foreground shadow-[0_4px_20px_rgba(122,23,201,0.08)] hover:shadow-[0_8px_30px_rgba(122,23,201,0.15)] hover:border-primary/30'
+          ? 'border border-stone-200/90 bg-white/95 text-stone-900 shadow-sm hover:bg-stone-50'
+          : 'border border-border bg-card text-card-foreground shadow-[0_4px_20px_rgba(0,0,0,0.25)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.35)] hover:border-white/20'
       }`}
     >
       <span
@@ -21,7 +21,7 @@ function Badge({ store, sub, variant, link }: { store: string; sub: string; vari
         <img src={darkLogo} alt="شعار تطبيق زاد" className="h-6 w-6 object-contain" />
       </span>
       <span className="flex flex-col text-right leading-tight">
-        <span className={`text-[11px] ${isLight ? 'text-white/70' : 'text-muted-foreground'}`}>{sub}</span>
+        <span className={`text-[11px] ${isLight ? 'text-stone-500 font-medium' : 'text-muted-foreground'}`}>{sub}</span>
         <span className="text-[15px] font-bold">{store}</span>
       </span>
     </a>
