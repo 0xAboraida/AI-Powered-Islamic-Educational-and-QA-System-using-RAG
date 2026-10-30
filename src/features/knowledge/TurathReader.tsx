@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback, useDeferredValue } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowRight, BookOpen, ChevronLeft, ChevronRight, FileText, BookText, Folder, Menu, Loader2, Search, ChevronDown, ChevronUp, Settings2, Maximize, Minimize, Sun, Moon, Type, Sparkles, X, Send, Bookmark, Copy, Volume2, VolumeX, BookmarkCheck, AlignJustify, MoreVertical, Hash, Download, CheckCircle2, FileDown, Layers, Check, HardDriveDownload, BookCheck, RotateCcw, Highlighter, Trash2, Share2, Palette, Quote } from 'lucide-react'
+import { ArrowRight, BookOpen, ChevronLeft, ChevronRight, FileText, BookText, Folder, Menu, Loader2, Search, ChevronDown, ChevronUp, Settings2, Maximize, Minimize, Sun, Moon, Type, Sparkles, X, Send, Bookmark, Copy, Volume2, VolumeX, BookmarkCheck, AlignJustify, MoreVertical, MoreHorizontal, Hash, Download, CheckCircle2, FileDown, Layers, Check, HardDriveDownload, BookCheck, RotateCcw, Highlighter, Trash2, Share2, Palette, Quote } from 'lucide-react'
 import { useTheme, type AccentColor } from '../../contexts/ThemeContext'
 
 const THEME_ACCENTS: { id: AccentColor; name: string; gradient: string; ring: string }[] = [
@@ -1585,6 +1585,169 @@ const RenderFootnotes = ({
   );
 };
 
+interface PageQuickSearchBarProps {
+  isOpen: boolean;
+  readerTheme: 'light' | 'dark' | 'sepia';
+  accentColor: AccentColor;
+  onSearchQueryChange: (query: string) => void;
+  onClose: () => void;
+  pageMatchesCount: number;
+  activeMatchIndex: number;
+  onPrevMatch: () => void;
+  onNextMatch: () => void;
+  onSearchInBook: (query: string) => void;
+}
+
+const PageQuickSearchBar: React.FC<PageQuickSearchBarProps> = React.memo(({
+  isOpen,
+  readerTheme,
+  accentColor,
+  onSearchQueryChange,
+  onClose,
+  pageMatchesCount,
+  activeMatchIndex,
+  onPrevMatch,
+  onNextMatch,
+  onSearchInBook,
+}) => {
+  const [localQuery, setLocalQuery] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      const t = setTimeout(() => {
+        inputRef.current?.focus();
+        inputRef.current?.select();
+      }, 50);
+      return () => clearTimeout(t);
+    } else {
+      setLocalQuery('');
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    }
+  }, [isOpen]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setLocalQuery(val);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      onSearchQueryChange(val);
+    }, 180);
+  };
+
+  const handleClear = () => {
+    setLocalQuery('');
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    onSearchQueryChange('');
+    inputRef.current?.focus();
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+        onSearchQueryChange(localQuery);
+      }
+      if (e.shiftKey) onPrevMatch();
+      else onNextMatch();
+    } else if (e.key === 'Escape') {
+      onClose();
+      handleClear();
+    }
+  };
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ height: 0, opacity: 0, y: -8 }}
+          animate={{ height: 'auto', opacity: 1, y: 0 }}
+          exit={{ height: 0, opacity: 0, y: -8 }}
+          transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          onClick={(e) => e.stopPropagation()}
+          className={`w-full overflow-hidden flex items-center gap-2 sm:gap-3 px-3 sm:px-6 py-2 border-t select-none ${
+            readerTheme === 'dark'
+              ? 'border-white/10 bg-black/30 text-white'
+              : 'border-slate-200/80 bg-black/[0.03] text-slate-900'
+          }`}
+        >
+          {/* Search Icon with current accent color */}
+          <Search
+            className={`w-4 h-4 sm:w-4.5 sm:h-4.5 shrink-0 ${
+              accentColor === 'amber'
+                ? 'text-amber-500'
+                : accentColor === 'emerald'
+                  ? 'text-teal-600 dark:text-teal-400'
+                  : accentColor === 'blue'
+                    ? 'text-blue-600 dark:text-blue-400'
+                    : 'text-brand-magenta'
+            }`}
+            strokeWidth={2.3}
+          />
+
+          {/* Seamless Instant Input */}
+          <input
+            ref={inputRef}
+            type="text"
+            value={localQuery}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+            placeholder="بحث في الصفحة الحالية..."
+            className="flex-1 bg-transparent border-0 outline-none text-xs sm:text-sm font-semibold placeholder:text-muted-foreground/60 p-0 m-0 focus:ring-0 leading-normal"
+          />
+
+          {/* Match Counter & Quick Full-Book Search */}
+          {localQuery.trim() && (
+            <div className="flex items-center gap-1.5 shrink-0 border-r border-border/50 pr-2 mr-1">
+              {pageMatchesCount === 0 && (
+                <button
+                  type="button"
+                  onClick={() => onSearchInBook(localQuery)}
+                  className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-600 dark:text-amber-400 hover:bg-amber-500/25 transition-colors cursor-pointer shrink-0"
+                  title="البحث عن هذه الكلمة في كامل صفحات وأجزاء الكتاب"
+                >
+                  <Search className="w-3 h-3" />
+                  <span>بحث في كامل الكتاب</span>
+                </button>
+              )}
+              <span
+                className={`text-[11px] font-black px-2 py-0.5 rounded-md ${
+                  pageMatchesCount > 0
+                    ? accentColor === 'amber'
+                      ? 'bg-amber-500/20 text-amber-500 border border-amber-500/30'
+                      : accentColor === 'emerald'
+                        ? 'bg-teal-500/20 text-teal-600 dark:text-teal-400 border border-teal-500/30'
+                        : accentColor === 'blue'
+                          ? 'bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/30'
+                          : 'bg-brand-magenta/20 text-brand-magenta border border-brand-magenta/30'
+                    : 'bg-rose-500/10 text-rose-500 border border-rose-500/20'
+                }`}
+              >
+                {pageMatchesCount > 0 ? `${activeMatchIndex + 1} / ${pageMatchesCount}` : 'لا نتائج هنا'}
+              </span>
+            </div>
+          )}
+
+          {/* Close Button Only */}
+          <button
+            type="button"
+            onClick={() => {
+              onClose();
+              handleClear();
+            }}
+            className="p-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
+            title="إغلاق البحث (Esc)"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+});
+
 export default function TurathReader({
   book,
   onClose,
@@ -2696,7 +2859,7 @@ export default function TurathReader({
     });
   }, [activeMatchIndex]);
 
-  // Execute in-page search and highlight matches dynamically
+  // Execute in-page search and highlight matches dynamically (only in the current active page)
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container) return;
@@ -2720,7 +2883,13 @@ export default function TurathReader({
 
     const timer = setTimeout(() => {
       if (!scrollContainerRef.current) return;
-      const matched = applyPageHighlights(scrollContainerRef.current, regex);
+      // In continuous mode, search ONLY in the current active page element
+      const targetElement = readingMode === 'continuous'
+        ? (scrollContainerRef.current.querySelector(`[data-page="${currentPage}"]`) as HTMLElement || scrollContainerRef.current)
+        : scrollContainerRef.current;
+
+      clearPageHighlights(scrollContainerRef.current);
+      const matched = applyPageHighlights(targetElement, regex);
       pageMatchElementsRef.current = matched;
       setPageMatchesCount(matched.length);
       setActiveMatchIndex(0);
@@ -2738,7 +2907,7 @@ export default function TurathReader({
     }, 50);
 
     return () => clearTimeout(timer);
-  }, [pageSearchQuery, isPageSearchOpen, currentPage, pageText, continuousPages]);
+  }, [pageSearchQuery, isPageSearchOpen, currentPage, pageText, continuousPages, readingMode]);
 
   // Execute book-level search result highlighting on reading page
   useEffect(() => {
@@ -2961,6 +3130,8 @@ export default function TurathReader({
   const [pageCopied, setPageCopied] = useState(false)
   const [isPageActionsOpen, setIsPageActionsOpen] = useState(false)
   const pageActionsRef = useRef<HTMLDivElement>(null)
+  const [activeContinuousMenuPage, setActiveContinuousMenuPage] = useState<number | null>(null)
+  const [copiedContinuousPage, setCopiedContinuousPage] = useState<number | null>(null)
 
   // Touch Swipe Gesture Refs & Handlers (تقليب الصفحات باللمس)
   const touchStartXRef = useRef<number | null>(null)
@@ -3104,6 +3275,10 @@ export default function TurathReader({
       if (volumePickerRef.current && !volumePickerRef.current.contains(target)) {
         setIsVolumePickerOpen(false)
       }
+      const clickedInContinuousActions = (target as Element)?.closest?.('.continuous-page-actions');
+      if (!clickedInContinuousActions) {
+        setActiveContinuousMenuPage(null)
+      }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -3216,6 +3391,19 @@ export default function TurathReader({
     }
     return null;
   }, [pageMap, currentPage]);
+
+  const getPagePrintCitation = useCallback((digitalPage: number) => {
+    if (pageMap && pageMap.length >= digitalPage && digitalPage > 0 && pageMap[digitalPage - 1]) {
+      const entry = pageMap[digitalPage - 1];
+      if (entry) {
+        const parts = entry.split(',');
+        if (parts.length >= 2) {
+          return { vol: parts[0].trim(), page: parts[1].trim() };
+        }
+      }
+    }
+    return null;
+  }, [pageMap]);
 
   useEffect(() => {
     if (currentPrintCitation) {
@@ -4418,12 +4606,16 @@ export default function TurathReader({
   const goNext = () => {
     setSelectedTocIndex(null);
     setActiveHeadingText(null);
-    setCurrentPage(p => {
-      if (readingMode === 'continuous' && continuousPages.length > 0) {
-        return continuousPages[continuousPages.length - 1].page + 1;
+    if (readingMode === 'continuous') {
+      const nextPage = currentPage + 1;
+      const targetEl = scrollContainerRef.current?.querySelector(`[data-page="${nextPage}"]`);
+      if (targetEl) {
+        targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        setCurrentPage(nextPage);
+        return;
       }
-      return p + 1;
-    });
+    }
+    setCurrentPage(p => p + 1);
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollTo({ top: 0 });
     }
@@ -4432,12 +4624,18 @@ export default function TurathReader({
   const goPrev = () => {
     setSelectedTocIndex(null);
     setActiveHeadingText(null);
-    setCurrentPage(p => {
-      if (readingMode === 'continuous' && continuousPages.length > 0) {
-        return Math.max(1, continuousPages[0].page - 1);
+    if (readingMode === 'continuous') {
+      const prevPage = currentPage - 1;
+      if (prevPage >= 1) {
+        const targetEl = scrollContainerRef.current?.querySelector(`[data-page="${prevPage}"]`);
+        if (targetEl) {
+          targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          setCurrentPage(prevPage);
+          return;
+        }
       }
-      return Math.max(1, p - 1);
-    });
+    }
+    setCurrentPage(p => Math.max(1, p - 1));
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollTo({ top: 0 });
     }
@@ -5857,125 +6055,26 @@ export default function TurathReader({
           </div>
         )}
 
-        {/* In-Page Quick Search Sub-Bar (امتداد متصل بالهيدر العلوي ينسجم تماماً مع لون السمة بانسيابية وتأثير نزول رائع) */}
-        <AnimatePresence>
-          {isPageSearchOpen && (
-            <motion.div
-              ref={pageSearchContainerRef}
-              initial={{ height: 0, opacity: 0, y: -8 }}
-              animate={{ height: 'auto', opacity: 1, y: 0 }}
-              exit={{ height: 0, opacity: 0, y: -8 }}
-              transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-              onClick={(e) => e.stopPropagation()}
-              className={`w-full overflow-hidden flex items-center gap-2 sm:gap-3 px-3 sm:px-6 py-2 border-t select-none ${
-                readerTheme === 'dark'
-                  ? 'border-white/10 bg-black/30 text-white'
-                  : 'border-slate-200/80 bg-black/[0.03] text-slate-900'
-              }`}
-            >
-              {/* Search Icon with current accent color */}
-              <Search
-                className={`w-4 h-4 sm:w-4.5 sm:h-4.5 shrink-0 ${
-                  accentColor === 'amber'
-                    ? 'text-amber-500'
-                    : accentColor === 'emerald'
-                      ? 'text-teal-600 dark:text-teal-400'
-                      : accentColor === 'blue'
-                        ? 'text-blue-600 dark:text-blue-400'
-                        : 'text-brand-magenta'
-                }`}
-                strokeWidth={2.3}
-              />
-
-              {/* Seamless Input */}
-              <input
-                ref={pageSearchInputRef}
-                type="text"
-                value={pageSearchQuery}
-                onChange={(e) => setPageSearchQuery(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    if (e.shiftKey) handlePrevPageMatch();
-                    else handleNextPageMatch();
-                  } else if (e.key === 'Escape') {
-                    setIsPageSearchOpen(false);
-                    setPageSearchQuery('');
-                  }
-                }}
-                placeholder="بحث في الصفحة المفتوحة..."
-                className="flex-1 bg-transparent border-0 outline-none text-xs sm:text-sm font-semibold placeholder:text-muted-foreground/60 p-0 m-0 focus:ring-0 leading-normal"
-              />
-
-              {/* Clear Input Button */}
-              {pageSearchQuery && (
-                <button
-                  type="button"
-                  onClick={() => setPageSearchQuery('')}
-                  className="p-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 text-muted-foreground transition-colors cursor-pointer shrink-0"
-                  title="مسح البحث"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              )}
-
-              {/* Match Counter & Arrow Controls */}
-              {pageSearchQuery.trim() && (
-                <div className="flex items-center gap-1.5 shrink-0 border-r border-border/50 pr-2 mr-1">
-                  <span
-                    className={`text-[11px] font-black px-2 py-0.5 rounded-md ${
-                      pageMatchesCount > 0
-                        ? accentColor === 'amber'
-                          ? 'bg-amber-500/20 text-amber-500 border border-amber-500/30'
-                          : accentColor === 'emerald'
-                            ? 'bg-teal-500/20 text-teal-600 dark:text-teal-400 border border-teal-500/30'
-                            : accentColor === 'blue'
-                              ? 'bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/30'
-                              : 'bg-brand-magenta/20 text-brand-magenta border border-brand-magenta/30'
-                        : 'bg-rose-500/10 text-rose-500 border border-rose-500/20'
-                    }`}
-                  >
-                    {pageMatchesCount > 0 ? `${activeMatchIndex + 1} / ${pageMatchesCount}` : 'لا نتائج'}
-                  </span>
-
-                  <div className="flex items-center gap-0.5">
-                    <button
-                      type="button"
-                      disabled={pageMatchesCount === 0}
-                      onClick={handlePrevPageMatch}
-                      className="w-6 h-6 rounded-lg flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/10 disabled:opacity-25 transition-all cursor-pointer active:scale-90"
-                      title="الموضع السابق (Shift+Enter)"
-                    >
-                      <ChevronRight className="w-3.5 h-3.5 rotate-90" strokeWidth={2.5} />
-                    </button>
-                    <button
-                      type="button"
-                      disabled={pageMatchesCount === 0}
-                      onClick={handleNextPageMatch}
-                      className="w-6 h-6 rounded-lg flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/10 disabled:opacity-25 transition-all cursor-pointer active:scale-90"
-                      title="الموضع التالي (Enter)"
-                    >
-                      <ChevronLeft className="w-3.5 h-3.5 -rotate-90" strokeWidth={2.5} />
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* Close Button */}
-              <button
-                type="button"
-                onClick={() => {
-                  setIsPageSearchOpen(false);
-                  setPageSearchQuery('');
-                }}
-                className="p-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
-                title="إغلاق البحث"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* In-Page Quick Search Sub-Bar (Isolated 60fps component with 0ms typing latency) */}
+        <PageQuickSearchBar
+          isOpen={isPageSearchOpen}
+          readerTheme={readerTheme}
+          accentColor={accentColor}
+          onSearchQueryChange={(q) => setPageSearchQuery(q)}
+          onClose={() => {
+            setIsPageSearchOpen(false);
+            setPageSearchQuery('');
+          }}
+          pageMatchesCount={pageMatchesCount}
+          activeMatchIndex={activeMatchIndex}
+          onPrevMatch={handlePrevPageMatch}
+          onNextMatch={handleNextPageMatch}
+          onSearchInBook={(q) => {
+            setBookSearchQuery(q);
+            setSidebarTab('search');
+            setIsPageSearchOpen(false);
+          }}
+        />
       </header>
 
       {/* Main Workspace Container */}
@@ -7719,83 +7818,165 @@ export default function TurathReader({
                           </div>
                         )}
 
-                        {continuousPages.map((p, idx) => (
-                          <div key={p.page} data-page={p.page} className={`w-full relative px-3.5 py-5 sm:px-8 sm:py-8 md:py-9 md:pr-10 md:pl-16 rounded-xl sm:rounded-2xl border ${readerTheme === 'dark' ? 'border-white/10 bg-[#181825]/40' : readerTheme === 'sepia' ? 'border-[#E2D6C0] bg-[#FFFDF9]' : 'border-gray-200 bg-white/40'} shadow-sm transition-all duration-300 hover:shadow-md group`}>
-                            <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 rounded-full px-6 py-1.5 text-sm font-bold shadow-sm border backdrop-blur-md ${readerTheme === 'dark' ? 'bg-[#0d071a] border-white/10 text-white/70' : readerTheme === 'sepia' ? 'bg-[#FAF5ED] border-[#E2D6C0] text-[#7A401A]' : 'bg-white border-gray-200 text-gray-500'}`}>
-                              صفحة {p.page}
-                            </div>
+                        {continuousPages.map((p, idx) => {
+                          const printCit = getPagePrintCitation(p.page);
+                          const displayPage = printCit ? printCit.page : p.page;
+                          const displayVol = printCit ? printCit.vol : null;
 
-                            {/* Inner Page Actions Toolbar (Desktop only) */}
-                            <div className={`hidden md:flex absolute top-4 md:top-5 left-3 md:left-5 z-10 flex-col items-center rounded-xl transition-all duration-300 group/toolbar overflow-hidden hover:border hover:backdrop-blur-md hover:shadow-sm hover:bg-white/70 hover:border-gray-200/80 dark:hover:bg-[#0d071a]/95 dark:hover:border-white/10 sepia:hover:bg-[#FAF5ED]/95 sepia:hover:border-[#E2D6C0]`}>
-
-                              {/* Compact Trigger Icon */}
-                              <div className={`p-2 cursor-pointer flex group-hover/toolbar:hidden transition-colors hover:scale-110 ${accentColor === 'amber' ? 'text-[#b88d46]' : accentColor === 'emerald' ? 'text-teal-600' : accentColor === 'blue' ? 'text-blue-600' : 'text-brand-magenta'}`}>
-                                <MoreVertical className="h-6 w-6 opacity-90 drop-shadow-md" />
+                          return (
+                            <div key={p.page} data-page={p.page} className={`w-full relative px-3.5 py-5 pb-11 sm:px-8 sm:py-8 sm:pb-12 md:py-9 md:px-10 md:pb-14 rounded-xl sm:rounded-2xl border ${readerTheme === 'dark' ? 'border-white/10 bg-[#181825]/40' : readerTheme === 'sepia' ? 'border-[#E2D6C0] bg-[#FFFDF9]' : 'border-gray-200 bg-white/40'} shadow-sm transition-all duration-300 hover:shadow-md group`}>
+                              <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 rounded-full px-5 py-1 text-sm font-bold shadow-sm border backdrop-blur-md flex items-center gap-1.5 ${readerTheme === 'dark' ? 'bg-[#0d071a] border-white/10 text-white/70' : readerTheme === 'sepia' ? 'bg-[#FAF5ED] border-[#E2D6C0] text-[#7A401A]' : 'bg-white border-gray-200 text-gray-500'}`}>
+                                <span>صفحة {displayPage}</span>
+                                {displayVol && availableVolumes.length > 1 && (
+                                  <span className="text-[11px] opacity-60 font-normal">
+                                    (جـ {toEasternArabicNumerals(displayVol)})
+                                  </span>
+                                )}
                               </div>
 
-                              {/* Expanded Actions */}
-                              <div className="hidden group-hover/toolbar:flex flex-col items-center gap-1.5 px-1 py-2 w-full animate-in fade-in zoom-in-95 duration-200">
-                                <button
-                                  onClick={() => {
-                                    setBookmarks(prev => prev.includes(p.page) ? prev.filter(b => b !== p.page) : [...prev, p.page])
-                                  }}
-                                  className={`p-1.5 rounded-lg transition-all ${bookmarks.includes(p.page)
+                            {/* Continuous Page Actions Toolbar (Bottom-Left Corner) */}
+                            <div className="continuous-page-actions absolute bottom-2.5 left-3 sm:bottom-3 sm:left-4 z-20">
+                              {/* 3-Dots Trigger Button (Fixed position, NEVER shifts or moves) */}
+                              <button
+                                type="button"
+                                onClick={() => setActiveContinuousMenuPage(prev => prev === p.page ? null : p.page)}
+                                className={`p-1.5 sm:p-2 rounded-xl transition-all flex items-center justify-center cursor-pointer border backdrop-blur-md shadow-xs ${
+                                  activeContinuousMenuPage === p.page
                                     ? accentColor === 'amber'
-                                      ? 'bg-amber-500/15 text-[#b88d46] shadow-sm'
+                                      ? 'text-[#b88d46] bg-amber-500/20 border-amber-500/40 ring-1 ring-amber-500/30'
                                       : accentColor === 'emerald'
-                                        ? 'bg-teal-500/15 text-teal-600 shadow-sm'
+                                        ? 'text-teal-600 bg-teal-500/20 border-teal-500/40 ring-1 ring-teal-500/30'
                                         : accentColor === 'blue'
-                                          ? 'bg-blue-500/15 text-blue-600 shadow-sm'
-                                          : 'bg-brand-magenta/15 text-brand-magenta shadow-sm'
-                                    : `text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5 ${accentColor === 'amber' ? 'hover:text-[#b88d46]' : accentColor === 'emerald' ? 'hover:text-teal-600' : accentColor === 'blue' ? 'hover:text-blue-600' : 'hover:text-brand-magenta'}`
+                                          ? 'text-blue-600 bg-blue-500/20 border-blue-500/40 ring-1 ring-blue-500/30'
+                                          : 'text-brand-magenta bg-brand-magenta/20 border-brand-magenta/40 ring-1 ring-brand-magenta/30'
+                                    : readerTheme === 'dark'
+                                      ? 'bg-[#181825]/95 border-white/10 text-white/70 hover:text-white hover:bg-white/10'
+                                      : readerTheme === 'sepia'
+                                        ? 'bg-[#FAF5ED]/95 border-[#E2D6C0] text-[#4A3523]/70 hover:text-[#4A3523] hover:bg-[#E2D6C0]/50'
+                                        : 'bg-white/95 border-gray-200 text-gray-500 hover:text-gray-800 hover:bg-gray-100'
+                                }`}
+                                title="خيارات ومشاركة الصفحة"
+                                aria-label="خيارات ومشاركة الصفحة"
+                              >
+                                <MoreHorizontal className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
+                              </button>
+
+                              {/* Floating Horizontal Actions Menu (Opens ABOVE the button, completely clear of the page badge) */}
+                              {activeContinuousMenuPage === p.page && (
+                                <div
+                                  dir="ltr"
+                                  className={`absolute bottom-full mb-2 left-0 flex flex-row items-center gap-1 sm:gap-1.5 p-1 rounded-xl border backdrop-blur-xl shadow-xl z-30 animate-in fade-in slide-in-from-bottom-2 duration-150 ${
+                                    readerTheme === 'dark'
+                                      ? 'bg-[#0f1422]/98 border-white/15 text-white shadow-black/80'
+                                      : readerTheme === 'sepia'
+                                        ? 'bg-[#FAF5ED]/98 border-[#E2D6C0] text-[#3D2C1D]'
+                                        : 'bg-white/98 border-gray-200 text-slate-800 shadow-lg'
+                                  }`}
+                                >
+                                  {/* Bookmark */}
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setBookmarks(prev => prev.includes(p.page) ? prev.filter(b => b !== p.page) : [...prev, p.page]);
+                                    }}
+                                    className={`p-1.5 rounded-lg transition-all cursor-pointer ${
+                                      bookmarks.includes(p.page)
+                                        ? accentColor === 'amber'
+                                          ? 'bg-amber-500/15 text-[#b88d46]'
+                                          : accentColor === 'emerald'
+                                            ? 'bg-teal-500/15 text-teal-600'
+                                            : accentColor === 'blue'
+                                              ? 'bg-blue-500/15 text-blue-600'
+                                              : 'bg-brand-magenta/15 text-brand-magenta'
+                                        : 'text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5'
                                     }`}
-                                  title={bookmarks.includes(p.page) ? "إزالة العلامة" : "حفظ كعلامة مرجعية"}
-                                >
-                                  {bookmarks.includes(p.page) ? (
-                                    <BookmarkCheck className={`h-4 w-4 ${accentColor === 'amber' ? 'fill-amber-500/20' : accentColor === 'emerald' ? 'fill-teal-500/20' : accentColor === 'blue' ? 'fill-blue-500/20' : 'fill-brand-magenta/20'}`} />
-                                  ) : (
-                                    <Bookmark className="h-4 w-4" />
-                                  )}
-                                </button>
-                                <div className="w-3 h-px bg-border/50 my-0.5 shrink-0" />
-                                <button
-                                  onClick={() => {
-                                    const textToCopy = formatPageCopyText(
-                                      p.matn || p.text,
-                                      p.sharh,
-                                      p.footnote,
-                                      book.title,
-                                      book.author,
-                                      p.page
-                                    );
-                                    navigator.clipboard.writeText(textToCopy);
-                                  }}
-                                  className={`p-1.5 rounded-lg transition-all text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5 ${accentColor === 'amber' ? 'hover:text-[#b88d46]' : accentColor === 'emerald' ? 'hover:text-teal-600' : accentColor === 'blue' ? 'hover:text-blue-600' : 'hover:text-brand-magenta'}`}
-                                  title="نسخ محتوى الصفحة"
-                                >
-                                  <Copy className="h-4 w-4" />
-                                </button>
-                                <div className="w-3 h-px bg-border/50 my-0.5 shrink-0" />
-                                <button
-                                  onClick={() => { setDistractionFree(!distractionFree); setShowSettings(false); setShowBookmarks(false); }}
-                                  className={`p-1.5 rounded-lg transition-all text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5 ${accentColor === 'amber' ? 'hover:text-[#b88d46]' : accentColor === 'emerald' ? 'hover:text-teal-600' : accentColor === 'blue' ? 'hover:text-blue-600' : 'hover:text-brand-magenta'}`}
-                                  title={distractionFree ? "إنهاء وضع ملء الشاشة" : "وضع ملء الشاشة"}
-                                >
-                                  {distractionFree ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
-                                </button>
-                                <div className="w-3 h-px bg-border/50 my-0.5 shrink-0" />
-                                <AudioReaderButton
-                                  text={p.matn ? `${p.matn} ${p.sharh || ''}` : p.text}
-                                  dark={readerTheme === 'dark'}
-                                  showTextLabel={false}
-                                  hidePodcast={true}
-                                  onStateChange={(playing) => setIsReadingPage(playing)}
-                                  orientation="vertical"
-                                  colorTheme={accentColor === 'emerald' ? 'emerald' : 'purple'}
-                                  menuPlacement="left"
-                                  className={`!bg-transparent !border-transparent !shadow-none !p-1.5 !rounded-lg !text-muted-foreground hover:!bg-black/5 dark:hover:!bg-white/5 ${accentColor === 'amber' ? 'hover:!text-[#b88d46]' : accentColor === 'emerald' ? 'hover:!text-teal-600' : accentColor === 'blue' ? 'hover:!text-blue-600' : 'hover:!text-brand-magenta'}`}
-                                />
-                              </div>
+                                    title={bookmarks.includes(p.page) ? "إزالة العلامة" : "حفظ كعلامة مرجعية"}
+                                  >
+                                    {bookmarks.includes(p.page) ? (
+                                      <BookmarkCheck className={`h-4 w-4 ${accentColor === 'amber' ? 'fill-amber-500/20' : accentColor === 'emerald' ? 'fill-teal-500/20' : accentColor === 'blue' ? 'fill-blue-500/20' : 'fill-brand-magenta/20'}`} />
+                                    ) : (
+                                      <Bookmark className="h-4 w-4" />
+                                    )}
+                                  </button>
+
+                                  <div className="w-px h-3.5 bg-border/50 shrink-0" />
+
+                                  {/* Copy Page Text */}
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const textToCopy = formatPageCopyText(
+                                        p.matn || p.text,
+                                        p.sharh,
+                                        p.footnote,
+                                        book.title,
+                                        book.author,
+                                        printCit?.page ? Number(printCit.page) : p.page
+                                      );
+                                      navigator.clipboard.writeText(textToCopy);
+                                      setCopiedContinuousPage(p.page);
+                                      setTimeout(() => setCopiedContinuousPage(null), 2000);
+                                    }}
+                                    className="p-1.5 rounded-lg transition-all text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
+                                    title="نسخ محتوى الصفحة"
+                                  >
+                                    {copiedContinuousPage === p.page ? (
+                                      <Check className="h-4 w-4 text-emerald-500" />
+                                    ) : (
+                                      <Copy className="h-4 w-4" />
+                                    )}
+                                  </button>
+
+                                  <div className="w-px h-3.5 bg-border/50 shrink-0" />
+
+                                  {/* Audio Reader */}
+                                  <AudioReaderButton
+                                    text={p.matn ? `${p.matn} ${p.sharh || ''}` : p.text}
+                                    dark={readerTheme === 'dark'}
+                                    showTextLabel={false}
+                                    hidePodcast={true}
+                                    onStateChange={(playing) => setIsReadingPage(playing)}
+                                    orientation="horizontal"
+                                    colorTheme={accentColor === 'emerald' ? 'emerald' : 'purple'}
+                                    menuPlacement="top"
+                                    className="!bg-transparent !border-transparent !shadow-none !p-1.5 !rounded-lg !text-muted-foreground hover:!bg-black/5 dark:hover:!bg-white/5 cursor-pointer"
+                                  />
+
+                                  <div className="w-px h-3.5 bg-border/50 shrink-0" />
+
+                                  {/* Share Page */}
+                                  <button
+                                    type="button"
+                                    onClick={async () => {
+                                      const shareText = formatPageCopyText(
+                                        p.matn || p.text,
+                                        p.sharh,
+                                        p.footnote,
+                                        book.title,
+                                        book.author,
+                                        printCit?.page ? Number(printCit.page) : p.page
+                                      );
+                                      if (navigator.share) {
+                                        try {
+                                          await navigator.share({
+                                            title: `${book.title} - صـ ${displayPage}`,
+                                            text: shareText.slice(0, 300) + '...',
+                                            url: window.location.href,
+                                          });
+                                        } catch { }
+                                      } else {
+                                        navigator.clipboard.writeText(`${window.location.href}\n\n${book.title} - صـ ${displayPage}\n${shareText.slice(0, 300)}...`);
+                                        setCopiedContinuousPage(p.page);
+                                        setTimeout(() => setCopiedContinuousPage(null), 2000);
+                                      }
+                                    }}
+                                    className="p-1.5 rounded-lg transition-all text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
+                                    title="مشاركة الصفحة"
+                                  >
+                                    <Share2 className="h-4 w-4" />
+                                  </button>
+                                </div>
+                              )}
                             </div>
 
                             {/* Matn Section */}
@@ -7834,7 +8015,8 @@ export default function TurathReader({
                               />
                             )}
                           </div>
-                        ))}
+                          );
+                        })}
 
                         {/* Status for next page */}
                         <div className="flex flex-col items-center justify-center p-8 gap-4 min-h-[150px]">
@@ -7876,7 +8058,7 @@ export default function TurathReader({
           </div>
 
           {/* Pagination Footer with Scrub Bar & Auto-Hide on Mobile */}
-          {readingMode === 'paged' && (
+          {!distractionFree && (
             <div
               className={`shrink-0 w-full md:w-auto md:absolute md:bottom-2 md:left-1/2 md:-translate-x-1/2 z-20 transition-all duration-300 ${
                 sidebarTab !== 'none'
@@ -8235,8 +8417,9 @@ export default function TurathReader({
                     <ChevronLeft className="h-4 w-4 md:h-5 md:w-5 group-hover:-translate-x-0.5 transition-transform" />
                   </button>
 
-                  {/* Page Actions 3-dots Menu (نسخ ومشاركة الصفحة) - Mobile only */}
-                  <div className="relative shrink-0 md:hidden" ref={pageActionsRef}>
+                  {/* Page Actions 3-dots Menu (نسخ ومشاركة الصفحة) - Mobile paged mode only */}
+                  {readingMode === 'paged' && (
+                    <div className="relative shrink-0 md:hidden" ref={pageActionsRef}>
                     <button
                       type="button"
                       onClick={() => {
@@ -8331,6 +8514,7 @@ export default function TurathReader({
                       </div>
                     )}
                   </div>
+                  )}
                 </div>
               </footer>
             </div>
