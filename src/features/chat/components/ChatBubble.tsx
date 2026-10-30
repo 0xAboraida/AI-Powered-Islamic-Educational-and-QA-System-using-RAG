@@ -405,6 +405,7 @@ export function Bubble({
   onStreamingChange?: (isStreaming: boolean) => void;
 }) {
   const isUser = message.role === 'user'
+  const { accentColor } = useTheme()
 
   let activeLessonBreadcrumb: string | undefined = lessonTitle
   try {
@@ -863,39 +864,52 @@ export function Bubble({
               )}
 
               {!isUser && !isStreaming && (
-                <div className="flex flex-wrap justify-end items-center gap-1.5 sm:gap-2 mt-1 pt-3 border-t max-w-full" dir="rtl" style={{ borderColor: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }}>
-                  <AudioReaderButton text={displayedText} dark={dark} />
+                <div className="flex items-center justify-end gap-1.5 mt-2 pt-2 border-t max-w-full" dir="rtl" style={{ borderColor: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }}>
+                  <AudioReaderButton
+                    text={displayedText}
+                    dark={dark}
+                    showTextLabel={false}
+                    hidePodcast={true}
+                    colorTheme={accentColor}
+                    menuPlacement="top"
+                    className="!h-8 !w-8 !p-0 !justify-center !rounded-xl hover:scale-105 transition-transform"
+                  />
 
                   <button
                     onClick={handleCopy}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] text-[13px] font-bold transition-all duration-300 hover:scale-105 ${dark
-                      ? 'text-purple-300 hover:text-purple-100 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 shadow-sm'
-                      : 'text-purple-700 hover:text-purple-900 bg-purple-50 hover:bg-purple-100 border border-purple-200 shadow-sm'
-                      }`}
+                    title={isCopied ? 'تم النسخ' : 'نسخ النص'}
+                    aria-label="نسخ النص"
+                    className={`h-8 w-8 flex items-center justify-center rounded-xl text-[13px] font-bold transition-all duration-200 hover:scale-105 cursor-pointer ${
+                      isCopied
+                        ? 'text-emerald-500 bg-emerald-500/10 border border-emerald-500/30'
+                        : dark
+                          ? 'text-white/70 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10'
+                          : 'text-slate-600 hover:text-slate-900 bg-slate-100/80 hover:bg-slate-200/80 border border-slate-200'
+                    }`}
                   >
                     {isCopied ? (
                       <Check size={14} className="text-emerald-500 drop-shadow-sm" strokeWidth={3} />
                     ) : (
-                      <Copy size={14} strokeWidth={2.5} />
+                      <Copy size={14} strokeWidth={2.2} />
                     )}
-                    <span className={isCopied ? "text-emerald-500 drop-shadow-sm" : ""}>{isCopied ? 'تم النسخ' : 'نسخ النص'}</span>
                   </button>
 
                   <button
                     onClick={handleDownloadPDF}
                     disabled={isExportingPDF}
-                    title="حفظ الرسالة كـ PDF"
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] text-[13px] font-bold transition-all duration-300 hover:scale-105 ${dark
-                      ? 'text-purple-300 hover:text-purple-100 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 shadow-sm'
-                      : 'text-purple-700 hover:text-purple-900 bg-purple-50 hover:bg-purple-100 border border-purple-200 shadow-sm'
-                      } ${isExportingPDF ? 'opacity-50 cursor-wait' : ''}`}
+                    title="حفظ كـ PDF"
+                    aria-label="حفظ كـ PDF"
+                    className={`h-8 w-8 flex items-center justify-center rounded-xl text-[13px] font-bold transition-all duration-200 hover:scale-105 cursor-pointer ${
+                      dark
+                        ? 'text-white/70 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10'
+                        : 'text-slate-600 hover:text-slate-900 bg-slate-100/80 hover:bg-slate-200/80 border border-slate-200'
+                    } ${isExportingPDF ? 'opacity-50 cursor-wait' : ''}`}
                   >
                     {isExportingPDF ? (
                       <Loader2 size={14} className="animate-spin text-purple-400" />
                     ) : (
-                      <Download size={14} strokeWidth={2.5} />
+                      <Download size={14} strokeWidth={2.2} />
                     )}
-                    <span>{isExportingPDF ? 'جاري التصدير...' : 'حفظ كـ PDF'}</span>
                   </button>
                 </div>
               )}

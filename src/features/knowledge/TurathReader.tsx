@@ -2053,12 +2053,6 @@ export default function TurathReader({
   };
 
   const getHeaderTabActiveStyle = (tab: 'toc' | 'search' | 'hadiths' | 'chat') => {
-    if (tab === 'hadiths') {
-      if (readerTheme === 'dark') {
-        return 'bg-amber-500/25 border border-amber-500/50 text-white shadow-lg shadow-amber-500/25 font-extrabold scale-[1.02] ring-1 ring-amber-500/30';
-      }
-      return 'bg-gradient-to-b from-white/90 via-amber-50/60 to-amber-100/70 backdrop-blur-xl border border-amber-300/80 text-amber-950 shadow-md shadow-amber-500/10 font-extrabold scale-[1.02]';
-    }
     if (readerTheme === 'dark') {
       switch (accentColor) {
         case 'amber':
@@ -2532,6 +2526,145 @@ export default function TurathReader({
       case 'emerald': return 'border-teal-200 shadow-teal-950/10 ring-1 ring-teal-400/20';
       case 'blue': return 'border-blue-200 shadow-blue-950/10 ring-1 ring-blue-400/20';
       case 'purple': default: return 'border-purple-200 shadow-purple-950/10 ring-1 ring-purple-400/20';
+    }
+  };
+
+  const getHadithHeaderIconClass = () => {
+    switch (accentColor) {
+      case 'amber':
+        return readerTheme === 'dark' ? 'text-[#dfbf83]' : 'text-[#b88d46]';
+      case 'emerald':
+        return readerTheme === 'dark' ? 'text-teal-400' : 'text-teal-600';
+      case 'blue':
+        return readerTheme === 'dark' ? 'text-blue-400' : 'text-blue-600';
+      case 'purple':
+      default:
+        return readerTheme === 'dark' ? 'text-purple-400' : 'text-brand-magenta';
+    }
+  };
+
+  const getHadithBtnClass = () => {
+    switch (accentColor) {
+      case 'amber':
+        return 'bg-[#b88d46] hover:bg-[#9a7434] text-white shadow-md shadow-amber-900/20';
+      case 'emerald':
+        return 'bg-teal-600 hover:bg-teal-700 text-white shadow-md shadow-teal-900/20';
+      case 'blue':
+        return 'bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-900/20';
+      case 'purple':
+      default:
+        return 'bg-brand-magenta hover:bg-purple-700 text-white shadow-md shadow-purple-900/20';
+    }
+  };
+
+  const getHadithInputFocusClass = () => {
+    switch (accentColor) {
+      case 'amber': return 'focus:ring-amber-500';
+      case 'emerald': return 'focus:ring-teal-500';
+      case 'blue': return 'focus:ring-blue-500';
+      case 'purple':
+      default: return 'focus:ring-brand-magenta';
+    }
+  };
+
+  const getHadithCardActiveStyle = () => {
+    if (readerTheme === 'dark') {
+      switch (accentColor) {
+        case 'amber':
+          return 'bg-amber-500/20 border-amber-500/60 text-amber-300 shadow-sm ring-1 ring-amber-500/40';
+        case 'emerald':
+          return 'bg-teal-500/20 border-teal-500/60 text-teal-200 shadow-sm ring-1 ring-teal-500/40';
+        case 'blue':
+          return 'bg-blue-500/20 border-blue-500/60 text-blue-200 shadow-sm ring-1 ring-blue-500/40';
+        case 'purple':
+        default:
+          return 'bg-brand-magenta/20 border-brand-magenta/60 text-purple-200 shadow-sm ring-1 ring-brand-magenta/40';
+      }
+    }
+    if (readerTheme === 'sepia') {
+      switch (accentColor) {
+        case 'amber':
+          return 'bg-[#dfbf83]/30 border-[#b88d46] text-[#78531b] shadow-xs ring-1 ring-[#b88d46]/30';
+        case 'emerald':
+          return 'bg-teal-100 border-teal-500 text-teal-900 shadow-xs ring-1 ring-teal-500/30';
+        case 'blue':
+          return 'bg-blue-100 border-blue-500 text-blue-900 shadow-xs ring-1 ring-blue-500/30';
+        case 'purple':
+        default:
+          return 'bg-purple-100 border-purple-500 text-purple-900 shadow-xs ring-1 ring-purple-500/30';
+      }
+    }
+    // Light mode
+    switch (accentColor) {
+      case 'amber':
+        return 'bg-amber-500/15 border-amber-500/70 text-amber-900 shadow-sm ring-1 ring-amber-500/30';
+      case 'emerald':
+        return 'bg-teal-500/15 border-teal-500/70 text-teal-900 shadow-sm ring-1 ring-teal-500/30';
+      case 'blue':
+        return 'bg-blue-500/15 border-blue-500/70 text-blue-900 shadow-sm ring-1 ring-blue-500/30';
+      case 'purple':
+      default:
+        return 'bg-brand-magenta/15 border-brand-magenta/70 text-purple-950 shadow-sm ring-1 ring-brand-magenta/30';
+    }
+  };
+
+  const getHadithCardInactiveStyle = () => {
+    if (readerTheme === 'dark') {
+      switch (accentColor) {
+        case 'amber':
+          return 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-amber-500/40 text-slate-200';
+        case 'emerald':
+          return 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-teal-500/40 text-slate-200';
+        case 'blue':
+          return 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-blue-500/40 text-slate-200';
+        case 'purple':
+        default:
+          return 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-brand-magenta/40 text-slate-200';
+      }
+    }
+    if (readerTheme === 'sepia') {
+      switch (accentColor) {
+        case 'amber':
+          return 'bg-[#FAF5ED] border-[#E2D6C0] hover:bg-[#F4ECD8] hover:border-[#b88d46]/50 text-[#3D2C1D]';
+        case 'emerald':
+          return 'bg-[#FAF5ED] border-[#E2D6C0] hover:bg-teal-50/60 hover:border-teal-400 text-[#3D2C1D]';
+        case 'blue':
+          return 'bg-[#FAF5ED] border-[#E2D6C0] hover:bg-blue-50/60 hover:border-blue-400 text-[#3D2C1D]';
+        case 'purple':
+        default:
+          return 'bg-[#FAF5ED] border-[#E2D6C0] hover:bg-purple-50/60 hover:border-purple-400 text-[#3D2C1D]';
+      }
+    }
+    // Light mode
+    switch (accentColor) {
+      case 'amber':
+        return 'bg-white border-slate-200/80 hover:bg-amber-50/70 hover:border-amber-300 text-slate-800 shadow-xs';
+      case 'emerald':
+        return 'bg-white border-slate-200/80 hover:bg-teal-50/70 hover:border-teal-300 text-slate-800 shadow-xs';
+      case 'blue':
+        return 'bg-white border-slate-200/80 hover:bg-blue-50/70 hover:border-blue-300 text-slate-800 shadow-xs';
+      case 'purple':
+      default:
+        return 'bg-white border-slate-200/80 hover:bg-purple-50/70 hover:border-purple-300 text-slate-800 shadow-xs';
+    }
+  };
+
+  const getHadithNumClass = (isCurrentPage: boolean) => {
+    if (isCurrentPage) {
+      switch (accentColor) {
+        case 'amber': return 'text-amber-700 dark:text-amber-300 font-black';
+        case 'emerald': return 'text-teal-700 dark:text-teal-300 font-black';
+        case 'blue': return 'text-blue-700 dark:text-blue-300 font-black';
+        case 'purple':
+        default: return 'text-brand-magenta dark:text-purple-300 font-black';
+      }
+    }
+    switch (accentColor) {
+      case 'amber': return 'text-[#b88d46] font-extrabold';
+      case 'emerald': return 'text-teal-600 font-extrabold';
+      case 'blue': return 'text-blue-600 font-extrabold';
+      case 'purple':
+      default: return 'text-brand-magenta font-extrabold';
     }
   };
 
@@ -3213,6 +3346,7 @@ export default function TurathReader({
   const [chatHistory, setChatHistory] = useState<Message[]>([])
   const [chatLoading, setChatLoading] = useState(false)
   const [chatInput, setChatInput] = useState("")
+  const [showResetChatConfirm, setShowResetChatConfirm] = useState(false)
   const [sidebarWidth, setSidebarWidth] = useState(360)
   const [isResizing, setIsResizing] = useState(false)
 
@@ -4973,9 +5107,9 @@ export default function TurathReader({
                     }`}
                   title={`انتقال برقم ${numberedItemsLabel.single} (${hadithsCount} ${numberedItemsLabel.plural})`}
                 >
-                  <Hash size={14} className="text-amber-500 shrink-0" />
+                  <Hash size={14} className={`${accentColor === 'amber' ? 'text-[#b88d46]' : accentColor === 'emerald' ? 'text-teal-600' : accentColor === 'blue' ? 'text-blue-600' : 'text-brand-magenta'} shrink-0`} />
                   <span>{numberedItemsLabel.short}</span>
-                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-500 font-extrabold">{hadithsCount}</span>
+                  <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-extrabold ${accentColor === 'amber' ? 'bg-amber-500/20 text-[#b88d46]' : accentColor === 'emerald' ? 'bg-teal-500/20 text-teal-600' : accentColor === 'blue' ? 'bg-blue-500/20 text-blue-600' : 'bg-brand-magenta/20 text-brand-magenta'}`}>{hadithsCount}</span>
                 </button>
               )}
 
@@ -6246,7 +6380,7 @@ export default function TurathReader({
                   </h3>
                 )}
                 {sidebarTab === 'search' && <h3 className="font-bold text-base flex items-center gap-2"><Search className={`h-4 w-4 ${accentColor === 'amber' ? 'text-[#b88d46]' : accentColor === 'emerald' ? 'text-teal-600' : accentColor === 'blue' ? 'text-blue-600' : 'text-brand-magenta'}`} /> البحث في نصوص الكتاب</h3>}
-                {sidebarTab === 'hadiths' && <h3 className="font-bold text-base flex items-center gap-2"><Hash className="h-4 w-4 text-amber-500" /> {numberedItemsLabel.full}</h3>}
+                {sidebarTab === 'hadiths' && <h3 className="font-bold text-base flex items-center gap-2"><Hash className={`h-4 w-4 ${getHadithHeaderIconClass()}`} /> {numberedItemsLabel.full}</h3>}
                 {sidebarTab === 'highlights' && (
                   <h3 className="font-bold text-base flex items-center gap-2">
                     <Highlighter className={`h-4 w-4 ${getHighlightHeaderIconClass()}`} />
@@ -6263,11 +6397,15 @@ export default function TurathReader({
                 {sidebarTab === 'chat' && chatHistory.length > 0 && (
                   <button
                     type="button"
-                    onClick={() => setChatHistory([])}
-                    className="text-[10px] font-bold text-rose-500 hover:bg-rose-500/10 px-2 py-1 rounded-lg transition-colors cursor-pointer"
-                    title="بدء محادثة جديدة"
+                    onClick={() => setShowResetChatConfirm(true)}
+                    className={`w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-xl border transition-all duration-200 active:scale-95 shadow-sm hover:scale-105 cursor-pointer ${readerTheme === 'dark'
+                      ? 'bg-white/10 border-white/20 text-white/90 hover:bg-white/20 hover:text-white shadow-black/40'
+                      : 'bg-white/80 border-slate-300/80 text-slate-700 hover:bg-white hover:text-slate-900 hover:border-slate-400 shadow-slate-900/5'
+                      }`}
+                    title="بدء محادثة جديدة ومسح الرسائل"
+                    aria-label="بدء محادثة جديدة"
                   >
-                    محادثة جديدة
+                    <RotateCcw className="h-3.5 w-3.5" strokeWidth={2.2} />
                   </button>
                 )}
                 {sidebarTab === 'highlights' && highlights.length > 0 && (
@@ -6583,10 +6721,15 @@ export default function TurathReader({
                   )}
                 </div>
 
-                <div className={`p-3 sm:p-4 border-t shrink-0 z-20 ${readerTheme === 'dark' ? 'border-white/10 bg-[#0f1422]' : 'border-gray-200/60 bg-white'}`}>
+                <div className={`p-3 sm:p-4 pt-5 shrink-0 z-20 border-0 border-none ${readerTheme === 'dark'
+                    ? 'bg-gradient-to-t from-[#0f1422] via-[#0f1422]/80 to-transparent'
+                    : readerTheme === 'sepia'
+                      ? 'bg-gradient-to-t from-[#FAF5ED] via-[#FAF5ED]/80 to-transparent'
+                      : 'bg-gradient-to-t from-white via-white/85 to-transparent'
+                  }`}>
                   <form onSubmit={handleSendChatMessage} className="flex flex-col w-full gap-2 relative">
                     <div className="gradient-border min-w-0 flex-1 rounded-[22px] p-[2px] shadow-lg shadow-primary/20 transition-all duration-300">
-                      <div className={`flex items-end gap-2 rounded-[20px] py-1.5 pr-4 pl-2 transition-all duration-300 ${readerTheme === 'dark' ? 'bg-[#0f1422]' : 'bg-white'}`}>
+                      <div className={`flex items-end gap-2 rounded-[20px] py-1.5 pr-4 pl-2 transition-all duration-300 ${readerTheme === 'dark' ? 'bg-[#0f1422]' : readerTheme === 'sepia' ? 'bg-[#FAF5ED]' : 'bg-white'}`}>
                         <textarea
                           rows={1}
                           className="font-sans min-w-0 flex-1 resize-none bg-transparent py-2 text-sm outline-none placeholder:opacity-50 [&::-webkit-scrollbar]:hidden"
@@ -6915,47 +7058,48 @@ export default function TurathReader({
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') handleJumpToHadith(hadithSearchInput);
                       }}
-                      className={`flex-1 rounded-2xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all ${readerTheme === 'dark' ? 'bg-white/5 border border-white/10 text-white placeholder-white/40' : 'bg-slate-100 text-slate-900 placeholder-slate-400 border border-slate-200'}`}
+                      className={`flex-1 rounded-2xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 ${getHadithInputFocusClass()} transition-all ${readerTheme === 'dark' ? 'bg-white/5 border border-white/10 text-white placeholder-white/40' : 'bg-slate-100 text-slate-900 placeholder-slate-400 border border-slate-200'}`}
                     />
                     <button
                       type="button"
                       onClick={() => handleJumpToHadith(hadithSearchInput)}
-                      className="px-3.5 py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-md transition-all shrink-0 active:scale-95 cursor-pointer"
+                      className={`px-3.5 py-2.5 rounded-2xl font-bold text-xs transition-all shrink-0 active:scale-95 cursor-pointer ${getHadithBtnClass()}`}
                     >
                       انتقال
                     </button>
                   </div>
                   <p className="text-[11px] text-muted-foreground font-semibold">
-                    يتوفر في هذا الكتاب <strong className="text-amber-500">{hadithsCount}</strong> موضعاً مرقماً ({numberedItemsLabel.plural}).
+                    يتوفر في هذا الكتاب <strong className={getAccentTextClass()}>{toEasternArabicNumerals(hadithsCount)}</strong> موضعاً مرقماً ({numberedItemsLabel.plural}).
                   </p>
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
                   <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
-                    {Object.entries(hadithsMap).slice(0, 150).map(([hNum, pageTarget]) => (
-                      <button
-                        key={hNum}
-                        onClick={() => {
-                          setCurrentPage(pageTarget);
-                          if (typeof window !== 'undefined' && window.innerWidth < 768) {
-                            setSidebarTab('none');
-                          }
-                        }}
-                        className={`flex flex-col items-center justify-center p-2 rounded-xl border text-xs font-bold transition-all cursor-pointer ${pageTarget === currentPage
-                          ? 'bg-amber-500/20 border-amber-500/50 text-amber-500 shadow-sm'
-                          : readerTheme === 'dark'
-                            ? 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-amber-500/40 text-slate-200'
-                            : 'bg-white border-slate-200/80 hover:bg-amber-50 hover:border-amber-300 text-slate-800'
-                          }`}
-                      >
-                        <span className="text-[10px] text-amber-500 font-extrabold">#{hNum}</span>
-                        <span className="text-[9px] opacity-60">صـ {pageTarget}</span>
-                      </button>
-                    ))}
+                    {Object.entries(hadithsMap).slice(0, 150).map(([hNum, pageTarget]) => {
+                      const isCurrentPage = pageTarget === currentPage;
+                      return (
+                        <button
+                          key={hNum}
+                          onClick={() => {
+                            setCurrentPage(pageTarget);
+                            if (typeof window !== 'undefined' && window.innerWidth < 768) {
+                              setSidebarTab('none');
+                            }
+                          }}
+                          className={`flex flex-col items-center justify-center p-2 rounded-xl border text-xs font-bold transition-all cursor-pointer ${isCurrentPage
+                            ? getHadithCardActiveStyle()
+                            : getHadithCardInactiveStyle()
+                            }`}
+                        >
+                          <span className={`text-[10px] ${getHadithNumClass(isCurrentPage)}`}>#{toEasternArabicNumerals(hNum)}</span>
+                          <span className="text-[9px] opacity-60 font-semibold">صـ {toEasternArabicNumerals(pageTarget)}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                   {hadithsCount > 150 && (
                     <p className="text-center text-[11px] text-muted-foreground mt-3 font-semibold">
-                      استخدم حقل البحث بالأعلى للوصول الفوري لأي رقم حتى {hadithsCount}.
+                      استخدم حقل البحث بالأعلى للوصول الفوري لأي رقم حتى {toEasternArabicNumerals(hadithsCount)}.
                     </p>
                   )}
                 </div>
@@ -8911,6 +9055,70 @@ export default function TurathReader({
             </button>
           </div>
         </nav>
+      )}
+
+      {/* Feature: Reset Chat Confirmation Modal */}
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {showResetChatConfirm && (
+            <div dir="rtl" className="fixed inset-0 z-[140] flex items-center justify-center p-4">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowResetChatConfirm(false)}
+                className="fixed inset-0 bg-black/60 backdrop-blur-xs cursor-pointer"
+              />
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                onClick={(e) => e.stopPropagation()}
+                className={`relative w-full max-w-sm rounded-3xl p-5 shadow-2xl border flex flex-col gap-4 z-10 ${
+                  readerTheme === 'dark'
+                    ? 'bg-[#0f1422] border-white/15 text-white shadow-black/80'
+                    : readerTheme === 'sepia'
+                      ? 'bg-[#FAF5ED] border-[#E2D6C0] text-[#3D2C1D]'
+                      : 'bg-white border-slate-200 text-slate-900'
+                }`}
+              >
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-rose-500/15 text-rose-500 flex items-center justify-center shrink-0 border border-rose-500/20">
+                    <RotateCcw className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-base mb-1">بدء محادثة جديدة؟</h4>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      سيتم مسح رسائل المحادثة الحالية لبدء جلسة جديدة مع مساعد زاد.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 justify-end pt-2 border-t border-inherit/10">
+                  <button
+                    type="button"
+                    onClick={() => setShowResetChatConfirm(false)}
+                    className="px-4 py-2 rounded-xl text-xs font-bold hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                  >
+                    إلغاء
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setChatHistory([]);
+                      setShowResetChatConfirm(false);
+                    }}
+                    className="px-4 py-2 rounded-xl text-xs font-bold bg-rose-500 hover:bg-rose-600 text-white transition-all cursor-pointer shadow-sm active:scale-95"
+                  >
+                    مسح وبدء من جديد
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>,
+        document.body
       )}
 
       {/* Feature 5: Multi-Volume PDF Selector Modal / Bottom Sheet */}
