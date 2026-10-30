@@ -592,7 +592,7 @@ export function useLibraryData({
     const cleanRaw = (str: string) =>
       str
         .replace(/\s*\([^\)]*\)/g, '') // remove (ت 142هـ)
-        .replace(/^(الشيخ|الإمام|العلامة|الحافظ|الدكتور|د\.)\s+/, '')
+        .replace(/^(شيخ الإسلام|الشيخ|الإمام|العلامة|الحافظ|الدكتور|د\.)\s+/, '')
         .replace(/\bابن\b/g, 'بن')
         .trim();
 

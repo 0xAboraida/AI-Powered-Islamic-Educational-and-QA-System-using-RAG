@@ -97,15 +97,79 @@ const buildTree = (headings: (Heading & { originalIndex?: number })[]): TreeNode
   return root;
 }
 
+/**
+ * Strips all HTML/XML tags (including malformed, broken, or clipped tags like `span data-type="title" >`
+ * and `< span/>`) and decodes HTML entities, while optionally preserving `<em>` highlight tokens.
+ */
+function cleanTurathSnippet(rawText: string, preserveHighlights: boolean = true): string {
+  if (!rawText) return '';
+
+  let text = rawText;
+
+  // 1. If preserving highlights, replace <em> and </em> with safe internal tokens
+  if (preserveHighlights) {
+    text = text
+      .replace(/<em\b[^>]*>/gi, '___EM_START___')
+      .replace(/<\/em>/gi, '___EM_END___');
+  } else {
+    text = text.replace(/<\/?em\b[^>]*>/gi, '');
+  }
+
+  // 2. Remove malformed tags with spaces (e.g. `< span/>`, `</ span>`, `< / span >`)
+  text = text.replace(/<\s*\/?\s*[a-zA-Z0-9_\-]+[^>]*>/gi, ' ');
+
+  // 3. Remove standard complete HTML/XML tags
+  text = text.replace(/<[^>]+>/g, ' ');
+
+  // 4. Remove clipped tag fragments without opening `<` (e.g. `span data-type="title" id="toc-524" >`)
+  text = text.replace(/\b(?:span|div|p|br|hr)\b[^>]*>/gi, ' ');
+
+  // 5. Remove standalone attribute fragments (e.g. `data-level="3 >`, `data-type="title"`)
+  text = text.replace(/\b(?:data-[a-zA-Z0-9_\-]+|id|class|style|level)\s*=\s*["'][^"']*["']\s*>?/gi, ' ');
+  text = text.replace(/\b(?:data-[a-zA-Z0-9_\-]+|id|class|style|level)\s*=\s*[^>\s]+\s*>?/gi, ' ');
+
+  // 6. Any remaining `<` or `>` is broken markup residue, strip it
+  text = text.replace(/[<>]/g, ' ');
+
+  // 7. Remove any dangling HTML tag names or attributes left as standalone English words
+  text = text.replace(/\b(?:span|div|toc|data-type|data-level|data-id)\b/gi, ' ');
+
+  // 8. Decode HTML entities
+  text = text
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&quot;/gi, '"')
+    .replace(/&apos;/gi, "'")
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&#\d+;/g, (match) => {
+      const code = parseInt(match.slice(2, -1), 10);
+      return !isNaN(code) ? String.fromCharCode(code) : '';
+    });
+
+  // 9. Clean up multiple spaces and stray dots/punctuation
+  text = text
+    .replace(/\s{2,}/g, ' ')
+    .replace(/^\s*[.,;:]\s*/, '')
+    .trim();
+
+  return text;
+}
+
 const renderSearchSnippet = (rawText: string, isDark: boolean, accentColor: string = 'amber') => {
   if (!rawText) return null;
-  if (!rawText.includes('<em>')) {
-    return rawText;
+
+  // Clean all HTML codes, broken tags and entities while preserving highlights
+  const cleaned = cleanTurathSnippet(rawText, true);
+
+  if (!cleaned.includes('___EM_START___')) {
+    return cleaned;
   }
-  const parts = rawText.split(/(<em>.*?<\/em>)/gi);
+
+  const parts = cleaned.split(/(___EM_START___.*?___EM_END___)/g);
   return parts.map((part, i) => {
-    if (part.toLowerCase().startsWith('<em>') && part.toLowerCase().endsWith('</em>')) {
-      const keyword = part.slice(4, -5);
+    if (part.startsWith('___EM_START___') && part.endsWith('___EM_END___')) {
+      const keyword = part.slice(14, -12);
       return (
         <span
           key={i}
@@ -2574,7 +2638,7 @@ export default function TurathReader({
   };
 
   const handleCopyHitText = (text: string, index: number) => {
-    const clean = text.replace(/<[^>]+>/g, '').trim();
+    const clean = cleanTurathSnippet(text, false);
     if (navigator.clipboard) {
       navigator.clipboard.writeText(clean);
       setCopiedHitIndex(index);
@@ -4189,7 +4253,7 @@ export default function TurathReader({
     if (bookSearchMode === 'exact' && cleanQuery) {
       termsToHighlight = [cleanQuery];
     } else if (emMatches && emMatches.length > 0) {
-      termsToHighlight = Array.from(new Set(emMatches.map(m => m.replace(/<\/?em>/gi, '').trim()).filter(Boolean)));
+      termsToHighlight = Array.from(new Set(emMatches.map(m => cleanTurathSnippet(m, false).trim()).filter(Boolean)));
     } else if (cleanQuery) {
       termsToHighlight = cleanQuery.split(/\s+/).filter(w => w.length > 1);
     }

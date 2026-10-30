@@ -981,6 +981,17 @@ export default function KnowledgeBase({
                   }}
                   onReadBook={handleReadBook}
                   onOpenLinkedBook={handleOpenLinkedBook}
+                  onOpenBookInfo={(book) => {
+                    const found = publishedBooks.find(b => Number(b.id) === Number(book.id) || b.title === book.title);
+                    setActiveInfoBook(found || {
+                      id: book.id,
+                      title: book.title,
+                      author: book.author,
+                      category: book.categoryLabel || book.category,
+                      century_name: book.authorDeath ? `وفاة ${book.authorDeath}` : undefined,
+                      info: book.description || book.info,
+                    } as any);
+                  }}
                   favoriteBookIds={favoriteBookIds}
                   toggleFavorite={toggleFavorite}
                 />
