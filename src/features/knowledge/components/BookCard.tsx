@@ -730,15 +730,9 @@ export function BookCard({
         </div>
       </div>
 
-      {/* Bottom Row: Right = "قراءة الكتاب" CTA, Left = Action buttons */}
+      {/* Bottom Row: Action buttons on the right, "قراءة الكتاب" CTA on the left */}
       <div className="pt-2 border-t border-slate-100 dark:border-white/5 flex items-center justify-between gap-2 text-xs">
-        {/* Right CTA */}
-        <div className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-bold text-primary group-hover:underline">
-          <span>قراءة الكتاب</span>
-          <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
-        </div>
-
-        {/* Left Action Buttons */}
+        {/* Right Action Buttons */}
         <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
           {/* Download Menu */}
           <div className={`relative ${isDownloadMenuOpen ? 'z-50' : 'z-10'}`}>
@@ -898,6 +892,12 @@ export function BookCard({
               <Trash2 className="w-3.5 h-3.5" />
             </button>
           )}
+        </div>
+
+        {/* Left CTA: قراءة الكتاب */}
+        <div className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-bold text-primary group-hover:underline">
+          <span>قراءة الكتاب</span>
+          <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
         </div>
       </div>
     </div>
