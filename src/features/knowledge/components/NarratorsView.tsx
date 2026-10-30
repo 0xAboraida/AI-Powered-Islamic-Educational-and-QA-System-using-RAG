@@ -446,7 +446,7 @@ export default function NarratorsView({ onReadBook, publishedBooks, onOpenBookIn
     );
   }
 
-  const selectedRankLabel = rankOptions.find(o => o.id === rankFilter)?.label || 'الكل';
+  const selectedRankLabel = rankFilter === 'all' ? 'رتبة الراوي' : (rankOptions.find(o => o.id === rankFilter)?.label || 'رتبة الراوي');
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300" dir="rtl">
@@ -485,22 +485,35 @@ export default function NarratorsView({ onReadBook, publishedBooks, onOpenBookIn
               </button>
             )}
 
-            {/* Subtle Divider */}
-            <div className={`w-px shrink-0 ${isDark ? 'bg-white/20' : 'bg-stone-400/50'} h-6 sm:h-7`} />
-
             {/* Rank Filter Dropdown (تصفية الرتبة كـ dropdown داخل السيرش بار) */}
             <div className="relative" ref={rankPickerRef}>
               <button
                 type="button"
                 onClick={() => setIsRankPickerOpen(!isRankPickerOpen)}
-                className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs font-bold transition-all border cursor-pointer shrink-0 ${rankFilter !== 'all'
+                className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 h-[30px] sm:h-[34px] rounded-full text-xs font-bold transition-all duration-200 border cursor-pointer shrink-0 active:scale-95 ${rankFilter !== 'all'
                     ? getFilterPillActiveStyle()
-                    : 'bg-transparent border-transparent hover:bg-black/5 dark:hover:bg-white/10 text-stone-700 dark:text-stone-300'
+                    : isDark
+                      ? 'bg-white/10 hover:bg-white/20 border-white/20 text-white backdrop-blur-md'
+                      : 'bg-white/40 hover:bg-white/60 border-white/60 hover:border-white text-stone-900 font-bold backdrop-blur-md shadow-2xs'
                   }`}
                 title="تصفية حسب رتبة الراوي"
               >
                 <span className="truncate max-w-[85px] sm:max-w-[130px]">{selectedRankLabel}</span>
-                <ChevronDown className={`w-3 h-3 transition-transform ${isRankPickerOpen ? 'rotate-180' : ''}`} />
+                {rankFilter !== 'all' ? (
+                  <span
+                    role="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setRankFilter('all');
+                    }}
+                    className="w-3.5 h-3.5 rounded-full flex items-center justify-center transition-all ml-0.5 cursor-pointer shrink-0 bg-black/10 hover:bg-black/20 dark:bg-white/20 dark:hover:bg-white/30"
+                    title="إلغاء التصفية"
+                  >
+                    <X className="w-2.5 h-2.5" />
+                  </span>
+                ) : (
+                  <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${isRankPickerOpen ? 'rotate-180' : ''}`} />
+                )}
               </button>
 
               {/* Dropdown Menu */}

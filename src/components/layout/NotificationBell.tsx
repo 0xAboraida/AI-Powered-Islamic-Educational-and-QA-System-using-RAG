@@ -551,14 +551,13 @@ export default function NotificationBell({ variant = 'default', className = '' }
                   ? 'border-white/15 bg-white/[0.06] hover:bg-white/[0.12] text-white shadow-[0_4px_20px_rgba(0,0,0,0.25)]'
                   : 'border-white/60 bg-white/[0.30] hover:bg-white/[0.40] text-stone-900 shadow-[0_4px_20px_rgba(0,0,0,0.06)]'
               } ${className}`
-            : `relative flex h-8 w-8 lg:h-10 lg:w-10 items-center justify-center rounded-full border backdrop-blur-md transition-all active:scale-95 ${getBellButtonClass()} ${className}`
+            : `relative flex h-10 w-10 items-center justify-center rounded-full border backdrop-blur-md transition-all active:scale-95 cursor-pointer group ${getBellButtonClass()} ${className}`
         }
         title="الإشعارات"
       >
         <Bell
-          size={18}
+          className={`h-4.5 w-4.5 transition-transform duration-300 group-hover:scale-105 ${isOpen ? 'scale-110' : ''}`}
           strokeWidth={2.2}
-          className={`transition-transform duration-300 ${isOpen ? 'scale-110' : ''}`}
         />
 
         {/* Pulse Dot & Badge Counter */}

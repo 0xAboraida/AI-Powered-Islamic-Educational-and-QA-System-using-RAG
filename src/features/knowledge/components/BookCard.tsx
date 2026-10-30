@@ -220,6 +220,35 @@ export function BookCard({
     }
   };
 
+  const triggerDownloadPdfFromUrl = async (url: string, filename: string) => {
+    try {
+      const res = await fetch(url);
+      if (res.ok) {
+        const blob = await res.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = filename.endsWith('.pdf') ? filename : `${filename}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 2000);
+        return true;
+      }
+    } catch (err) {
+      console.warn('Fetch blob download failed, trying anchor fallback:', err);
+    }
+
+    // Fallback: create temporary anchor
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename.endsWith('.pdf') ? filename : `${filename}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    return false;
+  };
+
   const handleOpenOrDownloadPdf = async (e?: React.MouseEvent) => {
     if (e) {
       e.preventDefault();
@@ -227,30 +256,35 @@ export function BookCard({
     }
     setIsDownloadMenuOpen(false);
 
-    // 1. Direct URL if already attached
-    const immediateUrl = getBookPdfUrl(book);
-    if (immediateUrl) {
-      window.open(immediateUrl, '_blank', 'noopener,noreferrer');
-      return;
-    }
+    const safeTitle = (book.title || 'كتاب').replace(/[\\/:*?"<>|]/g, '_').trim();
+    const pdfFileName = `${safeTitle}.pdf`;
 
-    // 2. Fetch Turath PDF dynamically on demand
-    const turathId = typeof book.id === 'number' ? book.id : parseInt(String(book.id), 10);
-    if (!isNaN(turathId) && turathId > 0) {
-      setLoadingPdf(true);
-      try {
-        const resolvedUrl = await fetchTurathBookPdfUrl(turathId);
-        if (resolvedUrl) {
-          book.pdf_url = resolvedUrl;
-          window.open(resolvedUrl, '_blank', 'noopener,noreferrer');
-        } else {
-          alert('النسخة المصورة جارية إتاحتها من خادم تراث، يرجى المحاولة بعد قليل.');
+    setLoadingPdf(true);
+    try {
+      // 1. Direct URL if already attached
+      let targetUrl = getBookPdfUrl(book);
+
+      // 2. Fetch Turath PDF dynamically on demand if not attached
+      if (!targetUrl) {
+        const turathId = typeof book.id === 'number' ? book.id : parseInt(String(book.id), 10);
+        if (!isNaN(turathId) && turathId > 0) {
+          targetUrl = await fetchTurathBookPdfUrl(turathId);
+          if (targetUrl) {
+            book.pdf_url = targetUrl;
+          }
         }
-      } catch (err) {
-        console.error('Error fetching PDF:', err);
-      } finally {
-        setLoadingPdf(false);
       }
+
+      if (targetUrl) {
+        await triggerDownloadPdfFromUrl(targetUrl, pdfFileName);
+      } else {
+        alert('النسخة المصورة جارية إتاحتها من خادم تراث، يرجى المحاولة بعد قليل.');
+      }
+    } catch (err) {
+      console.error('Error downloading PDF:', err);
+      alert('حدث خطأ أثناء محاولة تحميل ملف الـ PDF.');
+    } finally {
+      setLoadingPdf(false);
     }
   };
 
@@ -749,10 +783,10 @@ export function BookCard({
               <div
                 ref={downloadMenuRef}
                 onClick={(e) => e.stopPropagation()}
-                className={`absolute left-0 w-56 rounded-xl border border-slate-200 dark:border-white/10 bg-white/95 dark:bg-[#161226]/95 backdrop-blur-xl p-1.5 shadow-xl z-50 text-right animate-in fade-in zoom-in-95 duration-150 ${
+                className={`absolute right-0 w-56 rounded-xl border border-slate-200 dark:border-white/10 bg-white/95 dark:bg-[#161226]/95 backdrop-blur-xl p-1.5 shadow-xl z-50 text-right animate-in fade-in zoom-in-95 duration-150 ${
                   menuPlacement === 'top'
-                    ? 'bottom-full mb-1.5 origin-bottom-left'
-                    : 'top-full mt-1.5 origin-top-left'
+                    ? 'bottom-full mb-1.5 origin-bottom-right'
+                    : 'top-full mt-1.5 origin-top-right'
                 }`}
               >
                 <div className="flex items-center justify-between px-2 py-1 border-b border-slate-100 dark:border-white/10 mb-1">

@@ -639,16 +639,18 @@ export const SearchConsole: React.FC<SearchConsoleProps> = ({
             </button>
           )}
 
-          {/* Subtle Vertical Divider (Desktop only) */}
-          <div className={`w-px shrink-0 ${!isCompact && activeMainTab === 'home'
-            ? 'bg-white/30'
-            : isDark
-              ? 'bg-white/20'
-              : 'bg-stone-400/50'
-            } ${isCompact ? 'h-5' : 'h-6 sm:h-7'} hidden md:block`} />
+          {/* Subtle Vertical Divider (Desktop only - hidden on authors) */}
+          {activeMainTab !== 'authors' && (
+            <div className={`w-px shrink-0 ${!isCompact && activeMainTab === 'home'
+              ? 'bg-white/30'
+              : isDark
+                ? 'bg-white/20'
+                : 'bg-stone-400/50'
+              } ${isCompact ? 'h-5' : 'h-6 sm:h-7'} hidden md:block`} />
+          )}
 
-          {/* Dropdown Filters: Domain & Author (Desktop: inside search bar) */}
-          <div className="hidden md:flex items-center gap-1 sm:gap-1.5 shrink-0">
+          {/* Dropdown Filters: Domain & Author (On authors tab: visible inside search bar on all screen sizes) */}
+          <div className={`${activeMainTab === 'authors' ? 'flex' : 'hidden md:flex'} items-center gap-1 sm:gap-1.5 shrink-0`}>
             {/* Domain Picker */}
             <div className="relative" ref={domainPickerRef}>
               <button
@@ -668,9 +670,13 @@ export const SearchConsole: React.FC<SearchConsoleProps> = ({
                   }`}
                 title="تصفية حسب القسم الشرعي"
               >
-                <Layers className={`${isCompact ? 'w-3 h-3' : 'w-3.5 h-3.5'} ${getFilterPillIconColor(selectedDomain !== 'all')} shrink-0`} />
-                <span className="truncate max-w-[70px] sm:max-w-[110px] md:max-w-[130px]">
-                  {selectedDomain === 'all' ? 'القسم: الكل' : selectedDomain}
+                {activeMainTab !== 'authors' && (
+                  <Layers className={`${isCompact ? 'w-3 h-3' : 'w-3.5 h-3.5'} ${getFilterPillIconColor(selectedDomain !== 'all')} shrink-0`} />
+                )}
+                <span className="truncate max-w-[80px] sm:max-w-[110px] md:max-w-[130px]">
+                  {selectedDomain === 'all'
+                    ? (activeMainTab === 'authors' ? 'كل الأقسام' : 'القسم: الكل')
+                    : selectedDomain}
                 </span>
                 {selectedDomain !== 'all' ? (
                   <span
@@ -870,8 +876,8 @@ export const SearchConsole: React.FC<SearchConsoleProps> = ({
         </div>
       </div>
 
-      {/* Mobile Filters Row (Below capsule on home, authors, and categories tabs when !isCompact) */}
-      {!isCompact && (activeMainTab === 'home' || activeMainTab === 'authors' || activeMainTab === 'categories') && (
+      {/* Mobile Filters Row (Below capsule on home and categories tabs when !isCompact) */}
+      {!isCompact && (activeMainTab === 'home' || activeMainTab === 'categories') && (
         <div className="flex md:hidden items-center justify-center gap-2 mt-2 px-1 animate-in fade-in duration-200">
           {/* Domain Picker (Mobile) */}
           <div className="relative" ref={mobileDomainPickerRef}>
@@ -968,8 +974,7 @@ export const SearchConsole: React.FC<SearchConsoleProps> = ({
             </div>
           </div>
 
-          {/* Author Picker (Mobile) - hidden on authors tab */}
-          {activeMainTab !== 'authors' && (
+          {/* Author Picker (Mobile) */}
           <div className="relative" ref={mobileAuthorPickerRef}>
             <button
               type="button"
@@ -1079,7 +1084,6 @@ export const SearchConsole: React.FC<SearchConsoleProps> = ({
               </div>
             </div>
           </div>
-          )}
         </div>
       )}
 

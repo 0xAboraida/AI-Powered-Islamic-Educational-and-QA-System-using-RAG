@@ -1039,11 +1039,10 @@ export function AuthorsView({
                                   ? 'bg-white/10 hover:bg-white/20 border-white/20 text-white backdrop-blur-md'
                                   : 'bg-white/60 hover:bg-white/90 border-slate-200/80 text-stone-800 backdrop-blur-md shadow-2xs'
                               }`}
-                            title="تصفية مصنفات المؤلف حسب المجال / التصنيف"
+                            title="تصفية مصنفات المؤلف حسب القسم"
                           >
-                            <Layers className="w-3.5 h-3.5 shrink-0 opacity-80" />
-                            <span className="truncate max-w-[70px] sm:max-w-[120px]">
-                              {selectedAuthorCategory === 'all' ? 'المجال: الكل' : selectedAuthorCategory}
+                            <span className="truncate max-w-[85px] sm:max-w-[130px]">
+                              {selectedAuthorCategory === 'all' ? 'كل الأقسام' : selectedAuthorCategory}
                             </span>
                             {selectedAuthorCategory !== 'all' ? (
                               <span
@@ -1053,7 +1052,7 @@ export function AuthorsView({
                                   setSelectedAuthorCategory('all');
                                 }}
                                 className="w-3.5 h-3.5 rounded-full flex items-center justify-center transition-all ml-0.5 cursor-pointer bg-black/10 hover:bg-black/20 dark:bg-white/20 dark:hover:bg-white/30"
-                                title="إلغاء تصفية المجال"
+                                title="إلغاء تصفية القسم"
                               >
                                 <X className="w-2.5 h-2.5" />
                               </span>
@@ -1069,8 +1068,8 @@ export function AuthorsView({
                                 : 'bg-white/95 border-slate-200 text-stone-900'
                               }`}>
                               <div className="flex items-center justify-between px-2.5 pb-2 mb-1 border-b border-slate-100 dark:border-white/10 text-xs font-bold text-muted-foreground">
-                                <span>مجالات مؤلفات {currentAuthorData.authorName}</span>
-                                <span className="text-[10px] font-mono opacity-80">{authorCategories.length} مجال</span>
+                                <span>أقسام مؤلفات {currentAuthorData.authorName}</span>
+                                <span className="text-[10px] font-mono opacity-80">{authorCategories.length} قسم</span>
                               </div>
 
                               <div className="flex flex-col gap-1 max-h-[260px] overflow-y-auto [&::-webkit-scrollbar]:hidden">
@@ -1086,7 +1085,7 @@ export function AuthorsView({
                                       : 'hover:bg-slate-100 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300'
                                     }`}
                                 >
-                                  <span>كل المجالات</span>
+                                  <span>كل الأقسام</span>
                                   <span className={`text-[11px] px-1.5 py-0.2 rounded-md ${selectedAuthorCategory === 'all' ? 'bg-white/20 text-white' : 'bg-slate-100 dark:bg-white/10 text-muted-foreground'
                                     }`}>
                                     {currentAuthorData.books.length}
@@ -1343,34 +1342,34 @@ export function AuthorsView({
                         : 'hover:bg-slate-50 dark:hover:bg-white/5'
                         }`}
                     >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <span className={`w-7 h-7 rounded-lg flex items-center justify-center font-mono font-bold text-xs shrink-0 transition-all ${getCategoryNumberBadgeStyle(isOpen)}`}>
+                      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                        <span className={`w-6 h-6 sm:w-7 sm:h-7 rounded-lg flex items-center justify-center font-mono font-bold text-xs shrink-0 transition-all ${getCategoryNumberBadgeStyle(isOpen)}`}>
                           {idx + 1}
                         </span>
 
                         <div className="min-w-0">
-                          <h3 className="font-bold text-sm sm:text-base text-slate-900 dark:text-slate-100 leading-snug">
+                          <h3 className="font-bold text-xs sm:text-sm md:text-base text-slate-900 dark:text-slate-100 leading-snug whitespace-nowrap">
                             {cGroup.centuryName}
                           </h3>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2 shrink-0">
-                        <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] sm:text-xs font-bold transition-colors ${isOpen
+                      <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+                        <span className={`inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-full text-[10px] sm:text-xs font-semibold sm:font-bold transition-colors whitespace-nowrap ${isOpen
                           ? getCategoryActiveBadgeStyle()
                           : 'bg-slate-100 dark:bg-white/[0.04] text-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-white/5 group-hover:border-white/10'
                           }`}>
                           {authorCount} مؤلف
                         </span>
 
-                        <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] sm:text-xs font-bold transition-colors ${isOpen
+                        <span className={`inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-full text-[10px] sm:text-xs font-semibold sm:font-bold transition-colors whitespace-nowrap ${isOpen
                           ? getCategoryActiveBadgeStyle()
                           : 'bg-slate-100 dark:bg-white/[0.04] text-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-white/5 group-hover:border-white/10'
                           }`}>
                           {booksCount} كتاب
                         </span>
 
-                        <div className={`w-7 h-7 rounded-full flex items-center justify-center transition-transform duration-300 ${isOpen ? `${getCategoryActiveIconStyle()} rotate-180` : 'bg-slate-100 dark:bg-white/5 text-muted-foreground group-hover:text-foreground'
+                        <div className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center transition-transform duration-300 ${isOpen ? `${getCategoryActiveIconStyle()} rotate-180` : 'bg-slate-100 dark:bg-white/5 text-muted-foreground group-hover:text-foreground'
                           }`}>
                           <ChevronDown className="w-3.5 h-3.5" />
                         </div>

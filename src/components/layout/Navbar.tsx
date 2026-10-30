@@ -650,9 +650,9 @@ export default function Navbar({
               onClick={() => setShowProfileMenu(!showProfileMenu)}
               aria-label="الإعدادات والمظهر"
               title="الإعدادات والمظهر"
-              className={`flex h-9 w-9 lg:h-10 lg:w-10 items-center justify-center rounded-full border backdrop-blur-md transition-all active:scale-95 group ${getNavActionBtnClass()}`}
+              className={`flex h-10 w-10 items-center justify-center rounded-full border backdrop-blur-md transition-all active:scale-95 group ${getNavActionBtnClass()}`}
             >
-              <Settings className="h-4 w-4 lg:h-[18px] lg:w-[18px] transition-transform group-hover:rotate-45 duration-300" strokeWidth={2.2} />
+              <Settings className="h-4.5 w-4.5 transition-transform group-hover:rotate-45 duration-300" strokeWidth={2.2} />
             </button>
 
             {showProfileMenu && (
