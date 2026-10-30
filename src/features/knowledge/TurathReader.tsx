@@ -6200,7 +6200,7 @@ export default function TurathReader({
             )}
 
             {/* Header of the sliding panel */}
-            <div className={`flex items-center justify-between p-4 border-b ${readerTheme === 'dark' ? 'border-white/5 bg-white/[0.02] text-white' : 'border-gray-200/60 bg-white/50 text-slate-900'}`}>
+            <div className={`flex items-center justify-between min-h-[3rem] sm:min-h-[3.5rem] md:min-h-[4rem] py-1 md:py-1.5 px-3 md:px-4 border-b shrink-0 ${readerTheme === 'dark' ? 'border-white/5 bg-white/[0.02] text-white' : 'border-gray-200/60 bg-white/50 text-slate-900'}`}>
               <div className="flex items-center gap-2 min-w-0">
                 {sidebarTab === 'toc' && (
                   availableVolumes.length > 1 && selectedVolumeForToc ? (
@@ -6239,6 +6239,12 @@ export default function TurathReader({
                     </h3>
                   )
                 )}
+                {sidebarTab === 'chat' && (
+                  <h3 className="font-bold text-base flex items-center gap-2">
+                    {renderZadLogo('h-4 w-4')}
+                    <span>مساعد زاد</span>
+                  </h3>
+                )}
                 {sidebarTab === 'search' && <h3 className="font-bold text-base flex items-center gap-2"><Search className={`h-4 w-4 ${accentColor === 'amber' ? 'text-[#b88d46]' : accentColor === 'emerald' ? 'text-teal-600' : accentColor === 'blue' ? 'text-blue-600' : 'text-brand-magenta'}`} /> البحث في نصوص الكتاب</h3>}
                 {sidebarTab === 'hadiths' && <h3 className="font-bold text-base flex items-center gap-2"><Hash className="h-4 w-4 text-amber-500" /> {numberedItemsLabel.full}</h3>}
                 {sidebarTab === 'highlights' && (
@@ -6254,6 +6260,16 @@ export default function TurathReader({
                 )}
               </div>
               <div className="flex items-center gap-2">
+                {sidebarTab === 'chat' && chatHistory.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setChatHistory([])}
+                    className="text-[10px] font-bold text-rose-500 hover:bg-rose-500/10 px-2 py-1 rounded-lg transition-colors cursor-pointer"
+                    title="بدء محادثة جديدة"
+                  >
+                    محادثة جديدة
+                  </button>
+                )}
                 {sidebarTab === 'highlights' && highlights.length > 0 && (
                   <button
                     type="button"
@@ -6276,6 +6292,46 @@ export default function TurathReader({
                 </button>
               </div>
             </div>
+
+            {/* Horizontal Scrollable Heading Hierarchy Strip for Sidebar Tabs */}
+            {activeHierarchy.length > 0 && (
+              <div
+                className={`w-full flex items-center px-3 sm:px-4 py-1 md:py-1.5 border-b overflow-x-auto no-scrollbar scroll-smooth transition-colors duration-200 select-none shrink-0 ${readerTheme === 'dark'
+                    ? 'border-white/5 bg-black/25 text-white/80'
+                    : 'border-black/5 bg-black/[0.02] text-slate-700'
+                  }`}
+              >
+                <div className="flex items-center gap-1.5 whitespace-nowrap text-[10px] sm:text-[11px] leading-tight min-w-max">
+                  <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${getAccentDotColor()} animate-pulse`} />
+                  {activeHierarchy.map((item, idx) => {
+                    const isCurrent = idx === activeHierarchy.length - 1;
+                    return (
+                      <React.Fragment key={idx}>
+                        <span
+                          className={`transition-colors truncate max-w-[200px] sm:max-w-[340px] ${isCurrent
+                              ? `font-bold ${accentColor === 'amber'
+                                ? 'text-amber-600 dark:text-[#dfbf83]'
+                                : accentColor === 'emerald'
+                                  ? 'text-teal-700 dark:text-teal-300'
+                                  : accentColor === 'blue'
+                                    ? 'text-blue-600 dark:text-blue-300'
+                                    : 'text-brand-magenta dark:text-purple-300'
+                              }`
+                              : 'opacity-65 hover:opacity-100 font-medium'
+                            }`}
+                          title={item}
+                        >
+                          {item}
+                        </span>
+                        {!isCurrent && (
+                          <ChevronLeft className="w-3 h-3 text-muted-foreground/40 shrink-0" />
+                        )}
+                      </React.Fragment>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             <div className="flex-1 overflow-hidden relative">
               {/* TOC Panel */}
