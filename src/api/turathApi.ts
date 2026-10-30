@@ -148,7 +148,7 @@ export async function fetchTurathBookIndexes(turathId: number): Promise<TurathBo
 /**
  * Fetch direct Turath PDF download/view URL dynamically for any book
  */
-export async function fetchTurathBookPdfUrl(turathId: number): Promise<string | null> {
+export async function fetchTurathBookPdfUrl(turathId: number, targetVolume?: number | string): Promise<string | null> {
   try {
     const data = await fetchTurathBookIndexes(turathId)
     if (!data) return null
@@ -156,24 +156,61 @@ export async function fetchTurathBookPdfUrl(turathId: number): Promise<string | 
     // 1. Check meta.pdf_links (Official Turath API format)
     const pdfLinks = data.meta?.pdf_links
     if (pdfLinks && Array.isArray(pdfLinks.files) && pdfLinks.files.length > 0) {
-      let file = pdfLinks.files[0]
-      if (file) {
-        file = file.split('|')[0].trim().replace(/^\/+/, '')
-        const root = (pdfLinks.root || '').trim().replace(/^\/+|\/+$/g, '')
-        let fullPath = root ? `${root}/${file}` : file
+      const root = (pdfLinks.root || '').trim().replace(/^\/+|\/+$/g, '')
+      
+      const formatItemUrl = (file: string) => {
+        const cleanFile = file.split('|')[0].trim().replace(/^\/+/, '')
+        let fullPath = root ? `${root}/${cleanFile}` : cleanFile
         if (fullPath.includes('archive.org')) {
           fullPath = 'archive/' + fullPath.replace('https://archive.org/download/', '').replace('/', '_=_')
         }
         return `https://files.turath.io/pdf/${encodeURIComponent(fullPath).replace(/%2F/g, '/')}`
+      }
+
+      // Check if user requested a specific volume
+      if (targetVolume !== undefined && targetVolume !== null && targetVolume !== '') {
+        const targetNum = typeof targetVolume === 'number' ? targetVolume : parseInt(String(targetVolume), 10)
+        if (!isNaN(targetNum)) {
+          const match = pdfLinks.files.find(f => {
+            const parts = f.split('|')
+            if (parts[1] && parts[1].trim() === String(targetNum)) return true
+            const numMatch = parts[0].match(/(?:_0?(\d+)|-(\d+)|\bvol(?:ume)?[-_]?(\d+)|_(\d+)\.pdf|^(\d+)_)/i)
+            const n = numMatch ? parseInt(numMatch[1] || numMatch[2] || numMatch[3] || numMatch[4] || numMatch[5], 10) : null
+            return n === targetNum
+          })
+          if (match) return formatItemUrl(match)
+        }
+      }
+
+      // Find first non-cover volume (e.g. Volume 1)
+      const firstRealVolume = pdfLinks.files.find(f => {
+        const parts = f.split('|')
+        const raw = parts[0].trim().replace(/^\/+/, '')
+        const label = parts[1]?.trim()
+        const isCover =
+          (label && /غلاف|مقدمة|عنوان/i.test(label)) ||
+          /^(00_|_0\.pdf|.*[_-]00?\b|.*cover|.*front)/i.test(raw) ||
+          raw.endsWith('p.pdf')
+        return !isCover
+      })
+
+      if (firstRealVolume) {
+        return formatItemUrl(firstRealVolume)
+      }
+
+      // Fallback to first file if all are covers or single file
+      if (pdfLinks.files[0]) {
+        return formatItemUrl(pdfLinks.files[0])
       }
     }
 
     // 2. Fallback to indexes.pdfs
     const pdfs = data.indexes?.pdfs
     if (pdfs && Object.keys(pdfs).length > 0) {
-      const firstKey = Object.keys(pdfs)[0]
-      const filePath = pdfs[firstKey]
       const pdfBase = (data.indexes?.pdf_base || 'https://files.turath.io/pdf/').replace(/\/+$/, '')
+      const entries = Object.entries(pdfs)
+      const nonCoverEntry = entries.find(([k, f]) => !k.startsWith('0') && !f.includes('00_')) || entries[0]
+      const filePath = nonCoverEntry[1]
       return `${pdfBase}/${filePath.replace(/^\/+/, '')}`
     }
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback, useDeferredValue } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowRight, BookOpen, ChevronLeft, ChevronRight, FileText, BookText, Folder, Menu, Loader2, Search, ChevronDown, ChevronUp, Settings2, Maximize, Minimize, Sun, Moon, Type, Sparkles, X, Send, Bookmark, Copy, Volume2, VolumeX, BookmarkCheck, AlignJustify, MoreVertical, MoreHorizontal, Hash, Download, CheckCircle2, FileDown, Layers, Check, HardDriveDownload, BookCheck, RotateCcw, Highlighter, Trash2, Share2, Palette, Quote } from 'lucide-react'
+import { ArrowRight, BookOpen, ChevronLeft, ChevronRight, FileText, BookText, Folder, Menu, Loader2, Search, ChevronDown, ChevronUp, Settings2, Maximize, Minimize, Sun, Moon, Type, Sparkles, X, Send, Bookmark, Copy, Volume2, VolumeX, BookmarkCheck, AlignJustify, MoreVertical, MoreHorizontal, Hash, Download, CheckCircle2, FileDown, Layers, Check, HardDriveDownload, BookCheck, RotateCcw, Highlighter, Trash2, Share2, Palette, Quote, ExternalLink } from 'lucide-react'
 import { useTheme, type AccentColor } from '../../contexts/ThemeContext'
 
 const THEME_ACCENTS: { id: AccentColor; name: string; gradient: string; ring: string }[] = [
@@ -27,7 +27,7 @@ import { AudioReaderButton } from '@/components/common/AudioReaderButton'
 import { fetchTurathBookIndexes, fetchTurathPage, searchTurathCorpus, fetchTurathBookPdfUrl, type TurathSearchHit } from '../../api/turathApi'
 import { idbGetTurathBookTree, idbSetTurathBookTree, idbDeleteTurathBookTree, idbSaveBookOffline, idbGetOfflineBook, idbIsBookSavedOffline, idbRemoveOfflineBook } from '../../utils/indexedDbStorage'
 import { downloadBookFile } from './utils/bookExport'
-import { hasBookPdf, getBookPdfUrl } from './utils/turathMeta'
+import { hasBookPdf, getBookPdfUrl, parsePdfFilesList, type VolumePdfItem } from './utils/turathMeta'
 import IslamicPattern from './components/IslamicPattern'
 
 import type { BookMeta } from './types/bookTypes'
@@ -2587,6 +2587,7 @@ export default function TurathReader({
   // -------------------------------------------------------------------------
   const [pdfBase, setPdfBase] = useState<string | null>(null)
   const [pdfsMap, setPdfsMap] = useState<Record<string, string>>({})
+  const [pdfLinks, setPdfLinks] = useState<{ root?: string; files?: string[] } | null>(book.pdf_links || null)
   const [showPdfModal, setShowPdfModal] = useState(false)
 
   // -------------------------------------------------------------------------
@@ -2602,6 +2603,7 @@ export default function TurathReader({
   const [isExporting, setIsExporting] = useState(false)
   const [exportProgressText, setExportProgressText] = useState('')
   const [loadingPdf, setLoadingPdf] = useState(false)
+  const [downloadingFile, setDownloadingFile] = useState<string | null>(null)
   const [isMobileDownloadExpanded, setIsMobileDownloadExpanded] = useState(false)
   const [isMobileFontExpanded, setIsMobileFontExpanded] = useState(false)
 
@@ -3851,6 +3853,11 @@ export default function TurathReader({
           // Feature 5: Multi-volume PDFs
           if (idx.pdf_base) setPdfBase(idx.pdf_base);
           if (idx.pdfs) setPdfsMap(idx.pdfs);
+          if (dataObj.meta?.pdf_links) {
+            setPdfLinks(dataObj.meta.pdf_links);
+          } else if (dataObj.pdf_links) {
+            setPdfLinks(dataObj.pdf_links);
+          }
         }
 
         return headingsFound.length > 0;
@@ -4233,23 +4240,8 @@ export default function TurathReader({
   // Feature 5: Multi-Volume PDF Links List
   // -------------------------------------------------------------------------
   const volumePdfList = useMemo(() => {
-    if (!pdfsMap || Object.keys(pdfsMap).length === 0) {
-      return [];
-    }
-    return Object.entries(pdfsMap).map(([volKey, fileName]) => {
-      let cleanFile = fileName.replace(/^\/+/, '');
-      const cleanRoot = pdfBase ? pdfBase.replace(/^\/+|\/+$/g, '') : '';
-      const fullPath = cleanRoot ? `${cleanRoot}/${cleanFile}` : cleanFile;
-      const url = fullPath.includes('archive.org') ? fullPath : `https://files.turath.io/pdf/${fullPath}`;
-      const bounds = volumeBounds?.[volKey];
-      return {
-        vol: volKey,
-        fileName,
-        url,
-        pageRange: bounds ? `(صـ ${bounds[0]} - ${bounds[1]})` : ''
-      };
-    });
-  }, [pdfsMap, pdfBase, volumeBounds]);
+    return parsePdfFilesList(pdfLinks || book.pdf_links, pdfsMap, pdfBase || undefined, volumeBounds);
+  }, [pdfLinks, book.pdf_links, pdfsMap, pdfBase, volumeBounds]);
 
   // -------------------------------------------------------------------------
   // Feature 6: Offline Book Storage Action
@@ -4321,26 +4313,66 @@ export default function TurathReader({
     }
   };
 
-  const handleOpenOrDownloadPdf = async () => {
+  const handleDirectFileDownload = async (url: string, fileName: string) => {
+    setDownloadingFile(fileName);
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Download failed');
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = fileName.endsWith('.pdf') ? fileName : `${fileName}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setTimeout(() => window.URL.revokeObjectURL(blobUrl), 15000);
+    } catch (err) {
+      console.warn('Direct blob download failed, falling back:', err);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } finally {
+      setDownloadingFile(null);
+    }
+  };
+
+  const handleOpenOrDownloadPdf = async (targetVolItem?: VolumePdfItem | React.MouseEvent) => {
+    const item = (targetVolItem && 'url' in targetVolItem) ? (targetVolItem as VolumePdfItem) : undefined;
+    if (item) {
+      window.open(item.url, '_blank', 'noopener,noreferrer');
+      setShowPdfModal(false);
+      setIsDownloadMenuOpen(false);
+      return;
+    }
+
     if (volumePdfList.length > 1) {
       setShowPdfModal(true);
       setIsDownloadMenuOpen(false);
       return;
     }
+
     if (volumePdfList.length === 1) {
       window.open(volumePdfList[0].url, '_blank', 'noopener,noreferrer');
       setIsDownloadMenuOpen(false);
       return;
     }
-    const immediateUrl = getBookPdfUrl(book);
+
+    const currentVolNum = parseInt(currentVolumeInfo?.vol || currentPrintCitation?.vol || '', 10) || undefined;
+    const immediateUrl = getBookPdfUrl(book, currentVolNum);
     if (immediateUrl) {
       window.open(immediateUrl, '_blank', 'noopener,noreferrer');
       setIsDownloadMenuOpen(false);
       return;
     }
+
     setLoadingPdf(true);
     try {
-      const resolvedUrl = await fetchTurathBookPdfUrl(Number(book.id));
+      const resolvedUrl = await fetchTurathBookPdfUrl(Number(book.id), currentVolNum);
       if (resolvedUrl) {
         window.open(resolvedUrl, '_blank', 'noopener,noreferrer');
       } else {
@@ -5266,7 +5298,7 @@ export default function TurathReader({
                 {(volumePdfList.length > 0 || hasBookPdf(book)) && (
                   <button
                     type="button"
-                    onClick={handleOpenOrDownloadPdf}
+                    onClick={() => handleOpenOrDownloadPdf()}
                     disabled={loadingPdf}
                     className="w-full flex items-center justify-between gap-2 px-2.5 py-2 rounded-xl text-xs font-semibold hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-right cursor-pointer text-rose-600 dark:text-rose-400"
                   >
@@ -5720,7 +5752,7 @@ export default function TurathReader({
                             {(volumePdfList.length > 0 || hasBookPdf(book)) && (
                               <button
                                 type="button"
-                                onClick={handleOpenOrDownloadPdf}
+                                onClick={() => handleOpenOrDownloadPdf()}
                                 disabled={loadingPdf}
                                 className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl text-xs font-semibold hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-right cursor-pointer"
                               >
@@ -5997,9 +6029,9 @@ export default function TurathReader({
                             <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${getAccentIconBgClass()}`}>
                               <Type className="w-4 h-4" />
                             </div>
-                            <div className="flex flex-col text-right">
-                              <span className="text-[10px] text-muted-foreground font-normal">خط القراءة</span>
-                              <span className={`text-xs font-bold ${(FONT_OPTIONS.find(f => f.id === (fontFamily === 'font-read' ? 'font-amiri' : fontFamily === 'font-sans' ? 'font-cairo' : fontFamily)) || FONT_OPTIONS[0]).class}`}>
+                            <div className="flex items-center gap-1.5 text-right">
+                              <span className="text-xs font-semibold text-muted-foreground shrink-0">خط القراءة:</span>
+                              <span className={`text-xs font-bold text-foreground translate-y-[2.5px] leading-none ${(FONT_OPTIONS.find(f => f.id === (fontFamily === 'font-read' ? 'font-amiri' : fontFamily === 'font-sans' ? 'font-cairo' : fontFamily)) || FONT_OPTIONS[0]).class}`}>
                                 {(FONT_OPTIONS.find(f => f.id === (fontFamily === 'font-read' ? 'font-amiri' : fontFamily === 'font-sans' ? 'font-cairo' : fontFamily)) || FONT_OPTIONS[0]).name}
                               </span>
                             </div>
@@ -8754,6 +8786,269 @@ export default function TurathReader({
             </button>
           </div>
         </nav>
+      )}
+
+      {/* Feature 5: Multi-Volume PDF Selector Modal / Bottom Sheet */}
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {showPdfModal && (() => {
+            // Compute modal styling dynamically based on readerTheme (light, dark, sepia) and accentColor (amber, emerald, blue, purple)
+            let containerBg = 'bg-[#0f1422]/98 border-white/10 text-white shadow-2xl';
+            let cardBg = 'bg-white/[0.03] border-white/10 hover:border-white/20 hover:bg-white/[0.06] text-white';
+            let closeBtn = 'hover:bg-white/10 text-white/70 hover:text-white';
+
+            if (readerTheme === 'light') {
+              containerBg = 'bg-white/98 border-slate-200 text-slate-900 shadow-2xl';
+              cardBg = 'bg-slate-50/80 border-slate-200/90 hover:border-slate-300 hover:bg-white text-slate-900';
+              closeBtn = 'hover:bg-black/5 text-slate-500 hover:text-slate-900';
+            } else if (readerTheme === 'sepia') {
+              containerBg = 'bg-[#FAF5ED]/98 border-[#E2D6C0] text-[#3D2C1D] shadow-2xl';
+              cardBg = 'bg-[#F4ECE1]/70 border-[#E5DAC6] hover:border-[#D5C6AC] hover:bg-[#FAF5ED] text-[#3D2C1D]';
+              closeBtn = 'hover:bg-black/5 text-[#7D6B58] hover:text-[#3D2C1D]';
+            }
+
+            let primaryBtn = 'bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-white shadow-sm shadow-purple-600/20';
+            let activeBorder = 'border-purple-500/50 bg-purple-500/5 ring-1 ring-purple-500/25';
+            let activeBadge = 'bg-purple-500/15 text-purple-700 dark:text-purple-300 border border-purple-500/30';
+            let headerBadge = 'bg-purple-500/10 text-purple-600 dark:text-purple-300 border border-purple-500/20';
+            let iconBox = 'bg-purple-500/10 border-purple-500/20 text-purple-600 dark:text-purple-300';
+
+            switch (accentColor) {
+              case 'amber':
+                primaryBtn = 'bg-gradient-to-r from-[#8e682d] to-[#c59b58] hover:from-[#7a5825] hover:to-[#b38944] text-white shadow-sm shadow-[#8e682d]/25';
+                activeBorder = 'border-[#c59b58]/50 bg-[#8e682d]/5 ring-1 ring-[#c59b58]/30';
+                activeBadge = 'bg-[#8e682d]/15 text-[#8e682d] dark:text-[#eedbb2] border border-[#c59b58]/30';
+                headerBadge = 'bg-[#8e682d]/10 text-[#8e682d] dark:text-[#dfbf83] border border-[#8e682d]/20';
+                iconBox = 'bg-[#8e682d]/10 border-[#8e682d]/20 text-[#8e682d] dark:text-[#dfbf83]';
+                break;
+              case 'emerald':
+                primaryBtn = 'bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-600 text-white shadow-sm shadow-teal-600/25';
+                activeBorder = 'border-teal-500/50 bg-teal-500/5 ring-1 ring-teal-500/30';
+                activeBadge = 'bg-teal-500/15 text-teal-700 dark:text-teal-300 border border-teal-500/30';
+                headerBadge = 'bg-teal-500/10 text-teal-600 dark:text-teal-300 border border-teal-500/20';
+                iconBox = 'bg-teal-500/10 border-teal-500/20 text-teal-600 dark:text-teal-300';
+                break;
+              case 'blue':
+                primaryBtn = 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-sm shadow-blue-600/25';
+                activeBorder = 'border-blue-500/50 bg-blue-500/5 ring-1 ring-blue-500/30';
+                activeBadge = 'bg-blue-500/15 text-blue-700 dark:text-blue-300 border border-blue-500/30';
+                headerBadge = 'bg-blue-500/10 text-blue-600 dark:text-blue-300 border border-blue-500/20';
+                iconBox = 'bg-blue-500/10 border-blue-500/20 text-blue-600 dark:text-blue-300';
+                break;
+              case 'purple':
+              default:
+                break;
+            }
+
+            return (
+              <div dir="rtl" className="fixed inset-0 z-[150] flex items-end sm:items-center justify-center p-0 sm:p-4">
+                {/* Backdrop */}
+                <motion.div
+                  key="pdf-modal-backdrop"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  onClick={() => setShowPdfModal(false)}
+                  className="fixed inset-0 bg-black/60 backdrop-blur-sm cursor-pointer"
+                />
+
+                {/* Modal Card with subtle, modern rounded corners (not overly rounded) */}
+                <motion.div
+                  key="pdf-modal-card"
+                  initial={{ y: '100%', opacity: 0.5, scale: 0.98 }}
+                  animate={{ y: 0, opacity: 1, scale: 1 }}
+                  exit={{ y: '100%', opacity: 0, scale: 0.98 }}
+                  transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                  onClick={(e) => e.stopPropagation()}
+                  className={`relative w-full max-w-xl mx-auto max-h-[88vh] flex flex-col rounded-t-2xl sm:rounded-2xl border shadow-2xl overflow-hidden z-10 ${containerBg}`}
+                >
+                  {/* Drag handle for mobile */}
+                  <div className="w-10 h-1 rounded-full bg-black/15 dark:bg-white/20 mx-auto mt-2 mb-1 sm:hidden" />
+
+                  {/* Header */}
+                  <div className="shrink-0 px-5 sm:px-6 pt-2 pb-3.5 border-b border-inherit/15 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shrink-0 ${iconBox}`}>
+                        <FileDown className="w-5 h-5" />
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="font-bold text-base sm:text-lg text-foreground truncate">
+                          تحميل أجزاء الكتاب (PDF)
+                        </h3>
+                        <p className="text-xs text-muted-foreground truncate max-w-[200px] sm:max-w-md">
+                          {book.title} • {authorName || book.author}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Badges & Close Button */}
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className={`px-2.5 py-1 rounded-full text-xs font-bold font-sans ${headerBadge}`}>
+                        {toEasternArabicNumerals(volumePdfList.length)} ملفات
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setShowPdfModal(false)}
+                        className={`p-1.5 sm:p-2 rounded-xl transition-colors cursor-pointer ${closeBtn}`}
+                        title="إغلاق النافذة"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Body: Current Volume banner + List of Volumes */}
+                  <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-3 custom-scrollbar">
+                    {/* Current Reading Volume Highlight if identified */}
+                    {(() => {
+                      const curVolNum = parseInt(currentVolumeInfo?.vol || currentPrintCitation?.vol || '', 10);
+                      const currentVolItem = (!isNaN(curVolNum) && curVolNum > 0)
+                        ? volumePdfList.find(it => !it.isCover && it.volNum === curVolNum)
+                        : null;
+                      if (!currentVolItem) return null;
+                      return (
+                        <div className={`p-3.5 sm:p-4 rounded-xl border flex flex-col gap-2.5 shadow-xs mb-1 ${activeBorder}`}>
+                          {/* Top Row: Title on right, English filename on left */}
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <Sparkles className="w-4 h-4 shrink-0 opacity-80" />
+                              <span className="text-xs opacity-75 shrink-0">
+                                أنت تقرأ حالياً:
+                              </span>
+                              <span className="text-xs sm:text-sm font-black text-foreground shrink-0">
+                                {currentVolItem.vol}
+                              </span>
+                            </div>
+                            <span className="text-[11px] opacity-60 font-mono shrink-0" dir="ltr">
+                              {currentVolItem.fileName}
+                            </span>
+                          </div>
+
+                          {/* Bottom Row: Page range on right, Download button on left */}
+                          <div className="flex items-center justify-between gap-3">
+                            <div>
+                              {currentVolItem.pageRange ? (
+                                <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-semibold font-sans ${activeBadge}`}>
+                                  {currentVolItem.pageRange}
+                                </span>
+                              ) : <span />}
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => handleDirectFileDownload(currentVolItem.url, currentVolItem.fileName)}
+                              disabled={downloadingFile === currentVolItem.fileName}
+                              className={`px-4 py-1.5 rounded-xl ${primaryBtn} active:scale-95 text-xs font-bold transition-all flex items-center justify-center gap-2 shrink-0 cursor-pointer disabled:opacity-50`}
+                            >
+                              {downloadingFile === currentVolItem.fileName ? (
+                                <>
+                                  <Loader2 className="w-4 h-4 animate-spin" />
+                                  <span>جاري التحميل...</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Download className="w-4 h-4" />
+                                  <span>تحميل هذا المجلد</span>
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })()}
+
+                    <div className="flex items-center justify-between px-1 pt-1">
+                      <span className="text-xs font-bold text-foreground/80">
+                        قائمة المجلدات والملفات المتاحة:
+                      </span>
+                      <span className="text-[11px] text-muted-foreground font-sans">
+                        مرتبة وفق الطبعة
+                      </span>
+                    </div>
+
+                    {volumePdfList.map((item, idx) => {
+                      const curVolNum = parseInt(currentVolumeInfo?.vol || currentPrintCitation?.vol || '', 10);
+                      const isCurrent = !isNaN(curVolNum) && curVolNum > 0 && !item.isCover && item.volNum === curVolNum;
+
+                      return (
+                        <div
+                          key={item.url || idx}
+                          className={`p-3 sm:p-3.5 rounded-xl border transition-all duration-200 flex flex-col gap-2.5 ${
+                            isCurrent
+                              ? activeBorder
+                              : cardBg
+                          }`}
+                        >
+                          {/* Top Row: Volume title on the right, English filename on the left */}
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className="font-bold text-xs sm:text-sm text-foreground shrink-0">
+                                {item.vol}
+                              </span>
+                              {isCurrent && (
+                                <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${activeBadge} shrink-0`}>
+                                  المجلد الحالي
+                                </span>
+                              )}
+                            </div>
+                            <span className="text-[11px] opacity-60 font-mono shrink-0" dir="ltr">
+                              {item.fileName}
+                            </span>
+                          </div>
+
+                          {/* Bottom Row: Page range on the right, Action buttons on the left */}
+                          <div className="flex items-center justify-between gap-3">
+                            <div>
+                              {item.pageRange ? (
+                                <span className="text-[11px] px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/10 text-muted-foreground font-semibold font-sans border border-inherit/15 inline-block">
+                                  {item.pageRange}
+                                </span>
+                              ) : <span />}
+                            </div>
+
+                            {/* Left: Action buttons */}
+                            <div className="flex items-center gap-2 shrink-0">
+                              <button
+                                type="button"
+                                onClick={() => window.open(item.url, '_blank', 'noopener,noreferrer')}
+                                className="px-3 py-1.5 rounded-xl border border-inherit/25 hover:bg-black/5 dark:hover:bg-white/10 text-xs font-semibold text-foreground transition-colors flex items-center gap-1.5 cursor-pointer"
+                                title="فتح للمطالعة في نافذة جديدة"
+                              >
+                                <ExternalLink className="w-3.5 h-3.5 opacity-70" />
+                                <span>قراءة</span>
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() => handleDirectFileDownload(item.url, item.fileName)}
+                                disabled={downloadingFile === item.fileName}
+                                className={`px-3.5 py-1.5 rounded-xl ${primaryBtn} active:scale-95 text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer disabled:opacity-50`}
+                                title="تحميل الملف مباشرة إلى جهازك"
+                              >
+                                {downloadingFile === item.fileName ? (
+                                  <>
+                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                    <span className="text-[11px]">جاري التحميل...</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Download className="w-3.5 h-3.5" />
+                                    <span>تحميل</span>
+                                  </>
+                                )}
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              </div>
+            );
+          })()}
+        </AnimatePresence>,
+        document.body
       )}
 
     </div>

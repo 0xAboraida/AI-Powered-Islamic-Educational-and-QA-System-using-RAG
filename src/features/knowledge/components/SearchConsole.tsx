@@ -12,11 +12,15 @@ import {
   FileText,
   Info,
   Heart,
-  ArrowLeft
+  ArrowLeft,
+  ChevronLeft,
+  Download,
+  Loader2
 } from 'lucide-react';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { BookMeta, MainTab } from '../types/bookTypes';
 import { inferCenturyAndDeath } from '../utils/turathMeta';
+import { downloadBookFile } from '../utils/bookExport';
 import { BookCard } from './BookCard';
 
 export interface SearchConsoleProps {
@@ -86,6 +90,18 @@ export const SearchConsole: React.FC<SearchConsoleProps> = ({
   const mobileAuthorPickerRef = useRef<HTMLDivElement>(null);
   const searchConsoleRef = useRef<HTMLDivElement>(null);
   const [authorFilterQuery, setAuthorFilterQuery] = useState('');
+  const [downloadingBookId, setDownloadingBookId] = useState<number | string | null>(null);
+
+  const handleDownloadBook = async (book: BookMeta) => {
+    setDownloadingBookId(book.id);
+    try {
+      await downloadBookFile(book, 'txt');
+    } catch (err) {
+      console.error('Failed to download book:', err);
+    } finally {
+      setDownloadingBookId(null);
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -457,6 +473,16 @@ export const SearchConsole: React.FC<SearchConsoleProps> = ({
     }
   };
 
+  const formatArabicBooksCount = (count: number): string => {
+    if (count <= 0) return 'لا توجد كتب';
+    if (count === 1) return 'كتاب واحد';
+    if (count === 2) return 'كتابان';
+    const mod100 = count % 100;
+    if (mod100 >= 3 && mod100 <= 10) return `${count} كتب`;
+    if (mod100 >= 11 && mod100 <= 99) return `${count} كتاباً`;
+    return `${count} كتاب`;
+  };
+
   const getPopoverCountBadgeStyle = () => {
     if (isDark) {
       switch (accentColor) {
@@ -488,6 +514,42 @@ export const SearchConsole: React.FC<SearchConsoleProps> = ({
       case 'purple':
       default:
         return 'bg-gradient-to-r from-brand-magenta to-brand-deep text-white shadow-purple-500/30';
+    }
+  };
+
+  const getPopoverBookIconBoxStyle = () => {
+    switch (accentColor) {
+      case 'amber':
+        return isDark
+          ? 'bg-amber-500/15 border border-[#dfbf83]/30 text-[#eed9b0]'
+          : 'bg-[#ebd9b5]/70 border border-[#dfbf83]/80 text-amber-950';
+      case 'emerald':
+        return isDark
+          ? 'bg-teal-500/15 border border-teal-500/30 text-teal-300'
+          : 'bg-teal-50 border border-teal-200 text-teal-800';
+      case 'blue':
+        return isDark
+          ? 'bg-blue-500/15 border border-blue-500/30 text-blue-300'
+          : 'bg-blue-50 border border-blue-200 text-blue-800';
+      case 'purple':
+      default:
+        return isDark
+          ? 'bg-purple-500/15 border border-purple-500/30 text-purple-300'
+          : 'bg-purple-50 border border-purple-200 text-purple-800';
+    }
+  };
+
+  const getPopoverCategoryBadgeStyle = () => {
+    switch (accentColor) {
+      case 'amber':
+        return 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/20';
+      case 'emerald':
+        return 'bg-teal-500/10 text-teal-700 dark:text-teal-300 border-teal-500/20';
+      case 'blue':
+        return 'bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/20';
+      case 'purple':
+      default:
+        return 'bg-purple-500/10 text-purple-700 dark:text-purple-300 border-purple-500/20';
     }
   };
 
@@ -1029,25 +1091,25 @@ export const SearchConsole: React.FC<SearchConsoleProps> = ({
           className={`absolute top-full left-0 right-0 ${isCompact ? 'mt-2' : 'mt-3'} rounded-2xl sm:rounded-3xl border shadow-2xl backdrop-blur-2xl transition-all duration-300 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 text-right ${getSearchPopoverContainerStyle()}`}
         >
           {/* Popover Header */}
-          <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-slate-100 dark:border-white/10">
-            <div className="flex items-center gap-2">
-              <Sparkles className={`w-4 h-4 ${getPopoverSparkleColor()}`} />
-              <span className="text-xs sm:text-sm font-black text-slate-800 dark:text-slate-100">
-                نتائج البحث الفوري
+          <div className="flex items-center justify-between px-3.5 sm:px-5 py-2.5 sm:py-3 border-b border-slate-100 dark:border-white/10 gap-4 sm:gap-6">
+            <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+              <span className="text-xs sm:text-sm font-black text-slate-800 dark:text-slate-100 whitespace-nowrap">
+                نتائج البحث
               </span>
-              <span className={`text-[11px] sm:text-xs font-mono font-bold px-2 py-0.5 rounded-full ${getPopoverCountBadgeStyle()}`}>
-                {homeSearchResults.length} {homeSearchResults.length === 1 ? 'كتاب' : 'كتب'}
+              <span className={`text-[11px] font-mono font-bold px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 ${getPopoverCountBadgeStyle()}`}>
+                {formatArabicBooksCount(homeSearchResults.length)}
               </span>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
               {homeSearchResults.length > 0 && (
                 <button
                   type="button"
                   onClick={() => onSearchSubmit?.()}
-                  className="text-[11px] sm:text-xs font-bold text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 cursor-pointer"
+                  className="text-[11px] sm:text-xs font-bold text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 cursor-pointer whitespace-nowrap"
+                  title="الانتقال لعرض جميع النتائج في صفحة الأقسام"
                 >
-                  <span>عرض في الأقسام</span>
+                  <span>عرض كل الأقسام</span>
                   <ArrowLeft className="w-3 h-3" />
                 </button>
               )}
@@ -1073,24 +1135,142 @@ export const SearchConsole: React.FC<SearchConsoleProps> = ({
               </p>
             </div>
           ) : (
-            <div className="max-h-[55vh] sm:max-h-[460px] overflow-y-auto p-3 sm:p-4 space-y-2.5 custom-scrollbar">
-              {homeSearchResults.slice(0, 8).map((book) => (
-                <BookCard
-                  key={book.id || book.title}
-                  book={book}
-                  viewMode="list"
-                  compact={isCompact}
-                  showCategoryBadge={true}
-                  onAsk={(b) => onAskBook?.(b)}
-                  onRead={(b) => {
-                    handleReadBook?.(b);
-                  }}
-                  onOpenAuthorBio={(b) => setSelectedAuthorBook?.(b)}
-                  onOpenBookInfo={(b) => setActiveInfoBook?.(b)}
-                  isFavorite={Boolean(favoriteBookIds?.has(book.id))}
-                  onToggleFavorite={(b) => toggleFavorite?.(b.id)}
-                />
-              ))}
+            <div className="max-h-[55vh] sm:max-h-[460px] overflow-y-auto p-2.5 sm:p-3.5 space-y-2.5 custom-scrollbar">
+              {homeSearchResults.slice(0, 8).map((book) => {
+                const { deathYear, centuryName } = inferCenturyAndDeath(book);
+                const isFav = Boolean(favoriteBookIds?.has(book.id));
+
+                return (
+                  <div
+                    key={book.id || book.title}
+                    onClick={() => handleReadBook?.(book)}
+                    className={`group relative p-2.5 sm:p-3 rounded-xl border transition-all duration-150 cursor-pointer flex flex-col gap-2 ${
+                      isDark
+                        ? 'bg-white/[0.03] hover:bg-white/[0.08] border-white/10 hover:border-white/20 text-white'
+                        : 'bg-slate-50/80 hover:bg-white border-slate-200/90 hover:border-slate-300 text-slate-900 shadow-2xs hover:shadow-sm'
+                    }`}
+                  >
+                    {/* Top Row: Right = Book Icon, Across from it = Title + Author */}
+                    <div className="flex items-start gap-2.5 sm:gap-3 min-w-0">
+                      {/* Book Icon */}
+                      <div
+                        className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shrink-0 transition-all shadow-xs mt-0.5 ${getPopoverBookIconBoxStyle()}`}
+                        title="فتح وقراءة الكتاب"
+                      >
+                        <BookOpen className="w-4.5 h-4.5" />
+                      </div>
+
+                      {/* Across from icon: Title on line 1, Author on line 2 */}
+                      <div className="min-w-0 flex-1 text-right">
+                        <h4 className="font-bold text-xs sm:text-sm text-foreground truncate group-hover:text-primary transition-colors leading-snug">
+                          {book.title}
+                        </h4>
+
+                        {book.author && book.author !== 'من غير معروف' ? (
+                          <div className="mt-0.5">
+                            <span
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedAuthorBook?.(book);
+                              }}
+                              className="inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground hover:underline cursor-pointer truncate max-w-[220px]"
+                              title="عرض ترجمة وسيرة المؤلف"
+                            >
+                              <User className="w-3 h-3 opacity-60 shrink-0" />
+                              <span className="truncate">{book.author}</span>
+                            </span>
+                          </div>
+                        ) : null}
+                      </div>
+                    </div>
+
+                    {/* Bottom Row: Right = المجال + الوفاة, Left = معلومات + إعجاب + تحميل */}
+                    <div className="flex items-center justify-between gap-2 pt-1 border-t border-slate-100/70 dark:border-white/5">
+                      {/* Right: المجال (Category) وجنبه الوفاة (ت 855هـ) */}
+                      <div className="flex items-center gap-1.5 flex-wrap min-w-0">
+                        {/* المجال */}
+                        {book.category && (
+                          <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold border shrink-0 ${getPopoverCategoryBadgeStyle()}`}>
+                            <Layers className="w-2.5 h-2.5" />
+                            <span>{book.category}</span>
+                          </span>
+                        )}
+
+                        {/* الوفاة: ت 855هـ */}
+                        {deathYear ? (
+                          <span
+                            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20 shrink-0 font-sans"
+                            title={`سنة الوفاة: ${deathYear} هـ`}
+                          >
+                            <Calendar className="w-2.5 h-2.5" />
+                            <span>ت {deathYear}هـ</span>
+                          </span>
+                        ) : centuryName && centuryName !== 'غير محدد' ? (
+                          <span
+                            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20 shrink-0 font-sans"
+                          >
+                            <Calendar className="w-2.5 h-2.5" />
+                            <span>{centuryName}</span>
+                          </span>
+                        ) : null}
+                      </div>
+
+                      {/* Left: زر معلومات الكتاب وزر الاعجاب وزر التحميل */}
+                      <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+                        {/* زر معلومات الكتاب */}
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActiveInfoBook?.(book);
+                          }}
+                          className="p-1.5 rounded-lg border border-slate-200 dark:border-white/10 text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                          title="معلومات وتفاصيل الكتاب"
+                        >
+                          <Info className="w-3.5 h-3.5" />
+                        </button>
+
+                        {/* زر الاعجاب */}
+                        {toggleFavorite && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleFavorite(book.id);
+                            }}
+                            className={`p-1.5 rounded-lg border transition-all cursor-pointer ${
+                              isFav
+                                ? 'border-rose-500/30 text-rose-500 bg-rose-500/10'
+                                : 'border-slate-200 dark:border-white/10 text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10'
+                            }`}
+                            title={isFav ? 'إزالة من المفضلة' : 'إضافة إلى المفضلة'}
+                          >
+                            <Heart className={`w-3.5 h-3.5 ${isFav ? 'fill-current text-rose-500' : ''}`} />
+                          </button>
+                        )}
+
+                        {/* زر التحميل */}
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDownloadBook(book);
+                          }}
+                          disabled={downloadingBookId === book.id}
+                          className="p-1.5 rounded-lg border border-slate-200 dark:border-white/10 text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer disabled:opacity-50"
+                          title="تحميل الكتاب (TXT)"
+                        >
+                          {downloadingBookId === book.id ? (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-500" />
+                          ) : (
+                            <Download className="w-3.5 h-3.5" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
 
               {/* View All Matching Results Footer Button */}
               {homeSearchResults.length > 8 && (
