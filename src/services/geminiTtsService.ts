@@ -70,10 +70,10 @@ const audioCacheMap = new Map<string, AudioPayload>()
 const DEFAULT_GEMINI_KEYS: string[] = []
 
 const TTS_MODELS = [
-  "gemini-2.5-flash-preview-tts",
   "gemini-3.8-flash-tts",
-  "gemini-3.1-flash-tts-preview",
   "gemini-3.8-flash-lite-tts",
+  "gemini-2.5-flash-preview-tts",
+  "gemini-3.1-flash-tts-preview",
 ]
 
 export interface TtsOptions {
@@ -495,7 +495,7 @@ async function fetchFullTextAudio(
   isPodcast = false
 ): Promise<AudioPayload | null> {
   const modeKey = isPodcast ? 'podcast' : 'full'
-  const cacheKey = `${modeKey}:${voiceName}:${cleanedText}`
+  const cacheKey = `v2:${modeKey}:${voiceName}:${cleanedText}`
 
   // Check in-memory audio cache first (0ms replay)
   if (audioCacheMap.has(cacheKey)) {
@@ -503,12 +503,7 @@ async function fetchFullTextAudio(
     return audioCacheMap.get(cacheKey)!
   }
 
-  const selectedVoiceObj = AVAILABLE_VOICES.find(v => v.id === voiceName)
-  const voiceGenderHint = selectedVoiceObj?.gender === 'female' ? 'امرأة' : 'رجل'
-
-  const promptText = isPodcast
-    ? `اقرأ اسكريبت البودكاست التعليمي التالي بنبرة إعلامية حماسية وفصيحة وممتعة بصوت (${voiceGenderHint}) وبدون أي مقدمات إضافية:\n\n${cleanedText.slice(0, 4000)}`
-    : `اقرأ النص التالي كاملاً بالحرف وباللغة العربية الفصحى بنبرة موحدة وواضحة ومريحة بصوت (${voiceGenderHint}) وبدون أي مقدمات أو زيادات:\n\n${cleanedText.slice(0, 4000)}`
+  const textToRead = cleanedText.slice(0, 4000)
 
   for (const modelName of TTS_MODELS) {
     for (let i = 0; i < keys.length; i++) {
@@ -523,9 +518,10 @@ async function fetchFullTextAudio(
           body: JSON.stringify({
             contents: [
               {
+                role: 'user',
                 parts: [
                   {
-                    text: promptText
+                    text: textToRead
                   }
                 ]
               }

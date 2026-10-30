@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
-import { Volume2, VolumeX, Pause, Play, Square, Loader2, Gauge, UserCheck, Download, Radio, Check, X } from 'lucide-react'
+import { Volume2, VolumeX, Pause, Play, Square, RotateCcw, Loader2, Gauge, UserCheck, Download, Radio, Check, X } from 'lucide-react'
 import {
   speakText,
   stopAllSpeech,
@@ -30,6 +30,10 @@ interface AudioReaderButtonProps {
   menuPlacement?: 'top' | 'left' | 'right'
   variant?: 'default' | 'deck'
   onClose?: () => void
+  activePage?: number | null
+  activePageLabel?: string | number
+  currentPage?: number
+  onReturnToActivePage?: () => void
 }
 
 const SPEED_OPTIONS = [1.0, 1.25, 1.5, 2.0, 0.8]
@@ -48,6 +52,10 @@ export function AudioReaderButton({
   menuPlacement = 'top',
   variant = 'default',
   onClose,
+  activePage,
+  activePageLabel,
+  currentPage,
+  onReturnToActivePage,
 }: AudioReaderButtonProps) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [isPaused, setIsPaused] = useState(false)
@@ -362,6 +370,22 @@ export function AudioReaderButton({
               <span className={`w-0.5 rounded-full transition-all duration-300 ${isPlaying ? `h-3.5 animate-bounce ${themeClasses.bar}` : 'h-1 bg-muted-foreground/30'}`} style={{ animationDelay: '150ms' }} />
             </div>
 
+            {/* Reading Page Indicator & Return Button when viewing another page */}
+            {activePage && currentPage && activePage !== currentPage && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onReturnToActivePage?.()
+                }}
+                className="flex items-center gap-1 px-1.5 py-0.5 rounded-lg text-[10px] sm:text-[11px] font-bold bg-amber-500/15 hover:bg-amber-500/25 text-amber-600 dark:text-amber-400 border border-amber-500/30 transition-all cursor-pointer shrink-0 animate-in fade-in active:scale-95"
+                title={`الرجوع إلى صفحة ${activePageLabel || activePage} التي يُقرأ صوتها حالياً`}
+              >
+                <span>يقرأ: صـ {String(activePageLabel || activePage).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[Number(d)])}</span>
+                <RotateCcw size={10} className="shrink-0 opacity-80" />
+              </button>
+            )}
+
             {/* Voice Pill */}
             <button
               onClick={(e) => {
@@ -403,20 +427,8 @@ export function AudioReaderButton({
             </button>
           </div>
 
-          {/* Center: Play / Pause Button + Stop Button */}
-          <div className="flex items-center gap-2 shrink-0">
-            {/* Stop Button */}
-            <button
-              onClick={handleFullStopSpeech}
-              type="button"
-              title="إيقاف وإنهاء القراءة"
-              className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-                dark ? 'text-rose-400 hover:bg-rose-500/20' : 'text-rose-600 hover:bg-rose-100'
-              }`}
-            >
-              <Square size={13} className="fill-current" />
-            </button>
-
+          {/* Center: Play / Pause Button (Stop button removed to maximize layout space) */}
+          <div className="flex items-center shrink-0">
             {/* Main Play / Pause Circle Button */}
             <button
               onClick={() => handleStartOrToggleSpeech()}
@@ -433,7 +445,7 @@ export function AudioReaderButton({
             >
               {isLoading ? (
                 <Loader2 size={14} className="animate-spin text-white" />
-              ) : isPaused ? (
+              ) : isPaused || !isPlaying ? (
                 <Play size={13} className="fill-current text-white ml-0.5" />
               ) : (
                 <Pause size={13} className="fill-current text-white" />

@@ -1730,25 +1730,23 @@ const PageQuickSearchBar: React.FC<PageQuickSearchBarProps> = React.memo(({
           exit={{ height: 0, opacity: 0, y: -8 }}
           transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
           onClick={(e) => e.stopPropagation()}
-          className={`w-full overflow-hidden flex flex-col border-t select-none ${
-            readerTheme === 'dark'
+          className={`w-full overflow-hidden flex flex-col border-t select-none ${readerTheme === 'dark'
               ? 'border-white/10 bg-black/30 text-white'
               : 'border-slate-200/80 bg-black/[0.03] text-slate-900'
-          }`}
+            }`}
         >
           {/* Main Search Input Row */}
           <div className="w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-6 py-2">
             {/* Search Icon with current accent color */}
             <Search
-              className={`w-4 h-4 sm:w-4.5 sm:h-4.5 shrink-0 ${
-                accentColor === 'amber'
+              className={`w-4 h-4 sm:w-4.5 sm:h-4.5 shrink-0 ${accentColor === 'amber'
                   ? 'text-amber-500'
                   : accentColor === 'emerald'
                     ? 'text-teal-600 dark:text-teal-400'
                     : accentColor === 'blue'
                       ? 'text-blue-600 dark:text-blue-400'
                       : 'text-brand-magenta'
-              }`}
+                }`}
               strokeWidth={2.3}
             />
 
@@ -1766,15 +1764,14 @@ const PageQuickSearchBar: React.FC<PageQuickSearchBarProps> = React.memo(({
             {/* Match Counter (Only when matches are found on this page) */}
             {localQuery.trim() && pageMatchesCount > 0 && (
               <span
-                className={`text-[11px] font-black px-2 py-0.5 rounded-md shrink-0 ${
-                  accentColor === 'amber'
+                className={`text-[11px] font-black px-2 py-0.5 rounded-md shrink-0 ${accentColor === 'amber'
                     ? 'bg-amber-500/20 text-amber-500 border border-amber-500/30'
                     : accentColor === 'emerald'
                       ? 'bg-teal-500/20 text-teal-600 dark:text-teal-400 border border-teal-500/30'
                       : accentColor === 'blue'
                         ? 'bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/30'
                         : 'bg-brand-magenta/20 text-brand-magenta border border-brand-magenta/30'
-                }`}
+                  }`}
               >
                 {activeMatchIndex + 1} / {pageMatchesCount}
               </span>
@@ -1797,11 +1794,10 @@ const PageQuickSearchBar: React.FC<PageQuickSearchBarProps> = React.memo(({
           {/* Underneath Suggestion Banner when 0 matches on current page */}
           {localQuery.trim() && pageMatchesCount === 0 && (
             <div
-              className={`w-full flex items-center justify-between gap-3 px-3 sm:px-6 py-2 border-t text-xs transition-colors ${
-                readerTheme === 'dark'
+              className={`w-full flex items-center justify-between gap-3 px-3 sm:px-6 py-2 border-t text-xs transition-colors ${readerTheme === 'dark'
                   ? 'bg-white/[0.04] border-white/10'
                   : 'bg-black/[0.02] border-slate-200/70'
-              }`}
+                }`}
             >
               <div className="flex items-center gap-2 min-w-0">
                 <span className="w-1.5 h-1.5 rounded-full bg-rose-500/80 shrink-0" />
@@ -1813,15 +1809,14 @@ const PageQuickSearchBar: React.FC<PageQuickSearchBarProps> = React.memo(({
               <button
                 type="button"
                 onClick={() => onSearchInBook(localQuery)}
-                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all shrink-0 cursor-pointer ${
-                  accentColor === 'amber'
+                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all shrink-0 cursor-pointer ${accentColor === 'amber'
                     ? 'bg-amber-500 text-white hover:bg-amber-600 shadow-sm shadow-amber-500/20'
                     : accentColor === 'emerald'
                       ? 'bg-teal-600 text-white hover:bg-teal-700 shadow-sm shadow-teal-600/20'
                       : accentColor === 'blue'
                         ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm shadow-blue-600/20'
                         : 'bg-brand-magenta text-white hover:bg-brand-magenta/90 shadow-sm'
-                }`}
+                  }`}
                 title="البحث عن هذه الكلمة في كامل صفحات وأجزاء الكتاب"
               >
                 <Search className="w-3.5 h-3.5" />
@@ -2806,7 +2801,7 @@ export default function TurathReader({
             const updated = prev.filter(h => h.id !== hlId);
             try {
               localStorage.setItem(`turath_highlights_${book.id || book.title}`, JSON.stringify(updated));
-            } catch (err) {}
+            } catch (err) { }
             return updated;
           });
         }
@@ -2826,7 +2821,7 @@ export default function TurathReader({
       const updated = prev.filter(h => h.id !== id);
       try {
         localStorage.setItem(`turath_highlights_${book.id || book.title}`, JSON.stringify(updated));
-      } catch (err) {}
+      } catch (err) { }
       return updated;
     });
   };
@@ -2847,7 +2842,7 @@ export default function TurathReader({
       setHighlights([]);
       try {
         localStorage.removeItem(`turath_highlights_${book.id || book.title}`);
-      } catch (err) {}
+      } catch (err) { }
     }
   };
 
@@ -3225,6 +3220,9 @@ export default function TurathReader({
   const [bookmarks, setBookmarks] = useState<number[]>([])
   const [isReadingPage, setIsReadingPage] = useState(false)
   const [isAudioBarOpen, setIsAudioBarOpen] = useState(false)
+  const [audioActivePage, setAudioActivePage] = useState<number | null>(null)
+  const [audioActivePageLabel, setAudioActivePageLabel] = useState<string>('')
+  const [audioActiveText, setAudioActiveText] = useState<string>('')
   const [pageCopied, setPageCopied] = useState(false)
   const [isPageActionsOpen, setIsPageActionsOpen] = useState(false)
   const pageActionsRef = useRef<HTMLDivElement>(null)
@@ -3295,13 +3293,13 @@ export default function TurathReader({
     }
   }
 
-  // Stop reading if page changes or unmounts
+  // Stop reading only when reader unmounts (leaving book)
   useEffect(() => {
     return () => {
       stopAllSpeech()
       setIsReadingPage(false)
     }
-  }, [currentPage])
+  }, [])
 
   const startResizing = React.useCallback((e: React.MouseEvent) => {
     setIsResizing(true)
@@ -4908,1245 +4906,1219 @@ export default function TurathReader({
         className={`shrink-0 flex flex-col w-full z-40 transition-transform duration-500 border-b ${distractionFree ? '-translate-y-full opacity-0 absolute' : 'translate-y-0 opacity-100'} ${readerTheme === 'dark' ? 'bg-[#090b10]/85 backdrop-blur-md border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.5)] text-white' : 'bg-white/80 backdrop-blur-md border-gray-200/80 text-slate-900'}`}
       >
         <div className="min-h-[3rem] sm:min-h-[3.5rem] md:min-h-[4rem] py-1 md:py-1.5 w-full flex items-center justify-between px-3 md:px-4">
-        <div className="flex items-center gap-2 h-full flex-1 min-w-0">
-          {/* Back to Library Button (Circular design matching sidebar button) */}
-          <button
-            type="button"
-            onClick={onClose}
-            className={`h-9 w-9 md:h-10 md:w-10 rounded-full border flex items-center justify-center transition-all backdrop-blur-md active:scale-95 cursor-pointer group shrink-0 ${getNavCircleBtnStyle()}`}
-            title="العودة للمكتبة"
-            aria-label="العودة للمكتبة"
-          >
-            <ArrowRight className="h-4.5 w-4.5 md:h-5 md:w-5 transition-transform group-hover:-translate-x-1" strokeWidth={2.2} />
-          </button>
-
-          {/* Library Sidebar Menu Button (Only on desktop to avoid duplicate menu button on mobile) */}
-          {onOpenSidebar && (
+          <div className="flex items-center gap-2 h-full flex-1 min-w-0">
+            {/* Back to Library Button (Circular design matching sidebar button) */}
             <button
               type="button"
-              onClick={onOpenSidebar}
-              className={`hidden md:flex h-10 w-10 rounded-full border items-center justify-center transition-all backdrop-blur-md active:scale-95 cursor-pointer group shrink-0 ${getNavCircleBtnStyle()}`}
-              title="فهرس وتصنيفات المكتبة العامة"
-              aria-label="فتح فهرس وتصنيفات المكتبة العامة"
+              onClick={onClose}
+              className={`h-9 w-9 md:h-10 md:w-10 rounded-full border flex items-center justify-center transition-all backdrop-blur-md active:scale-95 cursor-pointer group shrink-0 ${getNavCircleBtnStyle()}`}
+              title="العودة للمكتبة"
+              aria-label="العودة للمكتبة"
             >
-              <Menu className="h-5 w-5 transition-transform group-hover:scale-110" strokeWidth={2.2} />
-            </button>
-          )}
-
-          <div className="hidden md:block h-8 w-px bg-border/50 mx-1 shrink-0" />
-
-          {/* Tools Toggles (Desktop only) */}
-          <div className="hidden md:flex items-center gap-1.5 h-full py-2 shrink-0">
-            <button
-              onClick={() => setSidebarTab(sidebarTab === 'toc' ? 'none' : 'toc')}
-              className={`flex h-9 items-center justify-center gap-2 rounded-xl px-3 text-xs font-bold transition-all backdrop-blur-xl ${sidebarTab === 'toc'
-                ? getHeaderTabActiveStyle('toc')
-                : readerTheme === 'dark'
-                  ? 'bg-white/5 border border-white/10 text-white/60 hover:bg-white/10 hover:text-white'
-                  : 'bg-white/50 border border-slate-200/90 text-slate-600 hover:bg-white/80 hover:text-slate-900 hover:border-slate-300'
-                }`}
-            >
-              <Menu size={15} className="shrink-0 stroke-[2.2]" />
-              <span>الفهرس</span>
+              <ArrowRight className="h-4.5 w-4.5 md:h-5 md:w-5 transition-transform group-hover:-translate-x-1" strokeWidth={2.2} />
             </button>
 
-            <button
-              onClick={() => setSidebarTab(sidebarTab === 'search' ? 'none' : 'search')}
-              className={`flex h-9 items-center justify-center gap-2 rounded-xl px-3 text-xs font-bold transition-all backdrop-blur-xl ${sidebarTab === 'search'
-                ? getHeaderTabActiveStyle('search')
-                : readerTheme === 'dark'
-                  ? 'bg-white/5 border border-white/10 text-white/60 hover:bg-white/10 hover:text-white'
-                  : 'bg-white/50 border border-slate-200/90 text-slate-600 hover:bg-white/80 hover:text-slate-900 hover:border-slate-300'
-                }`}
-              title="بحث شامل في نصوص ومتون صفحات هذا الكتاب"
-            >
-              <Search size={15} className={`${sidebarTab === 'search' ? (accentColor === 'amber' ? 'text-stone-950 dark:text-[#eed9b0]' : 'text-current') : (accentColor === 'amber' ? 'text-[#b88d46]' : accentColor === 'emerald' ? 'text-teal-600' : accentColor === 'blue' ? 'text-blue-600' : 'text-brand-magenta')} shrink-0`} />
-              <span>بحث بالمتن</span>
-            </button>
-
-            {hadithsCount > 0 && (
+            {/* Library Sidebar Menu Button (Only on desktop to avoid duplicate menu button on mobile) */}
+            {onOpenSidebar && (
               <button
-                onClick={() => setSidebarTab(sidebarTab === 'hadiths' ? 'none' : 'hadiths')}
-                className={`flex h-9 items-center justify-center gap-1.5 rounded-xl px-2.5 text-xs font-bold transition-all backdrop-blur-xl ${sidebarTab === 'hadiths'
-                  ? getHeaderTabActiveStyle('hadiths')
+                type="button"
+                onClick={onOpenSidebar}
+                className={`hidden md:flex h-10 w-10 rounded-full border items-center justify-center transition-all backdrop-blur-md active:scale-95 cursor-pointer group shrink-0 ${getNavCircleBtnStyle()}`}
+                title="فهرس وتصنيفات المكتبة العامة"
+                aria-label="فتح فهرس وتصنيفات المكتبة العامة"
+              >
+                <Menu className="h-5 w-5 transition-transform group-hover:scale-110" strokeWidth={2.2} />
+              </button>
+            )}
+
+            <div className="hidden md:block h-8 w-px bg-border/50 mx-1 shrink-0" />
+
+            {/* Tools Toggles (Desktop only) */}
+            <div className="hidden md:flex items-center gap-1.5 h-full py-2 shrink-0">
+              <button
+                onClick={() => setSidebarTab(sidebarTab === 'toc' ? 'none' : 'toc')}
+                className={`flex h-9 items-center justify-center gap-2 rounded-xl px-3 text-xs font-bold transition-all backdrop-blur-xl ${sidebarTab === 'toc'
+                  ? getHeaderTabActiveStyle('toc')
                   : readerTheme === 'dark'
                     ? 'bg-white/5 border border-white/10 text-white/60 hover:bg-white/10 hover:text-white'
                     : 'bg-white/50 border border-slate-200/90 text-slate-600 hover:bg-white/80 hover:text-slate-900 hover:border-slate-300'
                   }`}
-                title={`انتقال برقم ${numberedItemsLabel.single} (${hadithsCount} ${numberedItemsLabel.plural})`}
               >
-                <Hash size={14} className="text-amber-500 shrink-0" />
-                <span>{numberedItemsLabel.short}</span>
-                <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-500 font-extrabold">{hadithsCount}</span>
+                <Menu size={15} className="shrink-0 stroke-[2.2]" />
+                <span>الفهرس</span>
               </button>
-            )}
 
-            <button
-              onClick={() => setSidebarTab(sidebarTab === 'chat' ? 'none' : 'chat')}
-              className={`flex h-9 items-center justify-center gap-2 rounded-xl px-3 text-xs font-bold transition-all backdrop-blur-xl ${sidebarTab === 'chat'
-                ? getHeaderTabActiveStyle('chat')
-                : readerTheme === 'dark'
-                  ? 'bg-white/5 border border-white/10 text-white/60 hover:bg-white/10 hover:text-white'
-                  : 'bg-white/50 border border-slate-200/90 text-slate-600 hover:bg-white/80 hover:text-slate-900 hover:border-slate-300'
-                }`}
-            >
-              {renderZadLogo('h-[15px] w-[15px]')}
-              <span>مساعد القراءة</span>
-            </button>
-          </div>
+              <button
+                onClick={() => setSidebarTab(sidebarTab === 'search' ? 'none' : 'search')}
+                className={`flex h-9 items-center justify-center gap-2 rounded-xl px-3 text-xs font-bold transition-all backdrop-blur-xl ${sidebarTab === 'search'
+                  ? getHeaderTabActiveStyle('search')
+                  : readerTheme === 'dark'
+                    ? 'bg-white/5 border border-white/10 text-white/60 hover:bg-white/10 hover:text-white'
+                    : 'bg-white/50 border border-slate-200/90 text-slate-600 hover:bg-white/80 hover:text-slate-900 hover:border-slate-300'
+                  }`}
+                title="بحث شامل في نصوص ومتون صفحات هذا الكتاب"
+              >
+                <Search size={15} className={`${sidebarTab === 'search' ? (accentColor === 'amber' ? 'text-stone-950 dark:text-[#eed9b0]' : 'text-current') : (accentColor === 'amber' ? 'text-[#b88d46]' : accentColor === 'emerald' ? 'text-teal-600' : accentColor === 'blue' ? 'text-blue-600' : 'text-brand-magenta')} shrink-0`} />
+                <span>بحث بالمتن</span>
+              </button>
 
-          <div className="hidden md:block h-8 w-px bg-border/50 mx-3 shrink-0" />
-
-          {/* Book Title & Hierarchy */}
-          <div className="flex items-center gap-1.5 md:gap-3 min-w-0 pointer-events-none text-muted-foreground flex-1 justify-center md:justify-start">
-            <h1 className={`font-scheherazade text-xl sm:text-2xl md:text-2xl font-bold ${getHeaderTitleColor()} min-w-0 leading-tight py-0.5 md:py-1 px-1.5 text-center md:text-right truncate`}>
-              {book.title}
-            </h1>
-
-            {/* Author & Hierarchy on Desktop */}
-            <div className="hidden md:flex flex-col gap-1 items-start justify-center min-w-0 border-r border-border/50 pr-3">
-              {authorName && (
-                <div className="relative group/author pointer-events-auto">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (onSelectAuthor) {
-                        onSelectAuthor(book.author || authorName);
-                      }
-                    }}
-                    className={`hidden sm:inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-bold border backdrop-blur-md shadow-sm transition-all shrink-0 hover:scale-105 cursor-pointer ${getHeaderAuthorBadgeClass()}`}
-                    title={authorName}
-                  >
-                    <span className={`w-1.5 h-1.5 rounded-full ${getAccentDotColor()} animate-pulse shrink-0`} />
-                    <span className="truncate max-w-[160px] sm:max-w-[220px] md:max-w-[300px]">{authorName}</span>
-                  </button>
-
-                  {/* Full Author Name Tooltip on Hover */}
-                  <div className="absolute right-0 top-full mt-1.5 hidden group-hover/author:block z-50 pointer-events-none animate-in fade-in slide-in-from-top-1 duration-200">
-                    <div className={`px-3.5 py-1.5 rounded-xl border text-xs font-bold shadow-xl backdrop-blur-xl whitespace-nowrap ${readerTheme === 'dark'
-                      ? 'bg-[#0d071a]/95 border-purple-500/40 text-purple-100 shadow-black/80'
-                      : 'bg-white/95 border-slate-200 text-slate-800 shadow-lg'
-                      }`}>
-                      {authorName}
-                    </div>
-                  </div>
-                </div>
+              {hadithsCount > 0 && (
+                <button
+                  onClick={() => setSidebarTab(sidebarTab === 'hadiths' ? 'none' : 'hadiths')}
+                  className={`flex h-9 items-center justify-center gap-1.5 rounded-xl px-2.5 text-xs font-bold transition-all backdrop-blur-xl ${sidebarTab === 'hadiths'
+                    ? getHeaderTabActiveStyle('hadiths')
+                    : readerTheme === 'dark'
+                      ? 'bg-white/5 border border-white/10 text-white/60 hover:bg-white/10 hover:text-white'
+                      : 'bg-white/50 border border-slate-200/90 text-slate-600 hover:bg-white/80 hover:text-slate-900 hover:border-slate-300'
+                    }`}
+                  title={`انتقال برقم ${numberedItemsLabel.single} (${hadithsCount} ${numberedItemsLabel.plural})`}
+                >
+                  <Hash size={14} className="text-amber-500 shrink-0" />
+                  <span>{numberedItemsLabel.short}</span>
+                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-500 font-extrabold">{hadithsCount}</span>
+                </button>
               )}
 
-              {activeHierarchy.length > 0 && (
-                <div className="relative group/breadcrumb pointer-events-auto">
-                  <span className={`flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[10px] md:text-[11px] font-bold border backdrop-blur-md shadow-sm transition-all cursor-pointer ${readerTheme === 'dark' ? 'bg-white/5 border-white/10 text-white/80 hover:bg-white/10' : 'bg-black/5 border-black/10 text-slate-800 hover:bg-black/10'}`}>
-                    <span className={`w-1.5 h-1.5 rounded-full ${getAccentDotColor()} animate-pulse shrink-0`} />
-                    <span className="flex items-center gap-1.5 min-w-0">
-                      {/* Level 1 Chapter Title */}
-                      <span className={`font-extrabold shrink-0 ${getBreadcrumbChapterColor()}`}>
-                        {activeHierarchy[0]}
-                      </span>
+              <button
+                onClick={() => setSidebarTab(sidebarTab === 'chat' ? 'none' : 'chat')}
+                className={`flex h-9 items-center justify-center gap-2 rounded-xl px-3 text-xs font-bold transition-all backdrop-blur-xl ${sidebarTab === 'chat'
+                  ? getHeaderTabActiveStyle('chat')
+                  : readerTheme === 'dark'
+                    ? 'bg-white/5 border border-white/10 text-white/60 hover:bg-white/10 hover:text-white'
+                    : 'bg-white/50 border border-slate-200/90 text-slate-600 hover:bg-white/80 hover:text-slate-900 hover:border-slate-300'
+                  }`}
+              >
+                {renderZadLogo('h-[15px] w-[15px]')}
+                <span>مساعد القراءة</span>
+              </button>
+            </div>
 
-                      {activeHierarchy.length > 1 && (
-                        <>
-                          <ChevronLeft className="h-3 w-3 text-brand-blue shrink-0 animate-pulse" />
-                          {/* Active Sub-Heading */}
-                          <span className="truncate max-w-[200px] sm:max-w-[320px] md:max-w-[450px]">
-                            {activeHierarchy[activeHierarchy.length - 1]}
-                          </span>
-                        </>
-                      )}
-                    </span>
-                  </span>
+            <div className="hidden md:block h-8 w-px bg-border/50 mx-3 shrink-0" />
 
-                  {/* Full Hierarchy Floating Tooltip Box on Hover */}
-                  <div className="absolute right-0 top-full mt-2 hidden group-hover/breadcrumb:block z-50 pointer-events-none animate-in fade-in slide-in-from-top-1 duration-200 delay-300">
-                    <div className={`px-4 py-2.5 rounded-2xl border text-xs font-bold shadow-2xl backdrop-blur-xl flex items-center gap-2 whitespace-nowrap ${readerTheme === 'dark' ? 'bg-[#0d071a]/95 border-purple-500/40 text-purple-100 shadow-black/80' : 'bg-white/95 border-purple-200 text-purple-950 shadow-xl'}`}>
-                      <span className="text-brand-magenta font-extrabold shrink-0">المسار الكامل:</span>
-                      {activeHierarchy.map((item, idx) => (
-                        <React.Fragment key={idx}>
-                          <span>{item}</span>
-                          {idx < activeHierarchy.length - 1 && <ChevronLeft className="h-3 w-3 text-brand-blue shrink-0" />}
-                        </React.Fragment>
-                      ))}
+            {/* Book Title & Hierarchy */}
+            <div className="flex items-center gap-1.5 md:gap-3 min-w-0 pointer-events-none text-muted-foreground flex-1 justify-center md:justify-start">
+              <h1 className={`font-scheherazade text-xl sm:text-2xl md:text-2xl font-bold ${getHeaderTitleColor()} min-w-0 leading-tight py-0.5 md:py-1 px-1.5 text-center md:text-right truncate`}>
+                {book.title}
+              </h1>
+
+              {/* Author & Hierarchy on Desktop */}
+              <div className="hidden md:flex flex-col gap-1 items-start justify-center min-w-0 border-r border-border/50 pr-3">
+                {authorName && (
+                  <div className="relative group/author pointer-events-auto">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (onSelectAuthor) {
+                          onSelectAuthor(book.author || authorName);
+                        }
+                      }}
+                      className={`hidden sm:inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-bold border backdrop-blur-md shadow-sm transition-all shrink-0 hover:scale-105 cursor-pointer ${getHeaderAuthorBadgeClass()}`}
+                      title={authorName}
+                    >
+                      <span className={`w-1.5 h-1.5 rounded-full ${getAccentDotColor()} animate-pulse shrink-0`} />
+                      <span className="truncate max-w-[160px] sm:max-w-[220px] md:max-w-[300px]">{authorName}</span>
+                    </button>
+
+                    {/* Full Author Name Tooltip on Hover */}
+                    <div className="absolute right-0 top-full mt-1.5 hidden group-hover/author:block z-50 pointer-events-none animate-in fade-in slide-in-from-top-1 duration-200">
+                      <div className={`px-3.5 py-1.5 rounded-xl border text-xs font-bold shadow-xl backdrop-blur-xl whitespace-nowrap ${readerTheme === 'dark'
+                        ? 'bg-[#0d071a]/95 border-purple-500/40 text-purple-100 shadow-black/80'
+                        : 'bg-white/95 border-slate-200 text-slate-800 shadow-lg'
+                        }`}>
+                        {authorName}
+                      </div>
                     </div>
+                  </div>
+                )}
+
+                {activeHierarchy.length > 0 && (
+                  <div className="relative group/breadcrumb pointer-events-auto">
+                    <span className={`flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[10px] md:text-[11px] font-bold border backdrop-blur-md shadow-sm transition-all cursor-pointer ${readerTheme === 'dark' ? 'bg-white/5 border-white/10 text-white/80 hover:bg-white/10' : 'bg-black/5 border-black/10 text-slate-800 hover:bg-black/10'}`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${getAccentDotColor()} animate-pulse shrink-0`} />
+                      <span className="flex items-center gap-1.5 min-w-0">
+                        {/* Level 1 Chapter Title */}
+                        <span className={`font-extrabold shrink-0 ${getBreadcrumbChapterColor()}`}>
+                          {activeHierarchy[0]}
+                        </span>
+
+                        {activeHierarchy.length > 1 && (
+                          <>
+                            <ChevronLeft className="h-3 w-3 text-brand-blue shrink-0 animate-pulse" />
+                            {/* Active Sub-Heading */}
+                            <span className="truncate max-w-[200px] sm:max-w-[320px] md:max-w-[450px]">
+                              {activeHierarchy[activeHierarchy.length - 1]}
+                            </span>
+                          </>
+                        )}
+                      </span>
+                    </span>
+
+                    {/* Full Hierarchy Floating Tooltip Box on Hover */}
+                    <div className="absolute right-0 top-full mt-2 hidden group-hover/breadcrumb:block z-50 pointer-events-none animate-in fade-in slide-in-from-top-1 duration-200 delay-300">
+                      <div className={`px-4 py-2.5 rounded-2xl border text-xs font-bold shadow-2xl backdrop-blur-xl flex items-center gap-2 whitespace-nowrap ${readerTheme === 'dark' ? 'bg-[#0d071a]/95 border-purple-500/40 text-purple-100 shadow-black/80' : 'bg-white/95 border-purple-200 text-purple-950 shadow-xl'}`}>
+                        <span className="text-brand-magenta font-extrabold shrink-0">المسار الكامل:</span>
+                        {activeHierarchy.map((item, idx) => (
+                          <React.Fragment key={idx}>
+                            <span>{item}</span>
+                            {idx < activeHierarchy.length - 1 && <ChevronLeft className="h-3 w-3 text-brand-blue shrink-0" />}
+                          </React.Fragment>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1.5 md:gap-2 relative h-full py-0.5 md:py-2" ref={settingsRef}>
+
+            {/* Feature: Book Highlights Dropdown (قائمة النصوص الملونة والتظليلات في الكتاب) */}
+            <div className="relative" ref={highlightsMenuRef}>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowHighlightsMenu(!showHighlightsMenu);
+                  setIsPageSearchOpen(false);
+                  setIsDownloadMenuOpen(false);
+                  setShowBookmarks(false);
+                  setShowSettings(false);
+                }}
+                className={`hidden md:flex w-10 h-10 rounded-xl justify-center items-center transition-all duration-300 backdrop-blur-md border shadow-sm relative ${showHighlightsMenu
+                  ? getHighlightsBtnActiveStyle()
+                  : readerTheme === 'dark'
+                    ? 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white hover:shadow-md hover:scale-105'
+                    : 'bg-white/50 border-gray-200/60 text-slate-500 hover:bg-white/80 hover:text-slate-900 hover:shadow-md hover:scale-105'
+                  }`}
+                title={`النصوص المظللة (${toEasternArabicNumerals(highlights.length)})`}
+                aria-label="قائمة النصوص المظللة"
+              >
+                <Highlighter className="h-5 w-5" />
+                {highlights.length > 0 && (
+                  <span className={`absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 font-black text-[10px] rounded-full flex items-center justify-center shadow-md border border-white/20 ${getBottomNavIndicatorClass()}`}>
+                    {highlights.length > 99 ? '+99' : toEasternArabicNumerals(highlights.length)}
+                  </span>
+                )}
+              </button>
+
+              {/* Highlights Dropdown Modal */}
+              {showHighlightsMenu && (
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  className={`fixed inset-x-3 top-16 md:absolute md:top-full md:left-0 md:inset-x-auto mt-2 w-auto md:w-80 backdrop-blur-2xl border rounded-3xl shadow-2xl p-3 z-50 animate-in fade-in slide-in-from-top-2 duration-200 ${readerTheme === 'dark'
+                      ? 'bg-[#0d071a]/98 text-white'
+                      : readerTheme === 'sepia'
+                        ? 'bg-[#FAF5ED]/98 text-[#3D2C1D]'
+                        : 'bg-white/98 text-slate-900'
+                    } ${getHighlightsDropdownBorder()}`}
+                >
+                  <div className="flex items-center justify-between pb-2 mb-2 border-b border-border/50 px-1">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${getHighlightEmptyIconStyle()}`}>
+                        <Highlighter className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <h3 className="font-bold text-xs">النصوص المظللة</h3>
+                          {highlights.length > 0 && (
+                            <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded-full border ${getHighlightsCountBadgeStyle()}`}>
+                              {toEasternArabicNumerals(highlights.length)}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-[10px] text-muted-foreground">
+                          {highlights.length > 0 ? 'في كامل الكتاب' : 'لا توجد تظليلات حالياً'}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                      {highlights.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={handleClearAllHighlights}
+                          className="px-2 py-1 text-[10px] font-bold text-rose-500 hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer"
+                          title="حذف جميع التظليلات"
+                        >
+                          مسح الكل
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => setShowHighlightsMenu(false)}
+                        className="p-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 text-muted-foreground cursor-pointer"
+                        title="إغلاق"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Highlights List */}
+                  <div className="max-h-80 overflow-y-auto custom-scrollbar flex flex-col gap-2 p-1">
+                    {highlights.length === 0 ? (
+                      <div className="py-8 px-4 text-center flex flex-col items-center justify-center gap-2 opacity-70">
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${getHighlightEmptyIconStyle()}`}>
+                          <Highlighter className="w-5 h-5" />
+                        </div>
+                        <p className="text-xs font-bold">لا توجد نصوص ملونة بعد</p>
+                        <p className="text-[11px] leading-relaxed text-muted-foreground">
+                          حدد أي نص في صفحات الكتاب واختر لوناً من شريط الأدوات لحفظه هنا.
+                        </p>
+                      </div>
+                    ) : (
+                      highlights.map((h) => {
+                        const isCurrentPage = h.page === currentPage;
+                        return (
+                          <div
+                            key={h.id}
+                            onClick={() => handleJumpToHighlight(h)}
+                            className={`group relative p-3 rounded-2xl border transition-all duration-200 cursor-pointer text-right flex flex-col gap-1.5 ${getHighlightActiveCardStyle(isCurrentPage)}`}
+                          >
+                            {/* Card Header: Page Badge + Color Dot + Delete Button */}
+                            <div className="flex items-center justify-between">
+                              <span className={`text-[11px] font-black px-2 py-0.5 rounded-lg flex items-center gap-1 ${getHighlightBadgeStyle(isCurrentPage)}`}>
+                                <span>صفحة {toEasternArabicNumerals(h.page)}</span>
+                                {isCurrentPage && <span className="text-[9px] font-bold opacity-80">(الحالية)</span>}
+                              </span>
+
+                              <div className="flex items-center gap-1.5">
+                                {/* Color Badge */}
+                                <span
+                                  className="w-3.5 h-3.5 rounded-full border border-black/10 shadow-xs inline-block"
+                                  style={{ backgroundColor: h.color }}
+                                  title="لون التحديد"
+                                />
+
+                                {/* Delete button */}
+                                <button
+                                  type="button"
+                                  onClick={(e) => handleDeleteHighlight(h.id, e)}
+                                  className="p-1 rounded-md text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-colors opacity-70 group-hover:opacity-100"
+                                  title="حذف هذا التظليل"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Highlight Text Quote */}
+                            <p
+                              className="text-xs leading-relaxed line-clamp-3 font-medium rounded-lg p-1.5 transition-colors"
+                              style={{
+                                borderRight: `3px solid ${h.color}`,
+                                backgroundColor: readerTheme === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)'
+                              }}
+                            >
+                              "{h.text}"
+                            </p>
+                          </div>
+                        );
+                      })
+                    )}
                   </div>
                 </div>
               )}
             </div>
 
-          </div>
-        </div>
-
-        <div className="flex items-center gap-1.5 md:gap-2 relative h-full py-0.5 md:py-2" ref={settingsRef}>
-
-          {/* Feature: Book Highlights Dropdown (قائمة النصوص الملونة والتظليلات في الكتاب) */}
-          <div className="relative" ref={highlightsMenuRef}>
+            {/* In-Page Quick Search Button & Floating Search Bar (البحث في الصفحة المفتوحة) */}
+            {/* In-Page Quick Search Button (Desktop) */}
             <button
               type="button"
               onClick={() => {
-                setShowHighlightsMenu(!showHighlightsMenu);
-                setIsPageSearchOpen(false);
+                setIsPageSearchOpen(prev => !prev);
                 setIsDownloadMenuOpen(false);
                 setShowBookmarks(false);
                 setShowSettings(false);
               }}
-              className={`hidden md:flex w-10 h-10 rounded-xl justify-center items-center transition-all duration-300 backdrop-blur-md border shadow-sm relative ${showHighlightsMenu
-                ? getHighlightsBtnActiveStyle()
-                : readerTheme === 'dark'
-                  ? 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white hover:shadow-md hover:scale-105'
-                  : 'bg-white/50 border-gray-200/60 text-slate-500 hover:bg-white/80 hover:text-slate-900 hover:shadow-md hover:scale-105'
-                }`}
-              title={`النصوص المظللة (${toEasternArabicNumerals(highlights.length)})`}
-              aria-label="قائمة النصوص المظللة"
-            >
-              <Highlighter className="h-5 w-5" />
-              {highlights.length > 0 && (
-                <span className={`absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 font-black text-[10px] rounded-full flex items-center justify-center shadow-md border border-white/20 ${getBottomNavIndicatorClass()}`}>
-                  {highlights.length > 99 ? '+99' : toEasternArabicNumerals(highlights.length)}
-                </span>
-              )}
-            </button>
-
-            {/* Highlights Dropdown Modal */}
-            {showHighlightsMenu && (
-              <div
-                onClick={(e) => e.stopPropagation()}
-                className={`fixed inset-x-3 top-16 md:absolute md:top-full md:left-0 md:inset-x-auto mt-2 w-auto md:w-80 backdrop-blur-2xl border rounded-3xl shadow-2xl p-3 z-50 animate-in fade-in slide-in-from-top-2 duration-200 ${
-                  readerTheme === 'dark'
-                    ? 'bg-[#0d071a]/98 text-white'
-                    : readerTheme === 'sepia'
-                      ? 'bg-[#FAF5ED]/98 text-[#3D2C1D]'
-                      : 'bg-white/98 text-slate-900'
-                } ${getHighlightsDropdownBorder()}`}
-              >
-                <div className="flex items-center justify-between pb-2 mb-2 border-b border-border/50 px-1">
-                  <div className="flex items-center gap-2">
-                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${getHighlightEmptyIconStyle()}`}>
-                      <Highlighter className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-1.5">
-                        <h3 className="font-bold text-xs">النصوص المظللة</h3>
-                        {highlights.length > 0 && (
-                          <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded-full border ${getHighlightsCountBadgeStyle()}`}>
-                            {toEasternArabicNumerals(highlights.length)}
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-[10px] text-muted-foreground">
-                        {highlights.length > 0 ? 'في كامل الكتاب' : 'لا توجد تظليلات حالياً'}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-1">
-                    {highlights.length > 0 && (
-                      <button
-                        type="button"
-                        onClick={handleClearAllHighlights}
-                        className="px-2 py-1 text-[10px] font-bold text-rose-500 hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer"
-                        title="حذف جميع التظليلات"
-                      >
-                        مسح الكل
-                      </button>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => setShowHighlightsMenu(false)}
-                      className="p-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 text-muted-foreground cursor-pointer"
-                      title="إغلاق"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Highlights List */}
-                <div className="max-h-80 overflow-y-auto custom-scrollbar flex flex-col gap-2 p-1">
-                  {highlights.length === 0 ? (
-                    <div className="py-8 px-4 text-center flex flex-col items-center justify-center gap-2 opacity-70">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${getHighlightEmptyIconStyle()}`}>
-                        <Highlighter className="w-5 h-5" />
-                      </div>
-                      <p className="text-xs font-bold">لا توجد نصوص ملونة بعد</p>
-                      <p className="text-[11px] leading-relaxed text-muted-foreground">
-                        حدد أي نص في صفحات الكتاب واختر لوناً من شريط الأدوات لحفظه هنا.
-                      </p>
-                    </div>
-                  ) : (
-                    highlights.map((h) => {
-                      const isCurrentPage = h.page === currentPage;
-                      return (
-                        <div
-                          key={h.id}
-                          onClick={() => handleJumpToHighlight(h)}
-                          className={`group relative p-3 rounded-2xl border transition-all duration-200 cursor-pointer text-right flex flex-col gap-1.5 ${getHighlightActiveCardStyle(isCurrentPage)}`}
-                        >
-                          {/* Card Header: Page Badge + Color Dot + Delete Button */}
-                          <div className="flex items-center justify-between">
-                            <span className={`text-[11px] font-black px-2 py-0.5 rounded-lg flex items-center gap-1 ${getHighlightBadgeStyle(isCurrentPage)}`}>
-                              <span>صفحة {toEasternArabicNumerals(h.page)}</span>
-                              {isCurrentPage && <span className="text-[9px] font-bold opacity-80">(الحالية)</span>}
-                            </span>
-
-                            <div className="flex items-center gap-1.5">
-                              {/* Color Badge */}
-                              <span
-                                className="w-3.5 h-3.5 rounded-full border border-black/10 shadow-xs inline-block"
-                                style={{ backgroundColor: h.color }}
-                                title="لون التحديد"
-                              />
-
-                              {/* Delete button */}
-                              <button
-                                type="button"
-                                onClick={(e) => handleDeleteHighlight(h.id, e)}
-                                className="p-1 rounded-md text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-colors opacity-70 group-hover:opacity-100"
-                                title="حذف هذا التظليل"
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </button>
-                            </div>
-                          </div>
-
-                          {/* Highlight Text Quote */}
-                          <p
-                            className="text-xs leading-relaxed line-clamp-3 font-medium rounded-lg p-1.5 transition-colors"
-                            style={{
-                              borderRight: `3px solid ${h.color}`,
-                              backgroundColor: readerTheme === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)'
-                            }}
-                          >
-                            "{h.text}"
-                          </p>
-                        </div>
-                      );
-                    })
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* In-Page Quick Search Button & Floating Search Bar (البحث في الصفحة المفتوحة) */}
-          {/* In-Page Quick Search Button (Desktop) */}
-          <button
-            type="button"
-            onClick={() => {
-              setIsPageSearchOpen(prev => !prev);
-              setIsDownloadMenuOpen(false);
-              setShowBookmarks(false);
-              setShowSettings(false);
-            }}
-            className={`hidden md:flex w-10 h-10 rounded-xl justify-center items-center transition-all duration-300 backdrop-blur-md border shadow-sm ${
-              isPageSearchOpen
-                ? accentColor === 'amber'
-                  ? 'bg-amber-500/20 border-amber-500 text-amber-500 shadow-sm scale-105'
-                  : accentColor === 'emerald'
-                    ? 'bg-teal-500/20 border-teal-500 text-teal-600 dark:text-teal-400 shadow-sm scale-105'
-                    : accentColor === 'blue'
-                      ? 'bg-blue-500/20 border-blue-500 text-blue-600 dark:text-blue-400 shadow-sm scale-105'
-                      : 'bg-brand-magenta/20 border-brand-magenta text-brand-magenta shadow-sm scale-105'
-                : readerTheme === 'dark'
-                  ? 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white hover:shadow-md hover:scale-105'
-                  : 'bg-white/50 border-gray-200/60 text-slate-500 hover:bg-white/80 hover:text-slate-900 hover:shadow-md hover:scale-105'
-            }`}
-            title="بحث في هذه الصفحة (Ctrl+F)"
-          >
-            <Search className="h-5 w-5" />
-          </button>
-
-          {/* Feature 5 & 6: Unified Download & Export Dropdown (مطابق تماماً لخارج الكتاب) */}
-          <div className="relative" ref={downloadMenuRef}>
-            <button
-              type="button"
-              onClick={() => setIsDownloadMenuOpen(!isDownloadMenuOpen)}
-              className={`hidden md:flex w-10 h-10 rounded-xl justify-center items-center transition-all duration-300 backdrop-blur-md border shadow-sm ${isDownloadMenuOpen
-                ? 'bg-brand-magenta/20 border-brand-magenta/40 text-brand-magenta shadow-[0_0_15px_rgba(149,11,196,0.3)] scale-105'
-                : isSavedOffline
-                  ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-500'
+              className={`hidden md:flex w-10 h-10 rounded-xl justify-center items-center transition-all duration-300 backdrop-blur-md border shadow-sm ${isPageSearchOpen
+                  ? accentColor === 'amber'
+                    ? 'bg-amber-500/20 border-amber-500 text-amber-500 shadow-sm scale-105'
+                    : accentColor === 'emerald'
+                      ? 'bg-teal-500/20 border-teal-500 text-teal-600 dark:text-teal-400 shadow-sm scale-105'
+                      : accentColor === 'blue'
+                        ? 'bg-blue-500/20 border-blue-500 text-blue-600 dark:text-blue-400 shadow-sm scale-105'
+                        : 'bg-brand-magenta/20 border-brand-magenta text-brand-magenta shadow-sm scale-105'
                   : readerTheme === 'dark'
                     ? 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white hover:shadow-md hover:scale-105'
                     : 'bg-white/50 border-gray-200/60 text-slate-500 hover:bg-white/80 hover:text-slate-900 hover:shadow-md hover:scale-105'
                 }`}
-              title="خيارات تحميل وتصدير الكتاب"
+              title="بحث في هذه الصفحة (Ctrl+F)"
             >
-              {isSavingOffline || isExporting || loadingPdf ? (
-                <Loader2 className="h-5 w-5 animate-spin text-brand-magenta" />
-              ) : isSavedOffline ? (
-                <CheckCircle2 className="h-5 w-5 text-emerald-500" />
-              ) : (
-                <Download className="h-5 w-5" />
-              )}
+              <Search className="h-5 w-5" />
             </button>
 
-            {isDownloadMenuOpen && (
-              <div
-                onClick={(e) => e.stopPropagation()}
-                className={`fixed inset-x-3 top-16 md:absolute md:top-full md:left-0 md:inset-x-auto mt-2 w-auto md:w-64 backdrop-blur-2xl border rounded-2xl shadow-2xl p-2 z-50 text-right animate-in fade-in slide-in-from-top-2 duration-150 ${readerTheme === 'dark'
-                  ? 'bg-[#121826]/95 border-white/10 shadow-black/80 text-white'
-                  : readerTheme === 'sepia'
-                    ? 'bg-[#FAF5ED]/95 border-[#E2D6C0] shadow-xl text-[#3D2C1D]'
-                    : 'bg-white/95 border-gray-200 shadow-xl text-slate-900'
+            {/* Feature 5 & 6: Unified Download & Export Dropdown (مطابق تماماً لخارج الكتاب) */}
+            <div className="relative" ref={downloadMenuRef}>
+              <button
+                type="button"
+                onClick={() => setIsDownloadMenuOpen(!isDownloadMenuOpen)}
+                className={`hidden md:flex w-10 h-10 rounded-xl justify-center items-center transition-all duration-300 backdrop-blur-md border shadow-sm ${isDownloadMenuOpen
+                  ? 'bg-brand-magenta/20 border-brand-magenta/40 text-brand-magenta shadow-[0_0_15px_rgba(149,11,196,0.3)] scale-105'
+                  : isSavedOffline
+                    ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-500'
+                    : readerTheme === 'dark'
+                      ? 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white hover:shadow-md hover:scale-105'
+                      : 'bg-white/50 border-gray-200/60 text-slate-500 hover:bg-white/80 hover:text-slate-900 hover:shadow-md hover:scale-105'
                   }`}
+                title="خيارات تحميل وتصدير الكتاب"
               >
-                <div className="flex items-center justify-between px-2 py-1 border-b border-inherit/40 mb-1">
-                  <span className="text-[10px] font-bold opacity-70">
-                    خيارات تحميل وتصدير الكتاب:
-                  </span>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setIsDownloadMenuOpen(false);
-                    }}
-                    className="p-1 rounded-lg hover:bg-black/10 dark:hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-                    title="إغلاق"
-                    aria-label="إغلاق قائمة التحميل"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                </div>
+                {isSavingOffline || isExporting || loadingPdf ? (
+                  <Loader2 className="h-5 w-5 animate-spin text-brand-magenta" />
+                ) : isSavedOffline ? (
+                  <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+                ) : (
+                  <Download className="h-5 w-5" />
+                )}
+              </button>
 
-                {/* 1. Offline Storage */}
-                <button
-                  type="button"
-                  onClick={handleToggleOfflineSave}
-                  disabled={isSavingOffline}
-                  className={`w-full flex items-center justify-between gap-2 px-2.5 py-2 rounded-xl text-xs font-semibold hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-right cursor-pointer ${isSavedOffline ? 'text-emerald-600 dark:text-emerald-400 font-bold' : ''
+              {isDownloadMenuOpen && (
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  className={`fixed inset-x-3 top-16 md:absolute md:top-full md:left-0 md:inset-x-auto mt-2 w-auto md:w-64 backdrop-blur-2xl border rounded-2xl shadow-2xl p-2 z-50 text-right animate-in fade-in slide-in-from-top-2 duration-150 ${readerTheme === 'dark'
+                    ? 'bg-[#121826]/95 border-white/10 shadow-black/80 text-white'
+                    : readerTheme === 'sepia'
+                      ? 'bg-[#FAF5ED]/95 border-[#E2D6C0] shadow-xl text-[#3D2C1D]'
+                      : 'bg-white/95 border-gray-200 shadow-xl text-slate-900'
                     }`}
                 >
-                  <div className="flex items-center gap-2">
-                    <HardDriveDownload className="w-4 h-4 text-amber-500 shrink-0" />
-                    <span>
-                      {isSavingOffline
-                        ? `جاري الحفظ (${offlineSaveProgress}%)...`
-                        : isSavedOffline
-                          ? 'محفوظ أوفلاين (إزالة)'
-                          : 'حفظ للقراءة دون إنترنت (Offline)'}
+                  <div className="flex items-center justify-between px-2 py-1 border-b border-inherit/40 mb-1">
+                    <span className="text-[10px] font-bold opacity-70">
+                      خيارات تحميل وتصدير الكتاب:
                     </span>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsDownloadMenuOpen(false);
+                      }}
+                      className="p-1 rounded-lg hover:bg-black/10 dark:hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                      title="إغلاق"
+                      aria-label="إغلاق قائمة التحميل"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
                   </div>
-                  {isSavingOffline ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-500" />
-                  ) : isSavedOffline ? (
-                    <Check className="w-3.5 h-3.5 text-emerald-500" />
-                  ) : null}
-                </button>
 
-                {/* 2. Full TXT download */}
-                <button
-                  type="button"
-                  onClick={() => handleExport('txt')}
-                  disabled={isExporting}
-                  className="w-full flex items-center justify-between gap-2 px-2.5 py-2 rounded-xl text-xs font-semibold hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-right cursor-pointer"
-                >
-                  <div className="flex items-center gap-2">
-                    <FileDown className="w-4 h-4 text-emerald-500 shrink-0" />
-                    <span>تحميل متن الكتاب (TXT)</span>
-                  </div>
-                  {isExporting ? <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-500" /> : null}
-                </button>
-
-                {/* 3. JSON download */}
-                <button
-                  type="button"
-                  onClick={() => handleExport('json')}
-                  disabled={isExporting}
-                  className="w-full flex items-center justify-between gap-2 px-2.5 py-2 rounded-xl text-xs font-semibold hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-right cursor-pointer"
-                >
-                  <div className="flex items-center gap-2">
-                    <BookCheck className="w-4 h-4 text-blue-500 shrink-0" />
-                    <span>بيانات وفهرس (JSON)</span>
-                  </div>
-                </button>
-
-                {/* 4. PDF download */}
-                {(volumePdfList.length > 0 || hasBookPdf(book)) && (
+                  {/* 1. Offline Storage */}
                   <button
                     type="button"
-                    onClick={() => handleOpenOrDownloadPdf()}
-                    disabled={loadingPdf}
-                    className="w-full flex items-center justify-between gap-2 px-2.5 py-2 rounded-xl text-xs font-semibold hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-right cursor-pointer text-rose-600 dark:text-rose-400"
+                    onClick={handleToggleOfflineSave}
+                    disabled={isSavingOffline}
+                    className={`w-full flex items-center justify-between gap-2 px-2.5 py-2 rounded-xl text-xs font-semibold hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-right cursor-pointer ${isSavedOffline ? 'text-emerald-600 dark:text-emerald-400 font-bold' : ''
+                      }`}
                   >
                     <div className="flex items-center gap-2">
-                      <FileDown className="w-4 h-4 text-rose-500 shrink-0" />
+                      <HardDriveDownload className="w-4 h-4 text-amber-500 shrink-0" />
                       <span>
-                        {volumePdfList.length > 1
-                          ? `تحميل الـ PDF (${volumePdfList.length} مجلدات)`
-                          : 'تحميل النسخة المصورة (PDF)'}
+                        {isSavingOffline
+                          ? `جاري الحفظ (${offlineSaveProgress}%)...`
+                          : isSavedOffline
+                            ? 'محفوظ أوفلاين (إزالة)'
+                            : 'حفظ للقراءة دون إنترنت (Offline)'}
                       </span>
                     </div>
-                    {loadingPdf ? (
-                      <Loader2 className="w-3.5 h-3.5 animate-spin text-rose-500" />
-                    ) : (
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-rose-500/10 border border-rose-500/20 font-mono">
-                        PDF
-                      </span>
-                    )}
+                    {isSavingOffline ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-500" />
+                    ) : isSavedOffline ? (
+                      <Check className="w-3.5 h-3.5 text-emerald-500" />
+                    ) : null}
                   </button>
-                )}
 
-                {isExporting && exportProgressText && (
-                  <p className="text-[10px] text-muted-foreground px-2 py-1 mt-1 border-t border-inherit animate-pulse">
-                    {exportProgressText}
-                  </p>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Bookmarks Dropdown Toggle */}
-          <div className="relative">
-            <button
-              onClick={() => { setShowBookmarks(!showBookmarks); setShowSettings(false); }}
-              className={`hidden md:flex w-10 h-10 rounded-xl justify-center items-center transition-all duration-300 backdrop-blur-md border shadow-sm ${showBookmarks ? 'bg-brand-magenta/20 border-brand-magenta/40 text-brand-magenta shadow-[0_0_15px_rgba(149,11,196,0.3)] scale-105' : readerTheme === 'dark' ? 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-brand-magenta hover:shadow-md hover:scale-105' : 'bg-white/50 border-gray-200/60 text-slate-500 hover:bg-white/80 hover:text-brand-magenta hover:shadow-md hover:scale-105'}`}
-              title="العلامات المرجعية"
-            >
-              <Bookmark className="h-5 w-5" />
-            </button>
-
-            {showBookmarks && (
-              <div className={`fixed inset-x-3 top-16 md:absolute md:top-full md:left-0 md:inset-x-auto mt-2 w-auto md:w-64 backdrop-blur-2xl border rounded-3xl shadow-2xl p-2 z-50 animate-in fade-in slide-in-from-top-2 ${readerTheme === 'dark' ? 'bg-[#0d071a]/95 border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.7)]' : 'bg-white/95 border-gray-200 shadow-xl text-slate-900'}`}>
-                <div className="p-3 border-b border-border/50 mb-2">
-                  <h3 className="font-bold text-sm">العلامات المرجعية</h3>
-                </div>
-                <div className="max-h-60 overflow-y-auto custom-scrollbar flex flex-col gap-1 p-1">
-                  {bookmarks.length === 0 ? (
-                    <div className="py-6 text-center opacity-60 text-xs font-semibold">
-                      لا يوجد صفحات محفوظة حالياً.
+                  {/* 2. Full TXT download */}
+                  <button
+                    type="button"
+                    onClick={() => handleExport('txt')}
+                    disabled={isExporting}
+                    className="w-full flex items-center justify-between gap-2 px-2.5 py-2 rounded-xl text-xs font-semibold hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-right cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2">
+                      <FileDown className="w-4 h-4 text-emerald-500 shrink-0" />
+                      <span>تحميل متن الكتاب (TXT)</span>
                     </div>
-                  ) : (
-                    bookmarks.map(page => (
-                      <button
-                        key={page}
-                        onClick={() => { setCurrentPage(page); setShowBookmarks(false); }}
-                        className={`group flex items-center justify-between p-2.5 rounded-xl transition-all duration-300 ${currentPage === page ? 'bg-brand-magenta/10 text-brand-magenta' : 'hover:bg-brand-magenta/5 dark:hover:bg-brand-magenta/10 hover:pr-3 hover:text-brand-magenta'}`}
-                      >
-                        <span className="text-xs font-bold truncate flex-1 text-right">صفحة {page}</span>
-                        <BookmarkCheck className={`h-4 w-4 transition-all duration-300 ${currentPage === page ? 'opacity-100' : 'opacity-50 group-hover:opacity-100 group-hover:scale-110'}`} />
-                      </button>
-                    ))
+                    {isExporting ? <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-500" /> : null}
+                  </button>
+
+                  {/* 3. JSON download */}
+                  <button
+                    type="button"
+                    onClick={() => handleExport('json')}
+                    disabled={isExporting}
+                    className="w-full flex items-center justify-between gap-2 px-2.5 py-2 rounded-xl text-xs font-semibold hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-right cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2">
+                      <BookCheck className="w-4 h-4 text-blue-500 shrink-0" />
+                      <span>بيانات وفهرس (JSON)</span>
+                    </div>
+                  </button>
+
+                  {/* 4. PDF download */}
+                  {(volumePdfList.length > 0 || hasBookPdf(book)) && (
+                    <button
+                      type="button"
+                      onClick={() => handleOpenOrDownloadPdf()}
+                      disabled={loadingPdf}
+                      className="w-full flex items-center justify-between gap-2 px-2.5 py-2 rounded-xl text-xs font-semibold hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-right cursor-pointer text-rose-600 dark:text-rose-400"
+                    >
+                      <div className="flex items-center gap-2">
+                        <FileDown className="w-4 h-4 text-rose-500 shrink-0" />
+                        <span>
+                          {volumePdfList.length > 1
+                            ? `تحميل الـ PDF (${volumePdfList.length} مجلدات)`
+                            : 'تحميل النسخة المصورة (PDF)'}
+                        </span>
+                      </div>
+                      {loadingPdf ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin text-rose-500" />
+                      ) : (
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-rose-500/10 border border-rose-500/20 font-mono">
+                          PDF
+                        </span>
+                      )}
+                    </button>
+                  )}
+
+                  {isExporting && exportProgressText && (
+                    <p className="text-[10px] text-muted-foreground px-2 py-1 mt-1 border-t border-inherit animate-pulse">
+                      {exportProgressText}
+                    </p>
                   )}
                 </div>
-              </div>
-            )}
-          </div>
-
-
-          <button
-            onClick={() => { setShowSettings(!showSettings); setShowBookmarks(false); }}
-            className={`hidden md:flex w-10 h-10 rounded-xl justify-center items-center transition-all duration-300 backdrop-blur-md border shadow-sm ${showSettings ? 'bg-brand-blue/20 border-brand-blue/40 text-brand-blue shadow-[0_0_15px_rgba(43,127,255,0.3)] scale-105' : readerTheme === 'dark' ? 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-brand-blue hover:shadow-md hover:scale-105' : 'bg-white/50 border-gray-200/60 text-slate-500 hover:bg-white/80 hover:text-brand-blue hover:shadow-md hover:scale-105'}`}
-            title="إعدادات القراءة"
-          >
-            <Settings2 className="h-5 w-5" />
-          </button>
-
-          {/* Settings Dropdown (Pops out below) */}
-          {showSettings && (
-            <div className={`fixed inset-x-3 top-16 md:absolute md:top-full md:left-0 md:inset-x-auto mt-2 w-auto md:w-[300px] max-h-[85vh] overflow-y-auto backdrop-blur-2xl border rounded-2xl shadow-2xl p-5 z-50 animate-in fade-in slide-in-from-top-4 duration-300 origin-top-left ${readerTheme === 'dark' ? 'bg-[#0d071a]/95 border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.7)] text-white' : 'bg-white/95 border-gray-200 shadow-xl text-slate-800'}`}>
-
-              {/* Reading Mode */}
-              <div className="mb-6">
-                <label className={`text-[11px] font-bold mb-3 block uppercase tracking-wider ${readerTheme === 'dark' ? 'text-white/50' : 'text-slate-400'}`}>نمط القراءة</label>
-                <div className="flex gap-2">
-                  <button onClick={() => handleSetReadingMode('paged')} className={`flex-1 py-2.5 rounded-2xl border transition-all duration-300 ${readingMode === 'paged' ? 'border-brand-blue bg-brand-blue/10 text-brand-blue shadow-sm scale-105' : readerTheme === 'dark' ? 'border-white/10 hover:bg-white/10 text-white/60 hover:text-white hover:border-white/20' : 'border-black/10 hover:bg-black/5 text-slate-600 hover:text-slate-900'} flex flex-col items-center justify-center gap-1.5`}>
-                    <BookText className="h-5 w-5" />
-                    <span className="text-[10px] font-bold">صفحة بصفحة</span>
-                  </button>
-                  <button onClick={() => handleSetReadingMode('continuous')} className={`flex-1 py-2.5 rounded-2xl border transition-all duration-300 ${readingMode === 'continuous' ? 'border-brand-blue bg-brand-blue/10 text-brand-blue shadow-sm scale-105' : readerTheme === 'dark' ? 'border-white/10 hover:bg-white/10 text-white/60 hover:text-white hover:border-white/20' : 'border-black/10 hover:bg-black/5 text-slate-600 hover:text-slate-900'} flex flex-col items-center justify-center gap-1.5`}>
-                    <AlignJustify className="h-5 w-5" />
-                    <span className="text-[10px] font-bold">تصفح متصل</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Tashkeel Toggle */}
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-2">
-                  <label className={`text-[11px] font-bold block uppercase tracking-wider ${readerTheme === 'dark' ? 'text-white/50' : 'text-slate-400'}`}>
-                    علامات التشكيل
-                  </label>
-                  <span className={`text-[10px] font-bold ${getAccentTextClass()}`}>
-                    {showTashkeel ? 'مُشَكَّل' : 'بدون تشكيل'}
-                  </span>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowTashkeel(true);
-                      setShowSettings(false);
-                    }}
-                    className={`flex-1 py-2 rounded-xl border transition-all text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer ${
-                      showTashkeel
-                        ? getActiveAccentClass()
-                        : 'border-border/50 hover:bg-black/5 dark:hover:bg-white/5 text-muted-foreground'
-                    }`}
-                  >
-                    <span className="font-amiri text-base font-black leading-none">عَـ</span>
-                    <span>إظهار التشكيل</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowTashkeel(false);
-                      setShowSettings(false);
-                    }}
-                    className={`flex-1 py-2 rounded-xl border transition-all text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer ${
-                      !showTashkeel
-                        ? getActiveAccentClass()
-                        : 'border-border/50 hover:bg-black/5 dark:hover:bg-white/5 text-muted-foreground'
-                    }`}
-                  >
-                    <span className="font-amiri text-base font-black leading-none">عـ</span>
-                    <span>إخفاء التشكيل</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Theme Lighting & Accent Colors */}
-              <div className="mb-6">
-                <label className={`text-[11px] font-bold mb-3 block uppercase tracking-wider ${isDark ? 'text-white/50' : 'text-slate-400'}`}>نمط الإضاءة</label>
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (theme === 'dark') toggleTheme();
-                      setReaderTheme('light');
-                    }}
-                    className={`flex-1 py-2.5 rounded-2xl border transition-all duration-300 flex flex-col items-center justify-center gap-1.5 cursor-pointer ${
-                      theme === 'light'
-                        ? `${getActiveAccentClass()} scale-105`
-                        : isDark
-                          ? 'border-white/10 hover:bg-white/10 text-white/60 hover:text-white hover:border-white/20'
-                          : 'border-black/10 hover:bg-black/5 text-slate-600 hover:text-slate-900'
-                    }`}
-                  >
-                    <Sun className="h-5 w-5 text-amber-500" />
-                    <span className="text-[10px] font-bold">نهاري (فاتح)</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (theme === 'light') toggleTheme();
-                      setReaderTheme('dark');
-                    }}
-                    className={`flex-1 py-2.5 rounded-2xl border transition-all duration-300 flex flex-col items-center justify-center gap-1.5 cursor-pointer ${
-                      theme === 'dark'
-                        ? `${getActiveAccentClass()} scale-105`
-                        : isDark
-                          ? 'border-white/10 hover:bg-white/10 text-white/60 hover:text-white hover:border-white/20'
-                          : 'border-black/10 hover:bg-black/5 text-slate-600 hover:text-slate-900'
-                    }`}
-                  >
-                    <Moon className="h-5 w-5 text-indigo-400" />
-                    <span className="text-[10px] font-bold">ليلي (داكن)</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Theme Accent Color */}
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-3">
-                  <label className={`text-[11px] font-bold block uppercase tracking-wider ${isDark ? 'text-white/50' : 'text-slate-400'}`}>
-                    لون السمة
-                  </label>
-                  <span className={`text-[10px] font-bold ${
-                    accentColor === 'emerald' ? 'text-teal-400' :
-                    accentColor === 'amber' ? 'text-[#dfbf83]' :
-                    accentColor === 'blue' ? 'text-blue-400' :
-                    'text-purple-400'
-                  }`}>
-                    {accentColor === 'purple' && 'أرجواني ملكي'}
-                    {accentColor === 'emerald' && 'فيروزي إسلامي'}
-                    {accentColor === 'amber' && 'عاجي إسلامي'}
-                    {accentColor === 'blue' && 'أزرق ياقوتي'}
-                  </span>
-                </div>
-                <div className="grid grid-cols-4 gap-2">
-                  {THEME_ACCENTS.map((item) => {
-                    const isSelected = accentColor === item.id;
-                    return (
-                      <button
-                        key={item.id}
-                        type="button"
-                        onClick={() => setAccentColor(item.id)}
-                        className={`group flex flex-col items-center gap-1.5 py-2 px-1 rounded-2xl border transition-all active:scale-95 cursor-pointer ${
-                          isSelected
-                            ? isDark
-                              ? 'border-white/25 bg-white/10 shadow-xs scale-102'
-                              : 'border-black/15 bg-black/5 shadow-xs scale-102'
-                            : isDark
-                              ? 'border-white/5 hover:border-white/15 hover:bg-white/5'
-                              : 'border-black/5 hover:border-black/15 hover:bg-black/5'
-                        }`}
-                      >
-                        <span
-                          className={`h-6 w-6 rounded-full bg-gradient-to-tr ${item.gradient} transition-all duration-300 ${
-                            isSelected
-                              ? `ring-2 ${item.ring} ring-offset-2 ${isDark ? 'ring-offset-[#0d071a]' : 'ring-offset-white'} scale-110 shadow-md`
-                              : 'scale-90 opacity-70 group-hover:opacity-100 group-hover:scale-95'
-                          }`}
-                        />
-                        <span
-                          className={`text-[10px] leading-tight transition-colors ${
-                            isSelected
-                              ? (isDark ? 'font-bold text-white' : 'font-bold text-stone-900')
-                              : (isDark ? 'font-medium text-white/60' : 'font-medium text-stone-600')
-                          }`}
-                        >
-                          {item.name}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-
-              {/* Font Size */}
-              <div className="mb-6">
-                <label className={`text-[11px] font-bold mb-3 flex justify-between uppercase tracking-wider ${readerTheme === 'dark' ? 'text-white/50' : 'text-slate-400'}`}>
-                  <span>حجم الخط</span>
-                  <span className="text-brand-blue">{fontSize}px</span>
-                </label>
-                <div className="flex items-center gap-3">
-                  <button onClick={() => setFontSize(s => Math.max(14, s - 2))} className={`p-2 rounded-xl transition-all duration-200 active:scale-90 ${readerTheme === 'dark' ? 'bg-white/10 hover:bg-white/20 text-white/80' : 'bg-black/5 hover:bg-black/10 text-slate-700'}`}>
-                    <Type className="h-4 w-4" />
-                  </button>
-                  <input type="range" min="14" max="40" step="2" value={fontSize} onChange={(e) => setFontSize(Number(e.target.value))} className={`flex-1 accent-brand-blue h-2 rounded-full appearance-none outline-none transition-colors ${readerTheme === 'dark' ? 'bg-white/20 hover:bg-white/30' : 'bg-black/10 hover:bg-black/20'}`} />
-                  <button onClick={() => setFontSize(s => Math.min(40, s + 2))} className={`p-2 rounded-xl transition-all duration-200 active:scale-90 ${readerTheme === 'dark' ? 'bg-white/10 hover:bg-white/20 text-white/80' : 'bg-black/5 hover:bg-black/10 text-slate-700'}`}>
-                    <Type className="h-5 w-5" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Font Family Dropdown */}
-              <div>
-                <label className={`text-[11px] font-bold mb-2 block uppercase tracking-wider ${readerTheme === 'dark' ? 'text-white/50' : 'text-slate-400'}`}>خط القراءة</label>
-                <div className="relative">
-                  <select
-                    value={fontFamily === 'font-read' ? 'font-amiri' : fontFamily === 'font-sans' ? 'font-cairo' : fontFamily}
-                    onChange={(e) => setFontFamily(e.target.value)}
-                    className={`w-full appearance-none px-4 py-2.5 pl-10 rounded-2xl text-sm font-semibold transition-all cursor-pointer outline-none border ${readerTheme === 'dark'
-                      ? 'bg-white/10 text-white border-white/15 focus:border-brand-blue hover:bg-white/15'
-                      : 'bg-slate-100 text-slate-800 border-slate-200 focus:border-brand-blue hover:bg-slate-200/70'
-                      }`}
-                  >
-                    <option value="font-amiri" className="font-amiri text-slate-900 bg-white dark:bg-slate-900 dark:text-white py-1">الخط الأميري</option>
-                    <option value="font-scheherazade" className="font-scheherazade text-slate-900 bg-white dark:bg-slate-900 dark:text-white py-1">خط شهرزاد</option>
-                    <option value="font-noto-naskh" className="font-noto-naskh text-slate-900 bg-white dark:bg-slate-900 dark:text-white py-1">خط النسخ</option>
-                    <option value="font-cairo" className="font-cairo text-slate-900 bg-white dark:bg-slate-900 dark:text-white py-1">خط القاهرة</option>
-                  </select>
-                  <ChevronDown className={`w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none ${readerTheme === 'dark' ? 'text-white/60' : 'text-slate-500'
-                    }`} />
-                </div>
-              </div>
+              )}
             </div>
-          )}
 
-          {/* Mobile Fast Action Buttons (Unified Settings Button) */}
-          <div className="flex md:hidden items-center gap-1.5 shrink-0" ref={mobileMenuRef}>
-            <button
-              type="button"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className={`h-9 w-9 rounded-full flex items-center justify-center border transition-all active:scale-95 cursor-pointer shrink-0 ${
-                isMobileMenuOpen
-                  ? 'bg-brand-blue/20 border-brand-blue/40 text-brand-blue ring-2 ring-brand-blue/30'
-                  : getNavCircleBtnStyle()
-              }`}
-              title="إعدادات وخيارات القراءة"
-              aria-label="إعدادات وخيارات القراءة"
-            >
-              <Settings2 className="h-4.5 w-4.5" strokeWidth={2.2} />
-            </button>
+            {/* Bookmarks Dropdown Toggle */}
+            <div className="relative">
+              <button
+                onClick={() => { setShowBookmarks(!showBookmarks); setShowSettings(false); }}
+                className={`hidden md:flex w-10 h-10 rounded-xl justify-center items-center transition-all duration-300 backdrop-blur-md border shadow-sm ${showBookmarks ? 'bg-brand-magenta/20 border-brand-magenta/40 text-brand-magenta shadow-[0_0_15px_rgba(149,11,196,0.3)] scale-105' : readerTheme === 'dark' ? 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-brand-magenta hover:shadow-md hover:scale-105' : 'bg-white/50 border-gray-200/60 text-slate-500 hover:bg-white/80 hover:text-brand-magenta hover:shadow-md hover:scale-105'}`}
+                title="العلامات المرجعية"
+              >
+                <Bookmark className="h-5 w-5" />
+              </button>
 
-            {typeof document !== 'undefined' && createPortal(
-              <AnimatePresence>
-                {isMobileMenuOpen && (
-                  <div dir="rtl" ref={mobileSettingsSheetRef}>
-                    {/* غطاء خلفي زجاجي شفاف ومضبب يغطي الصفحة بالكامل ويغلق القائمة عند النقر عليه */}
-                    <motion.div
-                      key="mobile-settings-backdrop"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.3, ease: 'easeOut' }}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="fixed inset-0 z-[90] bg-black/40 dark:bg-black/60 backdrop-blur-md cursor-pointer"
-                    />
-
-                    {/* درج سفلي زجاجي (Bottom Sheet) يرتفع بنعومة وانسيابية هادئة */}
-                    <motion.div
-                      key="mobile-settings-sheet"
-                      initial={{ y: '100%', opacity: 0.7 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      exit={{ y: '100%', opacity: 0.7 }}
-                      transition={{
-                        duration: 0.42,
-                        ease: [0.16, 1, 0.3, 1]
-                      }}
-                      onClick={(e) => e.stopPropagation()}
-                      className={`fixed inset-x-0 bottom-0 z-[100] h-[88vh] max-h-[92vh] flex flex-col rounded-t-xl border-t shadow-2xl backdrop-blur-2xl overflow-hidden ${
-                        readerTheme === 'dark'
-                          ? 'bg-[#0f1422]/95 border-white/15 text-white shadow-black/80'
-                          : readerTheme === 'sepia'
-                            ? 'bg-[#FAF5ED]/95 border-[#E2D6C0] text-[#3D2C1D] shadow-xl'
-                            : 'bg-white/95 border-slate-200/90 text-slate-900 shadow-2xl'
-                      }`}
-                    >
-                    {/* رأس الدرج: مقبض السحب + العنوان وزر الإغلاق الثابت */}
-                    <div className="shrink-0 px-4 pt-2.5 pb-3 border-b border-border/40">
-                      <div className="w-10 h-1 rounded-full bg-black/15 dark:bg-white/20 mx-auto mb-2.5" />
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold flex items-center gap-2">
-                          <Settings2 className={`w-4 h-4 ${getAccentTextClass()}`} />
-                          <span>إعدادات وخيارات القراءة</span>
-                        </span>
+              {showBookmarks && (
+                <div className={`fixed inset-x-3 top-16 md:absolute md:top-full md:left-0 md:inset-x-auto mt-2 w-auto md:w-64 backdrop-blur-2xl border rounded-3xl shadow-2xl p-2 z-50 animate-in fade-in slide-in-from-top-2 ${readerTheme === 'dark' ? 'bg-[#0d071a]/95 border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.7)]' : 'bg-white/95 border-gray-200 shadow-xl text-slate-900'}`}>
+                  <div className="p-3 border-b border-border/50 mb-2">
+                    <h3 className="font-bold text-sm">العلامات المرجعية</h3>
+                  </div>
+                  <div className="max-h-60 overflow-y-auto custom-scrollbar flex flex-col gap-1 p-1">
+                    {bookmarks.length === 0 ? (
+                      <div className="py-6 text-center opacity-60 text-xs font-semibold">
+                        لا يوجد صفحات محفوظة حالياً.
+                      </div>
+                    ) : (
+                      bookmarks.map(page => (
                         <button
-                          type="button"
-                          onClick={() => setIsMobileMenuOpen(false)}
-                          className={`w-7.5 h-7.5 rounded-full border flex items-center justify-center transition-all cursor-pointer active:scale-95 shadow-2xs ${
-                            readerTheme === 'dark'
-                              ? 'border-white/15 bg-white/5 text-white/70 hover:bg-white/15 hover:text-white hover:border-white/25'
-                              : readerTheme === 'sepia'
-                                ? 'border-[#E2D6C0] bg-[#FAF5ED] text-[#7A401A] hover:bg-[#F2E5D0] hover:text-[#5C3012] hover:border-[#D4C0A2]'
-                                : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900 hover:border-slate-300'
-                          }`}
-                          aria-label="إغلاق الإعدادات"
-                          title="إغلاق"
+                          key={page}
+                          onClick={() => { setCurrentPage(page); setShowBookmarks(false); }}
+                          className={`group flex items-center justify-between p-2.5 rounded-xl transition-all duration-300 ${currentPage === page ? 'bg-brand-magenta/10 text-brand-magenta' : 'hover:bg-brand-magenta/5 dark:hover:bg-brand-magenta/10 hover:pr-3 hover:text-brand-magenta'}`}
                         >
-                          <X className="w-4 h-4" strokeWidth={2.2} />
+                          <span className="text-xs font-bold truncate flex-1 text-right">صفحة {page}</span>
+                          <BookmarkCheck className={`h-4 w-4 transition-all duration-300 ${currentPage === page ? 'opacity-100' : 'opacity-50 group-hover:opacity-100 group-hover:scale-110'}`} />
                         </button>
-                      </div>
-                    </div>
-
-                    {/* جسم المحتوى الداخلي القابل للتمرير: السكرول بار يظل محصوراً بالداخل بنظافة */}
-                    <div
-                      className="flex-1 overflow-y-auto px-4 py-3 no-scrollbar flex flex-col gap-3.5"
-                      style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 1.5rem)' }}
-                    >
-                      {/* 1. تكبير الشاشة */}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setDistractionFree(true);
-                          setIsMobileMenuOpen(false);
-                        }}
-                        className="flex items-center justify-between p-2.5 rounded-2xl border border-border/40 hover:bg-black/5 dark:hover:bg-white/5 transition-all text-xs font-bold cursor-pointer"
-                      >
-                        <div className="flex items-center gap-2.5">
-                          <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${getAccentIconBgClass()}`}>
-                            <Maximize className="w-4 h-4" />
-                          </div>
-                          <span>تكبير الشاشة</span>
-                        </div>
-                      </button>
-
-                      {/* 2. تحميل الكتاب (قائمة منسدلة داخلية) */}
-                      <div className="shrink-0 grow-0 basis-auto flex flex-col rounded-2xl border border-border/40 overflow-hidden transition-all">
-                        <button
-                          type="button"
-                          onClick={() => setIsMobileDownloadExpanded(!isMobileDownloadExpanded)}
-                          className="flex items-center justify-between p-2.5 hover:bg-black/5 dark:hover:bg-white/5 transition-all text-xs font-bold cursor-pointer"
-                        >
-                          <div className="flex items-center gap-2.5">
-                            <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${getAccentIconBgClass()}`}>
-                              <Download className="w-4 h-4" />
-                            </div>
-                            <span>تحميل الكتاب</span>
-                          </div>
-                          <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${isMobileDownloadExpanded ? 'rotate-180' : ''}`} />
-                        </button>
-
-                        {isMobileDownloadExpanded && (
-                          <div className="p-2 border-t border-border/30 bg-black/[0.02] dark:bg-white/[0.02] flex flex-col gap-1.5 animate-in fade-in slide-in-from-top-1 duration-150">
-                            {/* حفظ أوفلاين */}
-                            <button
-                              type="button"
-                              onClick={handleToggleOfflineSave}
-                              disabled={isSavingOffline}
-                              className={`w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl text-xs font-semibold hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-right cursor-pointer ${
-                                isSavedOffline ? getAccentTextClass() + ' font-bold' : ''
-                              }`}
-                            >
-                              <div className="flex items-center gap-2">
-                                <HardDriveDownload className={`w-4 h-4 ${getAccentTextClass()}`} />
-                                <span>
-                                  {isSavingOffline
-                                    ? `جاري الحفظ (${offlineSaveProgress}%)...`
-                                    : isSavedOffline
-                                      ? 'محفوظ أوفلاين (إزالة)'
-                                      : 'حفظ للقراءة دون إنترنت (Offline)'}
-                                </span>
-                              </div>
-                              {isSavingOffline ? (
-                                <Loader2 className={`w-3.5 h-3.5 animate-spin ${getAccentTextClass()}`} />
-                              ) : isSavedOffline ? (
-                                <Check className="w-3.5 h-3.5 text-emerald-500" />
-                              ) : null}
-                            </button>
-
-                            {/* تحميل TXT */}
-                            <button
-                              type="button"
-                              onClick={() => handleExport('txt')}
-                              disabled={isExporting}
-                              className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl text-xs font-semibold hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-right cursor-pointer"
-                            >
-                              <div className="flex items-center gap-2">
-                                <FileDown className={`w-4 h-4 ${getAccentTextClass()}`} />
-                                <span>تحميل متن الكتاب (TXT)</span>
-                              </div>
-                              {isExporting ? <Loader2 className={`w-3.5 h-3.5 animate-spin ${getAccentTextClass()}`} /> : null}
-                            </button>
-
-                            {/* تحميل JSON */}
-                            <button
-                              type="button"
-                              onClick={() => handleExport('json')}
-                              disabled={isExporting}
-                              className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl text-xs font-semibold hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-right cursor-pointer"
-                            >
-                              <div className="flex items-center gap-2">
-                                <BookCheck className={`w-4 h-4 ${getAccentTextClass()}`} />
-                                <span>بيانات وفهرس (JSON)</span>
-                              </div>
-                            </button>
-
-                            {/* تحميل PDF إذا متوفر */}
-                            {(volumePdfList.length > 0 || hasBookPdf(book)) && (
-                              <button
-                                type="button"
-                                onClick={() => handleOpenOrDownloadPdf()}
-                                disabled={loadingPdf}
-                                className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl text-xs font-semibold hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-right cursor-pointer"
-                              >
-                                <div className="flex items-center gap-2">
-                                  <FileDown className={`w-4 h-4 ${getAccentTextClass()}`} />
-                                  <span>
-                                    {volumePdfList.length > 1
-                                      ? `تحميل الـ PDF (${volumePdfList.length} مجلدات)`
-                                      : 'تحميل النسخة المصورة (PDF)'}
-                                  </span>
-                                </div>
-                                {loadingPdf ? (
-                                  <Loader2 className={`w-3.5 h-3.5 animate-spin ${getAccentTextClass()}`} />
-                                ) : (
-                                  <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded font-mono ${getAccentIconBgClass()}`}>
-                                    PDF
-                                  </span>
-                                )}
-                              </button>
-                            )}
-
-                            {isExporting && exportProgressText && (
-                              <p className="text-[10px] text-muted-foreground px-3 py-1 animate-pulse">
-                                {exportProgressText}
-                              </p>
-                            )}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* 3. العلامات المرجعية */}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setShowBookmarks(true);
-                          setIsMobileMenuOpen(false);
-                        }}
-                        className="flex items-center justify-between p-2.5 rounded-2xl border border-border/40 hover:bg-black/5 dark:hover:bg-white/5 transition-all text-xs font-bold cursor-pointer"
-                      >
-                        <div className="flex items-center gap-2.5">
-                          <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${getAccentIconBgClass()}`}>
-                            <Bookmark className="w-4 h-4" />
-                          </div>
-                          <span>العلامات المرجعية</span>
-                        </div>
-                        <span className={`text-[11px] font-mono px-2 py-0.5 rounded-full ${getAccentIconBgClass()}`}>
-                          {bookmarks.length}
-                        </span>
-                      </button>
-
-                      {/* فاصل */}
-                      <div className="w-full h-px bg-border/40 my-0.5" />
-
-                      {/* 4. طريقة عرض الصفحة (نمط القراءة) */}
-                      <div>
-                        <label className={`text-[11px] font-bold mb-2 block uppercase tracking-wider ${readerTheme === 'dark' ? 'text-white/50' : 'text-slate-400'}`}>
-                          طريقة عرض الصفحة
-                        </label>
-                        <div className="flex gap-2">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              handleSetReadingMode('paged');
-                              setIsMobileMenuOpen(false);
-                            }}
-                            className={`flex-1 py-2.5 rounded-xl border transition-all text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer ${
-                              readingMode === 'paged'
-                                ? getActiveAccentClass()
-                                : 'border-border/50 hover:bg-black/5 dark:hover:bg-white/5 text-muted-foreground'
-                            }`}
-                          >
-                            <BookText className="h-4 w-4" />
-                            <span>صفحة بصفحة</span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              handleSetReadingMode('continuous');
-                              setIsMobileMenuOpen(false);
-                            }}
-                            className={`flex-1 py-2.5 rounded-xl border transition-all text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer ${
-                              readingMode === 'continuous'
-                                ? getActiveAccentClass()
-                                : 'border-border/50 hover:bg-black/5 dark:hover:bg-white/5 text-muted-foreground'
-                            }`}
-                          >
-                            <AlignJustify className="h-4 w-4" />
-                            <span>تصفح متصل</span>
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* 5. علامات التشكيل */}
-                      <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <label className={`text-[11px] font-bold block uppercase tracking-wider ${readerTheme === 'dark' ? 'text-white/50' : 'text-slate-400'}`}>
-                            علامات التشكيل
-                          </label>
-                          <span className={`text-[10px] font-bold ${getAccentTextClass()}`}>
-                            {showTashkeel ? 'مُشَكَّل' : 'بدون تشكيل'}
-                          </span>
-                        </div>
-                        <div className="flex gap-2">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setShowTashkeel(true);
-                              setIsMobileMenuOpen(false);
-                            }}
-                            className={`flex-1 py-2.5 rounded-xl border transition-all text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer ${
-                              showTashkeel
-                                ? getActiveAccentClass()
-                                : 'border-border/50 hover:bg-black/5 dark:hover:bg-white/5 text-muted-foreground'
-                            }`}
-                          >
-                            <span className="font-amiri text-base font-black leading-none">عَـ</span>
-                            <span>إظهار التشكيل</span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setShowTashkeel(false);
-                              setIsMobileMenuOpen(false);
-                            }}
-                            className={`flex-1 py-2.5 rounded-xl border transition-all text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer ${
-                              !showTashkeel
-                                ? getActiveAccentClass()
-                                : 'border-border/50 hover:bg-black/5 dark:hover:bg-white/5 text-muted-foreground'
-                            }`}
-                          >
-                            <span className="font-amiri text-base font-black leading-none">عـ</span>
-                            <span>إخفاء التشكيل</span>
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* 6. نمط الإضاءة */}
-                      <div>
-                        <label className={`text-[11px] font-bold mb-2 block uppercase tracking-wider ${isDark ? 'text-white/50' : 'text-slate-400'}`}>
-                          نمط الإضاءة
-                        </label>
-                        <div className="flex gap-2">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              if (theme === 'dark') toggleTheme();
-                              setReaderTheme('light');
-                            }}
-                            className={`flex-1 py-2 rounded-xl border transition-all flex flex-col items-center justify-center gap-1 cursor-pointer ${
-                              theme === 'light'
-                                ? getActiveAccentClass()
-                                : 'border-border/50 hover:bg-black/5 dark:hover:bg-white/5 text-muted-foreground'
-                            }`}
-                          >
-                            <Sun className="h-4 w-4 text-amber-500" />
-                            <span className="text-[10px] font-bold">نهاري (فاتح)</span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              if (theme === 'light') toggleTheme();
-                              setReaderTheme('dark');
-                            }}
-                            className={`flex-1 py-2 rounded-xl border transition-all flex flex-col items-center justify-center gap-1 cursor-pointer ${
-                              theme === 'dark'
-                                ? getActiveAccentClass()
-                                : 'border-border/50 hover:bg-black/5 dark:hover:bg-white/5 text-muted-foreground'
-                            }`}
-                          >
-                            <Moon className="h-4 w-4 text-indigo-400" />
-                            <span className="text-[10px] font-bold">ليلي (داكن)</span>
-                          </button>
-                        </div>
-
-                        {/* لون السمة */}
-                        <div className="mt-3.5">
-                          <div className="flex items-center justify-between mb-2">
-                            <label className={`text-[11px] font-bold block uppercase tracking-wider ${isDark ? 'text-white/50' : 'text-slate-400'}`}>
-                              لون السمة
-                            </label>
-                            <span className={`text-[10px] font-bold ${getAccentTextClass()}`}>
-                              {accentColor === 'purple' && 'أرجواني'}
-                              {accentColor === 'emerald' && 'فيروزي'}
-                              {accentColor === 'amber' && 'عاجي'}
-                              {accentColor === 'blue' && 'ياقوتي'}
-                            </span>
-                          </div>
-                          <div className="grid grid-cols-4 gap-2">
-                            {THEME_ACCENTS.map((item) => {
-                              const isSelected = accentColor === item.id;
-                              return (
-                                <button
-                                  key={item.id}
-                                  type="button"
-                                  onClick={() => setAccentColor(item.id)}
-                                  className={`group flex flex-col items-center gap-1.5 py-2 px-1 rounded-xl border transition-all active:scale-95 cursor-pointer ${
-                                    isSelected
-                                      ? isDark
-                                        ? 'border-white/25 bg-white/10 shadow-xs'
-                                        : 'border-black/15 bg-black/5 shadow-xs'
-                                      : isDark
-                                        ? 'border-white/5 hover:border-white/15 hover:bg-white/5'
-                                        : 'border-black/5 hover:border-black/15 hover:bg-black/5'
-                                  }`}
-                                >
-                                  <span
-                                    className={`h-6 w-6 rounded-full bg-gradient-to-tr ${item.gradient} transition-all duration-300 ${
-                                      isSelected
-                                        ? `ring-2 ${item.ring} ring-offset-2 ${isDark ? 'ring-offset-[#120324]' : 'ring-offset-white'} scale-110 shadow-md`
-                                        : 'scale-90 opacity-70 group-hover:opacity-100 group-hover:scale-95'
-                                    }`}
-                                  />
-                                  <span
-                                    className={`text-[10px] leading-tight transition-colors ${
-                                      isSelected
-                                        ? (isDark ? 'font-bold text-white' : 'font-bold text-stone-900')
-                                        : (isDark ? 'font-medium text-white/60' : 'font-medium text-stone-600')
-                                    }`}
-                                  >
-                                    {item.name}
-                                  </span>
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* 6. حجم الخط */}
-                      <div>
-                        <label className={`text-[11px] font-bold mb-2 flex justify-between uppercase tracking-wider ${readerTheme === 'dark' ? 'text-white/50' : 'text-slate-400'}`}>
-                          <span>حجم الخط</span>
-                          <span className={`font-mono font-bold ${getAccentTextClass()}`}>{fontSize}px</span>
-                        </label>
-                        <div className="flex items-center gap-2">
-                          <button
-                            type="button"
-                            onClick={() => setFontSize((s) => Math.max(14, s - 2))}
-                            className={`p-2 rounded-xl transition-all cursor-pointer ${readerTheme === 'dark' ? 'bg-white/10 hover:bg-white/20' : 'bg-black/5 hover:bg-black/10'}`}
-                            title="تصغير الخط"
-                          >
-                            <Type className="h-3.5 w-3.5" />
-                          </button>
-                          <input
-                            type="range"
-                            min="14"
-                            max="40"
-                            step="2"
-                            value={fontSize}
-                            onChange={(e) => setFontSize(Number(e.target.value))}
-                            className={`flex-1 ${getAccentSliderClass()} h-2 rounded-full appearance-none outline-none cursor-pointer ${
-                              readerTheme === 'dark' ? 'bg-white/20' : 'bg-black/10'
-                            }`}
-                          />
-                          <button
-                            type="button"
-                            onClick={() => setFontSize((s) => Math.min(40, s + 2))}
-                            className={`p-2 rounded-xl transition-all cursor-pointer ${readerTheme === 'dark' ? 'bg-white/10 hover:bg-white/20' : 'bg-black/5 hover:bg-black/10'}`}
-                            title="تكبير الخط"
-                          >
-                            <Type className="h-4.5 w-4.5" />
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* 7. خط القراءة (قائمة بطاقة منسدلة مطابقة لتصميم خيارات التحميل) */}
-                      <div className="shrink-0 grow-0 basis-auto flex flex-col rounded-2xl border border-border/40 overflow-hidden transition-all">
-                        <button
-                          type="button"
-                          onClick={() => setIsMobileFontExpanded(!isMobileFontExpanded)}
-                          className="flex items-center justify-between p-2.5 hover:bg-black/5 dark:hover:bg-white/5 transition-all text-xs font-bold cursor-pointer"
-                        >
-                          <div className="flex items-center gap-2.5">
-                            <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${getAccentIconBgClass()}`}>
-                              <Type className="w-4 h-4" />
-                            </div>
-                            <div className="flex items-center gap-1.5 text-right">
-                              <span className="text-xs font-semibold text-muted-foreground shrink-0">خط القراءة:</span>
-                              <span className={`text-xs font-bold text-foreground translate-y-[2.5px] leading-none ${(FONT_OPTIONS.find(f => f.id === (fontFamily === 'font-read' ? 'font-amiri' : fontFamily === 'font-sans' ? 'font-cairo' : fontFamily)) || FONT_OPTIONS[0]).class}`}>
-                                {(FONT_OPTIONS.find(f => f.id === (fontFamily === 'font-read' ? 'font-amiri' : fontFamily === 'font-sans' ? 'font-cairo' : fontFamily)) || FONT_OPTIONS[0]).name}
-                              </span>
-                            </div>
-                          </div>
-                          <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${isMobileFontExpanded ? 'rotate-180' : ''}`} />
-                        </button>
-
-                        {isMobileFontExpanded && (
-                          <div className="p-2 border-t border-border/30 bg-black/[0.02] dark:bg-white/[0.02] flex flex-col gap-1.5 animate-in fade-in slide-in-from-top-1 duration-150">
-                            {FONT_OPTIONS.map((f) => {
-                              const isSelected = (fontFamily === 'font-read' ? 'font-amiri' : fontFamily === 'font-sans' ? 'font-cairo' : fontFamily) === f.id;
-                              return (
-                                <button
-                                  key={f.id}
-                                  type="button"
-                                  onClick={() => {
-                                    setFontFamily(f.id);
-                                    setIsMobileFontExpanded(false);
-                                  }}
-                                  className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                                    isSelected
-                                      ? getActiveAccentClass()
-                                      : 'hover:bg-black/5 dark:hover:bg-white/5 text-muted-foreground'
-                                  }`}
-                                >
-                                  <span className={`${f.class} text-sm`}>{f.name}</span>
-                                  {isSelected && <Check className="w-3.5 h-3.5" />}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </motion.div>
+                      ))
+                    )}
+                  </div>
                 </div>
               )}
-            </AnimatePresence>,
-            document.body
-          )}
+            </div>
+
+
+            <button
+              onClick={() => { setShowSettings(!showSettings); setShowBookmarks(false); }}
+              className={`hidden md:flex w-10 h-10 rounded-xl justify-center items-center transition-all duration-300 backdrop-blur-md border shadow-sm ${showSettings ? 'bg-brand-blue/20 border-brand-blue/40 text-brand-blue shadow-[0_0_15px_rgba(43,127,255,0.3)] scale-105' : readerTheme === 'dark' ? 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-brand-blue hover:shadow-md hover:scale-105' : 'bg-white/50 border-gray-200/60 text-slate-500 hover:bg-white/80 hover:text-brand-blue hover:shadow-md hover:scale-105'}`}
+              title="إعدادات القراءة"
+            >
+              <Settings2 className="h-5 w-5" />
+            </button>
+
+            {/* Settings Dropdown (Pops out below) */}
+            {showSettings && (
+              <div className={`fixed inset-x-3 top-16 md:absolute md:top-full md:left-0 md:inset-x-auto mt-2 w-auto md:w-[300px] max-h-[85vh] overflow-y-auto backdrop-blur-2xl border rounded-2xl shadow-2xl p-5 z-50 animate-in fade-in slide-in-from-top-4 duration-300 origin-top-left ${readerTheme === 'dark' ? 'bg-[#0d071a]/95 border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.7)] text-white' : 'bg-white/95 border-gray-200 shadow-xl text-slate-800'}`}>
+
+                {/* Reading Mode */}
+                <div className="mb-6">
+                  <label className={`text-[11px] font-bold mb-3 block uppercase tracking-wider ${readerTheme === 'dark' ? 'text-white/50' : 'text-slate-400'}`}>نمط القراءة</label>
+                  <div className="flex gap-2">
+                    <button onClick={() => handleSetReadingMode('paged')} className={`flex-1 py-2.5 rounded-2xl border transition-all duration-300 ${readingMode === 'paged' ? 'border-brand-blue bg-brand-blue/10 text-brand-blue shadow-sm scale-105' : readerTheme === 'dark' ? 'border-white/10 hover:bg-white/10 text-white/60 hover:text-white hover:border-white/20' : 'border-black/10 hover:bg-black/5 text-slate-600 hover:text-slate-900'} flex flex-col items-center justify-center gap-1.5`}>
+                      <BookText className="h-5 w-5" />
+                      <span className="text-[10px] font-bold">صفحة بصفحة</span>
+                    </button>
+                    <button onClick={() => handleSetReadingMode('continuous')} className={`flex-1 py-2.5 rounded-2xl border transition-all duration-300 ${readingMode === 'continuous' ? 'border-brand-blue bg-brand-blue/10 text-brand-blue shadow-sm scale-105' : readerTheme === 'dark' ? 'border-white/10 hover:bg-white/10 text-white/60 hover:text-white hover:border-white/20' : 'border-black/10 hover:bg-black/5 text-slate-600 hover:text-slate-900'} flex flex-col items-center justify-center gap-1.5`}>
+                      <AlignJustify className="h-5 w-5" />
+                      <span className="text-[10px] font-bold">تصفح متصل</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Tashkeel Toggle */}
+                <div className="mb-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <label className={`text-[11px] font-bold block uppercase tracking-wider ${readerTheme === 'dark' ? 'text-white/50' : 'text-slate-400'}`}>
+                      علامات التشكيل
+                    </label>
+                    <span className={`text-[10px] font-bold ${getAccentTextClass()}`}>
+                      {showTashkeel ? 'مُشَكَّل' : 'بدون تشكيل'}
+                    </span>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowTashkeel(true);
+                        setShowSettings(false);
+                      }}
+                      className={`flex-1 py-2 rounded-xl border transition-all text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer ${showTashkeel
+                          ? getActiveAccentClass()
+                          : 'border-border/50 hover:bg-black/5 dark:hover:bg-white/5 text-muted-foreground'
+                        }`}
+                    >
+                      <span className="font-amiri text-base font-black leading-none">عَـ</span>
+                      <span>إظهار التشكيل</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowTashkeel(false);
+                        setShowSettings(false);
+                      }}
+                      className={`flex-1 py-2 rounded-xl border transition-all text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer ${!showTashkeel
+                          ? getActiveAccentClass()
+                          : 'border-border/50 hover:bg-black/5 dark:hover:bg-white/5 text-muted-foreground'
+                        }`}
+                    >
+                      <span className="font-amiri text-base font-black leading-none">عـ</span>
+                      <span>إخفاء التشكيل</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Theme Lighting & Accent Colors */}
+                <div className="mb-6">
+                  <label className={`text-[11px] font-bold mb-3 block uppercase tracking-wider ${isDark ? 'text-white/50' : 'text-slate-400'}`}>نمط الإضاءة</label>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (theme === 'dark') toggleTheme();
+                        setReaderTheme('light');
+                      }}
+                      className={`flex-1 py-2.5 rounded-2xl border transition-all duration-300 flex flex-col items-center justify-center gap-1.5 cursor-pointer ${theme === 'light'
+                          ? `${getActiveAccentClass()} scale-105`
+                          : isDark
+                            ? 'border-white/10 hover:bg-white/10 text-white/60 hover:text-white hover:border-white/20'
+                            : 'border-black/10 hover:bg-black/5 text-slate-600 hover:text-slate-900'
+                        }`}
+                    >
+                      <Sun className="h-5 w-5 text-amber-500" />
+                      <span className="text-[10px] font-bold">نهاري (فاتح)</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (theme === 'light') toggleTheme();
+                        setReaderTheme('dark');
+                      }}
+                      className={`flex-1 py-2.5 rounded-2xl border transition-all duration-300 flex flex-col items-center justify-center gap-1.5 cursor-pointer ${theme === 'dark'
+                          ? `${getActiveAccentClass()} scale-105`
+                          : isDark
+                            ? 'border-white/10 hover:bg-white/10 text-white/60 hover:text-white hover:border-white/20'
+                            : 'border-black/10 hover:bg-black/5 text-slate-600 hover:text-slate-900'
+                        }`}
+                    >
+                      <Moon className="h-5 w-5 text-indigo-400" />
+                      <span className="text-[10px] font-bold">ليلي (داكن)</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Theme Accent Color */}
+                <div className="mb-6">
+                  <div className="flex items-center justify-between mb-3">
+                    <label className={`text-[11px] font-bold block uppercase tracking-wider ${isDark ? 'text-white/50' : 'text-slate-400'}`}>
+                      لون السمة
+                    </label>
+                    <span className={`text-[10px] font-bold ${accentColor === 'emerald' ? 'text-teal-400' :
+                        accentColor === 'amber' ? 'text-[#dfbf83]' :
+                          accentColor === 'blue' ? 'text-blue-400' :
+                            'text-purple-400'
+                      }`}>
+                      {accentColor === 'purple' && 'أرجواني ملكي'}
+                      {accentColor === 'emerald' && 'فيروزي إسلامي'}
+                      {accentColor === 'amber' && 'عاجي إسلامي'}
+                      {accentColor === 'blue' && 'أزرق ياقوتي'}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-4 gap-2">
+                    {THEME_ACCENTS.map((item) => {
+                      const isSelected = accentColor === item.id;
+                      return (
+                        <button
+                          key={item.id}
+                          type="button"
+                          onClick={() => setAccentColor(item.id)}
+                          className={`group flex flex-col items-center gap-1.5 py-2 px-1 rounded-2xl border transition-all active:scale-95 cursor-pointer ${isSelected
+                              ? isDark
+                                ? 'border-white/25 bg-white/10 shadow-xs scale-102'
+                                : 'border-black/15 bg-black/5 shadow-xs scale-102'
+                              : isDark
+                                ? 'border-white/5 hover:border-white/15 hover:bg-white/5'
+                                : 'border-black/5 hover:border-black/15 hover:bg-black/5'
+                            }`}
+                        >
+                          <span
+                            className={`h-6 w-6 rounded-full bg-gradient-to-tr ${item.gradient} transition-all duration-300 ${isSelected
+                                ? `ring-2 ${item.ring} ring-offset-2 ${isDark ? 'ring-offset-[#0d071a]' : 'ring-offset-white'} scale-110 shadow-md`
+                                : 'scale-90 opacity-70 group-hover:opacity-100 group-hover:scale-95'
+                              }`}
+                          />
+                          <span
+                            className={`text-[10px] leading-tight transition-colors ${isSelected
+                                ? (isDark ? 'font-bold text-white' : 'font-bold text-stone-900')
+                                : (isDark ? 'font-medium text-white/60' : 'font-medium text-stone-600')
+                              }`}
+                          >
+                            {item.name}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+
+                {/* Font Size */}
+                <div className="mb-6">
+                  <label className={`text-[11px] font-bold mb-3 flex justify-between uppercase tracking-wider ${readerTheme === 'dark' ? 'text-white/50' : 'text-slate-400'}`}>
+                    <span>حجم الخط</span>
+                    <span className="text-brand-blue">{fontSize}px</span>
+                  </label>
+                  <div className="flex items-center gap-3">
+                    <button onClick={() => setFontSize(s => Math.max(14, s - 2))} className={`p-2 rounded-xl transition-all duration-200 active:scale-90 ${readerTheme === 'dark' ? 'bg-white/10 hover:bg-white/20 text-white/80' : 'bg-black/5 hover:bg-black/10 text-slate-700'}`}>
+                      <Type className="h-4 w-4" />
+                    </button>
+                    <input type="range" min="14" max="40" step="2" value={fontSize} onChange={(e) => setFontSize(Number(e.target.value))} className={`flex-1 accent-brand-blue h-2 rounded-full appearance-none outline-none transition-colors ${readerTheme === 'dark' ? 'bg-white/20 hover:bg-white/30' : 'bg-black/10 hover:bg-black/20'}`} />
+                    <button onClick={() => setFontSize(s => Math.min(40, s + 2))} className={`p-2 rounded-xl transition-all duration-200 active:scale-90 ${readerTheme === 'dark' ? 'bg-white/10 hover:bg-white/20 text-white/80' : 'bg-black/5 hover:bg-black/10 text-slate-700'}`}>
+                      <Type className="h-5 w-5" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Font Family Dropdown */}
+                <div>
+                  <label className={`text-[11px] font-bold mb-2 block uppercase tracking-wider ${readerTheme === 'dark' ? 'text-white/50' : 'text-slate-400'}`}>خط القراءة</label>
+                  <div className="relative">
+                    <select
+                      value={fontFamily === 'font-read' ? 'font-amiri' : fontFamily === 'font-sans' ? 'font-cairo' : fontFamily}
+                      onChange={(e) => setFontFamily(e.target.value)}
+                      className={`w-full appearance-none px-4 py-2.5 pl-10 rounded-2xl text-sm font-semibold transition-all cursor-pointer outline-none border ${readerTheme === 'dark'
+                        ? 'bg-white/10 text-white border-white/15 focus:border-brand-blue hover:bg-white/15'
+                        : 'bg-slate-100 text-slate-800 border-slate-200 focus:border-brand-blue hover:bg-slate-200/70'
+                        }`}
+                    >
+                      <option value="font-amiri" className="font-amiri text-slate-900 bg-white dark:bg-slate-900 dark:text-white py-1">الخط الأميري</option>
+                      <option value="font-scheherazade" className="font-scheherazade text-slate-900 bg-white dark:bg-slate-900 dark:text-white py-1">خط شهرزاد</option>
+                      <option value="font-noto-naskh" className="font-noto-naskh text-slate-900 bg-white dark:bg-slate-900 dark:text-white py-1">خط النسخ</option>
+                      <option value="font-cairo" className="font-cairo text-slate-900 bg-white dark:bg-slate-900 dark:text-white py-1">خط القاهرة</option>
+                    </select>
+                    <ChevronDown className={`w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none ${readerTheme === 'dark' ? 'text-white/60' : 'text-slate-500'
+                      }`} />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Mobile Fast Action Buttons (Unified Settings Button) */}
+            <div className="flex md:hidden items-center gap-1.5 shrink-0" ref={mobileMenuRef}>
+              <button
+                type="button"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className={`h-9 w-9 rounded-full flex items-center justify-center border transition-all active:scale-95 cursor-pointer shrink-0 ${isMobileMenuOpen
+                    ? 'bg-brand-blue/20 border-brand-blue/40 text-brand-blue ring-2 ring-brand-blue/30'
+                    : getNavCircleBtnStyle()
+                  }`}
+                title="إعدادات وخيارات القراءة"
+                aria-label="إعدادات وخيارات القراءة"
+              >
+                <Settings2 className="h-4.5 w-4.5" strokeWidth={2.2} />
+              </button>
+
+              {typeof document !== 'undefined' && createPortal(
+                <AnimatePresence>
+                  {isMobileMenuOpen && (
+                    <div dir="rtl" ref={mobileSettingsSheetRef}>
+                      {/* غطاء خلفي زجاجي شفاف ومضبب يغطي الصفحة بالكامل ويغلق القائمة عند النقر عليه */}
+                      <motion.div
+                        key="mobile-settings-backdrop"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3, ease: 'easeOut' }}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="fixed inset-0 z-[90] bg-black/40 dark:bg-black/60 backdrop-blur-md cursor-pointer"
+                      />
+
+                      {/* درج سفلي زجاجي (Bottom Sheet) يرتفع بنعومة وانسيابية هادئة */}
+                      <motion.div
+                        key="mobile-settings-sheet"
+                        initial={{ y: '100%', opacity: 0.7 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: '100%', opacity: 0.7 }}
+                        transition={{
+                          duration: 0.42,
+                          ease: [0.16, 1, 0.3, 1]
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        className={`fixed inset-x-0 bottom-0 z-[100] h-[88vh] max-h-[92vh] flex flex-col rounded-t-xl border-t shadow-2xl backdrop-blur-2xl overflow-hidden ${readerTheme === 'dark'
+                            ? 'bg-[#0f1422]/95 border-white/15 text-white shadow-black/80'
+                            : readerTheme === 'sepia'
+                              ? 'bg-[#FAF5ED]/95 border-[#E2D6C0] text-[#3D2C1D] shadow-xl'
+                              : 'bg-white/95 border-slate-200/90 text-slate-900 shadow-2xl'
+                          }`}
+                      >
+                        {/* رأس الدرج: مقبض السحب + العنوان وزر الإغلاق الثابت */}
+                        <div className="shrink-0 px-4 pt-2.5 pb-3 border-b border-border/40">
+                          <div className="w-10 h-1 rounded-full bg-black/15 dark:bg-white/20 mx-auto mb-2.5" />
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold flex items-center gap-2">
+                              <Settings2 className={`w-4 h-4 ${getAccentTextClass()}`} />
+                              <span>إعدادات وخيارات القراءة</span>
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setIsMobileMenuOpen(false)}
+                              className={`w-7.5 h-7.5 rounded-full border flex items-center justify-center transition-all cursor-pointer active:scale-95 shadow-2xs ${readerTheme === 'dark'
+                                  ? 'border-white/15 bg-white/5 text-white/70 hover:bg-white/15 hover:text-white hover:border-white/25'
+                                  : readerTheme === 'sepia'
+                                    ? 'border-[#E2D6C0] bg-[#FAF5ED] text-[#7A401A] hover:bg-[#F2E5D0] hover:text-[#5C3012] hover:border-[#D4C0A2]'
+                                    : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900 hover:border-slate-300'
+                                }`}
+                              aria-label="إغلاق الإعدادات"
+                              title="إغلاق"
+                            >
+                              <X className="w-4 h-4" strokeWidth={2.2} />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* جسم المحتوى الداخلي القابل للتمرير: السكرول بار يظل محصوراً بالداخل بنظافة */}
+                        <div
+                          className="flex-1 overflow-y-auto px-4 py-3 no-scrollbar flex flex-col gap-3.5"
+                          style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 1.5rem)' }}
+                        >
+                          {/* 1. تكبير الشاشة */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setDistractionFree(true);
+                              setIsMobileMenuOpen(false);
+                            }}
+                            className="flex items-center justify-between p-2.5 rounded-2xl border border-border/40 hover:bg-black/5 dark:hover:bg-white/5 transition-all text-xs font-bold cursor-pointer"
+                          >
+                            <div className="flex items-center gap-2.5">
+                              <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${getAccentIconBgClass()}`}>
+                                <Maximize className="w-4 h-4" />
+                              </div>
+                              <span>تكبير الشاشة</span>
+                            </div>
+                          </button>
+
+                          {/* 2. تحميل الكتاب (قائمة منسدلة داخلية) */}
+                          <div className="shrink-0 grow-0 basis-auto flex flex-col rounded-2xl border border-border/40 overflow-hidden transition-all">
+                            <button
+                              type="button"
+                              onClick={() => setIsMobileDownloadExpanded(!isMobileDownloadExpanded)}
+                              className="flex items-center justify-between p-2.5 hover:bg-black/5 dark:hover:bg-white/5 transition-all text-xs font-bold cursor-pointer"
+                            >
+                              <div className="flex items-center gap-2.5">
+                                <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${getAccentIconBgClass()}`}>
+                                  <Download className="w-4 h-4" />
+                                </div>
+                                <span>تحميل الكتاب</span>
+                              </div>
+                              <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${isMobileDownloadExpanded ? 'rotate-180' : ''}`} />
+                            </button>
+
+                            {isMobileDownloadExpanded && (
+                              <div className="p-2 border-t border-border/30 bg-black/[0.02] dark:bg-white/[0.02] flex flex-col gap-1.5 animate-in fade-in slide-in-from-top-1 duration-150">
+                                {/* حفظ أوفلاين */}
+                                <button
+                                  type="button"
+                                  onClick={handleToggleOfflineSave}
+                                  disabled={isSavingOffline}
+                                  className={`w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl text-xs font-semibold hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-right cursor-pointer ${isSavedOffline ? getAccentTextClass() + ' font-bold' : ''
+                                    }`}
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <HardDriveDownload className={`w-4 h-4 ${getAccentTextClass()}`} />
+                                    <span>
+                                      {isSavingOffline
+                                        ? `جاري الحفظ (${offlineSaveProgress}%)...`
+                                        : isSavedOffline
+                                          ? 'محفوظ أوفلاين (إزالة)'
+                                          : 'حفظ للقراءة دون إنترنت (Offline)'}
+                                    </span>
+                                  </div>
+                                  {isSavingOffline ? (
+                                    <Loader2 className={`w-3.5 h-3.5 animate-spin ${getAccentTextClass()}`} />
+                                  ) : isSavedOffline ? (
+                                    <Check className="w-3.5 h-3.5 text-emerald-500" />
+                                  ) : null}
+                                </button>
+
+                                {/* تحميل TXT */}
+                                <button
+                                  type="button"
+                                  onClick={() => handleExport('txt')}
+                                  disabled={isExporting}
+                                  className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl text-xs font-semibold hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-right cursor-pointer"
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <FileDown className={`w-4 h-4 ${getAccentTextClass()}`} />
+                                    <span>تحميل متن الكتاب (TXT)</span>
+                                  </div>
+                                  {isExporting ? <Loader2 className={`w-3.5 h-3.5 animate-spin ${getAccentTextClass()}`} /> : null}
+                                </button>
+
+                                {/* تحميل JSON */}
+                                <button
+                                  type="button"
+                                  onClick={() => handleExport('json')}
+                                  disabled={isExporting}
+                                  className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl text-xs font-semibold hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-right cursor-pointer"
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <BookCheck className={`w-4 h-4 ${getAccentTextClass()}`} />
+                                    <span>بيانات وفهرس (JSON)</span>
+                                  </div>
+                                </button>
+
+                                {/* تحميل PDF إذا متوفر */}
+                                {(volumePdfList.length > 0 || hasBookPdf(book)) && (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleOpenOrDownloadPdf()}
+                                    disabled={loadingPdf}
+                                    className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl text-xs font-semibold hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-right cursor-pointer"
+                                  >
+                                    <div className="flex items-center gap-2">
+                                      <FileDown className={`w-4 h-4 ${getAccentTextClass()}`} />
+                                      <span>
+                                        {volumePdfList.length > 1
+                                          ? `تحميل الـ PDF (${volumePdfList.length} مجلدات)`
+                                          : 'تحميل النسخة المصورة (PDF)'}
+                                      </span>
+                                    </div>
+                                    {loadingPdf ? (
+                                      <Loader2 className={`w-3.5 h-3.5 animate-spin ${getAccentTextClass()}`} />
+                                    ) : (
+                                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded font-mono ${getAccentIconBgClass()}`}>
+                                        PDF
+                                      </span>
+                                    )}
+                                  </button>
+                                )}
+
+                                {isExporting && exportProgressText && (
+                                  <p className="text-[10px] text-muted-foreground px-3 py-1 animate-pulse">
+                                    {exportProgressText}
+                                  </p>
+                                )}
+                              </div>
+                            )}
+                          </div>
+
+                          {/* 3. العلامات المرجعية */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setShowBookmarks(true);
+                              setIsMobileMenuOpen(false);
+                            }}
+                            className="flex items-center justify-between p-2.5 rounded-2xl border border-border/40 hover:bg-black/5 dark:hover:bg-white/5 transition-all text-xs font-bold cursor-pointer"
+                          >
+                            <div className="flex items-center gap-2.5">
+                              <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${getAccentIconBgClass()}`}>
+                                <Bookmark className="w-4 h-4" />
+                              </div>
+                              <span>العلامات المرجعية</span>
+                            </div>
+                            <span className={`text-[11px] font-mono px-2 py-0.5 rounded-full ${getAccentIconBgClass()}`}>
+                              {bookmarks.length}
+                            </span>
+                          </button>
+
+                          {/* فاصل */}
+                          <div className="w-full h-px bg-border/40 my-0.5" />
+
+                          {/* 4. طريقة عرض الصفحة (نمط القراءة) */}
+                          <div>
+                            <label className={`text-[11px] font-bold mb-2 block uppercase tracking-wider ${readerTheme === 'dark' ? 'text-white/50' : 'text-slate-400'}`}>
+                              طريقة عرض الصفحة
+                            </label>
+                            <div className="flex gap-2">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  handleSetReadingMode('paged');
+                                  setIsMobileMenuOpen(false);
+                                }}
+                                className={`flex-1 py-2.5 rounded-xl border transition-all text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer ${readingMode === 'paged'
+                                    ? getActiveAccentClass()
+                                    : 'border-border/50 hover:bg-black/5 dark:hover:bg-white/5 text-muted-foreground'
+                                  }`}
+                              >
+                                <BookText className="h-4 w-4" />
+                                <span>صفحة بصفحة</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  handleSetReadingMode('continuous');
+                                  setIsMobileMenuOpen(false);
+                                }}
+                                className={`flex-1 py-2.5 rounded-xl border transition-all text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer ${readingMode === 'continuous'
+                                    ? getActiveAccentClass()
+                                    : 'border-border/50 hover:bg-black/5 dark:hover:bg-white/5 text-muted-foreground'
+                                  }`}
+                              >
+                                <AlignJustify className="h-4 w-4" />
+                                <span>تصفح متصل</span>
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* 5. علامات التشكيل */}
+                          <div>
+                            <div className="flex items-center justify-between mb-2">
+                              <label className={`text-[11px] font-bold block uppercase tracking-wider ${readerTheme === 'dark' ? 'text-white/50' : 'text-slate-400'}`}>
+                                علامات التشكيل
+                              </label>
+                              <span className={`text-[10px] font-bold ${getAccentTextClass()}`}>
+                                {showTashkeel ? 'مُشَكَّل' : 'بدون تشكيل'}
+                              </span>
+                            </div>
+                            <div className="flex gap-2">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setShowTashkeel(true);
+                                  setIsMobileMenuOpen(false);
+                                }}
+                                className={`flex-1 py-2.5 rounded-xl border transition-all text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer ${showTashkeel
+                                    ? getActiveAccentClass()
+                                    : 'border-border/50 hover:bg-black/5 dark:hover:bg-white/5 text-muted-foreground'
+                                  }`}
+                              >
+                                <span className="font-amiri text-base font-black leading-none">عَـ</span>
+                                <span>إظهار التشكيل</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setShowTashkeel(false);
+                                  setIsMobileMenuOpen(false);
+                                }}
+                                className={`flex-1 py-2.5 rounded-xl border transition-all text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer ${!showTashkeel
+                                    ? getActiveAccentClass()
+                                    : 'border-border/50 hover:bg-black/5 dark:hover:bg-white/5 text-muted-foreground'
+                                  }`}
+                              >
+                                <span className="font-amiri text-base font-black leading-none">عـ</span>
+                                <span>إخفاء التشكيل</span>
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* 6. نمط الإضاءة */}
+                          <div>
+                            <label className={`text-[11px] font-bold mb-2 block uppercase tracking-wider ${isDark ? 'text-white/50' : 'text-slate-400'}`}>
+                              نمط الإضاءة
+                            </label>
+                            <div className="flex gap-2">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (theme === 'dark') toggleTheme();
+                                  setReaderTheme('light');
+                                }}
+                                className={`flex-1 py-2 rounded-xl border transition-all flex flex-col items-center justify-center gap-1 cursor-pointer ${theme === 'light'
+                                    ? getActiveAccentClass()
+                                    : 'border-border/50 hover:bg-black/5 dark:hover:bg-white/5 text-muted-foreground'
+                                  }`}
+                              >
+                                <Sun className="h-4 w-4 text-amber-500" />
+                                <span className="text-[10px] font-bold">نهاري (فاتح)</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (theme === 'light') toggleTheme();
+                                  setReaderTheme('dark');
+                                }}
+                                className={`flex-1 py-2 rounded-xl border transition-all flex flex-col items-center justify-center gap-1 cursor-pointer ${theme === 'dark'
+                                    ? getActiveAccentClass()
+                                    : 'border-border/50 hover:bg-black/5 dark:hover:bg-white/5 text-muted-foreground'
+                                  }`}
+                              >
+                                <Moon className="h-4 w-4 text-indigo-400" />
+                                <span className="text-[10px] font-bold">ليلي (داكن)</span>
+                              </button>
+                            </div>
+
+                            {/* لون السمة */}
+                            <div className="mt-3.5">
+                              <div className="flex items-center justify-between mb-2">
+                                <label className={`text-[11px] font-bold block uppercase tracking-wider ${isDark ? 'text-white/50' : 'text-slate-400'}`}>
+                                  لون السمة
+                                </label>
+                                <span className={`text-[10px] font-bold ${getAccentTextClass()}`}>
+                                  {accentColor === 'purple' && 'أرجواني'}
+                                  {accentColor === 'emerald' && 'فيروزي'}
+                                  {accentColor === 'amber' && 'عاجي'}
+                                  {accentColor === 'blue' && 'ياقوتي'}
+                                </span>
+                              </div>
+                              <div className="grid grid-cols-4 gap-2">
+                                {THEME_ACCENTS.map((item) => {
+                                  const isSelected = accentColor === item.id;
+                                  return (
+                                    <button
+                                      key={item.id}
+                                      type="button"
+                                      onClick={() => setAccentColor(item.id)}
+                                      className={`group flex flex-col items-center gap-1.5 py-2 px-1 rounded-xl border transition-all active:scale-95 cursor-pointer ${isSelected
+                                          ? isDark
+                                            ? 'border-white/25 bg-white/10 shadow-xs'
+                                            : 'border-black/15 bg-black/5 shadow-xs'
+                                          : isDark
+                                            ? 'border-white/5 hover:border-white/15 hover:bg-white/5'
+                                            : 'border-black/5 hover:border-black/15 hover:bg-black/5'
+                                        }`}
+                                    >
+                                      <span
+                                        className={`h-6 w-6 rounded-full bg-gradient-to-tr ${item.gradient} transition-all duration-300 ${isSelected
+                                            ? `ring-2 ${item.ring} ring-offset-2 ${isDark ? 'ring-offset-[#120324]' : 'ring-offset-white'} scale-110 shadow-md`
+                                            : 'scale-90 opacity-70 group-hover:opacity-100 group-hover:scale-95'
+                                          }`}
+                                      />
+                                      <span
+                                        className={`text-[10px] leading-tight transition-colors ${isSelected
+                                            ? (isDark ? 'font-bold text-white' : 'font-bold text-stone-900')
+                                            : (isDark ? 'font-medium text-white/60' : 'font-medium text-stone-600')
+                                          }`}
+                                      >
+                                        {item.name}
+                                      </span>
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* 6. حجم الخط */}
+                          <div>
+                            <label className={`text-[11px] font-bold mb-2 flex justify-between uppercase tracking-wider ${readerTheme === 'dark' ? 'text-white/50' : 'text-slate-400'}`}>
+                              <span>حجم الخط</span>
+                              <span className={`font-mono font-bold ${getAccentTextClass()}`}>{fontSize}px</span>
+                            </label>
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() => setFontSize((s) => Math.max(14, s - 2))}
+                                className={`p-2 rounded-xl transition-all cursor-pointer ${readerTheme === 'dark' ? 'bg-white/10 hover:bg-white/20' : 'bg-black/5 hover:bg-black/10'}`}
+                                title="تصغير الخط"
+                              >
+                                <Type className="h-3.5 w-3.5" />
+                              </button>
+                              <input
+                                type="range"
+                                min="14"
+                                max="40"
+                                step="2"
+                                value={fontSize}
+                                onChange={(e) => setFontSize(Number(e.target.value))}
+                                className={`flex-1 ${getAccentSliderClass()} h-2 rounded-full appearance-none outline-none cursor-pointer ${readerTheme === 'dark' ? 'bg-white/20' : 'bg-black/10'
+                                  }`}
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setFontSize((s) => Math.min(40, s + 2))}
+                                className={`p-2 rounded-xl transition-all cursor-pointer ${readerTheme === 'dark' ? 'bg-white/10 hover:bg-white/20' : 'bg-black/5 hover:bg-black/10'}`}
+                                title="تكبير الخط"
+                              >
+                                <Type className="h-4.5 w-4.5" />
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* 7. خط القراءة (قائمة بطاقة منسدلة مطابقة لتصميم خيارات التحميل) */}
+                          <div className="shrink-0 grow-0 basis-auto flex flex-col rounded-2xl border border-border/40 overflow-hidden transition-all">
+                            <button
+                              type="button"
+                              onClick={() => setIsMobileFontExpanded(!isMobileFontExpanded)}
+                              className="flex items-center justify-between p-2.5 hover:bg-black/5 dark:hover:bg-white/5 transition-all text-xs font-bold cursor-pointer"
+                            >
+                              <div className="flex items-center gap-2.5">
+                                <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${getAccentIconBgClass()}`}>
+                                  <Type className="w-4 h-4" />
+                                </div>
+                                <div className="flex items-center gap-1.5 text-right">
+                                  <span className="text-xs font-semibold text-muted-foreground shrink-0">خط القراءة:</span>
+                                  <span className={`text-xs font-bold text-foreground translate-y-[2.5px] leading-none ${(FONT_OPTIONS.find(f => f.id === (fontFamily === 'font-read' ? 'font-amiri' : fontFamily === 'font-sans' ? 'font-cairo' : fontFamily)) || FONT_OPTIONS[0]).class}`}>
+                                    {(FONT_OPTIONS.find(f => f.id === (fontFamily === 'font-read' ? 'font-amiri' : fontFamily === 'font-sans' ? 'font-cairo' : fontFamily)) || FONT_OPTIONS[0]).name}
+                                  </span>
+                                </div>
+                              </div>
+                              <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${isMobileFontExpanded ? 'rotate-180' : ''}`} />
+                            </button>
+
+                            {isMobileFontExpanded && (
+                              <div className="p-2 border-t border-border/30 bg-black/[0.02] dark:bg-white/[0.02] flex flex-col gap-1.5 animate-in fade-in slide-in-from-top-1 duration-150">
+                                {FONT_OPTIONS.map((f) => {
+                                  const isSelected = (fontFamily === 'font-read' ? 'font-amiri' : fontFamily === 'font-sans' ? 'font-cairo' : fontFamily) === f.id;
+                                  return (
+                                    <button
+                                      key={f.id}
+                                      type="button"
+                                      onClick={() => {
+                                        setFontFamily(f.id);
+                                        setIsMobileFontExpanded(false);
+                                      }}
+                                      className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${isSelected
+                                          ? getActiveAccentClass()
+                                          : 'hover:bg-black/5 dark:hover:bg-white/5 text-muted-foreground'
+                                        }`}
+                                    >
+                                      <span className={`${f.class} text-sm`}>{f.name}</span>
+                                      {isSelected && <Check className="w-3.5 h-3.5" />}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </motion.div>
+                    </div>
+                  )}
+                </AnimatePresence>,
+                document.body
+              )}
+            </div>
           </div>
         </div>
-      </div>
 
         {/* Horizontal Scrollable Heading Hierarchy Strip (شريط تسلسل العناوين القابل للتمرير باللمس) */}
         {activeHierarchy.length > 0 && (
           <div
-            className={`w-full flex items-center px-3 sm:px-4 py-1 md:py-1.5 border-t overflow-x-auto no-scrollbar scroll-smooth transition-colors duration-200 select-none ${
-              readerTheme === 'dark'
+            className={`w-full flex items-center px-3 sm:px-4 py-1 md:py-1.5 border-t overflow-x-auto no-scrollbar scroll-smooth transition-colors duration-200 select-none ${readerTheme === 'dark'
                 ? 'border-white/5 bg-black/25 text-white/80'
                 : 'border-black/5 bg-black/[0.02] text-slate-700'
-            }`}
+              }`}
           >
             <div className="flex items-center gap-1.5 whitespace-nowrap text-[10px] sm:text-[11px] leading-tight min-w-max">
               <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${getAccentDotColor()} animate-pulse`} />
@@ -6155,19 +6127,17 @@ export default function TurathReader({
                 return (
                   <React.Fragment key={idx}>
                     <span
-                      className={`transition-colors truncate max-w-[200px] sm:max-w-[340px] ${
-                        isCurrent
-                          ? `font-bold ${
-                              accentColor === 'amber'
-                                ? 'text-amber-600 dark:text-[#dfbf83]'
-                                : accentColor === 'emerald'
-                                  ? 'text-teal-700 dark:text-teal-300'
-                                  : accentColor === 'blue'
-                                    ? 'text-blue-600 dark:text-blue-300'
-                                    : 'text-brand-magenta dark:text-purple-300'
-                            }`
+                      className={`transition-colors truncate max-w-[200px] sm:max-w-[340px] ${isCurrent
+                          ? `font-bold ${accentColor === 'amber'
+                            ? 'text-amber-600 dark:text-[#dfbf83]'
+                            : accentColor === 'emerald'
+                              ? 'text-teal-700 dark:text-teal-300'
+                              : accentColor === 'blue'
+                                ? 'text-blue-600 dark:text-blue-300'
+                                : 'text-brand-magenta dark:text-purple-300'
+                          }`
                           : 'opacity-65 hover:opacity-100 font-medium'
-                      }`}
+                        }`}
                       title={item}
                     >
                       {item}
@@ -6376,103 +6346,100 @@ export default function TurathReader({
                       <div className={`p-8 text-center text-sm rounded-2xl mt-4 ${readerTheme === 'dark' ? 'bg-white/5 text-white/60' : 'bg-black/5 text-black/60'}`}>لا توجد نتائج مطابقة للبحث</div>
                     ) : (
                       <div className="space-y-1">
-                      <div className={`flex items-center justify-between text-[11.5px] font-bold px-2 py-1.5 mb-1.5 rounded-xl border ${
-                        readerTheme === 'dark'
-                          ? 'text-white/75 bg-white/[0.04] border-white/10'
-                          : 'text-slate-700 bg-slate-100/80 border-slate-200'
-                      }`}>
-                        <span>نتائج العناوين:</span>
-                        <span className={accentColor === 'amber' ? 'text-amber-500 font-black' : accentColor === 'emerald' ? 'text-teal-600 dark:text-teal-400 font-black' : accentColor === 'blue' ? 'text-blue-600 dark:text-blue-400 font-black' : 'text-brand-magenta font-black'}>
-                          {filteredToc.length} نتيجة
-                        </span>
-                      </div>
-                      {filteredToc.slice(0, visibleTocLimit).map((heading) => {
-                        const isExactActive = (activeTocIndex >= 0 && toc[activeTocIndex]?.title === heading.title) ||
-                          (heading.page === currentPage) ||
-                          (activeHeadingText ? (activeHeadingText.includes(heading.title.trim()) || heading.title.trim().includes(activeHeadingText)) : false);
-                        return (
-                          <button
-                            key={heading.originalIndex}
-                            data-toc-active={isExactActive ? "true" : undefined}
-                            onClick={() => {
-                              if (availableVolumes.length > 1) {
-                                const resultVol = getHeadingVolume(heading.page);
-                                if (resultVol) {
-                                  setSelectedVolumeForToc(resultVol);
-                                  setHasUserNavigatedToAllVolumes(false);
-                                }
-                              }
-                              handlePageJump(heading.page, heading.title, heading.originalIndex);
-                            }}
-                            className={`w-full flex items-center justify-between py-2.5 px-3 text-sm rounded-xl transition-all duration-200 group cursor-pointer border ${isExactActive
-                              ? accentColor === 'amber'
-                                ? 'bg-[#dfbf83] text-stone-950 font-bold border-[#cba35d] shadow-sm ring-1 ring-[#cba35d]/40'
-                                : accentColor === 'emerald'
-                                  ? 'bg-teal-500/15 text-teal-900 dark:text-teal-200 font-bold border-teal-500/30 shadow-sm ring-1 ring-teal-500/30'
-                                  : accentColor === 'blue'
-                                    ? 'bg-blue-500/15 text-blue-900 dark:text-blue-200 font-bold border-blue-500/30 shadow-sm ring-1 ring-blue-500/30'
-                                    : 'bg-brand-magenta/15 text-brand-magenta font-bold border-brand-magenta/30 shadow-sm ring-1 ring-brand-magenta/30'
-                              : readerTheme === 'dark'
-                                ? 'text-slate-200 hover:text-white hover:bg-white/10 border-transparent'
-                                : accentColor === 'amber'
-                                  ? 'text-slate-800 hover:bg-amber-50/70 hover:text-stone-900 border-transparent'
-                                  : accentColor === 'emerald'
-                                    ? 'text-slate-800 hover:bg-teal-50/70 hover:text-teal-950 border-transparent'
-                                    : accentColor === 'blue'
-                                      ? 'text-slate-800 hover:bg-blue-50/70 hover:text-blue-950 border-transparent'
-                                      : 'text-slate-800 hover:bg-purple-50/70 hover:text-purple-950 border-transparent'
-                              }`}
-                          >
-                            <span className={`truncate text-right max-w-[70%] leading-relaxed transition-colors ${accentColor === 'amber' ? 'group-hover:text-[#b88d46]' : accentColor === 'emerald' ? 'group-hover:text-teal-600' : accentColor === 'blue' ? 'group-hover:text-blue-600' : 'group-hover:text-brand-magenta'}`}>{heading.title}</span>
-                            <div className="flex items-center gap-1.5 shrink-0">
-                              {availableVolumes.length > 1 && (
-                                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded transition-colors ${
-                                  isExactActive
-                                    ? accentColor === 'amber'
-                                      ? 'bg-black/10 text-stone-950 border border-black/5'
-                                      : 'bg-white/20 text-white'
-                                    : readerTheme === 'dark'
-                                      ? 'bg-white/10 text-white/80'
-                                      : 'bg-slate-200/90 text-slate-700'
-                                }`}>
-                                  مج ({toEasternArabicNumerals(getHeadingVolume(heading.page))})
-                                </span>
-                              )}
-                              <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md transition-colors ${isExactActive
-                                ? accentColor === 'amber'
-                                  ? 'bg-black/10 text-stone-950 font-bold border border-black/5'
-                                  : accentColor === 'emerald'
-                                    ? 'bg-teal-500/20 text-teal-900 dark:text-teal-200'
-                                    : accentColor === 'blue'
-                                      ? 'bg-blue-500/20 text-blue-900 dark:text-blue-200'
-                                      : 'bg-brand-magenta/20 text-brand-magenta'
-                                : readerTheme === 'dark'
-                                  ? 'bg-white/10 text-white/70'
-                                  : 'bg-slate-200/80 text-slate-700'
-                                }`}>
-                                صـ {toEasternArabicNumerals(heading.page)}
-                              </span>
-                            </div>
-                          </button>
-                        )
-                      })}
-                      {filteredToc.length > visibleTocLimit && (
-                        <div className="pt-2 pb-1 text-center">
-                          <button
-                            type="button"
-                            onClick={() => setVisibleTocLimit(prev => prev + 80)}
-                            className={`w-full py-2.5 px-4 rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer ${
-                              readerTheme === 'dark'
-                                ? 'bg-white/10 hover:bg-white/15 text-white border border-white/15'
-                                : 'bg-slate-200/80 hover:bg-slate-300/80 text-slate-800 border border-slate-300/70'
-                            }`}
-                          >
-                            عرض المزيد (+80 من أصل {filteredToc.length})
-                          </button>
+                        <div className={`flex items-center justify-between text-[11.5px] font-bold px-2 py-1.5 mb-1.5 rounded-xl border ${readerTheme === 'dark'
+                            ? 'text-white/75 bg-white/[0.04] border-white/10'
+                            : 'text-slate-700 bg-slate-100/80 border-slate-200'
+                          }`}>
+                          <span>نتائج العناوين:</span>
+                          <span className={accentColor === 'amber' ? 'text-amber-500 font-black' : accentColor === 'emerald' ? 'text-teal-600 dark:text-teal-400 font-black' : accentColor === 'blue' ? 'text-blue-600 dark:text-blue-400 font-black' : 'text-brand-magenta font-black'}>
+                            {filteredToc.length} نتيجة
+                          </span>
                         </div>
-                      )}
-                    </div>
-                  )) : (
+                        {filteredToc.slice(0, visibleTocLimit).map((heading) => {
+                          const isExactActive = (activeTocIndex >= 0 && toc[activeTocIndex]?.title === heading.title) ||
+                            (heading.page === currentPage) ||
+                            (activeHeadingText ? (activeHeadingText.includes(heading.title.trim()) || heading.title.trim().includes(activeHeadingText)) : false);
+                          return (
+                            <button
+                              key={heading.originalIndex}
+                              data-toc-active={isExactActive ? "true" : undefined}
+                              onClick={() => {
+                                if (availableVolumes.length > 1) {
+                                  const resultVol = getHeadingVolume(heading.page);
+                                  if (resultVol) {
+                                    setSelectedVolumeForToc(resultVol);
+                                    setHasUserNavigatedToAllVolumes(false);
+                                  }
+                                }
+                                handlePageJump(heading.page, heading.title, heading.originalIndex);
+                              }}
+                              className={`w-full flex items-center justify-between py-2.5 px-3 text-sm rounded-xl transition-all duration-200 group cursor-pointer border ${isExactActive
+                                ? accentColor === 'amber'
+                                  ? 'bg-[#dfbf83] text-stone-950 font-bold border-[#cba35d] shadow-sm ring-1 ring-[#cba35d]/40'
+                                  : accentColor === 'emerald'
+                                    ? 'bg-teal-500/15 text-teal-900 dark:text-teal-200 font-bold border-teal-500/30 shadow-sm ring-1 ring-teal-500/30'
+                                    : accentColor === 'blue'
+                                      ? 'bg-blue-500/15 text-blue-900 dark:text-blue-200 font-bold border-blue-500/30 shadow-sm ring-1 ring-blue-500/30'
+                                      : 'bg-brand-magenta/15 text-brand-magenta font-bold border-brand-magenta/30 shadow-sm ring-1 ring-brand-magenta/30'
+                                : readerTheme === 'dark'
+                                  ? 'text-slate-200 hover:text-white hover:bg-white/10 border-transparent'
+                                  : accentColor === 'amber'
+                                    ? 'text-slate-800 hover:bg-amber-50/70 hover:text-stone-900 border-transparent'
+                                    : accentColor === 'emerald'
+                                      ? 'text-slate-800 hover:bg-teal-50/70 hover:text-teal-950 border-transparent'
+                                      : accentColor === 'blue'
+                                        ? 'text-slate-800 hover:bg-blue-50/70 hover:text-blue-950 border-transparent'
+                                        : 'text-slate-800 hover:bg-purple-50/70 hover:text-purple-950 border-transparent'
+                                }`}
+                            >
+                              <span className={`truncate text-right max-w-[70%] leading-relaxed transition-colors ${accentColor === 'amber' ? 'group-hover:text-[#b88d46]' : accentColor === 'emerald' ? 'group-hover:text-teal-600' : accentColor === 'blue' ? 'group-hover:text-blue-600' : 'group-hover:text-brand-magenta'}`}>{heading.title}</span>
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                {availableVolumes.length > 1 && (
+                                  <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded transition-colors ${isExactActive
+                                      ? accentColor === 'amber'
+                                        ? 'bg-black/10 text-stone-950 border border-black/5'
+                                        : 'bg-white/20 text-white'
+                                      : readerTheme === 'dark'
+                                        ? 'bg-white/10 text-white/80'
+                                        : 'bg-slate-200/90 text-slate-700'
+                                    }`}>
+                                    مج ({toEasternArabicNumerals(getHeadingVolume(heading.page))})
+                                  </span>
+                                )}
+                                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md transition-colors ${isExactActive
+                                  ? accentColor === 'amber'
+                                    ? 'bg-black/10 text-stone-950 font-bold border border-black/5'
+                                    : accentColor === 'emerald'
+                                      ? 'bg-teal-500/20 text-teal-900 dark:text-teal-200'
+                                      : accentColor === 'blue'
+                                        ? 'bg-blue-500/20 text-blue-900 dark:text-blue-200'
+                                        : 'bg-brand-magenta/20 text-brand-magenta'
+                                  : readerTheme === 'dark'
+                                    ? 'bg-white/10 text-white/70'
+                                    : 'bg-slate-200/80 text-slate-700'
+                                  }`}>
+                                  صـ {toEasternArabicNumerals(heading.page)}
+                                </span>
+                              </div>
+                            </button>
+                          )
+                        })}
+                        {filteredToc.length > visibleTocLimit && (
+                          <div className="pt-2 pb-1 text-center">
+                            <button
+                              type="button"
+                              onClick={() => setVisibleTocLimit(prev => prev + 80)}
+                              className={`w-full py-2.5 px-4 rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer ${readerTheme === 'dark'
+                                  ? 'bg-white/10 hover:bg-white/15 text-white border border-white/15'
+                                  : 'bg-slate-200/80 hover:bg-slate-300/80 text-slate-800 border border-slate-300/70'
+                                }`}
+                            >
+                              عرض المزيد (+80 من أصل {filteredToc.length})
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )) : (
                     <div className="space-y-1">
                       {/* Content: List of Volumes (Master View) OR Selected Volume Chapters (Detail View) */}
                       {availableVolumes.length > 1 && !selectedVolumeForToc ? (
@@ -6495,9 +6462,8 @@ export default function TurathReader({
                       ) : (
                         <div key={selectedVolumeForToc || 'chapters'} className="space-y-1">
                           {tocTree.length === 0 ? (
-                            <div className={`p-6 text-center text-xs rounded-xl ${
-                              readerTheme === 'dark' ? 'bg-white/[0.02] text-white/50' : 'bg-slate-50 text-slate-500'
-                            }`}>
+                            <div className={`p-6 text-center text-xs rounded-xl ${readerTheme === 'dark' ? 'bg-white/[0.02] text-white/50' : 'bg-slate-50 text-slate-500'
+                              }`}>
                               لا توجد أبواب مفهرسة في هذا المجلد
                             </div>
                           ) : (
@@ -6530,8 +6496,7 @@ export default function TurathReader({
                 <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4 custom-scrollbar relative">
                   {chatHistory.length === 0 ? (
                     <div className="h-full flex flex-col items-center justify-center text-center p-8 opacity-70">
-                      <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-4 transition-all duration-300 ${
-                        readerTheme === 'dark'
+                      <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-4 transition-all duration-300 ${readerTheme === 'dark'
                           ? accentColor === 'amber'
                             ? 'bg-amber-500/15 border border-[#dfbf83]/30 shadow-[0_0_20px_rgba(223,191,131,0.25)]'
                             : accentColor === 'emerald'
@@ -6546,7 +6511,7 @@ export default function TurathReader({
                               : accentColor === 'blue'
                                 ? 'bg-blue-50/80 border border-blue-300 shadow-[0_0_15px_rgba(37,99,235,0.25)]'
                                 : 'bg-purple-50/80 border border-purple-300 shadow-[0_0_15px_rgba(149,11,196,0.25)]'
-                      }`}>
+                        }`}>
                         {renderZadLogo('h-9 w-9', true)}
                       </div>
                       <p className="font-bold mb-2">كيف يمكنني مساعدتك؟</p>
@@ -6596,15 +6561,13 @@ export default function TurathReader({
               {/* Feature 4: Full-Text In-Book Search Panel */}
               <div className={`absolute inset-0 flex flex-col transition-all duration-300 ${sidebarTab === 'search' ? 'opacity-100 translate-x-0 z-10' : 'opacity-0 translate-x-4 pointer-events-none -z-10'}`}>
                 {/* Search Mode Full-Width Tabs (الشاشة مقسومة نصفين من اليمين للشمال بدون فريم وبدون أيقونات) */}
-                <div className={`grid grid-cols-2 w-full border-b shrink-0 ${
-                  readerTheme === 'dark' ? 'border-white/10 bg-white/[0.02]' : 'border-slate-200/90 bg-slate-50/70'
-                }`}>
+                <div className={`grid grid-cols-2 w-full border-b shrink-0 ${readerTheme === 'dark' ? 'border-white/10 bg-white/[0.02]' : 'border-slate-200/90 bg-slate-50/70'
+                  }`}>
                   {/* القسم الأيمن: بحث مرن */}
                   <button
                     type="button"
                     onClick={() => handleToggleSearchMode('flexible')}
-                    className={`py-3 px-2 text-center text-xs transition-all duration-200 cursor-pointer flex items-center justify-center border-b-2 font-bold ${
-                      bookSearchMode === 'flexible'
+                    className={`py-3 px-2 text-center text-xs transition-all duration-200 cursor-pointer flex items-center justify-center border-b-2 font-bold ${bookSearchMode === 'flexible'
                         ? readerTheme === 'dark'
                           ? accentColor === 'amber'
                             ? 'text-[#eedbb2] bg-amber-500/10 border-amber-400 font-black'
@@ -6623,7 +6586,7 @@ export default function TurathReader({
                         : readerTheme === 'dark'
                           ? 'text-white/50 hover:text-white hover:bg-white/[0.03] border-transparent'
                           : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100/60 border-transparent'
-                    }`}
+                      }`}
                   >
                     <span>بحث مرن</span>
                   </button>
@@ -6632,10 +6595,8 @@ export default function TurathReader({
                   <button
                     type="button"
                     onClick={() => handleToggleSearchMode('exact')}
-                    className={`py-3 px-2 text-center text-xs transition-all duration-200 cursor-pointer flex items-center justify-center border-b-2 border-r font-bold ${
-                      readerTheme === 'dark' ? 'border-r-white/10' : 'border-r-slate-200/90'
-                    } ${
-                      bookSearchMode === 'exact'
+                    className={`py-3 px-2 text-center text-xs transition-all duration-200 cursor-pointer flex items-center justify-center border-b-2 border-r font-bold ${readerTheme === 'dark' ? 'border-r-white/10' : 'border-r-slate-200/90'
+                      } ${bookSearchMode === 'exact'
                         ? readerTheme === 'dark'
                           ? accentColor === 'amber'
                             ? 'text-[#eedbb2] bg-amber-500/10 border-b-amber-400 font-black'
@@ -6654,7 +6615,7 @@ export default function TurathReader({
                         : readerTheme === 'dark'
                           ? 'text-white/50 hover:text-white hover:bg-white/[0.03] border-b-transparent'
                           : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100/60 border-b-transparent'
-                    }`}
+                      }`}
                   >
                     <span>مطابقة تامة</span>
                   </button>
@@ -6790,15 +6751,14 @@ export default function TurathReader({
                       return (
                         <div
                           key={idx}
-                          className={`text-right px-2 sm:px-3 py-3.5 transition-colors border-b last:border-b-0 ${
-                            isCurrent
+                          className={`text-right px-2 sm:px-3 py-3.5 transition-colors border-b last:border-b-0 ${isCurrent
                               ? readerTheme === 'dark'
                                 ? 'bg-white/[0.04] border-white/15'
                                 : 'bg-amber-500/[0.05] border-slate-200'
                               : readerTheme === 'dark'
                                 ? 'border-white/10 hover:bg-white/[0.02]'
                                 : 'border-slate-200/80 hover:bg-slate-50/60'
-                          }`}
+                            }`}
                         >
                           {/* Top Row: Arabic numeral on Right, Controls (المزيد + نسخ) on Left */}
                           <div className="flex items-center justify-between gap-2 mb-2">
@@ -6816,11 +6776,10 @@ export default function TurathReader({
                                   e.stopPropagation();
                                   toggleExpandHit(idx);
                                 }}
-                                className={`flex items-center gap-1.5 text-sm sm:text-[15px] font-bold transition-colors cursor-pointer ${
-                                  readerTheme === 'dark'
+                                className={`flex items-center gap-1.5 text-sm sm:text-[15px] font-bold transition-colors cursor-pointer ${readerTheme === 'dark'
                                     ? 'text-white/80 hover:text-white'
                                     : 'text-slate-700 hover:text-slate-950'
-                                }`}
+                                  }`}
                               >
                                 <span>{isExpanded ? 'الأقل' : 'المزيد'}</span>
                                 {isExpanded ? (
@@ -6837,11 +6796,10 @@ export default function TurathReader({
                                   e.stopPropagation();
                                   handleCopyHitText(displaySnippet, idx);
                                 }}
-                                className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-                                  readerTheme === 'dark'
+                                className={`p-1.5 rounded-lg transition-colors cursor-pointer ${readerTheme === 'dark'
                                     ? 'text-white/70 hover:text-white hover:bg-white/10'
                                     : 'text-slate-600 hover:text-slate-950 hover:bg-slate-200/60'
-                                }`}
+                                  }`}
                                 title="نسخ المقتطف"
                               >
                                 {copiedHitIndex === idx ? (
@@ -6858,9 +6816,8 @@ export default function TurathReader({
                             onClick={() => handleSelectSearchResult(hit)}
                             className="cursor-pointer transition-opacity my-2.5"
                           >
-                            <p className={`font-kitab text-[20px] sm:text-[21px] leading-[2.3] text-right ${
-                              isExpanded ? 'whitespace-pre-line' : 'line-clamp-4'
-                            } ${readerTheme === 'dark' ? 'text-slate-100' : 'text-slate-900'}`}>
+                            <p className={`font-kitab text-[20px] sm:text-[21px] leading-[2.3] text-right ${isExpanded ? 'whitespace-pre-line' : 'line-clamp-4'
+                              } ${readerTheme === 'dark' ? 'text-slate-100' : 'text-slate-900'}`}>
                               {renderSearchSnippet(displaySnippet, readerTheme === 'dark', accentColor)}
                             </p>
                           </div>
@@ -6877,9 +6834,8 @@ export default function TurathReader({
                             </button>
 
                             {hit.headings && hit.headings.length > 0 && (
-                              <span className={`truncate text-xs font-semibold max-w-[170px] ${
-                                readerTheme === 'dark' ? 'text-white/40' : 'text-slate-400'
-                              }`}>
+                              <span className={`truncate text-xs font-semibold max-w-[170px] ${readerTheme === 'dark' ? 'text-white/40' : 'text-slate-400'
+                                }`}>
                                 {hit.headings[hit.headings.length - 1]}
                               </span>
                             )}
@@ -7963,187 +7919,184 @@ export default function TurathReader({
                                 )}
                               </div>
 
-                            {/* Continuous Page Actions Toolbar (Bottom-Left Corner) */}
-                            <div className="continuous-page-actions absolute bottom-2.5 left-3 sm:bottom-3 sm:left-4 z-20">
-                              {/* 3-Dots Trigger Button (Fixed position, NEVER shifts or moves) */}
-                              <button
-                                type="button"
-                                onClick={() => setActiveContinuousMenuPage(prev => prev === p.page ? null : p.page)}
-                                className={`p-1.5 sm:p-2 rounded-xl transition-all flex items-center justify-center cursor-pointer border backdrop-blur-md shadow-xs ${
-                                  activeContinuousMenuPage === p.page
-                                    ? accentColor === 'amber'
-                                      ? 'text-[#b88d46] bg-amber-500/20 border-amber-500/40 ring-1 ring-amber-500/30'
-                                      : accentColor === 'emerald'
-                                        ? 'text-teal-600 bg-teal-500/20 border-teal-500/40 ring-1 ring-teal-500/30'
-                                        : accentColor === 'blue'
-                                          ? 'text-blue-600 bg-blue-500/20 border-blue-500/40 ring-1 ring-blue-500/30'
-                                          : 'text-brand-magenta bg-brand-magenta/20 border-brand-magenta/40 ring-1 ring-brand-magenta/30'
-                                    : readerTheme === 'dark'
-                                      ? 'bg-[#181825]/95 border-white/10 text-white/70 hover:text-white hover:bg-white/10'
-                                      : readerTheme === 'sepia'
-                                        ? 'bg-[#FAF5ED]/95 border-[#E2D6C0] text-[#4A3523]/70 hover:text-[#4A3523] hover:bg-[#E2D6C0]/50'
-                                        : 'bg-white/95 border-gray-200 text-gray-500 hover:text-gray-800 hover:bg-gray-100'
-                                }`}
-                                title="خيارات ومشاركة الصفحة"
-                                aria-label="خيارات ومشاركة الصفحة"
-                              >
-                                <MoreHorizontal className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
-                              </button>
-
-                              {/* Floating Horizontal Actions Menu (Opens ABOVE the button, completely clear of the page badge) */}
-                              {activeContinuousMenuPage === p.page && (
-                                <div
-                                  dir="ltr"
-                                  className={`absolute bottom-full mb-2 left-0 flex flex-row items-center gap-1 sm:gap-1.5 p-1 rounded-xl border backdrop-blur-xl shadow-xl z-30 animate-in fade-in slide-in-from-bottom-2 duration-150 ${
-                                    readerTheme === 'dark'
-                                      ? 'bg-[#0f1422]/98 border-white/15 text-white shadow-black/80'
-                                      : readerTheme === 'sepia'
-                                        ? 'bg-[#FAF5ED]/98 border-[#E2D6C0] text-[#3D2C1D]'
-                                        : 'bg-white/98 border-gray-200 text-slate-800 shadow-lg'
-                                  }`}
-                                >
-                                  {/* Bookmark */}
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      setBookmarks(prev => prev.includes(p.page) ? prev.filter(b => b !== p.page) : [...prev, p.page]);
-                                    }}
-                                    className={`p-1.5 rounded-lg transition-all cursor-pointer ${
-                                      bookmarks.includes(p.page)
-                                        ? accentColor === 'amber'
-                                          ? 'bg-amber-500/15 text-[#b88d46]'
-                                          : accentColor === 'emerald'
-                                            ? 'bg-teal-500/15 text-teal-600'
-                                            : accentColor === 'blue'
-                                              ? 'bg-blue-500/15 text-blue-600'
-                                              : 'bg-brand-magenta/15 text-brand-magenta'
-                                        : 'text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5'
+                              {/* Continuous Page Actions Toolbar (Bottom-Left Corner) */}
+                              <div className="continuous-page-actions absolute bottom-2.5 left-3 sm:bottom-3 sm:left-4 z-20">
+                                {/* 3-Dots Trigger Button (Fixed position, NEVER shifts or moves) */}
+                                <button
+                                  type="button"
+                                  onClick={() => setActiveContinuousMenuPage(prev => prev === p.page ? null : p.page)}
+                                  className={`p-1.5 sm:p-2 rounded-xl transition-all flex items-center justify-center cursor-pointer border backdrop-blur-md shadow-xs ${activeContinuousMenuPage === p.page
+                                      ? accentColor === 'amber'
+                                        ? 'text-[#b88d46] bg-amber-500/20 border-amber-500/40 ring-1 ring-amber-500/30'
+                                        : accentColor === 'emerald'
+                                          ? 'text-teal-600 bg-teal-500/20 border-teal-500/40 ring-1 ring-teal-500/30'
+                                          : accentColor === 'blue'
+                                            ? 'text-blue-600 bg-blue-500/20 border-blue-500/40 ring-1 ring-blue-500/30'
+                                            : 'text-brand-magenta bg-brand-magenta/20 border-brand-magenta/40 ring-1 ring-brand-magenta/30'
+                                      : readerTheme === 'dark'
+                                        ? 'bg-[#181825]/95 border-white/10 text-white/70 hover:text-white hover:bg-white/10'
+                                        : readerTheme === 'sepia'
+                                          ? 'bg-[#FAF5ED]/95 border-[#E2D6C0] text-[#4A3523]/70 hover:text-[#4A3523] hover:bg-[#E2D6C0]/50'
+                                          : 'bg-white/95 border-gray-200 text-gray-500 hover:text-gray-800 hover:bg-gray-100'
                                     }`}
-                                    title={bookmarks.includes(p.page) ? "إزالة العلامة" : "حفظ كعلامة مرجعية"}
+                                  title="خيارات ومشاركة الصفحة"
+                                  aria-label="خيارات ومشاركة الصفحة"
+                                >
+                                  <MoreHorizontal className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
+                                </button>
+
+                                {/* Floating Horizontal Actions Menu (Opens ABOVE the button, completely clear of the page badge) */}
+                                {activeContinuousMenuPage === p.page && (
+                                  <div
+                                    dir="ltr"
+                                    className={`absolute bottom-full mb-2 left-0 flex flex-row items-center gap-1 sm:gap-1.5 p-1 rounded-xl border backdrop-blur-xl shadow-xl z-30 animate-in fade-in slide-in-from-bottom-2 duration-150 ${readerTheme === 'dark'
+                                        ? 'bg-[#0f1422]/98 border-white/15 text-white shadow-black/80'
+                                        : readerTheme === 'sepia'
+                                          ? 'bg-[#FAF5ED]/98 border-[#E2D6C0] text-[#3D2C1D]'
+                                          : 'bg-white/98 border-gray-200 text-slate-800 shadow-lg'
+                                      }`}
                                   >
-                                    {bookmarks.includes(p.page) ? (
-                                      <BookmarkCheck className={`h-4 w-4 ${accentColor === 'amber' ? 'fill-amber-500/20' : accentColor === 'emerald' ? 'fill-teal-500/20' : accentColor === 'blue' ? 'fill-blue-500/20' : 'fill-brand-magenta/20'}`} />
-                                    ) : (
-                                      <Bookmark className="h-4 w-4" />
-                                    )}
-                                  </button>
+                                    {/* Bookmark */}
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setBookmarks(prev => prev.includes(p.page) ? prev.filter(b => b !== p.page) : [...prev, p.page]);
+                                      }}
+                                      className={`p-1.5 rounded-lg transition-all cursor-pointer ${bookmarks.includes(p.page)
+                                          ? accentColor === 'amber'
+                                            ? 'bg-amber-500/15 text-[#b88d46]'
+                                            : accentColor === 'emerald'
+                                              ? 'bg-teal-500/15 text-teal-600'
+                                              : accentColor === 'blue'
+                                                ? 'bg-blue-500/15 text-blue-600'
+                                                : 'bg-brand-magenta/15 text-brand-magenta'
+                                          : 'text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5'
+                                        }`}
+                                      title={bookmarks.includes(p.page) ? "إزالة العلامة" : "حفظ كعلامة مرجعية"}
+                                    >
+                                      {bookmarks.includes(p.page) ? (
+                                        <BookmarkCheck className={`h-4 w-4 ${accentColor === 'amber' ? 'fill-amber-500/20' : accentColor === 'emerald' ? 'fill-teal-500/20' : accentColor === 'blue' ? 'fill-blue-500/20' : 'fill-brand-magenta/20'}`} />
+                                      ) : (
+                                        <Bookmark className="h-4 w-4" />
+                                      )}
+                                    </button>
 
-                                  <div className="w-px h-3.5 bg-border/50 shrink-0" />
+                                    <div className="w-px h-3.5 bg-border/50 shrink-0" />
 
-                                  {/* Copy Page Text */}
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      const textToCopy = formatPageCopyText(
-                                        p.matn || p.text,
-                                        p.sharh,
-                                        p.footnote,
-                                        book.title,
-                                        book.author,
-                                        printCit?.page ? Number(printCit.page) : p.page
-                                      );
-                                      navigator.clipboard.writeText(textToCopy);
-                                      setCopiedContinuousPage(p.page);
-                                      setTimeout(() => setCopiedContinuousPage(null), 2000);
-                                    }}
-                                    className="p-1.5 rounded-lg transition-all text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
-                                    title="نسخ محتوى الصفحة"
-                                  >
-                                    {copiedContinuousPage === p.page ? (
-                                      <Check className="h-4 w-4 text-emerald-500" />
-                                    ) : (
-                                      <Copy className="h-4 w-4" />
-                                    )}
-                                  </button>
-
-                                  <div className="w-px h-3.5 bg-border/50 shrink-0" />
-
-                                  {/* Audio Reader */}
-                                  <AudioReaderButton
-                                    text={p.matn ? `${p.matn} ${p.sharh || ''}` : p.text}
-                                    dark={readerTheme === 'dark'}
-                                    showTextLabel={false}
-                                    hidePodcast={true}
-                                    onStateChange={(playing) => setIsReadingPage(playing)}
-                                    orientation="horizontal"
-                                    colorTheme={accentColor}
-                                    menuPlacement="top"
-                                    className="!bg-transparent !border-transparent !shadow-none !p-1.5 !rounded-lg !text-muted-foreground hover:!bg-black/5 dark:hover:!bg-white/5 cursor-pointer"
-                                  />
-
-                                  <div className="w-px h-3.5 bg-border/50 shrink-0" />
-
-                                  {/* Share Page */}
-                                  <button
-                                    type="button"
-                                    onClick={async () => {
-                                      const shareText = formatPageCopyText(
-                                        p.matn || p.text,
-                                        p.sharh,
-                                        p.footnote,
-                                        book.title,
-                                        book.author,
-                                        printCit?.page ? Number(printCit.page) : p.page
-                                      );
-                                      if (navigator.share) {
-                                        try {
-                                          await navigator.share({
-                                            title: `${book.title} - صـ ${displayPage}`,
-                                            text: shareText.slice(0, 300) + '...',
-                                            url: window.location.href,
-                                          });
-                                        } catch { }
-                                      } else {
-                                        navigator.clipboard.writeText(`${window.location.href}\n\n${book.title} - صـ ${displayPage}\n${shareText.slice(0, 300)}...`);
+                                    {/* Copy Page Text */}
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const textToCopy = formatPageCopyText(
+                                          p.matn || p.text,
+                                          p.sharh,
+                                          p.footnote,
+                                          book.title,
+                                          book.author,
+                                          printCit?.page ? Number(printCit.page) : p.page
+                                        );
+                                        navigator.clipboard.writeText(textToCopy);
                                         setCopiedContinuousPage(p.page);
                                         setTimeout(() => setCopiedContinuousPage(null), 2000);
-                                      }
-                                    }}
-                                    className="p-1.5 rounded-lg transition-all text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
-                                    title="مشاركة الصفحة"
-                                  >
-                                    <Share2 className="h-4 w-4" />
-                                  </button>
+                                      }}
+                                      className="p-1.5 rounded-lg transition-all text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
+                                      title="نسخ محتوى الصفحة"
+                                    >
+                                      {copiedContinuousPage === p.page ? (
+                                        <Check className="h-4 w-4 text-emerald-500" />
+                                      ) : (
+                                        <Copy className="h-4 w-4" />
+                                      )}
+                                    </button>
+
+                                    <div className="w-px h-3.5 bg-border/50 shrink-0" />
+
+                                    {/* Audio Reader */}
+                                    <AudioReaderButton
+                                      text={p.matn ? `${p.matn} ${p.sharh || ''}` : p.text}
+                                      dark={readerTheme === 'dark'}
+                                      showTextLabel={false}
+                                      hidePodcast={true}
+                                      onStateChange={(playing) => setIsReadingPage(playing)}
+                                      orientation="horizontal"
+                                      colorTheme={accentColor}
+                                      menuPlacement="top"
+                                      className="!bg-transparent !border-transparent !shadow-none !p-1.5 !rounded-lg !text-muted-foreground hover:!bg-black/5 dark:hover:!bg-white/5 cursor-pointer"
+                                    />
+
+                                    <div className="w-px h-3.5 bg-border/50 shrink-0" />
+
+                                    {/* Share Page */}
+                                    <button
+                                      type="button"
+                                      onClick={async () => {
+                                        const shareText = formatPageCopyText(
+                                          p.matn || p.text,
+                                          p.sharh,
+                                          p.footnote,
+                                          book.title,
+                                          book.author,
+                                          printCit?.page ? Number(printCit.page) : p.page
+                                        );
+                                        if (navigator.share) {
+                                          try {
+                                            await navigator.share({
+                                              title: `${book.title} - صـ ${displayPage}`,
+                                              text: shareText.slice(0, 300) + '...',
+                                              url: window.location.href,
+                                            });
+                                          } catch { }
+                                        } else {
+                                          navigator.clipboard.writeText(`${window.location.href}\n\n${book.title} - صـ ${displayPage}\n${shareText.slice(0, 300)}...`);
+                                          setCopiedContinuousPage(p.page);
+                                          setTimeout(() => setCopiedContinuousPage(null), 2000);
+                                        }
+                                      }}
+                                      className="p-1.5 rounded-lg transition-all text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
+                                      title="مشاركة الصفحة"
+                                    >
+                                      <Share2 className="h-4 w-4" />
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Matn Section */}
+                              <div
+                                data-page={p.page}
+                                data-selectable="true"
+                                data-library-content="true"
+                                className={`turath-content library-reader-content selectable-content prose prose-lg max-w-none leading-[2.4] ${selectionClass} ${fontFamily} prose-headings:m-0 prose-headings:leading-tight prose-p:my-1`}
+                                style={{ fontSize: `${fontSize}px` }}
+                                dangerouslySetInnerHTML={{ __html: renderContentHtml(p.matn || p.text) }}
+                              />
+
+                              {/* Sharh Section with Divider */}
+                              {p.sharh && (
+                                <div className="mt-6">
+                                  <RenderSharhDivider readerTheme={readerTheme} />
+                                  <div
+                                    data-page={p.page}
+                                    data-selectable="true"
+                                    data-library-content="true"
+                                    className={`turath-content library-reader-content selectable-content prose prose-lg max-w-none leading-[2.4] ${selectionClass} ${fontFamily} prose-headings:m-0 prose-headings:leading-tight prose-p:my-1`}
+                                    style={{ fontSize: `${fontSize}px` }}
+                                    dangerouslySetInnerHTML={{ __html: renderContentHtml(p.sharh) }}
+                                  />
                                 </div>
                               )}
-                            </div>
 
-                            {/* Matn Section */}
-                            <div
-                              data-page={p.page}
-                              data-selectable="true"
-                              data-library-content="true"
-                              className={`turath-content library-reader-content selectable-content prose prose-lg max-w-none leading-[2.4] ${selectionClass} ${fontFamily} prose-headings:m-0 prose-headings:leading-tight prose-p:my-1`}
-                              style={{ fontSize: `${fontSize}px` }}
-                              dangerouslySetInnerHTML={{ __html: renderContentHtml(p.matn || p.text) }}
-                            />
-
-                            {/* Sharh Section with Divider */}
-                            {p.sharh && (
-                              <div className="mt-6">
-                                <RenderSharhDivider readerTheme={readerTheme} />
-                                <div
-                                  data-page={p.page}
-                                  data-selectable="true"
-                                  data-library-content="true"
-                                  className={`turath-content library-reader-content selectable-content prose prose-lg max-w-none leading-[2.4] ${selectionClass} ${fontFamily} prose-headings:m-0 prose-headings:leading-tight prose-p:my-1`}
-                                  style={{ fontSize: `${fontSize}px` }}
-                                  dangerouslySetInnerHTML={{ __html: renderContentHtml(p.sharh) }}
+                              {/* Footnote Section with Divider */}
+                              {p.footnote && (
+                                <RenderFootnotes
+                                  footnoteText={p.footnote}
+                                  readerTheme={readerTheme}
+                                  fontFamily={fontFamily}
+                                  fontSize={fontSize}
+                                  showTashkeel={showTashkeel}
                                 />
-                              </div>
-                            )}
-
-                            {/* Footnote Section with Divider */}
-                            {p.footnote && (
-                              <RenderFootnotes
-                                footnoteText={p.footnote}
-                                readerTheme={readerTheme}
-                                fontFamily={fontFamily}
-                                fontSize={fontSize}
-                                showTashkeel={showTashkeel}
-                              />
-                            )}
-                          </div>
+                              )}
+                            </div>
                           );
                         })}
 
@@ -8189,46 +8142,60 @@ export default function TurathReader({
           {/* Pagination Footer with Scrub Bar & Auto-Hide on Mobile */}
           {!distractionFree && (
             <div
-              className={`shrink-0 w-full md:w-auto md:absolute md:bottom-2 md:left-1/2 md:-translate-x-1/2 z-20 transition-all duration-300 ${
-                sidebarTab !== 'none'
+              className={`shrink-0 w-full md:w-auto md:absolute md:bottom-2 md:left-1/2 md:-translate-x-1/2 z-20 transition-all duration-300 ${sidebarTab !== 'none'
                   ? 'max-md:hidden md:opacity-100 md:translate-y-0'
                   : isMobilePaginationVisible
                     ? `opacity-100 translate-y-0 ${isAudioBarOpen ? 'max-h-72' : 'max-h-28'} pointer-events-auto`
                     : 'max-md:opacity-0 max-md:translate-y-6 max-md:max-h-0 max-md:pointer-events-none md:opacity-100 md:translate-y-0'
-              }`}
+                }`}
             >
               <footer
                 onClick={(e) => e.stopPropagation()}
-                className={`flex flex-col items-center gap-1.5 md:gap-2 px-3 py-1.5 md:py-2 md:rounded-2xl border-t md:border backdrop-blur-xl shadow-md md:shadow-2xl transition-colors ${
-                  readerTheme === 'dark'
+                className={`flex flex-col items-center gap-1.5 md:gap-2 px-3 py-1.5 md:py-2 md:rounded-2xl border-t md:border backdrop-blur-xl shadow-md md:shadow-2xl transition-colors ${readerTheme === 'dark'
                     ? 'bg-[#0f1422]/95 border-white/10 text-white'
                     : readerTheme === 'sepia'
                       ? 'bg-[#FAF5ED]/95 border-[#E2D6C0] text-[#3D2C1D]'
                       : 'bg-white/95 border-gray-200 text-slate-800'
-                }`}
+                  }`}
               >
                 {/* 0. Dedicated Active Audio Player Shelf (يتمدد لأعلى كجزء متكامل مع فريم التقليب) */}
                 {isAudioBarOpen && (
                   <div
-                    className={`w-full px-2.5 py-1 rounded-xl border-b mb-1 select-none transition-all ${
-                      readerTheme === 'dark'
+                    className={`w-full px-2.5 py-1 rounded-xl border-b mb-1 select-none transition-all ${readerTheme === 'dark'
                         ? 'bg-white/[0.03] border-white/10 text-white'
                         : readerTheme === 'sepia'
                           ? 'bg-[#EAE0CF]/70 border-[#DFCDB7] text-[#3D2C1D]'
                           : 'bg-slate-50/80 border-slate-200/80 text-slate-800'
-                    }`}
+                      }`}
                   >
                     <AudioReaderButton
-                      text={pageText?.matn ? `${pageText.matn} ${pageText.sharh || ''}` : (pageText?.main || '')}
+                      key={audioActivePage ?? currentPage}
+                      text={audioActiveText || (pageText?.matn ? `${pageText.matn} ${pageText.sharh || ''}` : (pageText?.main || ''))}
                       dark={readerTheme === 'dark'}
                       showTextLabel={false}
                       hidePodcast={true}
                       autoPlay={true}
                       variant="deck"
+                      activePage={audioActivePage ?? currentPage}
+                      activePageLabel={
+                        audioActivePage
+                          ? (getPagePrintCitation(audioActivePage)?.page || audioActivePageLabel || String(audioActivePage))
+                          : (currentPrintCitation?.page || printPageInput || String(currentPage))
+                      }
+                      currentPage={currentPage}
+                      onReturnToActivePage={() => {
+                        if (audioActivePage) {
+                          setCurrentPage(audioActivePage);
+                          showMobilePagination();
+                        }
+                      }}
                       onClose={() => {
                         stopAllSpeech();
                         setIsReadingPage(false);
                         setIsAudioBarOpen(false);
+                        setAudioActivePage(null);
+                        setAudioActivePageLabel('');
+                        setAudioActiveText('');
                       }}
                       onStateChange={(playing) => setIsReadingPage(playing)}
                       colorTheme={accentColor}
@@ -8264,15 +8231,14 @@ export default function TurathReader({
                         <div className="absolute inset-x-0 h-1 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden">
                           {/* Active Progress Fill */}
                           <div
-                            className={`h-full transition-all ${
-                              accentColor === 'amber'
+                            className={`h-full transition-all ${accentColor === 'amber'
                                 ? 'bg-amber-500'
                                 : accentColor === 'emerald'
                                   ? 'bg-teal-600'
                                   : accentColor === 'blue'
                                     ? 'bg-blue-600'
                                     : 'bg-brand-magenta'
-                            }`}
+                              }`}
                             style={{ width: `${Math.min(100, Math.max(0, ((scrubCurrentVal / (scrubMax || 1)) * 100)))}%` }}
                           />
                         </div>
@@ -8311,11 +8277,10 @@ export default function TurathReader({
                         {/* Floating Tooltip while scrubbing */}
                         {isScrubbing && (
                           <div
-                            className={`absolute -top-7 -translate-x-1/2 px-2 py-0.5 rounded-lg text-[10px] font-black shadow-lg pointer-events-none whitespace-nowrap animate-in fade-in zoom-in-95 ${
-                              readerTheme === 'dark'
+                            className={`absolute -top-7 -translate-x-1/2 px-2 py-0.5 rounded-lg text-[10px] font-black shadow-lg pointer-events-none whitespace-nowrap animate-in fade-in zoom-in-95 ${readerTheme === 'dark'
                                 ? 'bg-amber-500 text-slate-950'
                                 : 'bg-slate-900 text-white'
-                            }`}
+                              }`}
                             style={{
                               left: `${Math.min(95, Math.max(5, ((scrubCurrentVal / (scrubMax || 1)) * 100)))}%`
                             }}
@@ -8331,22 +8296,21 @@ export default function TurathReader({
 
                 {/* 2. Controls Row: In-page Search, Prev, Page Info, Next, Page Actions */}
                 <div className="w-full flex items-center justify-between md:justify-center gap-1.5 sm:gap-2">
-                    {/* In-Page Search Button (البحث في الصفحة الحالية) - Mobile only */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsPageSearchOpen(true);
-                        showMobilePagination();
-                      }}
-                      className={`flex items-center justify-center p-1.5 md:p-2 rounded-xl transition-all font-bold shadow-xs cursor-pointer shrink-0 md:hidden ${
-                      isPageSearchOpen
+                  {/* In-Page Search Button (البحث في الصفحة الحالية) - Mobile only */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsPageSearchOpen(true);
+                      showMobilePagination();
+                    }}
+                    className={`flex items-center justify-center p-1.5 md:p-2 rounded-xl transition-all font-bold shadow-xs cursor-pointer shrink-0 md:hidden ${isPageSearchOpen
                         ? 'bg-amber-500/20 text-amber-500 border border-amber-500/40'
                         : readerTheme === 'dark'
                           ? 'bg-white/5 hover:bg-white/10 text-white/70 hover:text-white'
                           : readerTheme === 'sepia'
                             ? 'bg-[#F0E5D4] hover:bg-[#8B5226] text-[#4A3523] hover:text-white'
                             : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-                    }`}
+                      }`}
                     title="البحث داخل الصفحة الحالية"
                     aria-label="البحث داخل الصفحة الحالية"
                   >
@@ -8361,13 +8325,12 @@ export default function TurathReader({
                       showMobilePagination();
                     }}
                     disabled={currentPage <= 1}
-                    className={`flex items-center justify-center p-1.5 md:p-2 rounded-xl transition-all font-bold shadow-xs disabled:opacity-30 disabled:pointer-events-none group cursor-pointer shrink-0 ${
-                      readerTheme === 'dark'
+                    className={`flex items-center justify-center p-1.5 md:p-2 rounded-xl transition-all font-bold shadow-xs disabled:opacity-30 disabled:pointer-events-none group cursor-pointer shrink-0 ${readerTheme === 'dark'
                         ? 'bg-white/5 hover:bg-white/10 text-white'
                         : readerTheme === 'sepia'
                           ? 'bg-[#F0E5D4] hover:bg-[#8B5226] text-[#4A3523] hover:text-white'
                           : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-                    }`}
+                      }`}
                     title="الصفحة السابقة"
                   >
                     <ChevronRight className="h-4 w-4 md:h-5 md:w-5 group-hover:translate-x-0.5 transition-transform" />
@@ -8375,13 +8338,12 @@ export default function TurathReader({
 
                   {/* Inline Volume & Page Info / Direct Jump */}
                   <div
-                    className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-bold px-2 sm:px-3 py-1 rounded-xl transition-all border min-w-0 ${
-                      readerTheme === 'dark'
+                    className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-bold px-2 sm:px-3 py-1 rounded-xl transition-all border min-w-0 ${readerTheme === 'dark'
                         ? 'border-white/10 bg-white/5'
                         : readerTheme === 'sepia'
                           ? 'border-[#E2D6C0] bg-black/[0.02]'
                           : 'border-slate-200 bg-slate-50'
-                    }`}
+                      }`}
                   >
                     {/* Volume Bottom Sheet Selector Button */}
                     <div className="relative shrink-0" ref={volumePickerRef}>
@@ -8391,8 +8353,7 @@ export default function TurathReader({
                           setIsVolumePickerOpen(prev => !prev);
                           showMobilePagination();
                         }}
-                        className={`flex items-center gap-1 px-2 py-0.5 rounded-lg transition-all font-bold text-xs sm:text-sm cursor-pointer select-none active:scale-95 ${
-                          isVolumePickerOpen
+                        className={`flex items-center gap-1 px-2 py-0.5 rounded-lg transition-all font-bold text-xs sm:text-sm cursor-pointer select-none active:scale-95 ${isVolumePickerOpen
                             ? accentColor === 'amber'
                               ? 'bg-amber-500/20 text-amber-600 dark:text-[#dfbf83] ring-1 ring-amber-500/40'
                               : accentColor === 'emerald'
@@ -8401,13 +8362,23 @@ export default function TurathReader({
                                   ? 'bg-blue-500/20 text-blue-600 dark:text-blue-300 ring-1 ring-blue-500/40'
                                   : 'bg-purple-500/20 text-brand-magenta dark:text-purple-300 ring-1 ring-purple-500/40'
                             : 'hover:bg-black/5 dark:hover:bg-white/10'
-                        }`}
+                          }`}
                         title="اضغط لاختيار المجلد"
                       >
-                        <span className="text-[10px] sm:text-xs font-bold opacity-75">المجلد</span>
-                        <span className="font-black">
-                          {toEasternArabicNumerals(currentPrintCitation?.vol || printVolInput || '1')}
-                        </span>
+                        {(() => {
+                          const rawVol = (currentPrintCitation?.vol || printVolInput || '1').trim();
+                          const isAsciiNum = /^\d+$/.test(normalizeArabicDigits(rawVol));
+                          return (
+                            <>
+                              {isAsciiNum && (
+                                <span className="text-[10px] sm:text-xs font-bold opacity-75">المجلد</span>
+                              )}
+                              <span className={`font-black ${!isAsciiNum ? 'truncate max-w-[85px] sm:max-w-none' : ''}`}>
+                                {isAsciiNum ? toEasternArabicNumerals(rawVol) : rawVol}
+                              </span>
+                            </>
+                          );
+                        })()}
                         <ChevronUp className={`w-3.5 h-3.5 opacity-70 transition-transform duration-200 ${isVolumePickerOpen ? 'rotate-180' : ''}`} />
                       </button>
 
@@ -8415,97 +8386,99 @@ export default function TurathReader({
                       {typeof document !== 'undefined' && createPortal(
                         <AnimatePresence>
                           {isVolumePickerOpen && (
-                              <div dir="rtl" className="fixed inset-0 z-[120] flex flex-col justify-end">
-                                {/* Backdrop */}
-                                <motion.div
-                                  key="volume-picker-backdrop"
-                                  initial={{ opacity: 0 }}
-                                  animate={{ opacity: 1 }}
-                                  exit={{ opacity: 0 }}
-                                  transition={{ duration: 0.25 }}
-                                  onClick={() => setIsVolumePickerOpen(false)}
-                                  className="fixed inset-0 bg-black/50 backdrop-blur-xs cursor-pointer"
-                                />
+                            <div dir="rtl" className="fixed inset-0 z-[120] flex flex-col justify-end">
+                              {/* Backdrop */}
+                              <motion.div
+                                key="volume-picker-backdrop"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.25 }}
+                                onClick={() => setIsVolumePickerOpen(false)}
+                                className="fixed inset-0 bg-black/50 backdrop-blur-xs cursor-pointer"
+                              />
 
-                                {/* Bottom Sheet */}
-                                <motion.div
-                                  key="volume-picker-sheet"
-                                  initial={{ y: '100%' }}
-                                  animate={{ y: 0 }}
-                                  exit={{ y: '100%' }}
-                                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                                  onClick={(e) => e.stopPropagation()}
-                                  className={`relative w-full max-w-lg mx-auto max-h-[75vh] flex flex-col rounded-t-3xl border-t shadow-2xl overflow-hidden z-10 ${
-                                    readerTheme === 'dark'
-                                      ? 'bg-[#0f1422]/98 border-white/15 text-white shadow-black/80'
-                                      : readerTheme === 'sepia'
-                                        ? 'bg-[#FAF5ED]/98 border-[#E2D6C0] text-[#3D2C1D] shadow-2xl'
-                                        : 'bg-white/98 border-slate-200 text-slate-900 shadow-2xl'
+                              {/* Bottom Sheet */}
+                              <motion.div
+                                key="volume-picker-sheet"
+                                initial={{ y: '100%' }}
+                                animate={{ y: 0 }}
+                                exit={{ y: '100%' }}
+                                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                                onClick={(e) => e.stopPropagation()}
+                                className={`relative w-full max-w-lg mx-auto max-h-[75vh] flex flex-col rounded-t-3xl border-t shadow-2xl overflow-hidden z-10 ${readerTheme === 'dark'
+                                    ? 'bg-[#0f1422]/98 border-white/15 text-white shadow-black/80'
+                                    : readerTheme === 'sepia'
+                                      ? 'bg-[#FAF5ED]/98 border-[#E2D6C0] text-[#3D2C1D] shadow-2xl'
+                                      : 'bg-white/98 border-slate-200 text-slate-900 shadow-2xl'
                                   }`}
-                                >
-                                  {/* Drag Handle & Header */}
-                                  <div className="shrink-0 px-5 pt-3 pb-3 border-b border-inherit/15">
-                                    <div className="w-10 h-1 rounded-full bg-black/15 dark:bg-white/20 mx-auto mb-3" />
-                                    <div className="flex items-center justify-between">
-                                      <h3 className="font-bold text-base sm:text-lg">كل المجلدات</h3>
-                                      <button
-                                        type="button"
-                                        onClick={() => setIsVolumePickerOpen(false)}
-                                        className="p-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-                                        title="إغلاق"
-                                      >
-                                        <X className="w-5 h-5" />
-                                      </button>
-                                    </div>
+                              >
+                                {/* Drag Handle & Header */}
+                                <div className="shrink-0 px-5 pt-3 pb-3 border-b border-inherit/15">
+                                  <div className="w-10 h-1 rounded-full bg-black/15 dark:bg-white/20 mx-auto mb-3" />
+                                  <div className="flex items-center justify-between">
+                                    <h3 className="font-bold text-base sm:text-lg">كل المجلدات</h3>
+                                    <button
+                                      type="button"
+                                      onClick={() => setIsVolumePickerOpen(false)}
+                                      className="p-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                                      title="إغلاق"
+                                    >
+                                      <X className="w-5 h-5" />
+                                    </button>
                                   </div>
+                                </div>
 
-                                  {/* Volume List */}
-                                  <div
-                                    className="flex-1 overflow-y-auto px-4 py-2.5 custom-scrollbar flex flex-col divide-y divide-inherit/10"
-                                    style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 1.5rem)' }}
-                                  >
-                                    {availableVolumes.map((vol) => {
-                                      const isCurrent = String(vol) === String(currentPrintCitation?.vol || printVolInput || '1');
-                                      return (
-                                        <button
-                                          key={vol}
-                                          type="button"
-                                          onClick={() => {
-                                            handleSelectVolume(vol);
-                                            setIsVolumePickerOpen(false);
-                                            showMobilePagination();
-                                          }}
-                                          className={`w-full flex items-center justify-between px-4 py-3.5 text-right text-sm sm:text-base font-bold transition-all cursor-pointer ${
-                                            isCurrent
-                                              ? accentColor === 'amber'
-                                                ? 'bg-amber-500/15 text-amber-600 dark:text-[#dfbf83] font-black rounded-xl'
-                                                : accentColor === 'emerald'
-                                                  ? 'bg-teal-500/15 text-teal-700 dark:text-teal-300 font-black rounded-xl'
-                                                  : accentColor === 'blue'
-                                                    ? 'bg-blue-500/15 text-blue-600 dark:text-blue-300 font-black rounded-xl'
-                                                    : 'bg-purple-500/15 text-brand-magenta dark:text-purple-300 font-black rounded-xl'
-                                              : 'hover:bg-black/5 dark:hover:bg-white/5 text-slate-700 dark:text-slate-200'
+                                {/* Volume List */}
+                                <div
+                                  className="flex-1 overflow-y-auto px-4 py-2.5 custom-scrollbar flex flex-col divide-y divide-inherit/10"
+                                  style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 1.5rem)' }}
+                                >
+                                  {availableVolumes.map((vol) => {
+                                    const isCurrent = String(vol) === String(currentPrintCitation?.vol || printVolInput || '1');
+                                    const isNum = /^\d+$/.test(normalizeArabicDigits(String(vol).trim()));
+                                    return (
+                                      <button
+                                        key={vol}
+                                        type="button"
+                                        onClick={() => {
+                                          handleSelectVolume(vol);
+                                          setIsVolumePickerOpen(false);
+                                          showMobilePagination();
+                                        }}
+                                        className={`w-full flex items-center justify-between px-4 py-3.5 text-right text-sm sm:text-base font-bold transition-all cursor-pointer ${isCurrent
+                                            ? accentColor === 'amber'
+                                              ? 'bg-amber-500/15 text-amber-600 dark:text-[#dfbf83] font-black rounded-xl'
+                                              : accentColor === 'emerald'
+                                                ? 'bg-teal-500/15 text-teal-700 dark:text-teal-300 font-black rounded-xl'
+                                                : accentColor === 'blue'
+                                                  ? 'bg-blue-500/15 text-blue-600 dark:text-blue-300 font-black rounded-xl'
+                                                  : 'bg-purple-500/15 text-brand-magenta dark:text-purple-300 font-black rounded-xl'
+                                            : 'hover:bg-black/5 dark:hover:bg-white/5 text-slate-700 dark:text-slate-200'
                                           }`}
-                                        >
-                                          <span className="font-scheherazade text-base sm:text-lg">
-                                            المجلد ({toEasternArabicNumerals(vol)})
+                                      >
+                                        <span className="font-scheherazade text-base sm:text-lg">
+                                          {isNum ? `المجلد (${toEasternArabicNumerals(vol)})` : vol}
+                                        </span>
+                                        {isCurrent && (
+                                          <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-current/10 shrink-0">
+                                            الحالي
                                           </span>
-                                          {isCurrent && (
-                                            <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-current/10 shrink-0">
-                                              الحالي
-                                            </span>
-                                          )}
-                                        </button>
-                                      );
-                                    })}
-                                  </div>
-                                </motion.div>
-                              </div>
-                            )}
-                          </AnimatePresence>,
-                          document.body
-                        )}
-                      </div>
+                                        )}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              </motion.div>
+                            </div>
+                          )}
+                        </AnimatePresence>,
+                        document.body
+                      )}
+                    </div>
+
+                    {/* Subtle Divider between Volume and Page */}
+                    <div className="w-px h-3.5 bg-current opacity-15 shrink-0" />
 
                     {/* Page Input */}
                     <div className="flex items-center gap-0.5 sm:gap-1">
@@ -8527,7 +8500,7 @@ export default function TurathReader({
                         }}
                         onBlur={() => handleJumpToPrintPage(printVolInput, printPageInput)}
                         placeholder={String(currentPage)}
-                        className="w-9 sm:w-14 text-center font-bold text-xs sm:text-sm bg-transparent border-b border-inherit focus:outline-none"
+                        className="w-8 sm:w-12 text-center font-bold text-xs sm:text-sm bg-transparent border-b border-inherit focus:outline-none"
                         title="رقم الصفحة"
                       />
                     </div>
@@ -8535,23 +8508,23 @@ export default function TurathReader({
                     {/* Total pages (Volume total if available, otherwise Book total) */}
                     {(currentVolumeInfo ? (currentVolumeInfo.endPrintPage || currentVolumeInfo.totalPages) : maxPage) && (
                       <span
-                        className={`shrink-0 text-[10px] sm:text-xs md:text-sm font-sans font-bold tabular-nums rounded-full border transition-colors px-1.5 py-0.5 sm:px-2 md:px-2.5 md:py-1 ${
-                          readerTheme === 'dark'
+                        className={`shrink-0 text-[10px] sm:text-xs md:text-sm font-sans font-bold tabular-nums rounded-full border transition-colors px-1.5 py-0.5 sm:px-2 md:px-2.5 md:py-1 ${readerTheme === 'dark'
                             ? 'bg-white/5 border-white/15 text-white/70 hover:bg-white/10 hover:text-white'
                             : readerTheme === 'sepia'
                               ? 'bg-black/[0.03] border-[#E2D6C0] text-[#4A3523]/70 hover:bg-[#E2D6C0]/60 hover:text-[#4A3523]'
                               : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-100 hover:text-slate-700'
-                        }`}
+                          }`}
                         title={
                           currentVolumeInfo
                             ? `إجمالي صفحات الجزء ${currentVolumeInfo.vol}: ${currentVolumeInfo.endPrintPage || currentVolumeInfo.totalPages} صـ (الكتاب كاملاً: ${maxPage} صـ)`
                             : `إجمالي صفحات الكتاب: ${maxPage} صـ`
                         }
                       >
-                        <span className="md:hidden">/</span>
-                        <span className="hidden md:inline">من</span>{' '}
-                        {currentVolumeInfo ? (currentVolumeInfo.endPrintPage || currentVolumeInfo.totalPages) : maxPage}
-                        <span className="hidden md:inline"> صـ</span>
+                        <span className="text-[10px] sm:text-xs font-bold opacity-75">من</span>{' '}
+                        <span className="tabular-nums font-bold">
+                          {toEasternArabicNumerals(currentVolumeInfo ? (currentVolumeInfo.endPrintPage || currentVolumeInfo.totalPages) : maxPage)}
+                        </span>
+                        <span className="hidden md:inline text-[10px] sm:text-xs font-bold opacity-75"> صـ</span>
                       </span>
                     )}
                   </div>
@@ -8564,13 +8537,12 @@ export default function TurathReader({
                       showMobilePagination();
                     }}
                     disabled={currentPage >= (maxPage || 1)}
-                    className={`flex items-center justify-center p-1.5 md:p-2 rounded-xl transition-all font-bold shadow-xs disabled:opacity-30 disabled:pointer-events-none group cursor-pointer shrink-0 ${
-                      readerTheme === 'dark'
+                    className={`flex items-center justify-center p-1.5 md:p-2 rounded-xl transition-all font-bold shadow-xs disabled:opacity-30 disabled:pointer-events-none group cursor-pointer shrink-0 ${readerTheme === 'dark'
                         ? 'bg-white/5 hover:bg-white/10 text-white'
                         : readerTheme === 'sepia'
                           ? 'bg-[#F0E5D4] hover:bg-[#8B5226] text-[#4A3523] hover:text-white'
                           : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-                    }`}
+                      }`}
                     title="الصفحة التالية"
                   >
                     <ChevronLeft className="h-4 w-4 md:h-5 md:w-5 group-hover:-translate-x-0.5 transition-transform" />
@@ -8581,11 +8553,41 @@ export default function TurathReader({
                     <button
                       type="button"
                       onClick={() => {
-                        setIsAudioBarOpen(prev => !prev);
+                        const currentFormattedText = pageText?.matn ? `${pageText.matn} ${pageText.sharh || ''}` : (pageText?.main || '');
+                        const currentDisplayPage = currentPrintCitation?.page || printPageInput || String(currentPage);
+
+                        // Case 1: Audio is currently playing for another page -> switch and read current page!
+                        if (isAudioBarOpen && audioActivePage && audioActivePage !== currentPage) {
+                          stopAllSpeech();
+                          setAudioActivePage(currentPage);
+                          setAudioActivePageLabel(currentDisplayPage);
+                          setAudioActiveText(currentFormattedText);
+                          setIsReadingPage(true);
+                          showMobilePagination();
+                          return;
+                        }
+
+                        // Case 2: Audio bar is open on the same page -> close and stop
+                        if (isAudioBarOpen) {
+                          stopAllSpeech();
+                          setIsReadingPage(false);
+                          setIsAudioBarOpen(false);
+                          setAudioActivePage(null);
+                          setAudioActivePageLabel('');
+                          setAudioActiveText('');
+                          showMobilePagination();
+                          return;
+                        }
+
+                        // Case 3: Audio bar was closed -> open and start reading current page
+                        setAudioActivePage(currentPage);
+                        setAudioActivePageLabel(currentDisplayPage);
+                        setAudioActiveText(currentFormattedText);
+                        setIsAudioBarOpen(true);
+                        setIsReadingPage(true);
                         showMobilePagination();
                       }}
-                      className={`flex items-center justify-center p-1.5 md:p-2 rounded-xl transition-all font-bold shadow-xs cursor-pointer shrink-0 ${
-                        isAudioBarOpen || isReadingPage
+                      className={`flex items-center justify-center p-1.5 md:p-2 rounded-xl transition-all font-bold shadow-xs cursor-pointer shrink-0 ${isAudioBarOpen || isReadingPage
                           ? accentColor === 'amber'
                             ? 'bg-amber-500/20 text-amber-500 border border-amber-500/40'
                             : accentColor === 'emerald'
@@ -8598,8 +8600,14 @@ export default function TurathReader({
                             : readerTheme === 'sepia'
                               ? 'bg-[#F0E5D4] hover:bg-[#8B5226] text-[#4A3523] hover:text-white'
                               : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-                      }`}
-                      title={isAudioBarOpen ? "إغلاق فريم الصوت" : "قراءة الصفحة صوتياً"}
+                        }`}
+                      title={
+                        isAudioBarOpen && audioActivePage && audioActivePage !== currentPage
+                          ? `بدء قراءة الصفحة الحالية (صـ ${currentPrintCitation?.page || printPageInput || currentPage})`
+                          : isAudioBarOpen
+                          ? "إغلاق فريم الصوت"
+                          : "قراءة الصفحة صوتياً"
+                      }
                       aria-label="قراءة الصفحة صوتياً"
                     >
                       <Volume2 className="h-4 w-4 md:h-4.5 md:w-4.5" />
@@ -8609,121 +8617,118 @@ export default function TurathReader({
                   {/* Page Actions 3-dots Menu (نسخ ومشاركة وقراءة الصفحة) - Paged mode */}
                   {readingMode === 'paged' && (
                     <div className="relative shrink-0 flex" ref={pageActionsRef}>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsPageActionsOpen(!isPageActionsOpen);
-                        showMobilePagination();
-                      }}
-                      className={`flex items-center justify-center p-1.5 md:p-2 rounded-xl transition-all font-bold shadow-xs cursor-pointer ${
-                        isPageActionsOpen
-                          ? 'bg-amber-500/20 text-amber-500 border border-amber-500/40'
-                          : readerTheme === 'dark'
-                            ? 'bg-white/5 hover:bg-white/10 text-white/70 hover:text-white'
-                            : readerTheme === 'sepia'
-                              ? 'bg-[#F0E5D4] hover:bg-[#8B5226] text-[#4A3523] hover:text-white'
-                              : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-                      }`}
-                      title="خيارات ومشاركة الصفحة"
-                      aria-label="خيارات ومشاركة الصفحة"
-                    >
-                      <MoreVertical className="h-4 w-4 md:h-4.5 md:w-4.5" />
-                    </button>
-
-                    {isPageActionsOpen && (
-                      <div
-                        onClick={(e) => e.stopPropagation()}
-                        className={`absolute bottom-full left-0 mb-2 w-52 rounded-2xl border p-1.5 shadow-2xl backdrop-blur-2xl z-50 animate-in fade-in slide-in-from-bottom-2 duration-150 ${
-                          readerTheme === 'dark'
-                            ? 'bg-[#0f1422]/98 border-white/10 text-white shadow-black/80'
-                            : readerTheme === 'sepia'
-                              ? 'bg-[#FAF5ED]/98 border-[#E2D6C0] text-[#3D2C1D]'
-                              : 'bg-white/98 border-gray-200 text-slate-900 shadow-xl'
-                        }`}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsPageActionsOpen(!isPageActionsOpen);
+                          showMobilePagination();
+                        }}
+                        className={`flex items-center justify-center p-1.5 md:p-2 rounded-xl transition-all font-bold shadow-xs cursor-pointer ${isPageActionsOpen
+                            ? 'bg-amber-500/20 text-amber-500 border border-amber-500/40'
+                            : readerTheme === 'dark'
+                              ? 'bg-white/5 hover:bg-white/10 text-white/70 hover:text-white'
+                              : readerTheme === 'sepia'
+                                ? 'bg-[#F0E5D4] hover:bg-[#8B5226] text-[#4A3523] hover:text-white'
+                                : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                          }`}
+                        title="خيارات ومشاركة الصفحة"
+                        aria-label="خيارات ومشاركة الصفحة"
                       >
-                        {/* Audio Reader Menu Item */}
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setIsAudioBarOpen(true);
-                            setIsPageActionsOpen(false);
-                          }}
-                          className="w-full flex items-center gap-2.5 p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-xs font-bold text-right transition-colors cursor-pointer"
-                        >
-                          <Volume2 className={`w-4 h-4 shrink-0 ${
-                            accentColor === 'amber'
-                              ? 'text-amber-500'
-                              : accentColor === 'emerald'
-                                ? 'text-teal-600 dark:text-teal-400'
-                                : accentColor === 'blue'
-                                  ? 'text-blue-600 dark:text-blue-400'
-                                  : 'text-purple-600 dark:text-purple-400'
-                          }`} />
-                          <span className="truncate">قراءة الصفحة صوتياً</span>
-                        </button>
+                        <MoreVertical className="h-4 w-4 md:h-4.5 md:w-4.5" />
+                      </button>
 
-                        {/* إضافة / إزالة من العلامات المرجعية */}
-                        <button
-                          type="button"
-                          onClick={() => {
-                            toggleBookmark();
-                            setIsPageActionsOpen(false);
-                          }}
-                          className="w-full flex items-center gap-2.5 p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-xs font-bold text-right transition-colors cursor-pointer"
+                      {isPageActionsOpen && (
+                        <div
+                          onClick={(e) => e.stopPropagation()}
+                          className={`absolute bottom-full left-0 mb-2 w-52 rounded-2xl border p-1.5 shadow-2xl backdrop-blur-2xl z-50 animate-in fade-in slide-in-from-bottom-2 duration-150 ${readerTheme === 'dark'
+                              ? 'bg-[#0f1422]/98 border-white/10 text-white shadow-black/80'
+                              : readerTheme === 'sepia'
+                                ? 'bg-[#FAF5ED]/98 border-[#E2D6C0] text-[#3D2C1D]'
+                                : 'bg-white/98 border-gray-200 text-slate-900 shadow-xl'
+                            }`}
                         >
-                          <Bookmark className={`w-4 h-4 text-amber-500 shrink-0 ${bookmarks.includes(currentPage) ? 'fill-amber-500' : ''}`} />
-                          <span className="truncate">
-                            {bookmarks.includes(currentPage) ? 'إزالة من العلامات المرجعية' : 'إضافة إلى العلامات المرجعية'}
-                          </span>
-                        </button>
+                          {/* Audio Reader Menu Item */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setIsAudioBarOpen(true);
+                              setIsPageActionsOpen(false);
+                            }}
+                            className="w-full flex items-center gap-2.5 p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-xs font-bold text-right transition-colors cursor-pointer"
+                          >
+                            <Volume2 className={`w-4 h-4 shrink-0 ${accentColor === 'amber'
+                                ? 'text-amber-500'
+                                : accentColor === 'emerald'
+                                  ? 'text-teal-600 dark:text-teal-400'
+                                  : accentColor === 'blue'
+                                    ? 'text-blue-600 dark:text-blue-400'
+                                    : 'text-purple-600 dark:text-purple-400'
+                              }`} />
+                            <span className="truncate">قراءة الصفحة صوتياً</span>
+                          </button>
 
-                        <button
-                          type="button"
-                          onClick={() => {
-                            handleCopyPage();
-                            setIsPageActionsOpen(false);
-                          }}
-                          className="w-full flex items-center gap-2.5 p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-xs font-bold text-right transition-colors cursor-pointer"
-                        >
-                          <Copy className="w-4 h-4 text-purple-500 shrink-0" />
-                          <span className="truncate">{pageCopied ? 'تم النسخ بنجاح!' : 'نسخ نص الصفحة'}</span>
-                        </button>
+                          {/* إضافة / إزالة من العلامات المرجعية */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              toggleBookmark();
+                              setIsPageActionsOpen(false);
+                            }}
+                            className="w-full flex items-center gap-2.5 p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-xs font-bold text-right transition-colors cursor-pointer"
+                          >
+                            <Bookmark className={`w-4 h-4 text-amber-500 shrink-0 ${bookmarks.includes(currentPage) ? 'fill-amber-500' : ''}`} />
+                            <span className="truncate">
+                              {bookmarks.includes(currentPage) ? 'إزالة من العلامات المرجعية' : 'إضافة إلى العلامات المرجعية'}
+                            </span>
+                          </button>
 
-                        <button
-                          type="button"
-                          onClick={async () => {
-                            setIsPageActionsOpen(false);
-                            const shareText = formatPageCopyText(
-                              pageText?.matn || pageText?.main || '',
-                              pageText?.sharh,
-                              pageText?.footnote,
-                              book.title,
-                              book.author,
-                              currentPage
-                            );
-                            if (navigator.share) {
-                              try {
-                                await navigator.share({
-                                  title: `${book.title} - صـ ${currentPage}`,
-                                  text: shareText.slice(0, 300) + '...',
-                                  url: window.location.href,
-                                });
-                              } catch {
-                                // canceled
+                          <button
+                            type="button"
+                            onClick={() => {
+                              handleCopyPage();
+                              setIsPageActionsOpen(false);
+                            }}
+                            className="w-full flex items-center gap-2.5 p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-xs font-bold text-right transition-colors cursor-pointer"
+                          >
+                            <Copy className="w-4 h-4 text-purple-500 shrink-0" />
+                            <span className="truncate">{pageCopied ? 'تم النسخ بنجاح!' : 'نسخ نص الصفحة'}</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              setIsPageActionsOpen(false);
+                              const shareText = formatPageCopyText(
+                                pageText?.matn || pageText?.main || '',
+                                pageText?.sharh,
+                                pageText?.footnote,
+                                book.title,
+                                book.author,
+                                currentPage
+                              );
+                              if (navigator.share) {
+                                try {
+                                  await navigator.share({
+                                    title: `${book.title} - صـ ${currentPage}`,
+                                    text: shareText.slice(0, 300) + '...',
+                                    url: window.location.href,
+                                  });
+                                } catch {
+                                  // canceled
+                                }
+                              } else {
+                                navigator.clipboard.writeText(`${window.location.href}\n\n${book.title} - صـ ${currentPage}\n${shareText.slice(0, 300)}...`);
+                                alert('تم نسخ رابط وبيانات الصفحة لمشاركتها!');
                               }
-                            } else {
-                              navigator.clipboard.writeText(`${window.location.href}\n\n${book.title} - صـ ${currentPage}\n${shareText.slice(0, 300)}...`);
-                              alert('تم نسخ رابط وبيانات الصفحة لمشاركتها!');
-                            }
-                          }}
-                          className="w-full flex items-center gap-2.5 p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-xs font-bold text-right transition-colors cursor-pointer"
-                        >
-                          <Share2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                          <span className="truncate">مشاركة الصفحة</span>
-                        </button>
-                      </div>
-                    )}
-                  </div>
+                            }}
+                            className="w-full flex items-center gap-2.5 p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-xs font-bold text-right transition-colors cursor-pointer"
+                          >
+                            <Share2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                            <span className="truncate">مشاركة الصفحة</span>
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
               </footer>
@@ -8735,13 +8740,12 @@ export default function TurathReader({
       {/* Mobile Bottom Navigation Bar (Docked at the bottom of the screen with core tabs) */}
       {!distractionFree && (
         <nav
-          className={`md:hidden shrink-0 w-full border-t z-50 backdrop-blur-2xl transition-colors duration-300 ${
-            readerTheme === 'dark'
+          className={`md:hidden shrink-0 w-full border-t z-50 backdrop-blur-2xl transition-colors duration-300 ${readerTheme === 'dark'
               ? 'bg-[#0a0d14]/98 border-white/10 shadow-[0_-8px_25px_rgba(0,0,0,0.7)] text-white'
               : readerTheme === 'sepia'
                 ? 'bg-[#FAF5ED]/98 border-[#E2D6C0] shadow-[0_-6px_20px_rgba(80,50,20,0.08)] text-[#3D2C1D]'
                 : 'bg-white/98 border-gray-200/90 shadow-[0_-6px_20px_rgba(0,0,0,0.06)] text-slate-800'
-          }`}
+            }`}
           style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 4px)' }}
           aria-label="شريط التبويبات السفلي"
         >
@@ -8776,9 +8780,8 @@ export default function TurathReader({
               title="مساعد زاد الذكي"
             >
               <div
-                className={`w-7 h-7 sm:w-8 sm:h-8 transition-transform duration-200 ${
-                  sidebarTab === 'chat' ? 'scale-110' : ''
-                }`}
+                className={`w-7 h-7 sm:w-8 sm:h-8 transition-transform duration-200 ${sidebarTab === 'chat' ? 'scale-110' : ''
+                  }`}
                 style={{
                   backgroundColor: getBottomNavZadLogoColor(sidebarTab === 'chat'),
                   WebkitMaskImage: `url(${whiteLogo})`,
@@ -9039,11 +9042,10 @@ export default function TurathReader({
                       return (
                         <div
                           key={item.url || idx}
-                          className={`p-3 sm:p-3.5 rounded-xl border transition-all duration-200 flex flex-col gap-2.5 ${
-                            isCurrent
+                          className={`p-3 sm:p-3.5 rounded-xl border transition-all duration-200 flex flex-col gap-2.5 ${isCurrent
                               ? activeBorder
                               : cardBg
-                          }`}
+                            }`}
                         >
                           {/* Top Row: Volume title on the right, English filename on the left */}
                           <div className="flex items-center justify-between gap-3">
