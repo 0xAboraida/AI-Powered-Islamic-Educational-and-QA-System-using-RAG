@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react'
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import {
   BookOpen, Library, Search, X, Pen, FileText, User, Info,
@@ -91,6 +91,7 @@ export default function KnowledgeBase({
   onAskBook,
   onLogin,
   onNavigateGlobal,
+  activeTab,
   initialTab = 'home',
   hideCustomHeader = false,
   onTabChange,
@@ -100,6 +101,7 @@ export default function KnowledgeBase({
   onAskBook: (book: any) => void
   onLogin?: () => void
   onNavigateGlobal?: (view: any) => void
+  activeTab?: MainTab
   initialTab?: MainTab
   hideCustomHeader?: boolean
   onTabChange?: (tab: MainTab) => void
@@ -187,45 +189,101 @@ export default function KnowledgeBase({
     }
   };
 
-  // Default tab initialized from prop
-  const [activeMainTab, setActiveMainTab] = useState<MainTab>(initialTab);
+  // Controlled tab from App.tsx, with fallback to internal state
+  const [internalTab, setInternalTab] = useState<MainTab>(activeTab || initialTab || 'home');
+  const activeMainTab = activeTab !== undefined ? activeTab : internalTab;
 
+  const onTabChangeRef = useRef(onTabChange);
   useEffect(() => {
-    if (initialTab) {
-      setActiveMainTab(initialTab);
-      if (initialTab === 'home') {
-        setIsScrolledPastSearch(false);
-        onScrolledPastSearchChange?.(false);
-      }
-    }
-  }, [initialTab]);
+    onTabChangeRef.current = onTabChange;
+  }, [onTabChange]);
 
+  const onScrolledPastSearchChangeRef = useRef(onScrolledPastSearchChange);
   useEffect(() => {
-    onTabChange?.(activeMainTab);
-  }, [activeMainTab, onTabChange]);
+    onScrolledPastSearchChangeRef.current = onScrolledPastSearchChange;
+  }, [onScrolledPastSearchChange]);
+
+  const activeMainTabRef = useRef(activeMainTab);
+  useEffect(() => {
+    activeMainTabRef.current = activeMainTab;
+  }, [activeMainTab]);
 
   // Scroll Listener for Navbar Activation across all library views (يظهر فقط عند اختفاء شريط البحث تماماً من الشاشة)
-  const [isScrolledPastSearch, setIsScrolledPastSearch] = useState(false);
-  const isScrolledRef = useRef(false);
+  const [isScrolledPastSearch, setIsScrolledPastSearch] = useState(activeMainTab !== 'home');
+  const isScrolledRef = useRef(activeMainTab !== 'home');
   const lastScrollYRef = useRef(0);
+  const lastNotifiedScrolledRef = useRef(activeMainTab !== 'home');
+
+  const prevActiveTabRef = useRef(activeMainTab);
+
+  const setActiveMainTab = useCallback((tabOrFn: MainTab | ((prev: MainTab) => MainTab)) => {
+    const nextTab = typeof tabOrFn === 'function' ? tabOrFn(activeMainTabRef.current) : tabOrFn;
+    prevActiveTabRef.current = nextTab;
+    setInternalTab(nextTab);
+    onTabChangeRef.current?.(nextTab);
+    setView('search');
+    if (nextTab !== 'authors') {
+      setSelectedAuthor(null);
+    }
+    if (nextTab !== 'narrators') {
+      setSelectedNarrator(null);
+    }
+    if (nextTab === 'home') {
+      lastScrollYRef.current = 0;
+      isScrolledRef.current = false;
+      setIsScrolledPastSearch(false);
+      lastNotifiedScrolledRef.current = false;
+      onScrolledPastSearchChangeRef.current?.(false);
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    } else {
+      isScrolledRef.current = true;
+      setIsScrolledPastSearch(true);
+      lastNotifiedScrolledRef.current = true;
+      onScrolledPastSearchChangeRef.current?.(true);
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+  }, []);
+
+  // Synchronize internal state when activeTab or initialTab changes from parent
+  useEffect(() => {
+    const incomingTab = activeTab !== undefined ? activeTab : initialTab;
+    if (incomingTab && incomingTab !== prevActiveTabRef.current) {
+      prevActiveTabRef.current = incomingTab;
+      setInternalTab(incomingTab);
+      setView('search');
+      if (incomingTab !== 'authors') {
+        setSelectedAuthor(null);
+      }
+      if (incomingTab !== 'narrators') {
+        setSelectedNarrator(null);
+      }
+      if (incomingTab === 'home') {
+        lastScrollYRef.current = 0;
+        isScrolledRef.current = false;
+        setIsScrolledPastSearch(false);
+        lastNotifiedScrolledRef.current = false;
+        onScrolledPastSearchChangeRef.current?.(false);
+      } else {
+        isScrolledRef.current = true;
+        setIsScrolledPastSearch(true);
+        lastNotifiedScrolledRef.current = true;
+        onScrolledPastSearchChangeRef.current?.(true);
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      }
+    }
+  }, [activeTab, initialTab]);
 
   useEffect(() => {
     isScrolledRef.current = isScrolledPastSearch;
+    if (lastNotifiedScrolledRef.current !== isScrolledPastSearch) {
+      lastNotifiedScrolledRef.current = isScrolledPastSearch;
+      onScrolledPastSearchChangeRef.current?.(isScrolledPastSearch);
+    }
   }, [isScrolledPastSearch]);
 
-  const handleGoToLibraryHome = () => {
-    lastScrollYRef.current = 0;
-    isScrolledRef.current = false;
-    setIsScrolledPastSearch(false);
-    onScrolledPastSearchChange?.(false);
-    window.scrollTo({ top: 0, behavior: 'instant' });
+  const handleGoToLibraryHome = useCallback(() => {
     setActiveMainTab('home');
-    setSelectedAuthor(null);
-  };
-
-  useEffect(() => {
-    onScrolledPastSearchChange?.(isScrolledPastSearch);
-  }, [isScrolledPastSearch, onScrolledPastSearchChange]);
+  }, [setActiveMainTab]);
 
   useEffect(() => {
     if (activeMainTab !== 'home') {
@@ -245,25 +303,28 @@ export default function KnowledgeBase({
     const handleScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
-          if (activeMainTab !== 'home') {
+          if (activeMainTabRef.current !== 'home') {
             if (!isScrolledRef.current) {
               setIsScrolledPastSearch(true);
               isScrolledRef.current = true;
             }
-          } else {
-            const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
-            const isScrollingUp = scrollY < lastScrollYRef.current;
-            lastScrollYRef.current = scrollY;
+            ticking = false;
+            return;
+          }
 
-            // إذا كان المستخدم قريباً جداً من قمة الصفحة
-            if (scrollY < 120) {
-              if (isScrolledRef.current) {
-                setIsScrolledPastSearch(false);
-                isScrolledRef.current = false;
-              }
-              ticking = false;
-              return;
+          const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
+          const isScrollingUp = scrollY < lastScrollYRef.current;
+          lastScrollYRef.current = scrollY;
+
+          // إذا كان المستخدم قريباً جداً من قمة الصفحة
+          if (scrollY < 120) {
+            if (isScrolledRef.current) {
+              setIsScrolledPastSearch(false);
+              isScrolledRef.current = false;
             }
+            ticking = false;
+            return;
+          }
 
             const searchEl = document.getElementById('hero-main-search-bar');
             if (searchEl) {
@@ -312,7 +373,6 @@ export default function KnowledgeBase({
                 }
               }
             }
-          }
           ticking = false;
         });
         ticking = true;
@@ -688,6 +748,17 @@ export default function KnowledgeBase({
     setView('reader');
   };
 
+  useEffect(() => {
+    const handleOpenRecent = (e: any) => {
+      const book = e.detail || recentBook;
+      if (book) {
+        handleReadBook(book, book.savedPage);
+      }
+    };
+    window.addEventListener('open_zad_recent_book', handleOpenRecent);
+    return () => window.removeEventListener('open_zad_recent_book', handleOpenRecent);
+  }, [recentBook]);
+
   if (view === 'reader' && selectedBook) {
     return (
       <>
@@ -721,15 +792,21 @@ export default function KnowledgeBase({
           }}
           recentBook={recentBook}
           onClose={() => setIsSidebarOpen(false)}
+          onNavigateGlobal={onNavigateGlobal}
+          onExit={onExit}
+          onLogin={onLogin}
           onSelectTab={(tab) => {
             setIsSidebarOpen(false);
             setView('search');
+            setSelectedAuthor(null);
+            setSelectedNarrator(null);
             if (tab === 'home') {
               handleGoToLibraryHome();
             } else {
               window.scrollTo({ top: 0, behavior: 'instant' });
               setActiveMainTab(tab);
-              setSelectedAuthor(null);
+              setIsScrolledPastSearch(true);
+              onScrolledPastSearchChange?.(true);
             }
           }}
           onReadRecentBook={(book) => {
@@ -835,13 +912,21 @@ export default function KnowledgeBase({
           }}
           recentBook={recentBook}
           onClose={() => setIsSidebarOpen(false)}
+          onNavigateGlobal={onNavigateGlobal}
+          onExit={onExit}
+          onLogin={onLogin}
           onSelectTab={(tab) => {
+            setIsSidebarOpen(false);
+            setView('search');
+            setSelectedAuthor(null);
+            setSelectedNarrator(null);
             if (tab === 'home') {
               handleGoToLibraryHome();
             } else {
               window.scrollTo({ top: 0, behavior: 'instant' });
               setActiveMainTab(tab);
-              setSelectedAuthor(null);
+              setIsScrolledPastSearch(true);
+              onScrolledPastSearchChange?.(true);
             }
           }}
           onReadRecentBook={handleReadBook}

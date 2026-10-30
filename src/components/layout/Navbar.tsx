@@ -6,7 +6,7 @@ import {
   User, LogOut, Settings, LayoutDashboard, Sun, Moon, Sparkles, LogIn, Loader2,
   Activity, Zap, Server, Cpu, Home, BookOpen, GraduationCap, MessageSquare, Mic,
   ChevronLeft, ChevronDown, ShieldCheck, Database, Video, X, BookOpenCheck, Bell, Palette, Menu,
-  Share2, Smartphone, Copy, Check, Globe, Mail
+  Share2, Smartphone, Copy, Check, Globe, Mail, Library, Layers, Users, Heart, HardDriveDownload, Bookmark
 } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import { useTheme } from '../../contexts/ThemeContext'
@@ -35,10 +35,12 @@ export default function Navbar({
   onOpenSystemObservability,
   onNavigateHome,
   activeTab = 'home',
+  librarySubTab,
+  onReadRecentBook,
   headerClassName,
 }: {
   onTryChat: () => void
-  onOpenKnowledge: () => void
+  onOpenKnowledge: (tab?: any) => void
   onOpenStudy: () => void
   onOpenLessons: () => void
   onOpenAdmin?: () => void
@@ -52,6 +54,8 @@ export default function Navbar({
   onOpenSystemObservability?: () => void
   onNavigateHome?: () => void
   activeTab?: 'home' | 'knowledge' | 'lessons' | 'study' | 'chat' | 'voice'
+  librarySubTab?: string
+  onReadRecentBook?: (book: any) => void
   headerClassName?: string
 }) {
   const [open, setOpen] = useState(false)
@@ -63,6 +67,29 @@ export default function Navbar({
   const [showThemeMenu, setShowThemeMenu] = useState(false)
   const [isAdminMenuExpanded, setIsAdminMenuExpanded] = useState(false)
   const [isMobileAdminMenuExpanded, setIsMobileAdminMenuExpanded] = useState(false)
+  const [isMobileLibraryExpanded, setIsMobileLibraryExpanded] = useState(activeTab === 'knowledge')
+  const [recentBook, setRecentBook] = useState<any | null>(null)
+
+  useEffect(() => {
+    if (activeTab === 'knowledge') {
+      setIsMobileLibraryExpanded(true)
+    }
+  }, [activeTab])
+
+  useEffect(() => {
+    if (open) {
+      try {
+        const saved = localStorage.getItem('zad_recent_read_book')
+        if (saved) {
+          setRecentBook(JSON.parse(saved))
+        } else {
+          setRecentBook(null)
+        }
+      } catch (e) {
+        setRecentBook(null)
+      }
+    }
+  }, [open])
 
   const profileMenuRef = useRef<HTMLDivElement>(null)
   const themeMenuRef = useRef<HTMLDivElement>(null)
@@ -1177,27 +1204,153 @@ export default function Navbar({
                     )}
                   </a>
 
-                  {/* المكتبة */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setOpen(false)
-                      onOpenKnowledge()
-                    }}
-                    className={`flex w-full items-center justify-between rounded-xl border px-3.5 py-2.5 text-sm active:scale-[0.99] transition-all cursor-pointer ${activeTab === 'knowledge' ? `font-bold ${getActiveNavClass()}` : `font-semibold ${getNavItemCardClass()}`}`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${activeTab === 'knowledge' ? 'brand-gradient text-white shadow-sm' : `border ${getNavIconBoxClass()}`}`}>
-                        <BookOpen size={16} />
+                  {/* المكتبة (Accordion / تفرع شجري) */}
+                  <div className="space-y-1">
+                    <div
+                      className={`flex w-full items-center justify-between rounded-xl border px-3.5 py-2.5 text-sm active:scale-[0.99] transition-all cursor-pointer ${activeTab === 'knowledge' ? `font-bold ${getActiveNavClass()}` : `font-semibold ${getNavItemCardClass()}`}`}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setOpen(false)
+                          onOpenKnowledge('home')
+                        }}
+                        className="flex-1 flex items-center gap-3 text-right cursor-pointer"
+                      >
+                        <div className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${activeTab === 'knowledge' ? 'brand-gradient text-white shadow-sm' : `border ${getNavIconBoxClass()}`}`}>
+                          <BookOpen size={16} />
+                        </div>
+                        <span>المكتبة</span>
+                      </button>
+
+                      <div className="flex items-center gap-2">
+                        {activeTab === 'knowledge' && (
+                          <span className={`h-2 w-2 rounded-full ${getActiveDotClass()}`} />
+                        )}
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setIsMobileLibraryExpanded(!isMobileLibraryExpanded)
+                          }}
+                          className="p-1 rounded-md hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                          title={isMobileLibraryExpanded ? 'طي تفرع المكتبة' : 'توسيع تفرع المكتبة'}
+                        >
+                          <motion.div
+                            animate={{ rotate: isMobileLibraryExpanded ? 180 : 0 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <ChevronDown size={16} className={isDark ? 'text-white/60' : 'text-stone-400'} />
+                          </motion.div>
+                        </button>
                       </div>
-                      <span>المكتبة</span>
                     </div>
-                    {activeTab === 'knowledge' ? (
-                      <span className={`h-2 w-2 rounded-full ${getActiveDotClass()}`} />
-                    ) : (
-                      <ChevronLeft size={16} className={isDark ? 'text-white/55' : 'text-stone-400'} />
-                    )}
-                  </button>
+
+                    {/* Sub-branch items inside Library Accordion */}
+                    <AnimatePresence initial={false}>
+                      {isMobileLibraryExpanded && (
+                        <motion.div
+                          key="nav-library-accordion"
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.25, ease: 'easeInOut' }}
+                          className="overflow-hidden"
+                        >
+                          <div className="mr-3 pr-2.5 my-1.5 border-r-2 border-primary/25 space-y-1">
+                            {[
+                              { id: 'home', label: 'رئيسية المكتبة', icon: <Library size={14} /> },
+                              { id: 'categories', label: 'الكتب والأقسام', icon: <Layers size={14} /> },
+                              { id: 'authors', label: 'المؤلفون والقرون', icon: <Users size={14} /> },
+                              { id: 'narrators', label: 'الرواة', icon: <ShieldCheck size={14} /> },
+                              { id: 'favorites', label: 'الكتب المفضلة', icon: <Heart size={14} /> },
+                              { id: 'downloads', label: 'الكتب المحمّلة', icon: <HardDriveDownload size={14} /> },
+                            ].map((subItem) => {
+                              const isSubActive = activeTab === 'knowledge' && (librarySubTab || 'home') === subItem.id
+                              return (
+                                <button
+                                  key={subItem.id}
+                                  type="button"
+                                  onClick={() => {
+                                    setOpen(false)
+                                    onOpenKnowledge(subItem.id)
+                                  }}
+                                  className={`w-full group flex items-center justify-between py-2 px-2.5 rounded-lg text-xs font-semibold transition-all cursor-pointer select-none ${
+                                    isSubActive
+                                      ? isDark
+                                        ? 'bg-white/10 text-white font-bold border border-white/15 shadow-2xs'
+                                        : 'bg-stone-100 text-stone-950 font-bold border border-stone-200/90 shadow-2xs'
+                                      : isDark
+                                        ? 'text-white/75 hover:bg-white/[0.05] hover:text-white border border-transparent'
+                                        : 'text-stone-700 hover:bg-stone-50 hover:text-stone-900 border border-transparent'
+                                  }`}
+                                >
+                                  <div className="flex items-center gap-2.5 min-w-0">
+                                    <span className={`shrink-0 transition-colors ${
+                                      isSubActive
+                                        ? isDark ? 'text-white' : 'text-stone-950'
+                                        : isDark ? 'text-white/60 group-hover:text-white' : 'text-stone-500 group-hover:text-stone-900'
+                                    }`}>
+                                      {subItem.icon}
+                                    </span>
+                                    <span className="truncate">{subItem.label}</span>
+                                  </div>
+                                  {isSubActive ? (
+                                    <span className={`h-1.5 w-1.5 rounded-full ${getActiveDotClass()}`} />
+                                  ) : (
+                                    <ChevronLeft size={13} className="opacity-40" />
+                                  )}
+                                </button>
+                              )
+                            })}
+
+                            {/* Recent Book inside Library Accordion in Navbar Drawer */}
+                            {recentBook && (
+                              <div className={`mt-2 p-2.5 rounded-xl border space-y-1.5 shadow-2xs ${
+                                isDark
+                                  ? 'bg-white/[0.03] border-white/10 text-white'
+                                  : 'bg-stone-50/90 border-stone-200 text-stone-900'
+                              }`}>
+                                <div className="flex items-center gap-1.5 text-[11px] font-bold text-amber-600 dark:text-amber-400">
+                                  <Bookmark size={13} />
+                                  <span>متابعة القراءة الأخيرة</span>
+                                </div>
+                                <h5 className="font-bold text-xs truncate">
+                                  {recentBook.title}
+                                </h5>
+                                <p className={`text-[10.5px] truncate font-medium ${
+                                  isDark ? 'text-white/60' : 'text-stone-500'
+                                }`}>
+                                  {recentBook.author}
+                                </p>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setOpen(false)
+                                    if (onReadRecentBook) {
+                                      onReadRecentBook(recentBook)
+                                    } else {
+                                      onOpenKnowledge('home')
+                                      setTimeout(() => {
+                                        window.dispatchEvent(new CustomEvent('open_zad_recent_book', { detail: recentBook }))
+                                      }, 120)
+                                    }
+                                  }}
+                                  className={`w-full py-1.5 rounded-lg font-bold text-[11px] transition-all shadow-2xs cursor-pointer ${
+                                    isDark
+                                      ? 'bg-white text-stone-950 hover:bg-stone-100'
+                                      : 'bg-stone-900 text-white hover:bg-stone-800'
+                                  }`}
+                                >
+                                  إكمال القراءة 📖
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
 
                   {/* الشروحات والدورات (Video Icon) */}
                   <button

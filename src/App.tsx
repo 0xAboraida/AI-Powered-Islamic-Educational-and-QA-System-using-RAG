@@ -1,5 +1,5 @@
 import 'regenerator-runtime/runtime'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import darkLogo from '@/assets/images/ZadDarkLogo.webp'
 import Navbar from './components/layout/Navbar'
 import Hero from './components/layout/Hero'
@@ -93,11 +93,26 @@ function AppContent() {
     isAuthenticated ? navigate('chat') : navigate('login')
   }
   const openVoice = () => isAuthenticated ? navigate('voice') : navigate('login')
-  const openKnowledge = () => {
-    setLibraryTab('home')
+  
+  const handleLibraryTabChange = useCallback((tab: MainTab) => {
+    setLibraryTab((prev: any) => (prev === tab ? prev : tab))
+  }, [])
+
+  const handleLibraryScrolledChange = useCallback((scrolled: boolean) => {
+    setIsLibraryScrolled((prev) => (prev === scrolled ? prev : scrolled))
+  }, [])
+
+  const openKnowledge = useCallback((tab: any = 'home') => {
+    setLibraryTab((prev: any) => (prev === tab ? prev : tab))
     setHasVisitedKnowledge(true)
-    navigate('knowledge')
-  }
+    if (tab !== 'home') {
+      setIsLibraryScrolled(true)
+    } else {
+      setIsLibraryScrolled(false)
+    }
+    window.scrollTo({ top: 0, behavior: 'instant' })
+    setView((prev) => (prev === 'knowledge' ? prev : 'knowledge'))
+  }, [])
   const openStudy = () => isAuthenticated ? navigate('study') : navigate('login')
   const openAdmin = () => navigate('admin')
   const openTurathRag = () => navigate('turath_rag')
@@ -258,13 +273,10 @@ function AppContent() {
               <Navbar
                 headerClassName="absolute inset-x-0 top-4 sm:top-6 z-50 px-3 sm:px-4"
                 activeTab="knowledge"
+                librarySubTab={libraryTab}
                 onNavigateHome={() => navigate('home')}
                 onTryChat={openChat}
-                onOpenKnowledge={() => {
-                  setLibraryTab('home')
-                  setIsLibraryScrolled(false)
-                  openKnowledge()
-                }}
+                onOpenKnowledge={openKnowledge}
                 onOpenStudy={openStudy}
                 onOpenAdmin={openAdmin}
                 onOpenTurathRag={openTurathRag}
@@ -291,11 +303,10 @@ function AppContent() {
                 setIsLibraryScrolled(false)
                 navigate(targetView as View)
               }}
+              activeTab={libraryTab}
               initialTab={libraryTab}
-              onTabChange={(tab) => {
-                setLibraryTab(tab)
-              }}
-              onScrolledPastSearchChange={setIsLibraryScrolled}
+              onTabChange={handleLibraryTabChange}
+              onScrolledPastSearchChange={handleLibraryScrolledChange}
             />
           </div>
         )}
