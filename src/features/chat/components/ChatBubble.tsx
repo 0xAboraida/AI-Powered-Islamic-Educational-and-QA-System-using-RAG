@@ -10,7 +10,7 @@ import zadDarkLogo from '@/assets/images/ZadDarkLogo.png'
 import type { Message, CitationDTO } from '../data'
 import { exportMessageToPdf } from '@/utils/pdfExporter'
 import { useStudy } from '@/contexts/StudyContext'
-import { useTheme } from '@/contexts/ThemeContext'
+import { useTheme, type AccentColor } from '@/contexts/ThemeContext'
 import { AudioReaderButton } from '@/components/common/AudioReaderButton'
 
 function AvatarLogo({ dark }: { dark: boolean }) {
@@ -391,6 +391,152 @@ function preprocessFrameText(frameStr: string): string {
   return text.trim();
 }
 
+function getChatBubbleThemeClasses(accentColor: AccentColor, dark: boolean) {
+  switch (accentColor) {
+    case 'amber':
+      return {
+        h2Box: dark ? 'bg-amber-500/[0.07] border-amber-400/20' : 'bg-amber-50/80 border-amber-200/70',
+        h2Bar: dark ? 'bg-amber-400' : 'bg-amber-600',
+        h2Text: dark ? 'text-amber-300' : 'text-amber-900',
+        h3Text: dark ? 'text-transparent bg-clip-text bg-gradient-to-l from-amber-300 to-amber-500' : 'text-amber-800',
+        h4Banner: dark
+          ? 'from-amber-500/10 via-amber-500/[0.04] to-transparent border-b border-amber-500/20'
+          : 'from-amber-100/80 via-amber-50/40 to-transparent border-b border-amber-200/80',
+        h4Text: dark ? 'text-transparent bg-clip-text bg-gradient-to-l from-amber-200 to-amber-400' : 'text-amber-950',
+        marker: dark ? 'marker:text-amber-400' : 'marker:text-amber-600',
+        strong: dark ? 'text-amber-300 drop-shadow-[0_0_8px_rgba(245,158,11,0.35)]' : 'text-amber-900',
+        strongTitle: dark ? 'text-amber-300 decoration-amber-400/50' : 'text-amber-900 decoration-amber-500/50',
+        strongBadge: dark ? 'bg-amber-500/10 border-amber-500/30 text-amber-300' : 'bg-amber-50 border-amber-300 text-amber-800',
+        strongFrame: dark ? 'bg-gradient-to-l from-amber-500/10 to-transparent border-amber-500/20 text-amber-300' : 'bg-gradient-to-l from-amber-50 to-transparent border-amber-200 text-amber-900',
+        del: dark ? 'bg-amber-500/10 border-amber-400/30 text-amber-300 shadow-[0_0_16px_rgba(245,158,11,0.08)]' : 'bg-amber-50 border-amber-300/70 text-amber-800 shadow-sm',
+        link: dark ? 'text-amber-400 hover:text-amber-300 font-medium transition-colors underline underline-offset-4' : 'text-amber-600 hover:text-amber-800 font-medium transition-colors underline underline-offset-4',
+        code: dark ? 'bg-amber-950/50 text-amber-200' : 'bg-amber-100/60 text-amber-950 border border-amber-200/60',
+        quoteGeneric: dark ? 'border-amber-500/50 bg-amber-500/[0.08] text-amber-50' : 'border-amber-600 bg-[#FFFDF7] text-[#78350F] shadow-sm ring-1 ring-amber-100/70',
+        mainFrameBorder: dark ? 'border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.15)]' : 'border-amber-200/60 shadow-[0_2px_12px_rgba(217,119,6,0.04)]',
+        childBox: dark
+          ? 'bg-gradient-to-br from-[#1a1205]/90 via-[#231807]/80 to-[#100a02]/95 border-amber-500/40 shadow-[0_4px_20px_rgba(245,158,11,0.12)]'
+          : 'bg-gradient-to-br from-amber-50/90 via-white to-amber-50/40 border-amber-300/90 shadow-[0_2px_15px_rgba(217,119,6,0.08)]',
+        citationBtn: dark
+          ? 'bg-amber-500/15 text-amber-300 border-amber-500/30 hover:bg-amber-500/30 hover:border-amber-400 shadow-amber-950/40'
+          : 'bg-amber-100/80 text-amber-950 border-amber-300/80 hover:bg-amber-200 hover:border-amber-400 shadow-amber-100/50',
+        citationIcon: 'text-amber-400',
+        citationBadge: dark ? 'bg-amber-400/20 text-amber-200' : 'bg-amber-200 text-amber-900',
+        popoverBox: dark ? 'bg-[#140d04]/95 border-amber-500/30 text-white shadow-black/80' : 'bg-white/95 border-amber-200 text-slate-900 shadow-amber-900/15',
+        itemBox: dark ? 'bg-white/[0.03] border-white/10' : 'bg-amber-50/50 border-amber-100',
+        bookTitle: 'text-amber-400',
+        sourceBtn: dark ? 'bg-amber-500/20 text-amber-300 border-amber-500/30 hover:bg-amber-500/30' : 'bg-amber-600 text-white border-amber-600 hover:bg-amber-700 shadow-sm',
+        hierarchyTag: dark ? 'bg-amber-950/60 text-amber-300 border border-amber-500/30 hover:bg-amber-900/90 hover:border-amber-400/80 hover:shadow-[0_0_15px_rgba(245,158,11,0.4)]' : 'bg-amber-100/90 text-amber-900 border border-amber-300/70 hover:bg-amber-200/90 hover:border-amber-400 hover:shadow-[0_0_12px_rgba(245,158,11,0.3)]',
+        userBubbleGradient: 'linear-gradient(225deg, #451a03 0%, #78350f 30%, #b45309 75%, #d97706 100%)',
+      };
+    case 'emerald':
+      return {
+        h2Box: dark ? 'bg-emerald-500/[0.07] border-emerald-400/20' : 'bg-emerald-50/80 border-emerald-200/70',
+        h2Bar: dark ? 'bg-emerald-400' : 'bg-emerald-600',
+        h2Text: dark ? 'text-emerald-300' : 'text-emerald-800',
+        h3Text: dark ? 'text-transparent bg-clip-text bg-gradient-to-l from-emerald-300 to-emerald-500' : 'text-emerald-700',
+        h4Banner: dark
+          ? 'from-emerald-500/10 via-emerald-500/[0.04] to-transparent border-b border-emerald-500/20'
+          : 'from-emerald-100/80 via-emerald-50/40 to-transparent border-b border-emerald-200/80',
+        h4Text: dark ? 'text-transparent bg-clip-text bg-gradient-to-l from-emerald-200 to-emerald-400' : 'text-emerald-900',
+        marker: dark ? 'marker:text-emerald-400' : 'marker:text-emerald-600',
+        strong: dark ? 'text-emerald-300 drop-shadow-[0_0_8px_rgba(52,211,153,0.35)]' : 'text-emerald-800',
+        strongTitle: dark ? 'text-emerald-300 decoration-emerald-400/50' : 'text-emerald-800 decoration-emerald-500/50',
+        strongBadge: dark ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
+        strongFrame: dark ? 'bg-gradient-to-l from-emerald-500/10 to-transparent border-emerald-500/20 text-emerald-300' : 'bg-gradient-to-l from-emerald-50 to-transparent border-emerald-200 text-emerald-800',
+        del: dark ? 'bg-emerald-500/10 border-emerald-400/30 text-emerald-300 shadow-[0_0_16px_rgba(16,185,129,0.08)]' : 'bg-emerald-50 border-emerald-300/70 text-emerald-800 shadow-sm',
+        link: dark ? 'text-emerald-400 hover:text-emerald-300 font-medium transition-colors underline underline-offset-4' : 'text-emerald-600 hover:text-emerald-800 font-medium transition-colors underline underline-offset-4',
+        code: dark ? 'bg-emerald-950/50 text-emerald-200' : 'bg-emerald-100/60 text-emerald-900 border border-emerald-200/60',
+        quoteGeneric: dark ? 'border-emerald-500/50 bg-emerald-500/[0.08] text-emerald-50' : 'border-emerald-600 bg-[#F7FDFB] text-[#064E3B] shadow-sm ring-1 ring-emerald-100/70',
+        mainFrameBorder: dark ? 'border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.15)]' : 'border-emerald-200/60 shadow-[0_2px_12px_rgba(16,185,129,0.04)]',
+        childBox: dark
+          ? 'bg-gradient-to-br from-[#041413]/90 via-[#06201e]/80 to-[#020b0a]/95 border-emerald-500/40 shadow-[0_4px_20px_rgba(16,185,129,0.12)]'
+          : 'bg-gradient-to-br from-emerald-50/90 via-white to-emerald-50/40 border-emerald-300/90 shadow-[0_2px_15px_rgba(16,185,129,0.08)]',
+        citationBtn: dark
+          ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/30 hover:border-emerald-400 shadow-emerald-950/40'
+          : 'bg-emerald-100/80 text-emerald-900 border-emerald-300/80 hover:bg-emerald-200 hover:border-emerald-400 shadow-emerald-100/50',
+        citationIcon: 'text-emerald-400',
+        citationBadge: dark ? 'bg-emerald-400/20 text-emerald-200' : 'bg-emerald-200 text-emerald-800',
+        popoverBox: dark ? 'bg-[#041413]/95 border-emerald-500/30 text-white shadow-black/80' : 'bg-white/95 border-emerald-200 text-slate-900 shadow-emerald-900/15',
+        itemBox: dark ? 'bg-white/[0.03] border-white/10' : 'bg-emerald-50/50 border-emerald-100',
+        bookTitle: 'text-emerald-400',
+        sourceBtn: dark ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/30' : 'bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700 shadow-sm',
+        hierarchyTag: dark ? 'bg-emerald-950/60 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-900/90 hover:border-emerald-400/80 hover:shadow-[0_0_15px_rgba(16,185,129,0.4)]' : 'bg-emerald-100/90 text-emerald-900 border border-emerald-300/70 hover:bg-emerald-200/90 hover:border-emerald-400 hover:shadow-[0_0_12px_rgba(16,185,129,0.3)]',
+        userBubbleGradient: 'linear-gradient(225deg, #042f2e 0%, #064e3b 30%, #0d9488 75%, #14b8a6 100%)',
+      };
+    case 'blue':
+      return {
+        h2Box: dark ? 'bg-blue-500/[0.07] border-blue-400/20' : 'bg-blue-50/80 border-blue-200/70',
+        h2Bar: dark ? 'bg-blue-400' : 'bg-blue-600',
+        h2Text: dark ? 'text-blue-300' : 'text-blue-900',
+        h3Text: dark ? 'text-transparent bg-clip-text bg-gradient-to-l from-blue-300 to-blue-500' : 'text-blue-700',
+        h4Banner: dark
+          ? 'from-blue-500/10 via-blue-500/[0.04] to-transparent border-b border-blue-500/20'
+          : 'from-blue-100/80 via-blue-50/40 to-transparent border-b border-blue-200/80',
+        h4Text: dark ? 'text-transparent bg-clip-text bg-gradient-to-l from-blue-200 to-blue-400' : 'text-blue-950',
+        marker: dark ? 'marker:text-blue-400' : 'marker:text-blue-600',
+        strong: dark ? 'text-blue-300 drop-shadow-[0_0_8px_rgba(59,130,246,0.35)]' : 'text-blue-900',
+        strongTitle: dark ? 'text-blue-300 decoration-blue-400/50' : 'text-blue-900 decoration-blue-500/50',
+        strongBadge: dark ? 'bg-blue-500/10 border-blue-500/30 text-blue-300' : 'bg-blue-50 border-blue-300 text-blue-800',
+        strongFrame: dark ? 'bg-gradient-to-l from-blue-500/10 to-transparent border-blue-500/20 text-blue-300' : 'bg-gradient-to-l from-blue-50 to-transparent border-blue-200 text-blue-900',
+        del: dark ? 'bg-blue-500/10 border-blue-400/30 text-blue-300 shadow-[0_0_16px_rgba(59,130,246,0.08)]' : 'bg-blue-50 border-blue-300/70 text-blue-800 shadow-sm',
+        link: dark ? 'text-blue-400 hover:text-blue-300 font-medium transition-colors underline underline-offset-4' : 'text-blue-600 hover:text-blue-800 font-medium transition-colors underline underline-offset-4',
+        code: dark ? 'bg-blue-950/50 text-blue-200' : 'bg-blue-100/60 text-blue-950 border border-blue-200/60',
+        quoteGeneric: dark ? 'border-blue-500/50 bg-blue-500/[0.08] text-blue-50' : 'border-blue-600 bg-[#F8FAFC] text-[#1E3A8A] shadow-sm ring-1 ring-blue-100/70',
+        mainFrameBorder: dark ? 'border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.15)]' : 'border-blue-200/60 shadow-[0_2px_12px_rgba(37,99,235,0.04)]',
+        childBox: dark
+          ? 'bg-gradient-to-br from-[#061226]/90 via-[#0a1b38]/80 to-[#030914]/95 border-blue-500/40 shadow-[0_4px_20px_rgba(59,130,246,0.12)]'
+          : 'bg-gradient-to-br from-blue-50/90 via-white to-blue-50/40 border-blue-300/90 shadow-[0_2px_15px_rgba(37,99,235,0.08)]',
+        citationBtn: dark
+          ? 'bg-blue-500/15 text-blue-300 border-blue-500/30 hover:bg-blue-500/30 hover:border-blue-400 shadow-blue-950/40'
+          : 'bg-blue-100/80 text-blue-950 border-blue-300/80 hover:bg-blue-200 hover:border-blue-400 shadow-blue-100/50',
+        citationIcon: 'text-blue-400',
+        citationBadge: dark ? 'bg-blue-400/20 text-blue-200' : 'bg-blue-200 text-blue-900',
+        popoverBox: dark ? 'bg-[#040e1c]/95 border-blue-500/30 text-white shadow-black/80' : 'bg-white/95 border-blue-200 text-slate-900 shadow-blue-900/15',
+        itemBox: dark ? 'bg-white/[0.03] border-white/10' : 'bg-blue-50/50 border-blue-100',
+        bookTitle: 'text-blue-400',
+        sourceBtn: dark ? 'bg-blue-500/20 text-blue-300 border-blue-500/30 hover:bg-blue-500/30' : 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700 shadow-sm',
+        hierarchyTag: dark ? 'bg-blue-950/60 text-blue-300 border border-blue-500/30 hover:bg-blue-900/90 hover:border-blue-400/80 hover:shadow-[0_0_15px_rgba(59,130,246,0.4)]' : 'bg-blue-100/90 text-blue-900 border border-blue-300/70 hover:bg-blue-200/90 hover:border-blue-400 hover:shadow-[0_0_12px_rgba(59,130,246,0.3)]',
+        userBubbleGradient: 'linear-gradient(225deg, #0f172a 0%, #1e3a8a 30%, #1d4ed8 75%, #3b82f6 100%)',
+      };
+    case 'purple':
+    default:
+      return {
+        h2Box: dark ? 'bg-purple-500/[0.07] border-purple-400/20' : 'bg-purple-50/80 border-purple-200/70',
+        h2Bar: dark ? 'bg-purple-400' : 'bg-purple-600',
+        h2Text: dark ? 'text-purple-300' : 'text-purple-800',
+        h3Text: dark ? 'text-transparent bg-clip-text bg-gradient-to-l from-purple-300 to-purple-500' : 'text-purple-700',
+        h4Banner: dark
+          ? 'from-purple-500/10 via-purple-500/[0.04] to-transparent border-b border-purple-500/20'
+          : 'from-purple-100/80 via-purple-50/40 to-transparent border-b border-purple-200/80',
+        h4Text: dark ? 'text-transparent bg-clip-text bg-gradient-to-l from-purple-200 to-purple-400' : 'text-purple-900',
+        marker: dark ? 'marker:text-purple-400' : 'marker:text-purple-600',
+        strong: dark ? 'text-purple-300 drop-shadow-[0_0_8px_rgba(168,85,247,0.35)]' : 'text-purple-800',
+        strongTitle: dark ? 'text-purple-300 decoration-purple-400/50' : 'text-purple-800 decoration-purple-500/50',
+        strongBadge: dark ? 'bg-purple-500/10 border-purple-500/30 text-purple-300' : 'bg-purple-50 border-purple-300 text-purple-700',
+        strongFrame: dark ? 'bg-gradient-to-l from-purple-500/10 to-transparent border-purple-500/20 text-purple-300' : 'bg-gradient-to-l from-purple-50 to-transparent border-purple-200 text-purple-800',
+        del: dark ? 'bg-purple-500/10 border-purple-400/30 text-purple-300 shadow-[0_0_16px_rgba(168,85,247,0.08)]' : 'bg-purple-50 border-purple-300/70 text-purple-700 shadow-sm',
+        link: dark ? 'text-purple-400 hover:text-purple-300 font-medium transition-colors underline underline-offset-4' : 'text-purple-600 hover:text-purple-800 font-medium transition-colors underline underline-offset-4',
+        code: dark ? 'bg-purple-950/50 text-purple-200' : 'bg-purple-100/60 text-purple-900 border border-purple-200/60',
+        quoteGeneric: dark ? 'border-purple-500/50 bg-purple-500/[0.08] text-purple-50' : 'border-purple-600 bg-[#FDFBF7] text-[#1E1B4B] shadow-sm ring-1 ring-purple-100/70',
+        mainFrameBorder: dark ? 'border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.15)]' : 'border-purple-200/50 shadow-[0_2px_12px_rgba(124,58,237,0.03)]',
+        childBox: dark
+          ? 'bg-gradient-to-br from-[#16062b]/80 via-[#100321]/80 to-[#0a0216]/90 border-purple-500/40 shadow-[0_4px_20px_rgba(168,85,247,0.12)]'
+          : 'bg-gradient-to-br from-purple-50/90 via-white to-purple-50/40 border-purple-300/90 shadow-[0_2px_15px_rgba(124,58,237,0.08)]',
+        citationBtn: dark
+          ? 'bg-purple-500/15 text-purple-300 border-purple-500/30 hover:bg-purple-500/30 hover:border-purple-400 shadow-purple-950/40'
+          : 'bg-purple-100/80 text-purple-900 border-purple-300/80 hover:bg-purple-200 hover:border-purple-400 shadow-purple-100/50',
+        citationIcon: 'text-purple-400',
+        citationBadge: dark ? 'bg-purple-400/20 text-purple-200' : 'bg-purple-200 text-purple-800',
+        popoverBox: dark ? 'bg-[#0f041c]/95 border-purple-500/30 text-white shadow-black/80' : 'bg-white/95 border-purple-200 text-slate-900 shadow-purple-900/15',
+        itemBox: dark ? 'bg-white/[0.03] border-white/10' : 'bg-purple-50/50 border-purple-100',
+        bookTitle: 'text-purple-400',
+        sourceBtn: dark ? 'bg-purple-500/20 text-purple-300 border-purple-500/30 hover:bg-purple-500/30' : 'bg-purple-600 text-white border-purple-600 hover:bg-purple-700 shadow-sm',
+        hierarchyTag: dark ? 'bg-purple-950/60 text-purple-300 border border-purple-500/30 hover:bg-purple-900/90 hover:border-purple-400/80 hover:shadow-[0_0_15px_rgba(168,85,247,0.4)]' : 'bg-purple-100/90 text-purple-900 border border-purple-300/70 hover:bg-purple-200/90 hover:border-purple-400 hover:shadow-[0_0_12px_rgba(168,85,247,0.3)]',
+        userBubbleGradient: 'linear-gradient(225deg, #2e0854 0%, #4a044e 30%, #7e22ce 75%, #a855f7 100%)',
+      };
+  }
+}
+
 export function Bubble({
   message,
   dark,
@@ -406,6 +552,7 @@ export function Bubble({
 }) {
   const isUser = message.role === 'user'
   const { accentColor } = useTheme()
+  const theme = getChatBubbleThemeClasses(accentColor, dark)
 
   let activeLessonBreadcrumb: string | undefined = lessonTitle
   try {
@@ -505,18 +652,13 @@ export function Bubble({
       ),
       h2: ({ node, ...props }: any) => (
         <div
-          className={`flex items-center gap-2.5 mt-5 mb-3 px-3 py-2 rounded-xl border ${dark
-            ? 'bg-emerald-500/[0.06] border-emerald-400/15'
-            : 'bg-emerald-50/80 border-emerald-200/70'
-            }`}
+          className={`flex items-center gap-2.5 mt-5 mb-3 px-3 py-2 rounded-xl border ${theme.h2Box}`}
         >
           <span
-            className={`w-1 h-5 rounded-full flex-shrink-0 ${dark ? 'bg-emerald-400' : 'bg-emerald-600'
-              }`}
+            className={`w-1 h-5 rounded-full flex-shrink-0 ${theme.h2Bar}`}
           />
           <h2
-            className={`text-[17px] md:text-[18px] font-bold ${dark ? 'text-emerald-300' : 'text-emerald-700'
-              }`}
+            className={`text-[17px] md:text-[18px] font-bold ${theme.h2Text}`}
             {...props}
           />
         </div>
@@ -529,26 +671,17 @@ export function Bubble({
             }`}
         >
           <h3
-            className={`text-[19px] font-bold ${dark
-              ? 'text-transparent bg-clip-text bg-gradient-to-l from-emerald-300 to-emerald-500'
-              : 'text-purple-700'
-              }`}
+            className={`text-[19px] font-bold ${theme.h3Text}`}
             {...props}
           />
         </div>
       ),
       h4: ({ node, ...props }: any) => (
         <div
-          className={`flex items-center gap-2 mb-4 px-4 sm:px-5 py-3 -mx-4 sm:-mx-5 -mt-4 sm:-mt-5 bg-gradient-to-l ${dark
-            ? 'from-purple-500/10 via-purple-500/[0.04] to-transparent border-b border-purple-500/20'
-            : 'from-purple-100/80 via-purple-50/40 to-transparent border-b border-purple-200/80'
-            }`}
+          className={`flex items-center gap-2 mb-4 px-4 sm:px-5 py-3 -mx-4 sm:-mx-5 -mt-4 sm:-mt-5 bg-gradient-to-l ${theme.h4Banner}`}
         >
           <h4
-            className={`text-[16px] md:text-[17px] font-extrabold ${dark
-              ? 'text-transparent bg-clip-text bg-gradient-to-l from-emerald-200 to-emerald-400'
-              : 'text-purple-900'
-              }`}
+            className={`text-[16px] md:text-[17px] font-extrabold ${theme.h4Text}`}
             {...props}
           />
         </div>
@@ -561,11 +694,11 @@ export function Bubble({
         />
       ),
       ul: ({ node, ...props }: any) => (
-        <ul className={`list-disc list-outside pr-4 sm:pr-6 [&_ul]:pr-2 [&_ol]:pr-2 sm:[&_ul]:pr-6 sm:[&_ol]:pr-6 mr-0 sm:mr-2 mb-4 space-y-3 ${dark ? 'marker:text-emerald-400' : 'marker:text-purple-600'}`} {...props} />
+        <ul className={`list-disc list-outside pr-4 sm:pr-6 [&_ul]:pr-2 [&_ol]:pr-2 sm:[&_ul]:pr-6 sm:[&_ol]:pr-6 mr-0 sm:mr-2 mb-4 space-y-3 ${theme.marker}`} {...props} />
       ),
       ol: ({ node, ...props }: any) => (
         <ol
-          className={`list-decimal list-outside pr-4 sm:pr-6 [&_ul]:pr-2 [&_ol]:pr-2 sm:[&_ul]:pr-6 sm:[&_ol]:pr-6 mr-0 sm:mr-2 mb-4 space-y-3 font-semibold ${dark ? 'marker:text-emerald-400' : 'marker:text-purple-600'}`}
+          className={`list-decimal list-outside pr-4 sm:pr-6 [&_ul]:pr-2 [&_ol]:pr-2 sm:[&_ul]:pr-6 sm:[&_ol]:pr-6 mr-0 sm:mr-2 mb-4 space-y-3 font-semibold ${theme.marker}`}
           {...props}
         />
       ),
@@ -580,10 +713,7 @@ export function Bubble({
         if (text.includes('ZAD_TITLE_') || text.includes('__TITLE__')) {
           return (
             <strong
-              className={`font-bold underline underline-offset-[6px] decoration-[1.5px] ${dark
-                ? 'text-emerald-300 decoration-emerald-400/50'
-                : 'text-purple-800 decoration-purple-500/50'
-                }`}
+              className={`font-bold underline underline-offset-[6px] decoration-[1.5px] ${theme.strongTitle}`}
             >
               {text.replace(/ZAD_TITLE_/g, '').replace(/__TITLE__/g, '')}
             </strong>
@@ -592,10 +722,7 @@ export function Bubble({
         if (text.includes('ZAD_BADGE_') || text.includes('__BADGE__')) {
           return (
             <strong
-              className={`font-bold inline-block px-2.5 py-0.5 mx-1 rounded-md border text-[13px] md:text-[14px] ${dark
-                ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-                : 'bg-purple-50 border-purple-300 text-purple-700'
-                }`}
+              className={`font-bold inline-block px-2.5 py-0.5 mx-1 rounded-md border text-[13px] md:text-[14px] ${theme.strongBadge}`}
             >
               {text.replace(/ZAD_BADGE_/g, '').replace(/__BADGE__/g, '')}
             </strong>
@@ -604,10 +731,7 @@ export function Bubble({
         if (text.includes('ZAD_FRAME_') || text.includes('__FRAME__')) {
           return (
             <strong
-              className={`inline-flex items-center mb-2 mt-3 px-4 py-1.5 rounded-full border border-b-[2.5px] font-extrabold text-[15.5px] shadow-sm max-w-full leading-tight ${dark
-                ? 'bg-gradient-to-l from-emerald-500/10 to-transparent border-emerald-500/20 text-emerald-300'
-                : 'bg-gradient-to-l from-purple-50 to-transparent border-purple-200 text-purple-800'
-                }`}
+              className={`inline-flex items-center mb-2 mt-3 px-4 py-1.5 rounded-full border border-b-[2.5px] font-extrabold text-[15.5px] shadow-sm max-w-full leading-tight ${theme.strongFrame}`}
             >
               <span>{text.replace(/ZAD_FRAME_/g, '').replace(/__FRAME__/g, '')}</span>
             </strong>
@@ -615,10 +739,7 @@ export function Bubble({
         }
         return (
           <strong
-            className={`font-bold ${dark
-              ? 'text-emerald-300 drop-shadow-[0_0_8px_rgba(52,211,153,0.35)]'
-              : 'text-purple-800'
-              }`}
+            className={`font-bold ${theme.strong}`}
             {...props}
           />
         );
@@ -637,10 +758,7 @@ export function Bubble({
       del: ({ node, ...props }: any) => {
         return (
           <span
-            className={`inline-flex items-center mx-1 px-3 py-1 rounded-lg border align-middle font-bold text-[13px] md:text-[14px] ${dark
-              ? 'bg-emerald-500/10 border-emerald-400/30 text-emerald-300 shadow-[0_0_16px_rgba(16,185,129,0.08)]'
-              : 'bg-purple-50 border-purple-300/70 text-purple-700 shadow-sm'
-              }`}
+            className={`inline-flex items-center mx-1 px-3 py-1 rounded-lg border align-middle font-bold text-[13px] md:text-[14px] ${theme.del}`}
             {...props}
           />
         );
@@ -693,8 +811,8 @@ export function Bubble({
             label: 'مرجع',
           },
           generic: {
-            dark: 'border-emerald-500/50 bg-emerald-500/[0.08] text-emerald-50',
-            light: 'border-purple-600 bg-[#FDFBF7] text-[#1E1B4B] shadow-sm ring-1 ring-purple-100/70',
+            dark: theme.quoteGeneric,
+            light: theme.quoteGeneric,
             icon: <FileText className="w-[18px] h-[18px]" strokeWidth={2.5} />,
             label: 'اقتباس',
           },
@@ -755,7 +873,7 @@ export function Bubble({
         }
         return (
           <a
-            className={dark ? "text-emerald-400 hover:text-emerald-300 font-medium transition-colors underline underline-offset-4" : "text-purple-600 hover:text-purple-800 font-medium transition-colors underline underline-offset-4"}
+            className={theme.link}
             target="_blank"
             rel="noopener noreferrer"
             href={href}
@@ -768,21 +886,21 @@ export function Bubble({
 
       code: ({ node, ...props }: any) => (
         <code
-          className={`px-1.5 py-0.5 rounded-md text-sm font-mono ${dark
-            ? 'bg-emerald-950/50 text-emerald-200'
-            : 'bg-purple-100/60 text-purple-900 border border-purple-200/60'
-            }`}
+          className={`px-1.5 py-0.5 rounded-md text-sm font-mono ${theme.code}`}
           {...props}
         />
       ),
     };
-  }, [dark, message.citations]);
+  }, [dark, message.citations, accentColor]);
 
   return (
     <div className={`flex w-full min-w-0 animate-in fade-in slide-in-from-bottom-2 duration-500 ${isUser ? 'justify-start' : 'justify-end'}`}>
       <div className={`flex min-w-0 gap-1.5 sm:gap-3 w-full flex-col ${isUser ? 'items-start' : 'items-end'}`}>
         {isUser ? (
-          <div className="flex h-9 w-9 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full brand-gradient text-white shadow-lg shadow-primary/30">
+          <div
+            className="flex h-9 w-9 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full text-white shadow-lg shadow-primary/30"
+            style={{ background: theme.userBubbleGradient }}
+          >
             <User size={18} className="sm:hidden" strokeWidth={2.5} />
             <User size={22} className="hidden sm:block" strokeWidth={2.5} />
           </div>
@@ -792,7 +910,10 @@ export function Bubble({
           </span>
         )}
         {isUser ? (
-          <div className="rounded-[20px] sm:rounded-[24px] px-3.5 sm:px-5 py-2.5 sm:py-3.5 text-sm sm:text-[15px] leading-relaxed shadow-sm brand-gradient rounded-tr-none text-white whitespace-pre-line break-words">
+          <div
+            className="rounded-[20px] sm:rounded-[24px] px-3.5 sm:px-5 py-2.5 sm:py-3.5 text-sm sm:text-[15px] leading-relaxed shadow-sm rounded-tr-none text-white whitespace-pre-line break-words"
+            style={{ background: theme.userBubbleGradient }}
+          >
             {message.text}
           </div>
         ) : (
@@ -817,7 +938,7 @@ export function Bubble({
                     key={idx}
                     className={`p-3.5 sm:p-5 rounded-xl sm:rounded-2xl border flex flex-col gap-2 ${dark
                       ? 'bg-white/[0.02] border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.15)]'
-                      : 'bg-white border-purple-200/50 shadow-[0_2px_12px_rgba(124,58,237,0.03)]'
+                      : `bg-white ${theme.mainFrameBorder}`
                       }`}
                   >
                     {mainFrame.content.trim().length > 0 && (
@@ -836,10 +957,7 @@ export function Bubble({
                         {mainFrame.children.map((childContent, cIdx) => (
                           <div
                             key={cIdx}
-                            className={`p-4 sm:p-5 rounded-2xl border ${dark
-                              ? 'bg-gradient-to-br from-[#16062b]/80 via-[#100321]/80 to-[#0a0216]/90 border-purple-500/40 shadow-[0_4px_20px_rgba(168,85,247,0.12)]'
-                              : 'bg-gradient-to-br from-purple-50/90 via-white to-purple-50/40 border-purple-300/90 shadow-[0_2px_15px_rgba(124,58,237,0.08)]'
-                              }`}
+                            className={`p-4 sm:p-5 rounded-2xl border ${theme.childBox}`}
                           >
                             <div dir="rtl" className="w-full text-right">
                               <ReactMarkdown
@@ -906,7 +1024,7 @@ export function Bubble({
                     } ${isExportingPDF ? 'opacity-50 cursor-wait' : ''}`}
                   >
                     {isExportingPDF ? (
-                      <Loader2 size={14} className="animate-spin text-purple-400" />
+                      <Loader2 size={14} className="animate-spin text-primary" />
                     ) : (
                       <Download size={14} strokeWidth={2.2} />
                     )}
@@ -1041,6 +1159,8 @@ function getCitation(citations: CitationDTO[] | Record<string, CitationDTO> | un
 }
 
 function CitationPill({ ids, citations, dark }: { ids: number[]; citations?: CitationDTO[] | Record<string, CitationDTO>; dark: boolean }) {
+  const { accentColor } = useTheme();
+  const theme = getChatBubbleThemeClasses(accentColor, dark);
   const [isOpen, setIsOpen] = useState(false);
   const pillRef = useRef<HTMLSpanElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -1103,15 +1223,12 @@ function CitationPill({ ids, citations, dark }: { ids: number[]; citations?: Cit
           e.stopPropagation();
           setIsOpen(prev => !prev);
         }}
-        className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg border text-[12px] font-semibold transition-all duration-200 ease-out cursor-pointer shadow-sm hover:scale-[1.02] active:scale-[0.98] ${dark
-          ? 'bg-purple-500/15 text-purple-300 border-purple-500/30 hover:bg-purple-500/30 hover:border-purple-400 shadow-purple-950/40'
-          : 'bg-purple-100/80 text-purple-900 border-purple-300/80 hover:bg-purple-200 hover:border-purple-400 shadow-purple-100/50'
-          }`}
+        className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg border text-[12px] font-semibold transition-all duration-200 ease-out cursor-pointer shadow-sm hover:scale-[1.02] active:scale-[0.98] ${theme.citationBtn}`}
       >
-        <BookOpen size={12} className="shrink-0 text-purple-400" strokeWidth={2.5} />
+        <BookOpen size={12} className={`shrink-0 ${theme.citationIcon}`} strokeWidth={2.5} />
         <span className="font-sans font-bold">{truncatedTitle}</span>
         {extraCount > 0 && (
-          <span className={`px-1.5 py-0.2 rounded text-[10.5px] font-extrabold ${dark ? 'bg-purple-400/20 text-purple-200' : 'bg-purple-200 text-purple-800'}`}>
+          <span className={`px-1.5 py-0.2 rounded text-[10.5px] font-extrabold ${theme.citationBadge}`}>
             +{extraCount}
           </span>
         )}
@@ -1135,8 +1252,7 @@ function CitationPill({ ids, citations, dark }: { ids: number[]; citations?: Cit
             onMouseLeave={handleMouseLeave}
           >
             <div
-              className={`p-3.5 rounded-2xl border shadow-2xl backdrop-blur-xl transition-shadow duration-300 ${dark ? 'bg-[#0f041c]/95 border-purple-500/30 text-white shadow-black/80' : 'bg-white/95 border-purple-200 text-slate-900 shadow-purple-900/15'
-                }`}
+              className={`p-3.5 rounded-2xl border shadow-2xl backdrop-blur-xl transition-shadow duration-300 ${theme.popoverBox}`}
             >
               <div className="flex flex-col gap-3 max-h-72 overflow-y-auto custom-scrollbar pr-1">
                 {matchingCitations.map((cit, idx) => {
@@ -1151,12 +1267,11 @@ function CitationPill({ ids, citations, dark }: { ids: number[]; citations?: Cit
                   return (
                     <div
                       key={idx}
-                      className={`p-2.5 rounded-xl border flex flex-col gap-2 ${dark ? 'bg-white/[0.03] border-white/10' : 'bg-purple-50/50 border-purple-100'
-                        }`}
+                      className={`p-2.5 rounded-xl border flex flex-col gap-2 ${theme.itemBox}`}
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex flex-col min-w-0">
-                          <span className="font-bold text-xs sm:text-sm text-purple-400 font-sans leading-snug break-words">
+                          <span className={`font-bold text-xs sm:text-sm font-sans leading-snug break-words ${theme.bookTitle}`}>
                             {bTitle}
                           </span>
                           {author && (
@@ -1170,10 +1285,7 @@ function CitationPill({ ids, citations, dark }: { ids: number[]; citations?: Cit
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={(e) => e.stopPropagation()}
-                          className={`shrink-0 flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-lg border transition-all hover:scale-105 ${dark
-                            ? 'bg-purple-500/20 text-purple-300 border-purple-500/30 hover:bg-purple-500/30'
-                            : 'bg-purple-600 text-white border-purple-600 hover:bg-purple-700 shadow-sm'
-                            }`}
+                          className={`shrink-0 flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-lg border transition-all hover:scale-105 ${theme.sourceBtn}`}
                         >
                           <span>عرض المصدر</span>
                           <ExternalLink size={11} />
@@ -1194,10 +1306,7 @@ function CitationPill({ ids, citations, dark }: { ids: number[]; citations?: Cit
                         {cit.hierarchy && (
                           <span
                             title={cit.hierarchy}
-                            className={`inline-block px-2.5 py-0.5 rounded-lg text-[10.5px] font-semibold leading-relaxed transition-all duration-300 ease-out cursor-pointer text-ellipsis overflow-hidden whitespace-nowrap max-w-[180px] sm:max-w-[210px] hover:max-w-full hover:whitespace-normal hover:overflow-visible ${dark
-                              ? 'bg-purple-950/60 text-purple-300 border border-purple-500/30 hover:bg-purple-900/90 hover:border-purple-400/80 hover:shadow-[0_0_15px_rgba(168,85,247,0.4)]'
-                              : 'bg-purple-100/90 text-purple-900 border border-purple-300/70 hover:bg-purple-200/90 hover:border-purple-400 hover:shadow-[0_0_12px_rgba(168,85,247,0.3)]'
-                              }`}
+                            className={`inline-block px-2.5 py-0.5 rounded-lg text-[10.5px] font-semibold leading-relaxed transition-all duration-300 ease-out cursor-pointer text-ellipsis overflow-hidden whitespace-nowrap max-w-[180px] sm:max-w-[210px] hover:max-w-full hover:whitespace-normal hover:overflow-visible ${theme.hierarchyTag}`}
                           >
                             {cit.hierarchy}
                           </span>
