@@ -921,14 +921,14 @@ export function AuthorsView({
           </div>
 
           {/* UNIFIED AUTHOR'S BOOKS SECTION CARD (Matching the author profile frame style) */}
-          <div className="rounded-3xl border border-brand-magenta/25 dark:border-white/10 bg-gradient-to-br from-brand-magenta/[0.04] via-white to-brand-blue/[0.03] dark:from-[#131726] dark:via-[#121624] dark:to-[#17102b] p-6 sm:p-8 shadow-sm transition-all relative overflow-hidden backdrop-blur-md space-y-6">
+          <div className="rounded-2xl sm:rounded-3xl border border-brand-magenta/25 dark:border-white/10 bg-gradient-to-br from-brand-magenta/[0.04] via-white to-brand-blue/[0.03] dark:from-[#131726] dark:via-[#121624] dark:to-[#17102b] p-2.5 sm:p-6 lg:p-8 shadow-sm transition-all relative overflow-hidden backdrop-blur-md space-y-4 sm:space-y-6">
 
             {/* Ambient background glows */}
             <div className="pointer-events-none absolute -left-16 -top-16 w-48 h-48 rounded-full bg-brand-magenta/10 blur-3xl" />
             <div className="pointer-events-none absolute -right-16 -bottom-16 w-48 h-48 rounded-full bg-brand-blue/10 blur-3xl" />
 
             {/* Header: Title, Count Badge, and Layout Toggle */}
-            <div className="relative z-10 flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-200/60 dark:border-white/10">
+            <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 sm:gap-4 pb-3 sm:pb-4 border-b border-slate-200/60 dark:border-white/10 px-1 sm:px-0">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-xl bg-brand-magenta/15 text-brand-magenta flex items-center justify-center shrink-0">
                   <BookOpen className="w-4 h-4" />
@@ -1026,10 +1026,7 @@ export function AuthorsView({
 
                     {/* Category Dropdown Filteration */}
                     {authorCategories.length > 0 && (
-                      <>
-                        <div className={`w-px h-5 sm:h-6 shrink-0 ${isDark ? 'bg-white/20' : 'bg-stone-300/60'}`} />
-
-                        <div className="relative" ref={authorCatDropdownRef}>
+                      <div className="relative" ref={authorCatDropdownRef}>
                           <button
                             type="button"
                             onClick={() => setIsAuthorCatDropdownOpen(!isAuthorCatDropdownOpen)}
@@ -1121,8 +1118,7 @@ export function AuthorsView({
                             </div>
                           )}
                         </div>
-                      </>
-                    )}
+                      )}
 
                   </div>
                 </div>

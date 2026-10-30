@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { 
   Heart, 
   Search, 
@@ -53,14 +54,18 @@ export default function FavoriteBooksView({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Extract unique categories from favorite books
-  const availableCategories = useMemo(() => {
+  // Extract unique categories and counts from favorite books (only available categories)
+  const { availableCategories, categoryCounts } = useMemo(() => {
     const cats = new Set<string>();
+    const map = new Map<string, number>();
     favoriteBooks.forEach(b => {
-      const c = b.category;
-      if (c) cats.add(c);
+      const c = b.category || (b as any).cat_name;
+      if (c) {
+        cats.add(c);
+        map.set(c, (map.get(c) || 0) + 1);
+      }
     });
-    return Array.from(cats);
+    return { availableCategories: Array.from(cats), categoryCounts: map };
   }, [favoriteBooks]);
 
   // Filter books by query and category
@@ -184,7 +189,7 @@ export default function FavoriteBooksView({
   return (
     <div className="animate-in fade-in duration-300 space-y-6" dir="rtl">
       {/* 1. In-Page Floating Search Console (مطابق تماماً للأقسام والمؤلفين) */}
-      <div id="favorites-search-bar" className="max-w-4xl mx-auto w-full">
+      <div id="favorites-search-bar" className={`max-w-4xl mx-auto w-full relative transition-all ${isCategoryPickerOpen ? 'z-50' : 'z-30'}`}>
         <div className={`relative rounded-2xl md:rounded-full transition-all duration-300 w-full ${getHeroSearchContainerStyle()}`}>
           <div className="flex items-center gap-2 sm:gap-3 px-3.5 sm:px-4 py-2 sm:py-2.5">
             {/* Circle Search Button */}
@@ -219,103 +224,103 @@ export default function FavoriteBooksView({
               </button>
             )}
 
-            {/* Subtle Divider (Desktop only) */}
-            <div className={`w-px shrink-0 ${isDark ? 'bg-white/20' : 'bg-stone-400/50'} h-6 sm:h-7 hidden md:block`} />
-
-            {/* Category Dropdown (تصفية القسم - يظهر في الديسكتوب فقط) */}
-            <div className="relative hidden md:block" ref={categoryPickerRef}>
-              <button
-                type="button"
-                onClick={() => setIsCategoryPickerOpen(!isCategoryPickerOpen)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all border cursor-pointer ${
-                  selectedCategory !== 'all' 
-                    ? getFilterPillActiveStyle() 
-                    : 'bg-transparent border-transparent hover:bg-black/5 dark:hover:bg-white/10 text-stone-700 dark:text-stone-300'
-                }`}
-                title="تصفية حسب القسم"
-              >
-                <Layers className="w-3.5 h-3.5 text-rose-500 shrink-0" />
-                <span className="truncate max-w-[120px]">
-                  {selectedCategory === 'all' ? 'القسم: الكل' : selectedCategory}
-                </span>
-                <ChevronDown className={`w-3 h-3 transition-transform ${isCategoryPickerOpen ? 'rotate-180' : ''}`} />
-              </button>
-
-              {/* Category Dropdown Menu */}
-              {isCategoryPickerOpen && (
-                <div className={`absolute left-0 mt-2 w-56 rounded-2xl p-1.5 border shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150 max-h-72 overflow-y-auto ${getPopoverStyle()}`}>
-                  <div className="text-[11px] font-bold text-muted-foreground px-3 py-1.5 mb-1 border-b border-slate-100 dark:border-white/5">
-                    تصفية حسب أقسام المفضلة
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedCategory('all');
-                      setIsCategoryPickerOpen(false);
-                    }}
-                    className={`w-full text-right px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between cursor-pointer ${
-                      selectedCategory === 'all'
-                        ? 'bg-rose-500/15 text-rose-800 dark:text-rose-200 font-black'
-                        : 'hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-300'
-                    }`}
-                  >
-                    <span>الكل ({favoriteBooks.length})</span>
-                    {selectedCategory === 'all' && <Check className="w-3.5 h-3.5 text-rose-500" />}
-                  </button>
-                  {availableCategories.map((cat) => (
-                    <button
-                      key={cat}
-                      type="button"
-                      onClick={() => {
-                        setSelectedCategory(cat);
-                        setIsCategoryPickerOpen(false);
+            {/* Category Dropdown (تصفية القسم - مدمج داخل شريط البحث بدون خط فاصل) */}
+            {availableCategories.length > 0 && (
+              <div className="relative" ref={categoryPickerRef}>
+                <button
+                  type="button"
+                  onClick={() => setIsCategoryPickerOpen(!isCategoryPickerOpen)}
+                  className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 h-[30px] sm:h-[34px] rounded-full text-xs font-bold transition-all duration-200 border cursor-pointer shrink-0 active:scale-95 ${
+                    selectedCategory !== 'all' 
+                      ? getFilterPillActiveStyle() 
+                      : isDark
+                        ? 'bg-white/10 hover:bg-white/20 border-white/20 text-white backdrop-blur-md'
+                        : 'bg-white/40 hover:bg-white/60 border-white/60 hover:border-white text-stone-900 font-bold backdrop-blur-md shadow-2xs'
+                  }`}
+                  title="تصفية حسب أقسام المفضلة"
+                >
+                  <span className="truncate max-w-[85px] sm:max-w-[130px]">
+                    {selectedCategory === 'all' ? 'كل الأقسام' : selectedCategory}
+                  </span>
+                  {selectedCategory !== 'all' ? (
+                    <span
+                      role="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedCategory('all');
                       }}
-                      className={`w-full text-right px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between cursor-pointer ${
-                        selectedCategory === cat
-                          ? 'bg-rose-500/15 text-rose-800 dark:text-rose-200 font-black'
-                          : 'hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-300'
-                      }`}
+                      className="w-3.5 h-3.5 rounded-full flex items-center justify-center transition-all ml-0.5 cursor-pointer shrink-0 bg-black/10 hover:bg-black/20 dark:bg-white/20 dark:hover:bg-white/30"
+                      title="إلغاء التصفية"
                     >
-                      <span className="truncate">{cat}</span>
-                      {selectedCategory === cat && <Check className="w-3.5 h-3.5 text-rose-500" />}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+                      <X className="w-2.5 h-2.5" />
+                    </span>
+                  ) : (
+                    <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${isCategoryPickerOpen ? 'rotate-180' : ''}`} />
+                  )}
+                </button>
+
+                {/* Category Dropdown Menu with Open/Collapse Animation */}
+                <AnimatePresence>
+                  {isCategoryPickerOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.94, y: -8 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.94, y: -8 }}
+                      transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+                      className={`absolute left-0 mt-2 w-56 sm:w-60 rounded-2xl p-1.5 border shadow-2xl z-50 origin-top-left backdrop-blur-2xl max-h-72 overflow-y-auto ${getPopoverStyle()}`}
+                    >
+                      <div className="flex items-center justify-between px-3 py-1.5 mb-1 border-b border-slate-100 dark:border-white/5 text-[11px] font-bold text-muted-foreground">
+                        <span>أقسام الكتب المفضلة</span>
+                        <span className="text-[10px] font-mono opacity-80">{availableCategories.length} قسم</span>
+                      </div>
+
+                      <div className="space-y-0.5">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedCategory('all');
+                            setIsCategoryPickerOpen(false);
+                          }}
+                          className={`w-full text-right px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between cursor-pointer ${
+                            selectedCategory === 'all'
+                              ? 'bg-rose-500/15 text-rose-800 dark:text-rose-200 font-black'
+                              : 'hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-300'
+                          }`}
+                        >
+                          <span>كل الأقسام</span>
+                          <span className="text-[11px] font-mono opacity-75">({favoriteBooks.length})</span>
+                        </button>
+
+                        {availableCategories.map((cat) => {
+                          const count = categoryCounts.get(cat) || 0;
+                          const isSel = selectedCategory === cat;
+                          return (
+                            <button
+                              key={cat}
+                              type="button"
+                              onClick={() => {
+                                setSelectedCategory(cat);
+                                setIsCategoryPickerOpen(false);
+                              }}
+                              className={`w-full text-right px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between cursor-pointer ${
+                                isSel
+                                  ? 'bg-rose-500/15 text-rose-800 dark:text-rose-200 font-black'
+                                  : 'hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-300'
+                              }`}
+                            >
+                              <span className="truncate">{cat}</span>
+                              <span className="text-[11px] font-mono opacity-75 shrink-0 mr-2">({count})</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
           </div>
         </div>
-
-        {/* Mobile Category Filter Chips (تصفية القسم في الموبايل تحت شريط البحث) */}
-        {availableCategories.length > 0 && (
-          <div className="flex md:hidden items-center gap-1.5 overflow-x-auto no-scrollbar py-1 mt-2 px-0.5">
-            <button
-              type="button"
-              onClick={() => setSelectedCategory('all')}
-              className={`shrink-0 px-3 py-1 rounded-xl text-xs font-bold transition-all border active:scale-95 cursor-pointer select-none ${
-                selectedCategory === 'all'
-                  ? 'bg-rose-500/20 text-rose-800 dark:text-rose-200 border-rose-500/40 font-black'
-                  : 'bg-slate-100/80 dark:bg-white/5 border-slate-200/60 dark:border-white/10 text-slate-700 dark:text-slate-300'
-              }`}
-            >
-              جميع الأقسام ({favoriteBooks.length})
-            </button>
-            {availableCategories.map((cat) => (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => setSelectedCategory(cat)}
-                className={`shrink-0 px-3 py-1 rounded-xl text-xs font-bold transition-all border active:scale-95 cursor-pointer select-none ${
-                  selectedCategory === cat
-                    ? 'bg-rose-500/20 text-rose-800 dark:text-rose-200 border-rose-500/40 font-black'
-                    : 'bg-slate-100/80 dark:bg-white/5 border-slate-200/60 dark:border-white/10 text-slate-700 dark:text-slate-300'
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-        )}
       </div>
 
       {/* 2. Header & Layout Toggle Bar (يظهر في الشاشات الكبيرة فقط ومخفي في الهاتف) */}

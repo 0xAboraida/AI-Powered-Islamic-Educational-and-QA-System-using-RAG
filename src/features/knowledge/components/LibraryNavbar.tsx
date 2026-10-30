@@ -228,6 +228,24 @@ export const LibraryNavbar: React.FC<LibraryNavbarProps> = ({
     }
   };
 
+  const getZadWordClass = () => {
+    switch (accentColor) {
+      case 'emerald':
+        return isDark ? 'text-teal-400 font-black' : 'text-teal-700 font-black';
+      case 'amber':
+        return isDark ? 'text-[#dfbf83] font-black' : 'text-[#8a652a] font-black';
+      case 'blue':
+        return isDark
+          ? 'bg-gradient-to-l from-[#38bdf8] via-[#60a5fa] to-[#2563eb] bg-clip-text text-transparent font-black drop-shadow-[0_2px_10px_rgba(37,99,235,0.45)]'
+          : 'bg-gradient-to-l from-[#0284c7] via-[#1d4ed8] to-[#1e40af] bg-clip-text text-transparent font-black';
+      case 'purple':
+      default:
+        return isDark
+          ? 'bg-gradient-to-l from-[#c084fc] via-[#9d32ec] to-[#801bcc] bg-clip-text text-transparent font-black drop-shadow-[0_2px_10px_rgba(157,50,236,0.4)]'
+          : 'bg-gradient-to-l from-[#7b1fa2] via-[#8e24aa] to-[#5e1482] bg-clip-text text-transparent font-black';
+    }
+  };
+
   const isCatalogTab = ['categories', 'authors', 'narrators', 'favorites', 'downloads'].includes(activeMainTab as string);
 
   const getCatalogTabActiveStyle = () => {
@@ -406,19 +424,19 @@ export const LibraryNavbar: React.FC<LibraryNavbarProps> = ({
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }
             }}
-            className="flex items-center gap-2 cursor-pointer group select-none"
+            className="flex items-center gap-2 sm:gap-2.5 cursor-pointer group select-none"
             title="الرئيسية"
           >
             {accentColor === 'purple' ? (
               <img
                 src={darkLogo}
                 alt="زاد"
-                className="h-8 sm:h-9 w-auto object-contain drop-shadow-[0_2px_10px_rgba(157,50,236,0.35)] transition-transform group-hover:scale-105"
+                className="h-10 sm:h-11 w-auto object-contain drop-shadow-[0_2px_10px_rgba(157,50,236,0.35)] transition-transform group-hover:scale-105"
               />
             ) : (
               <div
                 aria-hidden="true"
-                className={`h-8 sm:h-9 w-8 sm:w-9 shrink-0 transition-transform group-hover:scale-105 ${accentColor === 'blue'
+                className={`h-10 w-10 sm:h-11 sm:w-11 shrink-0 transition-transform group-hover:scale-105 ${accentColor === 'blue'
                   ? theme === 'dark'
                     ? 'bg-gradient-to-b from-[#38bdf8] via-[#2563eb] to-[#1e40af] drop-shadow-[0_2px_10px_rgba(37,99,235,0.45)]'
                     : 'bg-gradient-to-b from-[#0284c7] via-[#1d4ed8] to-[#1e3a8a] drop-shadow-[0_2px_8px_rgba(2,132,199,0.35)]'
@@ -442,14 +460,7 @@ export const LibraryNavbar: React.FC<LibraryNavbarProps> = ({
                 }}
               />
             )}
-            <span className={`font-tajawal font-black text-sm sm:text-base tracking-tight hidden sm:inline ${accentColor === 'purple'
-              ? (isDark ? 'bg-gradient-to-l from-[#c084fc] via-[#9d32ec] to-[#801bcc] bg-clip-text text-transparent' : 'text-[#7a17c9]')
-              : accentColor === 'blue'
-                ? (isDark ? 'bg-gradient-to-l from-[#38bdf8] via-[#60a5fa] to-[#2563eb] bg-clip-text text-transparent drop-shadow-[0_2px_8px_rgba(37,99,235,0.4)]' : 'text-blue-700')
-                : accentColor === 'emerald'
-                  ? (isDark ? 'text-teal-400' : 'text-teal-700')
-                  : (isDark ? 'text-[#dfbf83]' : 'text-[#8a652a]')
-              }`}>
+            <span className={`font-display text-[22px] sm:text-[24px] lg:text-[26px] inline-block transition-colors leading-none ${getZadWordClass()}`}>
               زاد
             </span>
           </div>
