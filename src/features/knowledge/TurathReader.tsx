@@ -1295,23 +1295,22 @@ const processTextContent = (rawText: string): ProcessedContent => {
     });
 
     const fnBadge = (_: string, num: string) =>
-      `<span class="islamic-footnote-sup inline-flex items-center justify-center mx-1 align-baseline"><a href="#fn-${num}" data-type="footnote-ref" class="islamic-footnote-ref font-scheherazade font-bold text-[13px] shadow-2xs no-underline transition-all hover:scale-110 border-b-0 cursor-pointer">${num}</a></span>`;
+      `<span class="islamic-footnote-sup inline-flex items-center justify-center mx-0.5 align-baseline"><a href="#fn-${num}" data-type="footnote-ref" class="islamic-footnote-ref font-scheherazade font-bold text-[12px] no-underline transition-all hover:scale-105 border-b-0 cursor-pointer">${num}</a></span>`;
 
     let rawFormatted = safeProcessedText
-      // 1. Wrapped markers: (^1), ^(1), ^1, (1), [1], (1^)
-      .replace(/\s*[-–—]?\s*\(\^\s*([\d\u0660-\u0669]+)\)\s*[-–—]?/g, fnBadge)
-      .replace(/\s*[-–—]?\s*\^\(([\d\u0660-\u0669]+)\)\s*[-–—]?/g, fnBadge)
-      .replace(/\s*[-–—]?\s*\^([\d\u0660-\u0669]+)\s*[-–—]?/g, fnBadge)
-      .replace(/\s*\(([\d\u0660-\u0669]+)\^\)\s*/g, fnBadge)
-      .replace(/\s*[-–—]+\s*\(([\d\u0660-\u0669]+)\)\s*[-–—]+/g, fnBadge)
-      .replace(/\s*\(([\d\u0660-\u0669]{1,2})\)\s*/g, fnBadge)
-      .replace(/\s*\[([\d\u0660-\u0669]{1,2})\]\s*/g, fnBadge)
+      // 1. Wrapped markers: (^1), ^(1), ^1, (1), [1], (1^) without consuming leading/trailing dashes
+      .replace(/\s*\(\^\s*([\d\u0660-\u0669]+)\)\s*/g, (m, num) => ` ${fnBadge(m, num)} `)
+      .replace(/\s*\^\(([\d\u0660-\u0669]+)\)\s*/g, (m, num) => ` ${fnBadge(m, num)} `)
+      .replace(/\s*\^([\d\u0660-\u0669]+)\s*/g, (m, num) => ` ${fnBadge(m, num)} `)
+      .replace(/\s*\(([\d\u0660-\u0669]+)\^\)\s*/g, (m, num) => ` ${fnBadge(m, num)} `)
+      .replace(/\s*\(([\d\u0660-\u0669]{1,2})\)\s*/g, (m, num) => ` ${fnBadge(m, num)} `)
+      .replace(/\s*\[([\d\u0660-\u0669]{1,2})\]\s*/g, (m, num) => ` ${fnBadge(m, num)} `)
 
       // 2. Digits attached directly to the end of words (e.g., بالدمشقي١., النضح٣،)
-      .replace(/(?<=[\p{L}])([\d\u0660-\u0669]{1,2})(?=[.,،:;"'«»)\s]|$)/gu, fnBadge)
+      .replace(/(?<=[\p{L}])([\d\u0660-\u0669]{1,2})(?=[.,،:;"'«»)\s]|$)/gu, (m, num) => ` ${fnBadge(m, num)} `)
 
       // 3. Digits immediately following quotes/punctuation before a period/comma (e.g., "من ماء" ٢.)
-      .replace(/(?<=["'»])\s*([\d\u0660-\u0669]{1,2})(?=[.,،:;]|\s*[.,،:;])/gu, fnBadge);
+      .replace(/(?<=["'»])\s*([\d\u0660-\u0669]{1,2})(?=[.,،:;]|\s*[.,،:;])/gu, (m, num) => ` ${fnBadge(m, num)} `);
 
     // Restore protected Quran verses before passing to typography parser
     rawFormatted = rawFormatted.replace(/__QURAN_PRESERVE_(\d+)__/g, (_, idx) => quranPreserveTokens[Number(idx)] || '');
@@ -7770,49 +7769,52 @@ export default function TurathReader({
                     border-bottom: none !important;
                     line-height: 1 !important;
                     user-select: none !important;
-                    backdrop-filter: blur(8px) !important;
-                    -webkit-backdrop-filter: blur(8px) !important;
+                    backdrop-filter: blur(4px) !important;
+                    -webkit-backdrop-filter: blur(4px) !important;
                     transition: all 0.2s ease-in-out !important;
-                    min-width: 22px !important;
-                    height: 22px !important;
-                    padding: 0 5px !important;
+                    min-width: 20px !important;
+                    height: 20px !important;
+                    padding: 0 4px !important;
                     border-radius: 9999px !important;
                     font-family: 'Amiri', 'Scheherazade New', 'Cairo', serif !important;
                     font-weight: 700 !important;
-                    font-size: 13px !important;
+                    font-size: 12px !important;
                   }
                   .light-reader .turath-content .islamic-footnote-ref {
-                    background: ${accentColor === 'amber' ? 'rgba(184, 141, 70, 0.12)' : accentColor === 'emerald' ? 'rgba(13, 148, 136, 0.12)' : accentColor === 'blue' ? 'rgba(37, 99, 235, 0.12)' : 'rgba(149, 11, 196, 0.12)'} !important;
-                    border: 1.5px solid ${accentColor === 'amber' ? '#b88d46' : accentColor === 'emerald' ? '#0d9488' : accentColor === 'blue' ? '#2563eb' : '#950bc4'} !important;
-                    color: ${accentColor === 'amber' ? '#78531b' : accentColor === 'emerald' ? '#0f766e' : accentColor === 'blue' ? '#1d4ed8' : '#7e22ce'} !important;
-                    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08) !important;
+                    background: rgba(241, 245, 249, 0.85) !important;
+                    border: 1px solid #cbd5e1 !important;
+                    color: #475569 !important;
+                    box-shadow: none !important;
                   }
                   .light-reader .turath-content .islamic-footnote-ref:hover {
-                    background: ${accentColor === 'amber' ? 'rgba(184, 141, 70, 0.25)' : accentColor === 'emerald' ? 'rgba(13, 148, 136, 0.25)' : accentColor === 'blue' ? 'rgba(37, 99, 235, 0.25)' : 'rgba(149, 11, 196, 0.25)'} !important;
-                    border-color: ${accentColor === 'amber' ? '#8e682d' : accentColor === 'emerald' ? '#0f766e' : accentColor === 'blue' ? '#1e40af' : '#6b21a8'} !important;
-                    transform: scale(1.1) !important;
+                    background: rgba(226, 232, 240, 0.95) !important;
+                    border-color: #94a3b8 !important;
+                    color: #0f172a !important;
+                    transform: scale(1.08) !important;
                   }
                   .sepia-reader .turath-content .islamic-footnote-ref {
-                    background: rgba(180, 83, 9, 0.1) !important;
-                    border: 1px solid rgba(180, 83, 9, 0.3) !important;
-                    color: #92400e !important;
-                    box-shadow: 0 2px 6px rgba(180, 83, 9, 0.08) !important;
+                    background: rgba(120, 53, 15, 0.05) !important;
+                    border: 1px solid rgba(120, 53, 15, 0.22) !important;
+                    color: #78350f !important;
+                    box-shadow: none !important;
                   }
                   .sepia-reader .turath-content .islamic-footnote-ref:hover {
-                    background: rgba(180, 83, 9, 0.2) !important;
-                    border-color: rgba(180, 83, 9, 0.5) !important;
-                    transform: scale(1.1) !important;
+                    background: rgba(120, 53, 15, 0.12) !important;
+                    border-color: rgba(120, 53, 15, 0.35) !important;
+                    color: #451a03 !important;
+                    transform: scale(1.08) !important;
                   }
                   .dark-reader .turath-content .islamic-footnote-ref {
-                    background: ${accentColor === 'amber' ? 'rgba(223, 191, 131, 0.15)' : accentColor === 'emerald' ? 'rgba(45, 212, 191, 0.15)' : accentColor === 'blue' ? 'rgba(96, 165, 250, 0.15)' : 'rgba(168, 85, 247, 0.18)'} !important;
-                    border: 1px solid ${darkTitleBorder} !important;
-                    color: ${darkTitleColor} !important;
-                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+                    background: rgba(255, 255, 255, 0.06) !important;
+                    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+                    color: #94a3b8 !important;
+                    box-shadow: none !important;
                   }
                   .dark-reader .turath-content .islamic-footnote-ref:hover {
-                    background: ${accentColor === 'amber' ? 'rgba(223, 191, 131, 0.3)' : accentColor === 'emerald' ? 'rgba(45, 212, 191, 0.3)' : accentColor === 'blue' ? 'rgba(96, 165, 250, 0.3)' : 'rgba(168, 85, 247, 0.35)'} !important;
-                    border-color: ${darkTitleColor} !important;
-                    transform: scale(1.1) !important;
+                    background: rgba(255, 255, 255, 0.12) !important;
+                    border-color: rgba(255, 255, 255, 0.3) !important;
+                    color: #f1f5f9 !important;
+                    transform: scale(1.08) !important;
                   }
 
                   /* In-Page Quick Search Highlight Markers */
