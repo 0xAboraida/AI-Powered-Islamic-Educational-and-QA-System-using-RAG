@@ -1162,7 +1162,7 @@ export const SearchConsole: React.FC<SearchConsoleProps> = ({
 
                       {/* Across from icon: Title on line 1, Author on line 2 */}
                       <div className="min-w-0 flex-1 text-right">
-                        <h4 className="font-bold text-xs sm:text-sm text-foreground truncate group-hover:text-primary transition-colors leading-snug">
+                        <h4 className="font-bold text-xs sm:text-sm text-foreground line-clamp-2 group-hover:text-primary transition-colors leading-snug">
                           {book.title}
                         </h4>
 

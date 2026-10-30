@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import {
   BookOpen, FileText, User, Pen, Sparkles,
   Calendar, Layers, BookCheck, Download, FileDown, Info, Heart, Loader2,
-  Check, HardDriveDownload, Trash2, ChevronLeft, X
+  Check, HardDriveDownload, Trash2, ChevronLeft, X, ArrowLeft
 } from 'lucide-react';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { BookMeta } from '../types/bookTypes';
@@ -644,82 +644,102 @@ export function BookCard({
   return (
     <div
       onClick={() => onRead(book)}
-      className={`group rounded-xl border ${compact ? 'py-1.5 px-2.5 sm:px-3' : 'py-2.5 px-3 sm:px-4'} shadow-sm hover:shadow-md transition-colors duration-150 cursor-pointer ${getBookCardContainerClass()}`}
+      className={`group rounded-xl border ${compact ? 'py-2 px-2.5 sm:px-3' : 'p-3 sm:p-3.5'} shadow-xs hover:shadow-md transition-all duration-150 cursor-pointer flex flex-col gap-2.5 ${getBookCardContainerClass()}`}
     >
-      <div className={`flex flex-col sm:flex-row items-start sm:items-center justify-between ${compact ? 'gap-1.5 sm:gap-2' : 'gap-3'}`}>
+      {/* Top Details: Icon + Title + Meta */}
+      <div className="flex items-start gap-2.5 sm:gap-3 min-w-0">
+        <div
+          onClick={(e) => {
+            e.stopPropagation();
+            onRead(book);
+          }}
+          className={`${compact ? 'w-7 h-7 rounded-lg' : 'w-8 h-8 rounded-lg'} flex items-center justify-center shrink-0 transition-all shadow-xs mt-0.5 cursor-pointer ${getBookIconClass()}`}
+          title="فتح وقراءة الكتاب"
+        >
+          <BookOpen className={compact ? 'w-3.5 h-3.5' : 'w-4 h-4'} />
+        </div>
 
-        {/* Book Details */}
-        <div className={`flex items-center ${compact ? 'gap-2 sm:gap-2.5' : 'gap-3'} flex-1 min-w-0`}>
-          <div
+        <div className="min-w-0 flex-1">
+          <h4
             onClick={(e) => {
               e.stopPropagation();
               onRead(book);
             }}
-            className={`${compact ? 'w-7 h-7 rounded-lg' : 'w-9 h-9 rounded-xl'} flex items-center justify-center shrink-0 transition-all shadow-sm cursor-pointer ${getBookIconClass()}`}
-            title="فتح وقراءة الكتاب"
+            className={`font-bold ${compact ? 'text-xs sm:text-[13px] mb-0.5' : 'text-sm sm:text-[15px] mb-1.5'} text-slate-800 dark:text-slate-100 transition-colors line-clamp-2 leading-snug cursor-pointer ${getTitleHoverClass()}`}
+            title={book.title}
           >
-            <BookOpen className={compact ? 'w-3.5 h-3.5' : 'w-4.5 h-4.5'} />
-          </div>
+            {book.title}
+          </h4>
 
-          <div className="min-w-0 flex-1">
-            <h4
-              onClick={(e) => {
-                e.stopPropagation();
-                onRead(book);
-              }}
-              className={`font-bold ${compact ? 'text-xs sm:text-[13px] mb-0' : 'text-sm sm:text-base mb-0.5'} text-slate-800 dark:text-slate-100 transition-colors truncate cursor-pointer ${getTitleHoverClass()}`}
-              title="فتح وقراءة الكتاب"
-            >
-              {book.title}
-            </h4>
+          {/* Meta line: Author + Death / Century + Category */}
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground flex-wrap">
+            {onOpenAuthorBio && book.author && book.author !== 'من غير معروف' ? (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOpenAuthorBio(book);
+                }}
+                className={`inline-flex items-center gap-1 text-[11px] font-semibold text-muted-foreground hover:text-primary transition-colors group/author outline-none text-right shrink-0 cursor-pointer ${getTitleHoverClass()}`}
+                title={`عرض ترجمة وسيرة ${book.author}`}
+              >
+                <User className="h-3 w-3 shrink-0 text-slate-400 group-hover/author:scale-110 transition-transform" />
+                <span className="group-hover/author:underline underline-offset-2">
+                  {book.author}
+                </span>
+              </button>
+            ) : (
+              <p className="inline-flex items-center gap-1 text-[11px] text-muted-foreground shrink-0 select-none">
+                <User className="h-3 w-3 shrink-0 text-slate-400" />
+                <span>{book.author}</span>
+              </p>
+            )}
 
-            <div className={`flex items-center ${compact ? 'gap-1.5' : 'gap-2'} flex-wrap`}>
-              {onOpenAuthorBio && book.author && book.author !== 'من غير معروف' ? (
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onOpenAuthorBio(book);
-                  }}
-                  className={`inline-flex items-center gap-1 text-[11px] font-semibold text-muted-foreground transition-colors group/author outline-none text-right shrink-0 cursor-pointer ml-2 ${getTitleHoverClass()}`}
-                  title="عرض ترجمة وسيرة المؤلف"
+            {((centuryName && centuryName !== 'غير محدد') || deathYear) && (
+              <>
+                <span className="text-slate-300 dark:text-white/20 text-[10px]">•</span>
+                <span
+                  className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-medium text-amber-700 dark:text-amber-400 shrink-0 font-sans"
+                  title={deathYear ? `توفي: ${deathYear} هـ` : centuryName}
                 >
-                  <User className="h-3 w-3 shrink-0 group-hover/author:scale-110 transition-transform text-slate-400" />
-                  <span className="group-hover/author:underline underline-offset-4">
-                    {book.author}
-                  </span>
-                </button>
-              ) : (
-                <p className="inline-flex items-center gap-1 text-[11px] text-muted-foreground shrink-0 ml-2 cursor-default select-none">
-                  <User className="h-3 w-3 shrink-0 text-slate-400" />
-                  <span>{book.author}</span>
-                </p>
-              )}
+                  <Calendar className="w-2.5 h-2.5" />
+                  <span>{deathYear ? `ت ${deathYear}هـ` : centuryName}</span>
+                </span>
+              </>
+            )}
 
-              {showCategoryBadge && book.category && (
+            {showCategoryBadge && book.category && (
+              <>
+                <span className="text-slate-300 dark:text-white/20 text-[10px]">•</span>
                 <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold border shrink-0 ${getCategoryBadgeClass()}`}>
                   <Layers className="w-2.5 h-2.5" />
-                  {book.category}
+                  <span>{book.category}</span>
                 </span>
-              )}
-              {centuryName && centuryName !== 'غير محدد' && (
-                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20 shrink-0" title={deathYear ? `توفي: ${deathYear} هـ` : centuryName}>
-                  <Calendar className="w-2.5 h-2.5" />
-                  <span>{centuryName}</span>
-                  {deathYear && <span className="font-mono">({deathYear}هـ)</span>}
-                </span>
-              )}
-              {formattedSize && (
+              </>
+            )}
+
+            {formattedSize && (
+              <>
+                <span className="text-slate-300 dark:text-white/20 text-[10px]">•</span>
                 <span className="text-[10px] text-muted-foreground font-mono opacity-70 shrink-0" title="حجم ملف الكتاب">
                   {formattedSize}
                 </span>
-              )}
-            </div>
+              </>
+            )}
           </div>
         </div>
+      </div>
 
-        {/* Left Actions */}
-        <div className={`flex items-center gap-1.5 w-full sm:w-auto shrink-0 ${compact ? 'pt-1 sm:pt-0' : 'pt-2 sm:pt-0'} border-t sm:border-t-0 border-slate-100 dark:border-white/5`}>
+      {/* Bottom Row: Right = "قراءة الكتاب" CTA, Left = Action buttons */}
+      <div className="pt-2 border-t border-slate-100 dark:border-white/5 flex items-center justify-between gap-2 text-xs">
+        {/* Right CTA */}
+        <div className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-bold text-primary group-hover:underline">
+          <span>قراءة الكتاب</span>
+          <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
+        </div>
+
+        {/* Left Action Buttons */}
+        <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
           {/* Download Menu */}
           <div className={`relative ${isDownloadMenuOpen ? 'z-50' : 'z-10'}`}>
             <button
@@ -759,7 +779,7 @@ export function BookCard({
                   </button>
                 </div>
 
-                {/* 1. Offline Storage (مثل تراث تماماً) */}
+                {/* 1. Offline Storage */}
                 <button
                   type="button"
                   onClick={handleToggleOffline}
@@ -833,6 +853,7 @@ export function BookCard({
             )}
           </div>
 
+          {/* Info Button */}
           <button
             type="button"
             onClick={(e) => {
@@ -845,6 +866,7 @@ export function BookCard({
             <Info className="w-3.5 h-3.5" />
           </button>
 
+          {/* Favorite Button */}
           {onToggleFavorite && (
             <button
               type="button"
@@ -862,6 +884,7 @@ export function BookCard({
             </button>
           )}
 
+          {/* Delete Offline Button */}
           {onDeleteOffline && (
             <button
               type="button"
@@ -875,13 +898,7 @@ export function BookCard({
               <Trash2 className="w-3.5 h-3.5" />
             </button>
           )}
-
-          {/* Subtle Navigation Arrow Indicator */}
-          <div className="flex items-center text-muted-foreground/40 group-hover:text-foreground group-hover:-translate-x-1 transition-all pr-1">
-            <ChevronLeft className="w-4 h-4" />
-          </div>
         </div>
-
       </div>
     </div>
   );
