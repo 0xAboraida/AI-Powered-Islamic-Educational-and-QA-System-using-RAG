@@ -28,6 +28,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { getAvatarUrl } from '../../../api/client';
 import NotificationBell from '../../../components/layout/NotificationBell';
 import { MainTab } from '../types/bookTypes';
+import { idbGetAllOfflineBookPackages } from '../../../utils/indexedDbStorage';
 
 export interface LibraryNavbarProps {
   isScrolledPastSearch: boolean;
@@ -46,6 +47,7 @@ export interface LibraryNavbarProps {
   categoriesCount?: number;
   authorsCount?: number;
   favoritesCount?: number;
+  downloadsCount?: number;
 }
 
 export const LibraryNavbar: React.FC<LibraryNavbarProps> = ({
@@ -65,6 +67,7 @@ export const LibraryNavbar: React.FC<LibraryNavbarProps> = ({
   categoriesCount,
   authorsCount,
   favoritesCount,
+  downloadsCount,
 }) => {
   const { theme, toggleTheme, isDark, accentColor, setAccentColor } = useTheme();
   const { isAuthenticated, user, logout } = useAuth();
@@ -73,6 +76,29 @@ export const LibraryNavbar: React.FC<LibraryNavbarProps> = ({
   const [isSettingsMenuOpen, setIsSettingsMenuOpen] = useState(false);
   const [isLoginLoading, setIsLoginLoading] = useState(false);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+  const [internalDownloadsCount, setInternalDownloadsCount] = useState<number>(0);
+
+  useEffect(() => {
+    let isMounted = true;
+    const loadDownloadsCount = async () => {
+      try {
+        const pkgs = await idbGetAllOfflineBookPackages();
+        if (isMounted) {
+          setInternalDownloadsCount(pkgs.length);
+        }
+      } catch {
+        // ignore
+      }
+    };
+    loadDownloadsCount();
+    window.addEventListener('zad-offline-books-changed', loadDownloadsCount);
+    return () => {
+      isMounted = false;
+      window.removeEventListener('zad-offline-books-changed', loadDownloadsCount);
+    };
+  }, []);
+
+  const effectiveDownloadsCount = downloadsCount !== undefined ? downloadsCount : internalDownloadsCount;
   const settingsMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -318,6 +344,7 @@ export const LibraryNavbar: React.FC<LibraryNavbarProps> = ({
       label: 'الكتب المحمّلة',
       mobileLabel: 'المحمّلة',
       icon: <HardDriveDownload className="w-4 h-4" />,
+      badge: effectiveDownloadsCount > 0 ? effectiveDownloadsCount : undefined,
     },
   ];
 

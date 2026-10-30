@@ -214,7 +214,10 @@ export interface OfflineBookPackage {
 }
 
 export async function idbSaveBookOffline(pkg: OfflineBookPackage): Promise<void> {
-  return idbSet(`zad_offline_book_${pkg.bookId}`, pkg);
+  await idbSet(`zad_offline_book_${pkg.bookId}`, pkg);
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('zad-offline-books-changed'));
+  }
 }
 
 export async function idbGetOfflineBook(bookId: number | string): Promise<OfflineBookPackage | null> {
@@ -227,7 +230,10 @@ export async function idbIsBookSavedOffline(bookId: number | string): Promise<bo
 }
 
 export async function idbRemoveOfflineBook(bookId: number | string): Promise<void> {
-  return idbDelete(`zad_offline_book_${bookId}`);
+  await idbDelete(`zad_offline_book_${bookId}`);
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('zad-offline-books-changed'));
+  }
 }
 
 export async function idbGetAllOfflineBookPackages(): Promise<OfflineBookPackage[]> {

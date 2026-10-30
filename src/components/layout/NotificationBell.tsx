@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import {
   Bell,
   BookOpen,
@@ -351,6 +352,19 @@ export default function NotificationBell({ variant = 'default', className = '' }
     }
   }, [])
 
+  // Lock body scroll on small screens while notifications are open
+  useEffect(() => {
+    if (isOpen) {
+      const prevOverflow = document.body.style.overflow
+      if (typeof window !== 'undefined' && window.innerWidth < 640) {
+        document.body.style.overflow = 'hidden'
+      }
+      return () => {
+        document.body.style.overflow = prevOverflow
+      }
+    }
+  }, [isOpen])
+
   const handleOpenDropdown = () => {
     const nextState = !isOpen
     setIsOpen(nextState)
@@ -570,12 +584,27 @@ export default function NotificationBell({ variant = 'default', className = '' }
         )}
       </button>
 
-      {/* Notifications Glass Dropdown Panel */}
+      {/* Notifications Glass Dropdown Panel & Glassy Blurred Backdrop */}
       {isOpen && (
-        <div
-          dir="rtl"
-          className={`fixed inset-x-3 top-18 sm:absolute sm:inset-x-auto sm:left-0 sm:top-full sm:mt-2.5 sm:w-[410px] max-w-[calc(100vw-1.5rem)] rounded-3xl border backdrop-blur-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 origin-top-left duration-200 max-h-[calc(100dvh-6rem)] flex flex-col ${getThemeGlassPanelClass()}`}
-        >
+        <>
+          {/* Glassy Backdrop Overlay rendered into document.body to cover the full viewport and avoid containing-block trap */}
+          {typeof document !== 'undefined' && createPortal(
+            <div
+              onClick={(e) => {
+                e.stopPropagation()
+                setIsOpen(false)
+              }}
+              className="fixed inset-0 w-screen h-screen bg-slate-950/40 dark:bg-black/60 backdrop-blur-md z-40 transition-all duration-300 animate-in fade-in cursor-pointer"
+              aria-hidden="true"
+              title="انقر للإغلاق"
+            />,
+            document.body
+          )}
+
+          <div
+            dir="rtl"
+            className={`fixed inset-x-3 top-18 sm:absolute sm:inset-x-auto sm:left-0 sm:top-full sm:mt-2.5 sm:w-[410px] max-w-[calc(100vw-1.5rem)] rounded-3xl border backdrop-blur-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 origin-top-left duration-200 max-h-[calc(100dvh-6rem)] flex flex-col ${getThemeGlassPanelClass()}`}
+          >
           {/* Top Header */}
           <div className={`shrink-0 border-b px-4 sm:px-5 py-3.5 sm:py-4 transition-colors ${getThemeHeaderClass()}`}>
             <div className="flex items-center justify-between">
@@ -679,6 +708,7 @@ export default function NotificationBell({ variant = 'default', className = '' }
             {renderNotificationContent()}
           </div>
         </div>
+        </>
       )}
     </div>
   )

@@ -45,6 +45,7 @@ import {
 } from './utils/turathMeta'
 import { normalizeArabicText } from './utils/arabicText'
 import { downloadBookFile } from './utils/bookExport'
+import { idbGetAllOfflineBookPackages } from '../../utils/indexedDbStorage'
 
 import BookCard from './components/BookCard'
 import SkeletonList from './components/BookSkeletons'
@@ -451,6 +452,26 @@ export default function KnowledgeBase({
   const [loadingInfo, setLoadingInfo] = useState(false)
   const [bookDetailsCache, setBookDetailsCache] = useState<Record<string, { info: string; infoLong?: string | null }>>({})
   const [returnToReaderBook, setReturnToReaderBook] = useState<BookMeta | null>(null)
+  const [downloadsCount, setDownloadsCount] = useState<number>(0)
+
+  // Track offline downloaded books count and reactively update
+  useEffect(() => {
+    let isMounted = true
+    const fetchDownloads = async () => {
+      try {
+        const pkgs = await idbGetAllOfflineBookPackages()
+        if (isMounted) setDownloadsCount(pkgs.length)
+      } catch {
+        // ignore
+      }
+    }
+    fetchDownloads()
+    window.addEventListener('zad-offline-books-changed', fetchDownloads)
+    return () => {
+      isMounted = false
+      window.removeEventListener('zad-offline-books-changed', fetchDownloads)
+    }
+  }, [])
 
   // Library Data Hook (إدارة البيانات، التخزين المؤقت، والتصفية فائقة السرعة)
   const {
@@ -696,6 +717,7 @@ export default function KnowledgeBase({
             narrators: '18.9K',
             featured: featuredBookIds.size > 0 ? publishedBooks.filter(b => featuredBookIds.has(b.id) || featuredBookIds.has(b.title)).length : 0,
             favorites: favoriteBooksList.length,
+            downloads: downloadsCount,
           }}
           recentBook={recentBook}
           onClose={() => setIsSidebarOpen(false)}
@@ -809,6 +831,7 @@ export default function KnowledgeBase({
             narrators: '18.9K',
             featured: featuredBookIds.size > 0 ? publishedBooks.filter(b => featuredBookIds.has(b.id) || featuredBookIds.has(b.title)).length : 0,
             favorites: favoriteBooksList.length,
+            downloads: downloadsCount,
           }}
           recentBook={recentBook}
           onClose={() => setIsSidebarOpen(false)}
@@ -910,6 +933,7 @@ export default function KnowledgeBase({
               categoriesCount={booksByCategory.length}
               authorsCount={liveStats.total_authors}
               favoritesCount={favoriteBooksList.length}
+              downloadsCount={downloadsCount}
             />
 
             {/* HOME HERO SECTION */}
