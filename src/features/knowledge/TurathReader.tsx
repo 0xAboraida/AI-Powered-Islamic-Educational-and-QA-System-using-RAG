@@ -2492,37 +2492,45 @@ export default function TurathReader({
   const [activeHeadingText, setActiveHeadingText] = useState<string | null>(null)
   const [selectedTocIndex, setSelectedTocIndex] = useState<number | null>(null)
 
-  // Mobile Pagination auto-hide state and rapid scrub bar
+  // Mobile Pagination visibility state and rapid scrub bar
   const [isMobilePaginationVisible, setIsMobilePaginationVisible] = useState(true);
   const [scrubPage, setScrubPage] = useState<number>(currentPage);
   const [isScrubbing, setIsScrubbing] = useState(false);
-  const mobilePaginationTimerRef = useRef<number | null>(null);
+  const isSwipeGestureRef = useRef(false);
   const activeFootnoteHighlightRef = useRef<{ el: HTMLElement; classes: string[]; timer: number } | null>(null);
 
-  const resetMobilePaginationTimer = useCallback(() => {
+  // Keep pagination visible on interaction
+  const showMobilePagination = useCallback(() => {
     setIsMobilePaginationVisible(true);
-    if (mobilePaginationTimerRef.current) {
-      clearTimeout(mobilePaginationTimerRef.current);
+  }, []);
+
+  // Tap-to-toggle handler: toggles pagination & audio bar visibility on clean screen tap
+  const handleReaderAreaClick = useCallback((e: React.MouseEvent) => {
+    // If a horizontal swipe page flip gesture just occurred, don't toggle
+    if (isSwipeGestureRef.current) {
+      isSwipeGestureRef.current = false;
+      return;
     }
-    if (!isScrubbing) {
-      mobilePaginationTimerRef.current = window.setTimeout(() => {
-        setIsMobilePaginationVisible(false);
-      }, 3000);
+
+    // If user is selecting text (for highlight / copy / dictionary), don't toggle
+    const selection = window.getSelection();
+    if (selection && selection.toString().trim().length > 0) return;
+
+    // If clicked an interactive element (button, link, footnote, input, popup, etc.), don't toggle
+    const target = e.target as HTMLElement;
+    if (target.closest('button, a, input, select, textarea, [role="button"], .footnote-pill, .interactive, .popover, .dialog, [data-interactive="true"]')) {
+      return;
     }
-  }, [isScrubbing]);
+
+    // Toggle pagination & audio frame visibility on tap
+    setIsMobilePaginationVisible(prev => !prev);
+  }, []);
 
   useEffect(() => {
     if (!isScrubbing) {
       setScrubPage(currentPage);
     }
   }, [currentPage, isScrubbing]);
-
-  useEffect(() => {
-    resetMobilePaginationTimer();
-    return () => {
-      if (mobilePaginationTimerRef.current) clearTimeout(mobilePaginationTimerRef.current);
-    };
-  }, [currentPage, resetMobilePaginationTimer]);
 
   // -------------------------------------------------------------------------
   // Feature 2: Hadiths & Numbered Texts Mapping
@@ -3163,7 +3171,7 @@ export default function TurathReader({
   const touchStartYRef = useRef<number | null>(null)
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    resetMobilePaginationTimer();
+    isSwipeGestureRef.current = false;
     if (readingMode !== 'paged') return;
     if (e.touches.length === 1) {
       touchStartXRef.current = e.touches[0].clientX;
@@ -3182,17 +3190,16 @@ export default function TurathReader({
 
     // Minimum swipe threshold and mostly horizontal movement
     if (Math.abs(deltaX) > 45 && Math.abs(deltaX) > Math.abs(deltaY) * 1.3) {
+      isSwipeGestureRef.current = true;
       const sel = window.getSelection()?.toString();
       if (sel && sel.trim().length > 0) return;
 
       if (deltaX > 0) {
         // Swiping right in RTL Arabic = Previous Page
         goPrev();
-        resetMobilePaginationTimer();
       } else {
         // Swiping left in RTL Arabic = Next Page
         goNext();
-        resetMobilePaginationTimer();
       }
     }
   }
@@ -6993,7 +7000,7 @@ export default function TurathReader({
                   hidePodcast={true}
                   onStateChange={(playing) => setIsReadingPage(playing)}
                   orientation="vertical"
-                  colorTheme={accentColor === 'emerald' ? 'emerald' : 'purple'}
+                  colorTheme={accentColor}
                   menuPlacement="left"
                   className={`!bg-transparent !border-transparent !shadow-none !p-2 !rounded-xl !text-muted-foreground hover:!bg-black/5 dark:hover:!bg-white/5 ${accentColor === 'amber' ? 'hover:!text-[#b88d46]' : accentColor === 'emerald' ? 'hover:!text-teal-600' : accentColor === 'blue' ? 'hover:!text-blue-600' : 'hover:!text-brand-magenta'} [&_svg]:!h-5 [&_svg]:!w-5`}
                 />
@@ -7070,9 +7077,8 @@ export default function TurathReader({
             ref={scrollContainerRef}
             onScroll={() => {
               handleScroll();
-              resetMobilePaginationTimer();
             }}
-            onClick={() => resetMobilePaginationTimer()}
+            onClick={handleReaderAreaClick}
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
             data-selectable="true"
@@ -7962,7 +7968,7 @@ export default function TurathReader({
                                     hidePodcast={true}
                                     onStateChange={(playing) => setIsReadingPage(playing)}
                                     orientation="horizontal"
-                                    colorTheme={accentColor === 'emerald' ? 'emerald' : 'purple'}
+                                    colorTheme={accentColor}
                                     menuPlacement="top"
                                     className="!bg-transparent !border-transparent !shadow-none !p-1.5 !rounded-lg !text-muted-foreground hover:!bg-black/5 dark:hover:!bg-white/5 cursor-pointer"
                                   />
@@ -8090,10 +8096,11 @@ export default function TurathReader({
                   ? 'max-md:hidden md:opacity-100 md:translate-y-0'
                   : isMobilePaginationVisible
                     ? `opacity-100 translate-y-0 ${isAudioBarOpen ? 'max-h-72' : 'max-h-28'} pointer-events-auto`
-                    : 'max-md:opacity-0 max-md:translate-y-3 max-md:max-h-0 max-md:pointer-events-none md:opacity-100 md:translate-y-0'
+                    : 'max-md:opacity-0 max-md:translate-y-6 max-md:max-h-0 max-md:pointer-events-none md:opacity-100 md:translate-y-0'
               }`}
             >
               <footer
+                onClick={(e) => e.stopPropagation()}
                 className={`flex flex-col items-center gap-1.5 md:gap-2 px-3 py-1.5 md:py-2 md:rounded-2xl border-t md:border backdrop-blur-xl shadow-md md:shadow-2xl transition-colors ${
                   readerTheme === 'dark'
                     ? 'bg-[#0f1422]/95 border-white/10 text-white'
@@ -8102,47 +8109,32 @@ export default function TurathReader({
                       : 'bg-white/95 border-gray-200 text-slate-800'
                 }`}
               >
-                {/* 0. Dedicated Active Audio Player Controls Row (جزء لا يتجزأ من فريم التقليب يتمدد لأعلى) */}
+                {/* 0. Dedicated Active Audio Player Shelf (يتمدد لأعلى كجزء متكامل مع فريم التقليب) */}
                 {isAudioBarOpen && (
                   <div
-                    className={`w-full flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-xl border mb-0.5 animate-in fade-in slide-in-from-bottom-2 duration-200 select-none ${
+                    className={`w-full px-2.5 py-1 rounded-xl border-b mb-1 select-none transition-all ${
                       readerTheme === 'dark'
-                        ? 'bg-white/5 border-white/10 text-white'
+                        ? 'bg-white/[0.03] border-white/10 text-white'
                         : readerTheme === 'sepia'
-                          ? 'bg-[#F0E5D4]/80 border-[#E2D6C0] text-[#3D2C1D]'
-                          : 'bg-black/[0.03] border-slate-200 text-slate-800'
+                          ? 'bg-[#EAE0CF]/70 border-[#DFCDB7] text-[#3D2C1D]'
+                          : 'bg-slate-50/80 border-slate-200/80 text-slate-800'
                     }`}
                   >
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      <Volume2 className="w-4 h-4 text-amber-500 animate-pulse shrink-0" />
-                      <span className="text-xs font-bold truncate hidden sm:inline">قارئ الصفحة الصوتي</span>
-                    </div>
-
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      <AudioReaderButton
-                        text={pageText?.matn ? `${pageText.matn} ${pageText.sharh || ''}` : (pageText?.main || '')}
-                        dark={readerTheme === 'dark'}
-                        showTextLabel={false}
-                        hidePodcast={true}
-                        autoPlay={true}
-                        onStateChange={(playing) => setIsReadingPage(playing)}
-                        orientation="horizontal"
-                        colorTheme={accentColor === 'emerald' ? 'emerald' : 'purple'}
-                        menuPlacement="top"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          stopAllSpeech();
-                          setIsReadingPage(false);
-                          setIsAudioBarOpen(false);
-                        }}
-                        className="p-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
-                        title="إغلاق فريم الصوت"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
+                    <AudioReaderButton
+                      text={pageText?.matn ? `${pageText.matn} ${pageText.sharh || ''}` : (pageText?.main || '')}
+                      dark={readerTheme === 'dark'}
+                      showTextLabel={false}
+                      hidePodcast={true}
+                      autoPlay={true}
+                      variant="deck"
+                      onClose={() => {
+                        stopAllSpeech();
+                        setIsReadingPage(false);
+                        setIsAudioBarOpen(false);
+                      }}
+                      onStateChange={(playing) => setIsReadingPage(playing)}
+                      colorTheme={accentColor}
+                    />
                   </div>
                 )}
 
@@ -8207,12 +8199,12 @@ export default function TurathReader({
                           onMouseUp={() => {
                             setCurrentPage(scrubPage);
                             setIsScrubbing(false);
-                            resetMobilePaginationTimer();
+                            showMobilePagination();
                           }}
                           onTouchEnd={() => {
                             setCurrentPage(scrubPage);
                             setIsScrubbing(false);
-                            resetMobilePaginationTimer();
+                            showMobilePagination();
                           }}
                           className="absolute inset-x-0 w-full h-4 opacity-0 cursor-pointer z-10"
                           title="اسحب للتقليب السريع بين صفحات الجزء"
@@ -8246,7 +8238,7 @@ export default function TurathReader({
                       type="button"
                       onClick={() => {
                         setIsPageSearchOpen(true);
-                        resetMobilePaginationTimer();
+                        showMobilePagination();
                       }}
                       className={`flex items-center justify-center p-1.5 md:p-2 rounded-xl transition-all font-bold shadow-xs cursor-pointer shrink-0 md:hidden ${
                       isPageSearchOpen
@@ -8268,7 +8260,7 @@ export default function TurathReader({
                     type="button"
                     onClick={() => {
                       goPrev();
-                      resetMobilePaginationTimer();
+                      showMobilePagination();
                     }}
                     disabled={currentPage <= 1}
                     className={`flex items-center justify-center p-1.5 md:p-2 rounded-xl transition-all font-bold shadow-xs disabled:opacity-30 disabled:pointer-events-none group cursor-pointer shrink-0 ${
@@ -8299,7 +8291,7 @@ export default function TurathReader({
                         type="button"
                         onClick={() => {
                           setIsVolumePickerOpen(prev => !prev);
-                          resetMobilePaginationTimer();
+                          showMobilePagination();
                         }}
                         className={`flex items-center gap-1 px-2 py-0.5 rounded-lg transition-all font-bold text-xs sm:text-sm cursor-pointer select-none active:scale-95 ${
                           isVolumePickerOpen
@@ -8383,7 +8375,7 @@ export default function TurathReader({
                                           onClick={() => {
                                             handleSelectVolume(vol);
                                             setIsVolumePickerOpen(false);
-                                            resetMobilePaginationTimer();
+                                            showMobilePagination();
                                           }}
                                           className={`w-full flex items-center justify-between px-4 py-3.5 text-right text-sm sm:text-base font-bold transition-all cursor-pointer ${
                                             isCurrent
@@ -8425,14 +8417,14 @@ export default function TurathReader({
                         value={printPageInput}
                         onChange={(e) => {
                           setPrintPageInput(e.target.value);
-                          resetMobilePaginationTimer();
+                          showMobilePagination();
                         }}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') {
                             e.preventDefault();
                             handleJumpToPrintPage(printVolInput, printPageInput);
                             (e.target as HTMLInputElement).blur();
-                            resetMobilePaginationTimer();
+                            showMobilePagination();
                           }
                         }}
                         onBlur={() => handleJumpToPrintPage(printVolInput, printPageInput)}
@@ -8471,7 +8463,7 @@ export default function TurathReader({
                     type="button"
                     onClick={() => {
                       goNext();
-                      resetMobilePaginationTimer();
+                      showMobilePagination();
                     }}
                     disabled={currentPage >= (maxPage || 1)}
                     className={`flex items-center justify-center p-1.5 md:p-2 rounded-xl transition-all font-bold shadow-xs disabled:opacity-30 disabled:pointer-events-none group cursor-pointer shrink-0 ${
@@ -8492,11 +8484,17 @@ export default function TurathReader({
                       type="button"
                       onClick={() => {
                         setIsAudioBarOpen(prev => !prev);
-                        resetMobilePaginationTimer();
+                        showMobilePagination();
                       }}
                       className={`flex items-center justify-center p-1.5 md:p-2 rounded-xl transition-all font-bold shadow-xs cursor-pointer shrink-0 ${
                         isAudioBarOpen || isReadingPage
-                          ? 'bg-amber-500/20 text-amber-500 border border-amber-500/40 animate-pulse'
+                          ? accentColor === 'amber'
+                            ? 'bg-amber-500/20 text-amber-500 border border-amber-500/40'
+                            : accentColor === 'emerald'
+                              ? 'bg-teal-500/20 text-teal-600 dark:text-teal-400 border border-teal-500/40'
+                              : accentColor === 'blue'
+                                ? 'bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/40'
+                                : 'bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-500/40'
                           : readerTheme === 'dark'
                             ? 'bg-white/5 hover:bg-white/10 text-white/70 hover:text-white'
                             : readerTheme === 'sepia'
@@ -8506,7 +8504,7 @@ export default function TurathReader({
                       title={isAudioBarOpen ? "إغلاق فريم الصوت" : "قراءة الصفحة صوتياً"}
                       aria-label="قراءة الصفحة صوتياً"
                     >
-                      <Volume2 className={`h-4 w-4 md:h-4.5 md:w-4.5 ${isAudioBarOpen || isReadingPage ? 'text-amber-500' : ''}`} />
+                      <Volume2 className="h-4 w-4 md:h-4.5 md:w-4.5" />
                     </button>
                   )}
 
@@ -8517,7 +8515,7 @@ export default function TurathReader({
                       type="button"
                       onClick={() => {
                         setIsPageActionsOpen(!isPageActionsOpen);
-                        resetMobilePaginationTimer();
+                        showMobilePagination();
                       }}
                       className={`flex items-center justify-center p-1.5 md:p-2 rounded-xl transition-all font-bold shadow-xs cursor-pointer ${
                         isPageActionsOpen
@@ -8554,7 +8552,15 @@ export default function TurathReader({
                           }}
                           className="w-full flex items-center gap-2.5 p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-xs font-bold text-right transition-colors cursor-pointer"
                         >
-                          <Volume2 className="w-4 h-4 text-amber-500 shrink-0" />
+                          <Volume2 className={`w-4 h-4 shrink-0 ${
+                            accentColor === 'amber'
+                              ? 'text-amber-500'
+                              : accentColor === 'emerald'
+                                ? 'text-teal-600 dark:text-teal-400'
+                                : accentColor === 'blue'
+                                  ? 'text-blue-600 dark:text-blue-400'
+                                  : 'text-purple-600 dark:text-purple-400'
+                          }`} />
                           <span className="truncate">قراءة الصفحة صوتياً</span>
                         </button>
 
