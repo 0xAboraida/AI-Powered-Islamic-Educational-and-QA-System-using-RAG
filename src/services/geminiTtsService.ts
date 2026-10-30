@@ -71,7 +71,9 @@ const DEFAULT_GEMINI_KEYS: string[] = []
 
 const TTS_MODELS = [
   "gemini-2.5-flash-preview-tts",
-  "gemini-3.1-flash-tts-preview"
+  "gemini-3.8-flash-tts",
+  "gemini-3.1-flash-tts-preview",
+  "gemini-3.8-flash-lite-tts",
 ]
 
 export interface TtsOptions {
@@ -317,7 +319,78 @@ export function stopAllSpeech(): void {
 }
 
 /**
- * Web Speech API Fallback for a single block of text.
+ * Finds the highest quality Arabic voice available in the browser/OS.
+ */
+function getBrowserArabicVoice(voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | null {
+  if (!voices || voices.length === 0) return null
+
+  // 1. Premium / Natural Arabic voices (Edge Natural, Chrome Google Arabic, Saudi, Egypt)
+  const premium = voices.find(v => {
+    const lang = (v.lang || '').toLowerCase()
+    const name = v.name || ''
+    const isAr = lang.startsWith('ar') || name.toLowerCase().includes('arabic') || name.includes('عربي') || name.includes('العربية')
+    return isAr && (
+      name.includes('Natural') ||
+      name.includes('Online') ||
+      name.includes('Google') ||
+      name.includes('Shakir') ||
+      name.includes('Salma') ||
+      name.includes('Hoda') ||
+      name.includes('Hamed') ||
+      name.includes('Tarik') ||
+      name.includes('Maged') ||
+      name.includes('Naayf')
+    )
+  })
+  if (premium) return premium
+
+  // 2. Any voice registered as Arabic
+  const anyAr = voices.find(v => {
+    const lang = (v.lang || '').toLowerCase()
+    const name = v.name || ''
+    return lang.startsWith('ar') || name.toLowerCase().includes('arabic') || name.includes('عربي') || name.includes('العربية')
+  })
+  return anyAr || null
+}
+
+/**
+ * Splits text into natural sentence fragments (~120-180 characters)
+ * to prevent Chromium speech synthesis timeout bugs and ensure smooth Arabic playback.
+ */
+function splitIntoSentences(text: string): string[] {
+  const rawSentences = text.split(/(?<=[.،؛:!؟\n])\s+/)
+  const result: string[] = []
+  let currentChunk = ''
+
+  for (const sentence of rawSentences) {
+    if (!sentence.trim()) continue
+    if ((currentChunk + ' ' + sentence).trim().length <= 160) {
+      currentChunk = (currentChunk + ' ' + sentence).trim()
+    } else {
+      if (currentChunk) result.push(currentChunk)
+      if (sentence.length <= 160) {
+        currentChunk = sentence
+      } else {
+        const words = sentence.split(' ')
+        currentChunk = ''
+        for (const word of words) {
+          if (!word.trim()) continue
+          if ((currentChunk + ' ' + word).trim().length <= 160) {
+            currentChunk = (currentChunk + ' ' + word).trim()
+          } else {
+            if (currentChunk) result.push(currentChunk)
+            currentChunk = word
+          }
+        }
+      }
+    }
+  }
+  if (currentChunk.trim()) result.push(currentChunk.trim())
+  return result
+}
+
+/**
+ * Web Speech API Engine with Arabic Voice Enforcement & Chromium Sentence Chunking.
  */
 function playWebSpeech(cleanedText: string, options?: TtsOptions): void {
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
@@ -327,37 +400,89 @@ function playWebSpeech(cleanedText: string, options?: TtsOptions): void {
 
   stopAllSpeech()
   isPlaybackCancelled = false
+  const sessionId = globalSpeechSessionId
 
-  const rate = options?.playbackRate || currentPlaybackSpeed
-  const utterance = new SpeechSynthesisUtterance(cleanedText)
-  utterance.lang = 'ar-SA'
-  utterance.rate = Math.min(Math.max(rate, 0.5), 2.0)
-  utterance.pitch = 1.0
+  window.speechSynthesis.cancel()
 
-  const voices = window.speechSynthesis.getVoices()
-  const arVoice = voices.find(v => v.lang.startsWith('ar') && (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Maged') || v.name.includes('Tarik') || v.name.includes('Naayf')))
-    || voices.find(v => v.lang.startsWith('ar'))
-
-  if (arVoice) {
-    utterance.voice = arVoice
+  const chunks = splitIntoSentences(cleanedText)
+  if (chunks.length === 0) {
+    options?.onError?.(new Error('No readable text'))
+    return
   }
 
-  utterance.onstart = () => {
-    options?.onStart?.()
+  const rate = options?.playbackRate || currentPlaybackSpeed || 1.0
+
+  const pickVoiceAndSpeak = () => {
+    if (isPlaybackCancelled || sessionId !== globalSpeechSessionId) return
+
+    const voices = window.speechSynthesis.getVoices()
+    const arVoice = getBrowserArabicVoice(voices)
+
+    let chunkIndex = 0
+    let hasStarted = false
+
+    const speakNextChunk = () => {
+      if (isPlaybackCancelled || sessionId !== globalSpeechSessionId) {
+        window.speechSynthesis.cancel()
+        currentSpeechUtterance = null
+        return
+      }
+
+      if (chunkIndex >= chunks.length) {
+        currentSpeechUtterance = null
+        options?.onEnd?.()
+        return
+      }
+
+      const chunk = chunks[chunkIndex]
+      chunkIndex++
+
+      const utterance = new SpeechSynthesisUtterance(chunk)
+      utterance.lang = arVoice?.lang || 'ar-SA'
+      if (arVoice) {
+        utterance.voice = arVoice
+      }
+      utterance.rate = Math.min(Math.max(rate, 0.5), 2.0)
+      utterance.pitch = 1.0
+
+      utterance.onstart = () => {
+        if (!hasStarted) {
+          hasStarted = true
+          options?.onStart?.()
+        }
+      }
+
+      utterance.onend = () => {
+        speakNextChunk()
+      }
+
+      utterance.onerror = (e) => {
+        console.warn('Speech chunk warning:', e)
+        speakNextChunk()
+      }
+
+      currentSpeechUtterance = utterance
+      window.speechSynthesis.speak(utterance)
+    }
+
+    speakNextChunk()
   }
 
-  utterance.onend = () => {
-    currentSpeechUtterance = null
-    options?.onEnd?.()
+  const initialVoices = window.speechSynthesis.getVoices()
+  if (initialVoices.length > 0) {
+    pickVoiceAndSpeak()
+  } else {
+    let fired = false
+    const onVoices = () => {
+      if (!fired) {
+        fired = true
+        window.speechSynthesis.removeEventListener('voiceschanged', onVoices)
+        pickVoiceAndSpeak()
+      }
+    }
+    window.speechSynthesis.addEventListener('voiceschanged', onVoices)
+    setTimeout(onVoices, 200)
   }
-
-  utterance.onerror = (e) => {
-    currentSpeechUtterance = null
-    options?.onError?.(e)
-  }
-
-  currentSpeechUtterance = utterance
-  window.speechSynthesis.speak(utterance)
 }
 
 /**

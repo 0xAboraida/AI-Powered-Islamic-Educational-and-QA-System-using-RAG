@@ -18,10 +18,12 @@ import {
 
 interface AudioReaderButtonProps {
   text: string
+  label?: string
   dark?: boolean
   className?: string
   showTextLabel?: boolean
   hidePodcast?: boolean
+  autoPlay?: boolean
   onStateChange?: (isPlaying: boolean) => void
   colorTheme?: 'emerald' | 'purple'
   orientation?: 'horizontal' | 'vertical'
@@ -32,10 +34,12 @@ const SPEED_OPTIONS = [1.0, 1.25, 1.5, 2.0, 0.8]
 
 export function AudioReaderButton({
   text,
+  label,
   dark = true,
   className = '',
   showTextLabel = true,
   hidePodcast = false,
+  autoPlay = false,
   onStateChange,
   colorTheme = 'emerald',
   orientation = 'horizontal',
@@ -83,6 +87,12 @@ export function AudioReaderButton({
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
+
+  useEffect(() => {
+    if (autoPlay && text && text.trim()) {
+      handleStartOrToggleSpeech()
+    }
+  }, [autoPlay])
 
   const handleStartOrToggleSpeech = async (overrideVoice?: VoiceName) => {
     if (!text || !text.trim()) return
@@ -425,7 +435,7 @@ export function AudioReaderButton({
             onClick={() => handleStartOrToggleSpeech()}
             type="button"
             disabled={isLoading}
-            title="قراءة الإجابة كاملاً"
+            title={label || "قراءة النص كاملاً"}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] text-[13px] font-bold transition-all duration-300 hover:scale-105 ${
               dark
                 ? 'text-emerald-400 hover:text-emerald-200 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 shadow-sm'
@@ -439,7 +449,7 @@ export function AudioReaderButton({
             )}
 
             {showTextLabel && (
-              <span>{isLoading ? 'تجهيز الصوت...' : 'قراءة الإجابة'}</span>
+              <span>{isLoading ? 'تجهيز الصوت...' : (label || 'قراءة النص')}</span>
             )}
           </button>
 
