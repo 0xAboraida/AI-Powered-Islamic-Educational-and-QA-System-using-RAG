@@ -516,12 +516,13 @@ export default function HomeChartsSection({
 
   // Continuous Spline SVG Calculations
   const svgWidth = 800;
-  const svgHeight = 370;
-  const paddingX = 45;
-  const paddingTop = 26;
-  const paddingBottom = 40;
+  const svgHeight = 240;
+  const paddingX = 36;
+  const paddingTop = 28;
+  const paddingBottom = 16;
   const plotWidth = svgWidth - paddingX * 2;
   const plotHeight = svgHeight - paddingTop - paddingBottom;
+  const colWidth = plotWidth / (centuriesData.length - 1);
 
   const maxCenturyCount = Math.max(...centuriesData.map(c => c.count), 1);
 
@@ -741,7 +742,28 @@ export default function HomeChartsSection({
             <div className="relative w-full mt-auto flex-1 flex flex-col justify-end pt-2 pb-0">
               <svg
                 viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-                className="w-full h-72 sm:h-80 lg:h-[370px] select-none overflow-visible"
+                className="w-full h-auto max-h-[250px] sm:max-h-[320px] lg:max-h-[360px] select-none overflow-visible"
+                style={{ touchAction: 'pan-y' }}
+                onTouchMove={(e) => {
+                  const svgRect = e.currentTarget.getBoundingClientRect();
+                  const touch = e.touches[0];
+                  if (touch && svgRect.width > 0) {
+                    const relativeX = (touch.clientX - svgRect.left) / svgRect.width;
+                    const svgTouchX = relativeX * svgWidth;
+                    let closestIdx = 0;
+                    let minDiff = Infinity;
+                    curvePoints.forEach((pt, idx) => {
+                      const diff = Math.abs(pt.x - svgTouchX);
+                      if (diff < minDiff) {
+                        minDiff = diff;
+                        closestIdx = idx;
+                      }
+                    });
+                    setSelectedPointIndex(closestIdx);
+                    setHoveredPointIndex(closestIdx);
+                  }
+                }}
+                onTouchEnd={() => setHoveredPointIndex(null)}
               >
                 <defs>
                   {/* Glowing Area Fill Gradient */}
@@ -840,11 +862,12 @@ export default function HomeChartsSection({
                       onMouseLeave={() => setHoveredPointIndex(null)}
                       onClick={() => setSelectedPointIndex(i)}
                     >
-                      {/* Invisible wider target area for easy touch/mouse hover */}
-                      <circle
-                        cx={pt.x}
-                        cy={pt.y}
-                        r="20"
+                      {/* Wide full-height hit area for effortless touch tap/drag */}
+                      <rect
+                        x={pt.x - colWidth / 2}
+                        y={paddingTop}
+                        width={colWidth}
+                        height={plotHeight + paddingBottom}
                         fill="transparent"
                       />
 
@@ -853,7 +876,7 @@ export default function HomeChartsSection({
                         <circle
                           cx={pt.x}
                           cy={pt.y}
-                          r={isHovered ? "11" : "8.5"}
+                          r={isHovered ? "13" : "10"}
                           fill="none"
                           stroke={getCurveStrokeColor()}
                           strokeWidth="1.5"
@@ -866,57 +889,86 @@ export default function HomeChartsSection({
                       <circle
                         cx={pt.x}
                         cy={pt.y}
-                        r={isHovered ? "6.5" : isSelected ? "5.5" : "4"}
+                        r={isHovered ? "8" : isSelected ? "7" : "5"}
                         fill={isHovered || isSelected ? getCurveStrokeColor() : (isDark ? "#131620" : "#ffffff")}
                         stroke={getCurveStrokeColor()}
-                        strokeWidth={isHovered ? "3" : isSelected ? "2.5" : "2"}
+                        strokeWidth={isHovered ? "3.5" : isSelected ? "3" : "2"}
                         className="transition-all duration-200"
                       />
-
-                      {/* X-Axis Century Labels aligned directly beneath each point with fixed baseline */}
-                      <text
-                        x={pt.x}
-                        y={svgHeight - 12}
-                        textAnchor="middle"
-                        fill={isHovered || isSelected ? getCurveStrokeColor() : (isDark ? '#94a3b8' : '#475569')}
-                        fontSize="10"
-                        fontWeight={isHovered || isSelected ? '900' : '700'}
-                        className="transition-colors cursor-pointer select-none"
-                      >
-                        {pt.century}
-                      </text>
                     </g>
                   );
                 })}
               </svg>
 
-              {/* Floating Dynamic Tooltip for Active Point (Smartly Positioned & Clean) */}
-              {activeHoveredData && (
+              {/* Permanent Floating Value Badge Pinned above the Active Node on the Curve */}
+              {activePoint && (
                 <div
-                  className="absolute pointer-events-none select-none transition-all duration-150 z-30"
+                  className="absolute pointer-events-none select-none transition-all duration-300 z-20"
                   style={{
-                    left: `${(activeHoveredData.x / svgWidth) * 100}%`,
-                    top: `${(activeHoveredData.y / svgHeight) * 100}%`,
-                    transform: activeHoveredData.y < 110
-                      ? 'translate(-50%, 12px)'
+                    left: `${(activePoint.x / svgWidth) * 100}%`,
+                    top: `${(activePoint.y / svgHeight) * 100}%`,
+                    transform: activePoint.y < 65
+                      ? 'translate(-50%, 14px)'
                       : 'translate(-50%, -100%) translateY(-12px)'
                   }}
                 >
-                  <div className="bg-slate-900/95 dark:bg-[#151924]/95 text-white py-1.5 px-3 rounded-xl shadow-2xl border border-white/20 backdrop-blur-xl text-center min-w-[150px] max-w-[240px] space-y-0.5">
-                    <div className="flex items-center justify-between gap-2 border-b border-white/10 pb-1">
-                      <span className="text-xs font-black text-amber-300">
-                        {activeHoveredData.century}
-                      </span>
-                      <span className="text-[11px] font-mono font-bold px-1.5 py-0.2 rounded-md bg-white/15">
-                        {activeHoveredData.count.toLocaleString('ar-EG')} مصنفاً
-                      </span>
-                    </div>
-                    <p className="text-[10px] text-slate-200 font-medium leading-relaxed pt-0.5 truncate">
-                      {activeHoveredData.label}
-                    </p>
+                  <div className={`px-2.5 py-1 rounded-xl shadow-lg border backdrop-blur-md flex items-center gap-1.5 whitespace-nowrap font-bold text-xs transition-transform duration-200 ${
+                    isDark
+                      ? 'bg-slate-900/95 border-emerald-500/40 text-emerald-400 shadow-black/60'
+                      : 'bg-white/95 border-emerald-500/40 text-emerald-700 shadow-emerald-900/15'
+                  }`}>
+                    <span>{activePoint.century}</span>
+                    <span className="opacity-40">•</span>
+                    <span className="text-sm font-black font-mono">{activePoint.count.toLocaleString('ar-EG')}</span>
+                    <span className="text-[10px] font-sans opacity-80">كتاب</span>
                   </div>
                 </div>
               )}
+
+              {/* 4. Real HTML X-Axis Century Labels - perfectly crisp, readable, and responsive on all devices */}
+              <div className="relative w-full h-8 mt-1.5 select-none">
+                {curvePoints.map((pt, i) => {
+                  const isSelected = selectedPointIndex === i;
+                  const percentLeft = (pt.x / svgWidth) * 100;
+                  const isMilestone = pt.centuryNum % 2 === 0 || pt.centuryNum === 15;
+
+                  return (
+                    <button
+                      key={pt.century}
+                      type="button"
+                      onClick={() => {
+                        setSelectedPointIndex(i);
+                        setHoveredPointIndex(null);
+                      }}
+                      style={{ left: `${percentLeft}%` }}
+                      className={`absolute -translate-x-1/2 top-0 flex flex-col items-center transition-all cursor-pointer ${
+                        isSelected ? 'z-10' : 'opacity-80 hover:opacity-100'
+                      }`}
+                      title={`${pt.century}: ${pt.count.toLocaleString('ar-EG')} كتاب`}
+                    >
+                      {/* Desktop format: full text like "ق 8 هـ" */}
+                      <span className={`hidden sm:inline-block text-xs whitespace-nowrap transition-colors ${
+                        isSelected
+                          ? 'font-black text-emerald-600 dark:text-emerald-400 scale-110'
+                          : 'font-bold text-slate-600 dark:text-slate-400'
+                      }`}>
+                        {pt.century}
+                      </span>
+
+                      {/* Mobile format: crisp 12px bold font like "8هـ" */}
+                      <span className={`sm:hidden text-xs whitespace-nowrap transition-all ${
+                        isSelected
+                          ? 'px-2 py-0.5 rounded-md bg-emerald-500 text-white font-black shadow-xs text-xs'
+                          : isMilestone
+                            ? 'font-bold text-slate-800 dark:text-slate-200 text-xs'
+                            : 'font-bold text-slate-400 dark:text-slate-600 text-[11px]'
+                      }`}>
+                        {isMilestone || isSelected ? `${pt.centuryNum}هـ` : '·'}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
