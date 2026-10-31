@@ -397,18 +397,18 @@ function getChatBubbleThemeClasses(accentColor: AccentColor, dark: boolean) {
       return {
         h2Box: dark ? 'bg-amber-500/[0.07] border-amber-400/20' : 'bg-amber-50/80 border-amber-200/70',
         h2Bar: dark ? 'bg-amber-400' : 'bg-amber-600',
-        h2Text: dark ? 'text-amber-300' : 'text-amber-900',
-        h3Text: dark ? 'text-transparent bg-clip-text bg-gradient-to-l from-amber-300 to-amber-500' : 'text-amber-800',
+        h2Text: dark ? 'text-amber-300/90' : 'text-amber-900/85',
+        h3Text: dark ? 'text-amber-300/90' : 'text-amber-800/85',
         h4Banner: dark
           ? 'from-amber-500/10 via-amber-500/[0.04] to-transparent border-b border-amber-500/20'
           : 'from-amber-100/80 via-amber-50/40 to-transparent border-b border-amber-200/80',
-        h4Text: dark ? 'text-transparent bg-clip-text bg-gradient-to-l from-amber-200 to-amber-400' : 'text-amber-950',
-        marker: dark ? 'marker:text-amber-400' : 'marker:text-amber-600',
-        strong: dark ? 'text-amber-300 drop-shadow-[0_0_8px_rgba(245,158,11,0.35)]' : 'text-amber-900',
-        strongTitle: dark ? 'text-amber-300 decoration-amber-400/50' : 'text-amber-900 decoration-amber-500/50',
-        strongBadge: dark ? 'bg-amber-500/10 border-amber-500/30 text-amber-300' : 'bg-amber-50 border-amber-300 text-amber-800',
-        strongFrame: dark ? 'bg-gradient-to-l from-amber-500/10 to-transparent border-amber-500/20 text-amber-300' : 'bg-gradient-to-l from-amber-50 to-transparent border-amber-200 text-amber-900',
-        del: dark ? 'bg-amber-500/10 border-amber-400/30 text-amber-300 shadow-[0_0_16px_rgba(245,158,11,0.08)]' : 'bg-amber-50 border-amber-300/70 text-amber-800 shadow-sm',
+        h4Text: dark ? 'text-amber-200/90' : 'text-amber-900/85',
+        marker: dark ? 'marker:text-amber-400/80' : 'marker:text-amber-700/80',
+        strong: dark ? 'text-amber-300/90 drop-shadow-[0_0_4px_rgba(245,158,11,0.2)]' : 'text-amber-900/85',
+        strongTitle: dark ? 'text-amber-300/90 decoration-amber-400/40' : 'text-amber-900/85 decoration-amber-500/40',
+        strongBadge: dark ? 'bg-amber-500/10 border-amber-500/30 text-amber-300/90' : 'bg-amber-50 border-amber-300 text-amber-800/90',
+        strongFrame: dark ? 'bg-gradient-to-l from-amber-500/10 to-transparent border-amber-500/20 text-amber-300/90' : 'bg-gradient-to-l from-amber-50 to-transparent border-amber-200 text-amber-900/85',
+        del: dark ? 'bg-amber-500/10 border-amber-400/30 text-amber-300/90 shadow-[0_0_12px_rgba(245,158,11,0.06)]' : 'bg-amber-50 border-amber-300/70 text-amber-800/90 shadow-sm',
         link: dark ? 'text-amber-400 hover:text-amber-300 font-medium transition-colors underline underline-offset-4' : 'text-amber-600 hover:text-amber-800 font-medium transition-colors underline underline-offset-4',
         code: dark ? 'bg-amber-950/50 text-amber-200' : 'bg-amber-100/60 text-amber-950 border border-amber-200/60',
         quoteGeneric: dark ? 'border-amber-500/50 bg-amber-500/[0.08] text-amber-50' : 'border-amber-600 bg-[#FFFDF7] text-[#78350F] shadow-sm ring-1 ring-amber-100/70',
@@ -426,24 +426,24 @@ function getChatBubbleThemeClasses(accentColor: AccentColor, dark: boolean) {
         bookTitle: 'text-amber-400',
         sourceBtn: dark ? 'bg-amber-500/20 text-amber-300 border-amber-500/30 hover:bg-amber-500/30' : 'bg-amber-600 text-white border-amber-600 hover:bg-amber-700 shadow-sm',
         hierarchyTag: dark ? 'bg-amber-950/60 text-amber-300 border border-amber-500/30 hover:bg-amber-900/90 hover:border-amber-400/80 hover:shadow-[0_0_15px_rgba(245,158,11,0.4)]' : 'bg-amber-100/90 text-amber-900 border border-amber-300/70 hover:bg-amber-200/90 hover:border-amber-400 hover:shadow-[0_0_12px_rgba(245,158,11,0.3)]',
-        userBubbleGradient: 'linear-gradient(225deg, #451a03 0%, #78350f 30%, #b45309 75%, #d97706 100%)',
+        userBubbleGradient: 'linear-gradient(225deg, #78350f 0%, #854d0e 50%, #92400e 100%)',
       };
     case 'emerald':
       return {
         h2Box: dark ? 'bg-emerald-500/[0.07] border-emerald-400/20' : 'bg-emerald-50/80 border-emerald-200/70',
         h2Bar: dark ? 'bg-emerald-400' : 'bg-emerald-600',
-        h2Text: dark ? 'text-emerald-300' : 'text-emerald-800',
-        h3Text: dark ? 'text-transparent bg-clip-text bg-gradient-to-l from-emerald-300 to-emerald-500' : 'text-emerald-700',
+        h2Text: dark ? 'text-emerald-300/90' : 'text-emerald-800/85',
+        h3Text: dark ? 'text-emerald-300/90' : 'text-emerald-800/85',
         h4Banner: dark
           ? 'from-emerald-500/10 via-emerald-500/[0.04] to-transparent border-b border-emerald-500/20'
           : 'from-emerald-100/80 via-emerald-50/40 to-transparent border-b border-emerald-200/80',
-        h4Text: dark ? 'text-transparent bg-clip-text bg-gradient-to-l from-emerald-200 to-emerald-400' : 'text-emerald-900',
-        marker: dark ? 'marker:text-emerald-400' : 'marker:text-emerald-600',
-        strong: dark ? 'text-emerald-300 drop-shadow-[0_0_8px_rgba(52,211,153,0.35)]' : 'text-emerald-800',
-        strongTitle: dark ? 'text-emerald-300 decoration-emerald-400/50' : 'text-emerald-800 decoration-emerald-500/50',
-        strongBadge: dark ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
-        strongFrame: dark ? 'bg-gradient-to-l from-emerald-500/10 to-transparent border-emerald-500/20 text-emerald-300' : 'bg-gradient-to-l from-emerald-50 to-transparent border-emerald-200 text-emerald-800',
-        del: dark ? 'bg-emerald-500/10 border-emerald-400/30 text-emerald-300 shadow-[0_0_16px_rgba(16,185,129,0.08)]' : 'bg-emerald-50 border-emerald-300/70 text-emerald-800 shadow-sm',
+        h4Text: dark ? 'text-emerald-200/90' : 'text-emerald-900/85',
+        marker: dark ? 'marker:text-emerald-400/80' : 'marker:text-emerald-700/80',
+        strong: dark ? 'text-emerald-300/90 drop-shadow-[0_0_4px_rgba(52,211,153,0.2)]' : 'text-emerald-800/85',
+        strongTitle: dark ? 'text-emerald-300/90 decoration-emerald-400/40' : 'text-emerald-800/85 decoration-emerald-500/40',
+        strongBadge: dark ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300/90' : 'bg-emerald-50 border-emerald-300 text-emerald-800/90',
+        strongFrame: dark ? 'bg-gradient-to-l from-emerald-500/10 to-transparent border-emerald-500/20 text-emerald-300/90' : 'bg-gradient-to-l from-emerald-50 to-transparent border-emerald-200 text-emerald-800/85',
+        del: dark ? 'bg-emerald-500/10 border-emerald-400/30 text-emerald-300/90 shadow-[0_0_12px_rgba(16,185,129,0.06)]' : 'bg-emerald-50 border-emerald-300/70 text-emerald-800/90 shadow-sm',
         link: dark ? 'text-emerald-400 hover:text-emerald-300 font-medium transition-colors underline underline-offset-4' : 'text-emerald-600 hover:text-emerald-800 font-medium transition-colors underline underline-offset-4',
         code: dark ? 'bg-emerald-950/50 text-emerald-200' : 'bg-emerald-100/60 text-emerald-900 border border-emerald-200/60',
         quoteGeneric: dark ? 'border-emerald-500/50 bg-emerald-500/[0.08] text-emerald-50' : 'border-emerald-600 bg-[#F7FDFB] text-[#064E3B] shadow-sm ring-1 ring-emerald-100/70',
@@ -461,24 +461,24 @@ function getChatBubbleThemeClasses(accentColor: AccentColor, dark: boolean) {
         bookTitle: 'text-emerald-400',
         sourceBtn: dark ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/30' : 'bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700 shadow-sm',
         hierarchyTag: dark ? 'bg-emerald-950/60 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-900/90 hover:border-emerald-400/80 hover:shadow-[0_0_15px_rgba(16,185,129,0.4)]' : 'bg-emerald-100/90 text-emerald-900 border border-emerald-300/70 hover:bg-emerald-200/90 hover:border-emerald-400 hover:shadow-[0_0_12px_rgba(16,185,129,0.3)]',
-        userBubbleGradient: 'linear-gradient(225deg, #042f2e 0%, #064e3b 30%, #0d9488 75%, #14b8a6 100%)',
+        userBubbleGradient: 'linear-gradient(225deg, #064e3b 0%, #065f46 50%, #0f766e 100%)',
       };
     case 'blue':
       return {
         h2Box: dark ? 'bg-blue-500/[0.07] border-blue-400/20' : 'bg-blue-50/80 border-blue-200/70',
         h2Bar: dark ? 'bg-blue-400' : 'bg-blue-600',
-        h2Text: dark ? 'text-blue-300' : 'text-blue-900',
-        h3Text: dark ? 'text-transparent bg-clip-text bg-gradient-to-l from-blue-300 to-blue-500' : 'text-blue-700',
+        h2Text: dark ? 'text-blue-300/90' : 'text-blue-900/85',
+        h3Text: dark ? 'text-blue-300/90' : 'text-blue-800/85',
         h4Banner: dark
           ? 'from-blue-500/10 via-blue-500/[0.04] to-transparent border-b border-blue-500/20'
           : 'from-blue-100/80 via-blue-50/40 to-transparent border-b border-blue-200/80',
-        h4Text: dark ? 'text-transparent bg-clip-text bg-gradient-to-l from-blue-200 to-blue-400' : 'text-blue-950',
-        marker: dark ? 'marker:text-blue-400' : 'marker:text-blue-600',
-        strong: dark ? 'text-blue-300 drop-shadow-[0_0_8px_rgba(59,130,246,0.35)]' : 'text-blue-900',
-        strongTitle: dark ? 'text-blue-300 decoration-blue-400/50' : 'text-blue-900 decoration-blue-500/50',
-        strongBadge: dark ? 'bg-blue-500/10 border-blue-500/30 text-blue-300' : 'bg-blue-50 border-blue-300 text-blue-800',
-        strongFrame: dark ? 'bg-gradient-to-l from-blue-500/10 to-transparent border-blue-500/20 text-blue-300' : 'bg-gradient-to-l from-blue-50 to-transparent border-blue-200 text-blue-900',
-        del: dark ? 'bg-blue-500/10 border-blue-400/30 text-blue-300 shadow-[0_0_16px_rgba(59,130,246,0.08)]' : 'bg-blue-50 border-blue-300/70 text-blue-800 shadow-sm',
+        h4Text: dark ? 'text-blue-200/90' : 'text-blue-900/85',
+        marker: dark ? 'marker:text-blue-400/80' : 'marker:text-blue-700/80',
+        strong: dark ? 'text-blue-300/90 drop-shadow-[0_0_4px_rgba(59,130,246,0.2)]' : 'text-blue-900/85',
+        strongTitle: dark ? 'text-blue-300/90 decoration-blue-400/40' : 'text-blue-900/85 decoration-blue-500/40',
+        strongBadge: dark ? 'bg-blue-500/10 border-blue-500/30 text-blue-300/90' : 'bg-blue-50 border-blue-300 text-blue-800/90',
+        strongFrame: dark ? 'bg-gradient-to-l from-blue-500/10 to-transparent border-blue-500/20 text-blue-300/90' : 'bg-gradient-to-l from-blue-50 to-transparent border-blue-200 text-blue-900/85',
+        del: dark ? 'bg-blue-500/10 border-blue-400/30 text-blue-300/90 shadow-[0_0_12px_rgba(59,130,246,0.06)]' : 'bg-blue-50 border-blue-300/70 text-blue-800/90 shadow-sm',
         link: dark ? 'text-blue-400 hover:text-blue-300 font-medium transition-colors underline underline-offset-4' : 'text-blue-600 hover:text-blue-800 font-medium transition-colors underline underline-offset-4',
         code: dark ? 'bg-blue-950/50 text-blue-200' : 'bg-blue-100/60 text-blue-950 border border-blue-200/60',
         quoteGeneric: dark ? 'border-blue-500/50 bg-blue-500/[0.08] text-blue-50' : 'border-blue-600 bg-[#F8FAFC] text-[#1E3A8A] shadow-sm ring-1 ring-blue-100/70',
@@ -496,25 +496,25 @@ function getChatBubbleThemeClasses(accentColor: AccentColor, dark: boolean) {
         bookTitle: 'text-blue-400',
         sourceBtn: dark ? 'bg-blue-500/20 text-blue-300 border-blue-500/30 hover:bg-blue-500/30' : 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700 shadow-sm',
         hierarchyTag: dark ? 'bg-blue-950/60 text-blue-300 border border-blue-500/30 hover:bg-blue-900/90 hover:border-blue-400/80 hover:shadow-[0_0_15px_rgba(59,130,246,0.4)]' : 'bg-blue-100/90 text-blue-900 border border-blue-300/70 hover:bg-blue-200/90 hover:border-blue-400 hover:shadow-[0_0_12px_rgba(59,130,246,0.3)]',
-        userBubbleGradient: 'linear-gradient(225deg, #0f172a 0%, #1e3a8a 30%, #1d4ed8 75%, #3b82f6 100%)',
+        userBubbleGradient: 'linear-gradient(225deg, #172554 0%, #1e3a8a 50%, #1d4ed8 100%)',
       };
     case 'purple':
     default:
       return {
         h2Box: dark ? 'bg-purple-500/[0.07] border-purple-400/20' : 'bg-purple-50/80 border-purple-200/70',
         h2Bar: dark ? 'bg-purple-400' : 'bg-purple-600',
-        h2Text: dark ? 'text-purple-300' : 'text-purple-800',
-        h3Text: dark ? 'text-transparent bg-clip-text bg-gradient-to-l from-purple-300 to-purple-500' : 'text-purple-700',
+        h2Text: dark ? 'text-purple-300/90' : 'text-purple-800/85',
+        h3Text: dark ? 'text-purple-300/90' : 'text-purple-800/85',
         h4Banner: dark
           ? 'from-purple-500/10 via-purple-500/[0.04] to-transparent border-b border-purple-500/20'
           : 'from-purple-100/80 via-purple-50/40 to-transparent border-b border-purple-200/80',
-        h4Text: dark ? 'text-transparent bg-clip-text bg-gradient-to-l from-purple-200 to-purple-400' : 'text-purple-900',
-        marker: dark ? 'marker:text-purple-400' : 'marker:text-purple-600',
-        strong: dark ? 'text-purple-300 drop-shadow-[0_0_8px_rgba(168,85,247,0.35)]' : 'text-purple-800',
-        strongTitle: dark ? 'text-purple-300 decoration-purple-400/50' : 'text-purple-800 decoration-purple-500/50',
-        strongBadge: dark ? 'bg-purple-500/10 border-purple-500/30 text-purple-300' : 'bg-purple-50 border-purple-300 text-purple-700',
-        strongFrame: dark ? 'bg-gradient-to-l from-purple-500/10 to-transparent border-purple-500/20 text-purple-300' : 'bg-gradient-to-l from-purple-50 to-transparent border-purple-200 text-purple-800',
-        del: dark ? 'bg-purple-500/10 border-purple-400/30 text-purple-300 shadow-[0_0_16px_rgba(168,85,247,0.08)]' : 'bg-purple-50 border-purple-300/70 text-purple-700 shadow-sm',
+        h4Text: dark ? 'text-purple-200/90' : 'text-purple-900/85',
+        marker: dark ? 'marker:text-purple-400/80' : 'marker:text-purple-700/80',
+        strong: dark ? 'text-purple-300/90 drop-shadow-[0_0_4px_rgba(168,85,247,0.2)]' : 'text-purple-800/85',
+        strongTitle: dark ? 'text-purple-300/90 decoration-purple-400/40' : 'text-purple-800/85 decoration-purple-500/40',
+        strongBadge: dark ? 'bg-purple-500/10 border-purple-500/30 text-purple-300/90' : 'bg-purple-50 border-purple-300 text-purple-700/90',
+        strongFrame: dark ? 'bg-gradient-to-l from-purple-500/10 to-transparent border-purple-500/20 text-purple-300/90' : 'bg-gradient-to-l from-purple-50 to-transparent border-purple-200 text-purple-800/85',
+        del: dark ? 'bg-purple-500/10 border-purple-400/30 text-purple-300/90 shadow-[0_0_12px_rgba(168,85,247,0.06)]' : 'bg-purple-50 border-purple-300/70 text-purple-700/90 shadow-sm',
         link: dark ? 'text-purple-400 hover:text-purple-300 font-medium transition-colors underline underline-offset-4' : 'text-purple-600 hover:text-purple-800 font-medium transition-colors underline underline-offset-4',
         code: dark ? 'bg-purple-950/50 text-purple-200' : 'bg-purple-100/60 text-purple-900 border border-purple-200/60',
         quoteGeneric: dark ? 'border-purple-500/50 bg-purple-500/[0.08] text-purple-50' : 'border-purple-600 bg-[#FDFBF7] text-[#1E1B4B] shadow-sm ring-1 ring-purple-100/70',
@@ -532,7 +532,7 @@ function getChatBubbleThemeClasses(accentColor: AccentColor, dark: boolean) {
         bookTitle: 'text-purple-400',
         sourceBtn: dark ? 'bg-purple-500/20 text-purple-300 border-purple-500/30 hover:bg-purple-500/30' : 'bg-purple-600 text-white border-purple-600 hover:bg-purple-700 shadow-sm',
         hierarchyTag: dark ? 'bg-purple-950/60 text-purple-300 border border-purple-500/30 hover:bg-purple-900/90 hover:border-purple-400/80 hover:shadow-[0_0_15px_rgba(168,85,247,0.4)]' : 'bg-purple-100/90 text-purple-900 border border-purple-300/70 hover:bg-purple-200/90 hover:border-purple-400 hover:shadow-[0_0_12px_rgba(168,85,247,0.3)]',
-        userBubbleGradient: 'linear-gradient(225deg, #2e0854 0%, #4a044e 30%, #7e22ce 75%, #a855f7 100%)',
+        userBubbleGradient: 'linear-gradient(225deg, #4a044e 0%, #581c87 50%, #6b21a8 100%)',
       };
   }
 }
@@ -645,43 +645,43 @@ export function Bubble({
     return {
       h1: ({ node, ...props }: any) => (
         <h1
-          className={`text-2xl font-bold mt-1 mb-4 ${dark ? 'text-white' : 'text-primary'
+          className={`text-[17px] sm:text-[18px] md:text-[19px] font-bold mt-1 mb-3 leading-snug ${dark ? 'text-white' : 'text-primary'
             }`}
           {...props}
         />
       ),
       h2: ({ node, ...props }: any) => (
         <div
-          className={`flex items-center gap-2.5 mt-5 mb-3 px-3 py-2 rounded-xl border ${theme.h2Box}`}
+          className={`flex items-center gap-2 mt-3.5 mb-2 px-2.5 py-1.5 rounded-xl border ${theme.h2Box}`}
         >
           <span
-            className={`w-1 h-5 rounded-full flex-shrink-0 ${theme.h2Bar}`}
+            className={`w-1 h-4 rounded-full flex-shrink-0 ${theme.h2Bar}`}
           />
           <h2
-            className={`text-[17px] md:text-[18px] font-bold ${theme.h2Text}`}
+            className={`text-[14.5px] sm:text-[15.5px] font-bold leading-snug ${theme.h2Text}`}
             {...props}
           />
         </div>
       ),
       h3: ({ node, ...props }: any) => (
         <div
-          className={`flex items-center gap-3 mb-5 px-3 sm:px-5 py-3.5 -mx-3 sm:-mx-5 -mt-3 sm:-mt-5 bg-gradient-to-l ${dark
+          className={`flex items-center gap-2 mb-3.5 px-3 sm:px-4 py-2 sm:py-2.5 -mx-3 sm:-mx-4 -mt-3 sm:-mt-4 bg-gradient-to-l ${dark
             ? 'from-white/[0.06] to-transparent border-b border-white/10'
             : 'from-primary/[0.05] to-transparent border-b border-primary/10'
             }`}
         >
           <h3
-            className={`text-[19px] font-bold ${theme.h3Text}`}
+            className={`text-[14.5px] sm:text-[15.5px] md:text-[16px] font-bold leading-snug ${theme.h3Text}`}
             {...props}
           />
         </div>
       ),
       h4: ({ node, ...props }: any) => (
         <div
-          className={`flex items-center gap-2 mb-4 px-4 sm:px-5 py-3 -mx-4 sm:-mx-5 -mt-4 sm:-mt-5 bg-gradient-to-l ${theme.h4Banner}`}
+          className={`flex items-center gap-2 mb-2.5 px-3 sm:px-4 py-1.5 sm:py-2 -mx-3 sm:-mx-4 -mt-3 sm:-mt-4 bg-gradient-to-l ${theme.h4Banner}`}
         >
           <h4
-            className={`text-[16px] md:text-[17px] font-extrabold ${theme.h4Text}`}
+            className={`text-[13.5px] sm:text-[14.5px] font-bold leading-snug ${theme.h4Text}`}
             {...props}
           />
         </div>
@@ -731,7 +731,7 @@ export function Bubble({
         if (text.includes('ZAD_FRAME_') || text.includes('__FRAME__')) {
           return (
             <strong
-              className={`inline-flex items-center mb-2 mt-3 px-4 py-1.5 rounded-full border border-b-[2.5px] font-extrabold text-[15.5px] shadow-sm max-w-full leading-tight ${theme.strongFrame}`}
+              className={`inline-flex items-center mb-1.5 mt-2 px-3 py-1 rounded-full border border-b-[2px] font-bold text-[13.5px] sm:text-[14px] shadow-xs max-w-full leading-tight ${theme.strongFrame}`}
             >
               <span>{text.replace(/ZAD_FRAME_/g, '').replace(/__FRAME__/g, '')}</span>
             </strong>
@@ -911,7 +911,7 @@ export function Bubble({
         )}
         {isUser ? (
           <div
-            className="rounded-[20px] sm:rounded-[24px] px-3.5 sm:px-5 py-2.5 sm:py-3.5 text-sm sm:text-[15px] leading-relaxed shadow-sm rounded-tr-none text-white whitespace-pre-line break-words"
+            className="rounded-[18px] sm:rounded-[22px] px-3 sm:px-4.5 py-2 sm:py-3 text-sm sm:text-[15px] leading-relaxed shadow-sm rounded-tr-none text-white whitespace-pre-line break-words"
             style={{ background: theme.userBubbleGradient }}
           >
             {message.text}
@@ -921,7 +921,7 @@ export function Bubble({
             <div
               ref={messageContentRef}
               data-selectable="true"
-              className={`relative px-3 sm:px-5 py-3 sm:py-5 border rounded-[20px] sm:rounded-[24px] rounded-tl-none flex flex-col gap-3 sm:gap-4 ${dark
+              className={`relative px-2 sm:px-4 py-2.5 sm:py-4 border rounded-[18px] sm:rounded-[22px] rounded-tl-none flex flex-col gap-2.5 sm:gap-4 ${dark
                 ? 'bg-black/60 backdrop-blur-2xl border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.15)]'
                 : 'bg-[#FAF9FC] border-primary/15 shadow-[0_4px_20px_rgba(124,58,237,0.04)]'
                 }`}
@@ -936,7 +936,7 @@ export function Bubble({
                 return structuredFrames.map((mainFrame, idx) => (
                   <div
                     key={idx}
-                    className={`p-3.5 sm:p-5 rounded-xl sm:rounded-2xl border flex flex-col gap-2 ${dark
+                    className={`p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border flex flex-col gap-2 ${dark
                       ? 'bg-white/[0.02] border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.15)]'
                       : `bg-white ${theme.mainFrameBorder}`
                       }`}
@@ -953,11 +953,11 @@ export function Bubble({
                     )}
 
                     {mainFrame.children.length > 0 && (
-                      <div className={`flex flex-col gap-3 sm:gap-4 ${mainFrame.content.trim().length > 0 ? 'mt-2' : ''}`}>
+                      <div className={`flex flex-col gap-2.5 sm:gap-3.5 ${mainFrame.content.trim().length > 0 ? 'mt-1.5' : ''}`}>
                         {mainFrame.children.map((childContent, cIdx) => (
                           <div
                             key={cIdx}
-                            className={`p-4 sm:p-5 rounded-2xl border ${theme.childBox}`}
+                            className={`p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border ${theme.childBox}`}
                           >
                             <div dir="rtl" className="w-full text-right">
                               <ReactMarkdown

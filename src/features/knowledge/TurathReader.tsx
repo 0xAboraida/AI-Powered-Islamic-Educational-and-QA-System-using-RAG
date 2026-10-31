@@ -1830,6 +1830,67 @@ const PageQuickSearchBar: React.FC<PageQuickSearchBarProps> = React.memo(({
   );
 });
 
+interface ReaderChatInputBarProps {
+  onSendMessage: (msg: string) => void;
+  disabled: boolean;
+  readerTheme: string;
+}
+
+const ReaderChatInputBar: React.FC<ReaderChatInputBarProps> = React.memo(({
+  onSendMessage,
+  disabled,
+  readerTheme,
+}) => {
+  const [text, setText] = useState('');
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!text.trim() || disabled) return;
+    onSendMessage(text.trim());
+    setText('');
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-col w-full gap-2 relative">
+      <div className="gradient-border min-w-0 flex-1 rounded-[22px] p-[2px] shadow-lg shadow-primary/20 transition-all duration-300">
+        <div className={`flex items-end gap-2 rounded-[20px] py-1.5 pr-4 pl-2 transition-all duration-300 ${
+          readerTheme === 'dark' ? 'bg-[#0f1422]' : readerTheme === 'sepia' ? 'bg-[#FAF5ED]' : 'bg-white'
+        }`}>
+          <textarea
+            ref={textareaRef}
+            rows={1}
+            className="font-sans min-w-0 flex-1 resize-none bg-transparent py-2 text-sm outline-none placeholder:opacity-50 [&::-webkit-scrollbar]:hidden"
+            value={text}
+            onChange={e => setText(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="اكتب سؤالك هنا..."
+            disabled={disabled}
+          />
+          <button
+            type="submit"
+            disabled={!text.trim() || disabled}
+            onMouseDown={(e) => e.preventDefault()}
+            className="brand-gradient flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white shadow-lg shadow-primary/30 transition-transform hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0 cursor-pointer"
+          >
+            <Send className="h-4 w-4 rtl:-scale-x-100" />
+          </button>
+        </div>
+      </div>
+    </form>
+  );
+});
+
 export default function TurathReader({
   book,
   onClose,
@@ -1943,16 +2004,9 @@ export default function TurathReader({
 
   // -------------------------------------------------------------------------
   // Dynamic 4-Theme Styling Helpers for Reader
-  // -------------------------------------------------------------------------
   const getReaderRootBg = () => {
     if (readerTheme === 'dark') {
-      switch (accentColor) {
-        case 'amber': return 'bg-[#090b10] text-slate-100';
-        case 'emerald': return 'bg-[#061110] text-slate-100';
-        case 'blue': return 'bg-[#060e1a] text-slate-100';
-        case 'purple':
-        default: return 'bg-[#0d071a] text-slate-100';
-      }
+      return 'bg-[#090b10] text-slate-100';
     }
     if (readerTheme === 'sepia') {
       return 'bg-[#fcf8f0] text-[#3d2c1d] sepia-reader';
@@ -1989,13 +2043,8 @@ export default function TurathReader({
   };
 
   const getReaderFrameBgColor = (opacity: number) => {
-    switch (accentColor) {
-      case 'amber': return `rgba(13, 16, 22, ${opacity / 100})`;
-      case 'emerald': return `rgba(8, 20, 19, ${opacity / 100})`;
-      case 'blue': return `rgba(8, 16, 28, ${opacity / 100})`;
-      case 'purple':
-      default: return `rgba(13, 7, 26, ${opacity / 100})`;
-    }
+    // Matched exactly to header frame (#090b10 -> rgb(9, 11, 16)) without theme-color tinting
+    return `rgba(9, 11, 16, ${opacity / 100})`;
   };
 
   const getReaderBackButtonClass = () => {
@@ -3343,12 +3392,43 @@ export default function TurathReader({
     }
   }, [sidebarTab]);
 
+  // Mobile virtual keyboard handling for drawer inputs (hides bottom nav bar while typing without lag)
+  const asideRef = useRef<HTMLElement>(null);
+  const [isMobileKeyboardOpen, setIsMobileKeyboardOpen] = useState(false);
+
+  const handleAsideFocusCapture = useCallback(() => {
+    setIsMobileKeyboardOpen(true);
+  }, []);
+
+  const handleAsideBlurCapture = useCallback(() => {
+    setTimeout(() => {
+      const activeEl = document.activeElement;
+      const isStillInsideAside = asideRef.current?.contains(activeEl);
+      const isInput = activeEl?.tagName === 'INPUT' || activeEl?.tagName === 'TEXTAREA';
+      if (!isStillInsideAside || !isInput) {
+        setIsMobileKeyboardOpen(false);
+      }
+    }, 120);
+  }, []);
+
+  useEffect(() => {
+    if (sidebarTab === 'none') {
+      setIsMobileKeyboardOpen(false);
+    }
+  }, [sidebarTab]);
+
   const [chatHistory, setChatHistory] = useState<Message[]>([])
   const [chatLoading, setChatLoading] = useState(false)
-  const [chatInput, setChatInput] = useState("")
   const [showResetChatConfirm, setShowResetChatConfirm] = useState(false)
   const [sidebarWidth, setSidebarWidth] = useState(360)
   const [isResizing, setIsResizing] = useState(false)
+  const chatEndRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (sidebarTab === 'chat' && chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [chatHistory, chatLoading, sidebarTab])
 
   // Page Actions State
   const [bookmarks, setBookmarks] = useState<number[]>([])
@@ -3522,13 +3602,19 @@ export default function TurathReader({
     const newHistory = [...chatHistory, newUserMsg];
     setChatHistory(newHistory);
 
-    const activeChapter = activeHierarchy.length > 0 ? activeHierarchy.join(" • ") : "بدون عنوان";
+    const activeChapter = (typeof activeHierarchy !== 'undefined' && activeHierarchy.length > 0)
+      ? activeHierarchy.join(" • ")
+      : "بدون عنوان";
 
     try {
       const baseUrl = import.meta.env.VITE_READING_ASSISTANT_URL || 'https://abourida-zad-tutor-engine-space.hf.space';
+      const apiKey = import.meta.env.VITE_TUTOR_ENGINE_API_KEY || 'zad-super-secret-key';
       const res = await fetch(`${baseUrl}/api/v1/reading-assistant/explain`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': apiKey,
+        },
         body: JSON.stringify({
           book_title: book.title,
           author: book.author,
@@ -3548,25 +3634,28 @@ export default function TurathReader({
     }
   };
 
-  const handleSendChatMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!chatInput.trim() || chatLoading) return;
+  const handleSendChatMessage = async (msgText: string) => {
+    if (!msgText || !msgText.trim() || chatLoading) return;
 
-    const msg = chatInput.trim();
-    setChatInput("");
+    const msg = msgText.trim();
     setChatLoading(true);
 
     const newUserMsg: Message = { id: Date.now().toString(), role: 'user' as const, text: msg };
-    const newHistory = [...chatHistory, newUserMsg];
-    setChatHistory(newHistory);
+    setChatHistory(prev => [...prev, newUserMsg]);
 
-    const activeChapter = activeHierarchy.length > 0 ? activeHierarchy.join(" • ") : "بدون عنوان";
+    const activeChapter = (typeof activeHierarchy !== 'undefined' && activeHierarchy.length > 0)
+      ? activeHierarchy.join(" • ")
+      : "بدون عنوان";
 
     try {
       const baseUrl = import.meta.env.VITE_READING_ASSISTANT_URL || 'https://abourida-zad-tutor-engine-space.hf.space';
+      const apiKey = import.meta.env.VITE_TUTOR_ENGINE_API_KEY || 'zad-super-secret-key';
       const res = await fetch(`${baseUrl}/api/v1/reading-assistant/explain`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': apiKey,
+        },
         body: JSON.stringify({
           book_title: book.title,
           author: book.author,
@@ -3578,9 +3667,9 @@ export default function TurathReader({
       });
       if (!res.ok) throw new Error("فشل الاتصال بالخادم");
       const data = await res.json();
-      setChatHistory([...newHistory, { id: Date.now().toString(), role: 'assistant', text: data.explanation }]);
+      setChatHistory(prev => [...prev, { id: Date.now().toString(), role: 'assistant', text: data.explanation || data.answer || data.reply || 'تمت الإجابة' }]);
     } catch (err: any) {
-      setChatHistory([...newHistory, { id: Date.now().toString(), role: 'assistant', text: 'عذراً، حدث خطأ أثناء الإرسال. يرجى المحاولة مرة أخرى.' }]);
+      setChatHistory(prev => [...prev, { id: Date.now().toString(), role: 'assistant', text: 'عذراً، حدث خطأ أثناء الإرسال. يرجى المحاولة مرة أخرى.' }]);
     } finally {
       setChatLoading(false);
     }
@@ -5562,7 +5651,7 @@ export default function TurathReader({
 
             <button
               onClick={() => { setShowSettings(!showSettings); setShowBookmarks(false); }}
-              className={`hidden md:flex w-10 h-10 rounded-xl justify-center items-center transition-all duration-300 backdrop-blur-md border shadow-sm ${showSettings ? 'bg-brand-blue/20 border-brand-blue/40 text-brand-blue shadow-[0_0_15px_rgba(43,127,255,0.3)] scale-105' : readerTheme === 'dark' ? 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-brand-blue hover:shadow-md hover:scale-105' : 'bg-white/50 border-gray-200/60 text-slate-500 hover:bg-white/80 hover:text-brand-blue hover:shadow-md hover:scale-105'}`}
+              className={`hidden md:flex w-10 h-10 rounded-xl justify-center items-center transition-colors duration-200 border shadow-sm ${showSettings ? 'bg-brand-blue/20 border-brand-blue/40 text-brand-blue shadow-[0_0_15px_rgba(43,127,255,0.3)] scale-105' : readerTheme === 'dark' ? 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-brand-blue hover:shadow-md' : 'bg-white/50 border-gray-200/60 text-slate-500 hover:bg-white/80 hover:text-brand-blue hover:shadow-md'}`}
               title="إعدادات القراءة"
             >
               <Settings2 className="h-5 w-5" />
@@ -5570,7 +5659,7 @@ export default function TurathReader({
 
             {/* Settings Dropdown (Pops out below) */}
             {showSettings && (
-              <div className={`fixed inset-x-3 top-16 md:absolute md:top-full md:left-0 md:inset-x-auto mt-2 w-auto md:w-[300px] max-h-[85vh] overflow-y-auto backdrop-blur-2xl border rounded-2xl shadow-2xl p-5 z-50 animate-in fade-in slide-in-from-top-4 duration-300 origin-top-left ${readerTheme === 'dark' ? 'bg-[#0d071a]/95 border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.7)] text-white' : 'bg-white/95 border-gray-200 shadow-xl text-slate-800'}`}>
+              <div className={`fixed inset-x-3 top-16 md:absolute md:top-full md:left-0 md:inset-x-auto mt-2 w-auto md:w-[310px] max-h-[85vh] overflow-y-auto border rounded-2xl shadow-2xl p-5 z-50 animate-in fade-in slide-in-from-top-2 duration-150 ease-out origin-top-left ${readerTheme === 'dark' ? 'bg-[#0d071a] border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.7)] text-white' : 'bg-white border-gray-200 shadow-xl text-slate-800'}`}>
 
                 {/* Reading Mode */}
                 <div className="mb-6">
@@ -5782,34 +5871,41 @@ export default function TurathReader({
               {typeof document !== 'undefined' && createPortal(
                 <AnimatePresence>
                   {isMobileMenuOpen && (
-                    <div dir="rtl" ref={mobileSettingsSheetRef}>
-                      {/* غطاء خلفي زجاجي شفاف ومضبب يغطي الصفحة بالكامل ويغلق القائمة عند النقر عليه */}
+                    <motion.div
+                      key="mobile-settings-wrapper"
+                      dir="rtl"
+                      ref={mobileSettingsSheetRef}
+                      className="fixed inset-0 z-[100]"
+                    >
+                      {/* غطاء خلفي معتم يغطي الصفحة بالكامل ويغلق القائمة عند النقر عليه */}
                       <motion.div
                         key="mobile-settings-backdrop"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        transition={{ duration: 0.3, ease: 'easeOut' }}
+                        transition={{ duration: 0.18, ease: 'easeOut' }}
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="fixed inset-0 z-[90] bg-black/40 dark:bg-black/60 backdrop-blur-md cursor-pointer"
+                        className="fixed inset-0 bg-black/60 dark:bg-black/75 cursor-pointer"
                       />
 
-                      {/* درج سفلي زجاجي (Bottom Sheet) يرتفع بنعومة وانسيابية هادئة */}
+                      {/* درج سفلي يرتفع بنعومة وانسيابية فورية بسرعة 60fps دون أي ثقل */}
                       <motion.div
                         key="mobile-settings-sheet"
-                        initial={{ y: '100%', opacity: 0.7 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        exit={{ y: '100%', opacity: 0.7 }}
+                        initial={{ y: '100%' }}
+                        animate={{ y: 0 }}
+                        exit={{ y: '100%' }}
                         transition={{
-                          duration: 0.42,
-                          ease: [0.16, 1, 0.3, 1]
+                          type: 'spring',
+                          damping: 30,
+                          stiffness: 350,
+                          mass: 0.8
                         }}
                         onClick={(e) => e.stopPropagation()}
-                        className={`fixed inset-x-0 bottom-0 z-[100] h-[88vh] max-h-[92vh] flex flex-col rounded-t-xl border-t shadow-2xl backdrop-blur-2xl overflow-hidden ${readerTheme === 'dark'
-                            ? 'bg-[#0f1422]/95 border-white/15 text-white shadow-black/80'
+                        className={`fixed inset-x-0 bottom-0 z-[101] h-[88vh] max-h-[92vh] flex flex-col rounded-t-2xl border-t shadow-2xl overflow-hidden overscroll-contain ${readerTheme === 'dark'
+                            ? 'bg-[#0f1422] border-white/15 text-white shadow-black/80'
                             : readerTheme === 'sepia'
-                              ? 'bg-[#FAF5ED]/95 border-[#E2D6C0] text-[#3D2C1D] shadow-xl'
-                              : 'bg-white/95 border-slate-200/90 text-slate-900 shadow-2xl'
+                              ? 'bg-[#FAF5ED] border-[#E2D6C0] text-[#3D2C1D] shadow-xl'
+                              : 'bg-white border-slate-200/90 text-slate-900 shadow-2xl'
                           }`}
                       >
                         {/* رأس الدرج: مقبض السحب + العنوان وزر الإغلاق الثابت */}
@@ -6237,7 +6333,7 @@ export default function TurathReader({
                           </div>
                         </div>
                       </motion.div>
-                    </div>
+                    </motion.div>
                   )}
                 </AnimatePresence>,
                 document.body
@@ -6309,24 +6405,33 @@ export default function TurathReader({
       </header>
 
       {/* Main Workspace Container */}
-      <div className="flex-1 flex overflow-hidden w-full relative p-0 sm:p-2 md:p-4 gap-0 md:gap-4">
+      <div className={`flex-1 flex overflow-hidden w-full relative p-0 sm:p-2 md:p-4 ${sidebarTab !== 'none' && !distractionFree ? 'gap-0 md:gap-4' : 'gap-0'}`}>
 
 
         {/* Sliding Panel Area (TOC / Chat / Search / Hadiths) */}
         <aside
-          className={`shrink-0 md:h-full max-md:h-auto relative rounded-3xl overflow-hidden ${isResizing ? '' : 'transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]'} z-30 ${distractionFree || sidebarTab === 'none' ? 'opacity-0 border-none pointer-events-none' : 'opacity-100 border'
-            } ${readerTheme === 'dark' ? 'border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)]' : 'border-gray-200/80 bg-white/90 shadow-xl text-slate-900'} backdrop-blur-xl max-md:fixed max-md:inset-x-0 max-md:top-0 max-md:bottom-[calc(3.75rem+env(safe-area-inset-bottom,0px))] sm:max-md:bottom-[calc(4.25rem+env(safe-area-inset-bottom,0px))] max-md:z-40 max-md:w-full max-md:rounded-none max-md:border-none md:relative md:rounded-3xl`}
+          ref={asideRef}
+          onFocusCapture={handleAsideFocusCapture}
+          onBlurCapture={handleAsideBlurCapture}
+          className={`shrink-0 md:h-full max-md:h-auto relative rounded-3xl overflow-hidden ${isResizing ? '' : 'transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)]'} z-30 ${distractionFree || sidebarTab === 'none'
+            ? 'hidden w-0 min-w-0 max-w-0 opacity-0 border-none shadow-none backdrop-blur-none pointer-events-none'
+            : `opacity-100 border ${readerTheme === 'dark' ? 'border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)] backdrop-blur-xl' : 'border-gray-200/80 bg-white/90 shadow-xl text-slate-900 backdrop-blur-xl'}`
+          } max-md:fixed max-md:inset-x-0 max-md:top-0 ${
+            isMobileKeyboardOpen
+              ? 'max-md:bottom-0'
+              : 'max-md:bottom-[calc(3.75rem+env(safe-area-inset-bottom,0px))] sm:max-md:bottom-[calc(4.25rem+env(safe-area-inset-bottom,0px))]'
+          } max-md:z-40 max-md:w-full max-md:rounded-none max-md:border-none md:relative md:rounded-3xl`}
           style={{
             width: typeof window !== 'undefined' && window.innerWidth < 768
               ? (distractionFree || sidebarTab === 'none' ? 0 : '100%')
               : (distractionFree || sidebarTab === 'none' ? 0 : sidebarWidth),
-            backgroundColor: readerTheme === 'dark' ? getReaderFrameBgColor(darkFrameOpacity) : undefined
+            backgroundColor: readerTheme === 'dark' && sidebarTab !== 'none' && !distractionFree ? getReaderFrameBgColor(darkFrameOpacity) : undefined
           }}
         >
 
 
           <div className="w-full h-full flex flex-col relative">
-            {readerTheme === 'dark' && (
+            {readerTheme === 'dark' && sidebarTab !== 'none' && !distractionFree && (
               <>
                 <div className={`absolute -top-32 -right-32 w-64 h-64 ${accentColor === 'amber' ? 'bg-amber-500/5' : 'bg-brand-magenta/15'} rounded-full blur-[80px] pointer-events-none`}></div>
                 <div className={`absolute -bottom-32 -left-32 w-64 h-64 ${accentColor === 'amber' ? 'bg-[#dfbf83]/5' : 'bg-brand-blue/15'} rounded-full blur-[80px] pointer-events-none`}></div>
@@ -6687,9 +6792,10 @@ export default function TurathReader({
 
               {/* Chat Panel */}
               <div className={`absolute inset-0 flex flex-col transition-all duration-300 ${sidebarTab === 'chat' ? 'opacity-100 translate-x-0 z-10' : 'opacity-0 -translate-x-4 pointer-events-none -z-10'}`}>
-                <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4 custom-scrollbar relative">
+                {/* Scrollable Messages Area - extends full height with bottom padding to allow scrolling past the input bar */}
+                <div className="absolute inset-0 overflow-y-auto px-2 pt-3 pb-24 sm:px-4 sm:pt-4 sm:pb-28 flex flex-col gap-3 sm:gap-4 custom-scrollbar">
                   {chatHistory.length === 0 ? (
-                    <div className="h-full flex flex-col items-center justify-center text-center p-8 opacity-70">
+                    <div className="h-full flex flex-col items-center justify-center text-center p-8 pb-20 opacity-70">
                       <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-4 transition-all duration-300 ${readerTheme === 'dark'
                           ? accentColor === 'amber'
                             ? 'bg-amber-500/15 border border-[#dfbf83]/30 shadow-[0_0_20px_rgba(223,191,131,0.25)]'
@@ -6719,41 +6825,30 @@ export default function TurathReader({
                   {chatLoading && (
                     <TypingBubble dark={readerTheme === 'dark'} />
                   )}
+                  <div ref={chatEndRef} className="h-1 shrink-0" />
                 </div>
 
-                <div className={`p-3 sm:p-4 pt-5 shrink-0 z-20 border-0 border-none ${readerTheme === 'dark'
-                    ? 'bg-gradient-to-t from-[#0f1422] via-[#0f1422]/80 to-transparent'
-                    : readerTheme === 'sepia'
-                      ? 'bg-gradient-to-t from-[#FAF5ED] via-[#FAF5ED]/80 to-transparent'
-                      : 'bg-gradient-to-t from-white via-white/85 to-transparent'
-                  }`}>
-                  <form onSubmit={handleSendChatMessage} className="flex flex-col w-full gap-2 relative">
-                    <div className="gradient-border min-w-0 flex-1 rounded-[22px] p-[2px] shadow-lg shadow-primary/20 transition-all duration-300">
-                      <div className={`flex items-end gap-2 rounded-[20px] py-1.5 pr-4 pl-2 transition-all duration-300 ${readerTheme === 'dark' ? 'bg-[#0f1422]' : readerTheme === 'sepia' ? 'bg-[#FAF5ED]' : 'bg-white'}`}>
-                        <textarea
-                          rows={1}
-                          className="font-sans min-w-0 flex-1 resize-none bg-transparent py-2 text-sm outline-none placeholder:opacity-50 [&::-webkit-scrollbar]:hidden"
-                          value={chatInput}
-                          onChange={e => setChatInput(e.target.value)}
-                          onKeyDown={e => {
-                            if (e.key === 'Enter' && !e.shiftKey) {
-                              e.preventDefault();
-                              handleSendChatMessage(e as any);
-                            }
-                          }}
-                          placeholder="اكتب سؤالك هنا..."
-                          disabled={chatLoading}
-                        />
-                        <button
-                          type="submit"
-                          disabled={!chatInput.trim() || chatLoading}
-                          className="brand-gradient flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white shadow-lg shadow-primary/30 transition-transform hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0 cursor-pointer"
-                        >
-                          <Send className="h-4 w-4 rtl:-scale-x-100" />
-                        </button>
-                      </div>
-                    </div>
-                  </form>
+                {/* Progressive Gradient Blur Floating Input Bar */}
+                <div
+                  className={`absolute bottom-0 inset-x-0 z-20 pointer-events-none px-2 pb-3 sm:px-4 sm:pb-4 pt-10 border-0 border-none backdrop-blur-md ${
+                    readerTheme === 'dark'
+                      ? 'bg-gradient-to-t from-[#0f1422]/95 via-[#0f1422]/75 to-transparent'
+                      : readerTheme === 'sepia'
+                        ? 'bg-gradient-to-t from-[#FAF5ED]/95 via-[#FAF5ED]/75 to-transparent'
+                        : 'bg-gradient-to-t from-white/95 via-white/75 to-transparent'
+                  }`}
+                  style={{
+                    WebkitMaskImage: 'linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 100%)',
+                    maskImage: 'linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 100%)',
+                  }}
+                >
+                  <div className="pointer-events-auto">
+                    <ReaderChatInputBar
+                      onSendMessage={handleSendChatMessage}
+                      disabled={chatLoading}
+                      readerTheme={readerTheme}
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -7334,7 +7429,7 @@ export default function TurathReader({
             onTouchEnd={handleTouchEnd}
             data-selectable="true"
             data-library-content="true"
-            className={`library-reader-content selectable-content flex-1 overflow-y-auto ${readingMode === 'continuous' ? 'px-2.5 sm:px-6 md:px-8 lg:px-12 max-sm:no-scrollbar' : 'px-3.5 sm:px-6 md:px-12 lg:px-24'} pb-6 md:pb-32 pt-3 sm:pt-4 md:pt-8 custom-scrollbar relative flex justify-center transition-all duration-500`}
+            className={`library-reader-content selectable-content flex-1 overflow-y-auto ${readingMode === 'continuous' ? 'px-2.5 sm:px-6 md:px-8 lg:px-12 max-sm:no-scrollbar' : 'px-3.5 sm:px-6 md:px-12 lg:px-24'} pb-28 sm:pb-32 md:pb-36 pt-3 sm:pt-4 md:pt-8 custom-scrollbar relative flex justify-center transition-all duration-500`}
           >
             <div className={`w-full ${readingMode === 'continuous' ? 'max-w-7xl' : 'max-w-4xl'} min-h-full transition-all duration-500 mx-auto`}>
               {loadingPage ? (
@@ -8342,7 +8437,7 @@ export default function TurathReader({
           {/* Pagination Footer with Scrub Bar & Auto-Hide on Mobile */}
           {!distractionFree && (
             <div
-              className={`shrink-0 w-full md:w-auto md:absolute md:bottom-2 md:left-1/2 md:-translate-x-1/2 z-20 transition-all duration-300 ${sidebarTab !== 'none'
+              className={`absolute bottom-0 inset-x-0 md:inset-x-auto md:bottom-2 md:left-1/2 md:-translate-x-1/2 md:w-auto z-20 transition-all duration-300 ${sidebarTab !== 'none'
                   ? 'max-md:hidden md:opacity-100 md:translate-y-0'
                   : isMobilePaginationVisible
                     ? `opacity-100 translate-y-0 ${isAudioBarOpen ? 'max-h-72' : 'max-h-28'} pointer-events-auto`
@@ -8351,11 +8446,11 @@ export default function TurathReader({
             >
               <footer
                 onClick={(e) => e.stopPropagation()}
-                className={`flex flex-col items-center gap-1.5 md:gap-2 px-3 py-1.5 md:py-2 md:rounded-2xl border-t md:border backdrop-blur-xl shadow-md md:shadow-2xl transition-colors ${readerTheme === 'dark'
-                    ? 'bg-[#0f1422]/95 border-white/10 text-white'
+                className={`flex flex-col items-center gap-1 sm:gap-1.5 px-2 py-1 md:px-3 md:py-2 md:rounded-2xl border-t md:border backdrop-blur-2xl backdrop-saturate-150 shadow-lg md:shadow-2xl transition-colors ${readerTheme === 'dark'
+                    ? 'bg-[#090b10]/75 border-white/10 text-white'
                     : readerTheme === 'sepia'
-                      ? 'bg-[#FAF5ED]/95 border-[#E2D6C0] text-[#3D2C1D]'
-                      : 'bg-white/95 border-gray-200 text-slate-800'
+                      ? 'bg-[#FAF5ED]/75 border-[#E2D6C0]/80 text-[#3D2C1D]'
+                      : 'bg-white/75 border-gray-200/80 text-slate-800'
                   }`}
               >
                 {/* 0. Dedicated Active Audio Player Shelf (يتمدد لأعلى كجزء متكامل مع فريم التقليب) */}
@@ -8424,19 +8519,21 @@ export default function TurathReader({
                   }
 
                   return (
-                    <div className="w-full flex items-center gap-2 px-1 relative group/scrubber">
-                      <span className="text-[9px] font-mono opacity-50 shrink-0">{scrubStartLabel}</span>
-                      <div className="relative flex-1 flex items-center h-4 cursor-pointer">
+                    <div className="w-full flex items-center gap-2 px-1.5 pt-0.5 pb-0.5 relative group/scrubber">
+                      <span className="text-[10px] sm:text-[11px] font-sans font-bold opacity-60 tabular-nums shrink-0">
+                        {toEasternArabicNumerals(scrubStartLabel)}
+                      </span>
+                      <div className="relative flex-1 flex items-center h-3.5 cursor-pointer">
                         {/* Background Track */}
-                        <div className="absolute inset-x-0 h-1 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden">
+                        <div className="absolute inset-x-0 h-1.5 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden">
                           {/* Active Progress Fill */}
                           <div
-                            className={`h-full transition-all ${accentColor === 'amber'
+                            className={`h-full transition-all duration-150 rounded-full ${accentColor === 'amber'
                                 ? 'bg-amber-500'
                                 : accentColor === 'emerald'
-                                  ? 'bg-teal-600'
+                                  ? 'bg-teal-500'
                                   : accentColor === 'blue'
-                                    ? 'bg-blue-600'
+                                    ? 'bg-blue-500'
                                     : 'bg-brand-magenta'
                               }`}
                             style={{ width: `${Math.min(100, Math.max(0, ((scrubCurrentVal / (scrubMax || 1)) * 100)))}%` }}
@@ -8489,200 +8586,190 @@ export default function TurathReader({
                           </div>
                         )}
                       </div>
-                      <span className="text-[9px] font-mono opacity-50 shrink-0">{scrubEndLabel}</span>
+                      <span className="text-[10px] sm:text-[11px] font-sans font-bold opacity-60 tabular-nums shrink-0">
+                        {toEasternArabicNumerals(scrubEndLabel)}
+                      </span>
                     </div>
                   );
                 })()}
 
-                {/* 2. Controls Row: In-page Search, Prev, Page Info, Next, Page Actions */}
-                <div className="w-full flex items-center justify-between md:justify-center gap-1.5 sm:gap-2">
-                  {/* In-Page Search Button (البحث في الصفحة الحالية) - Mobile only */}
+                {/* 2. Controls Row: Tool (Search) -> Unified Navigation Capsule (Prev + Info + Next) -> Tools (Audio + More) */}
+                <div className="w-full flex items-center justify-between gap-1 sm:gap-2 px-0">
+                  {/* Right Flank: In-Page Search Button */}
                   <button
                     type="button"
                     onClick={() => {
                       setIsPageSearchOpen(true);
                       showMobilePagination();
                     }}
-                    className={`flex items-center justify-center p-1.5 md:p-2 rounded-xl transition-all font-bold shadow-xs cursor-pointer shrink-0 md:hidden ${isPageSearchOpen
-                        ? 'bg-amber-500/20 text-amber-500 border border-amber-500/40'
+                    className={`h-8 w-8 sm:h-8.5 sm:w-8.5 md:h-9 md:w-9 flex items-center justify-center rounded-xl transition-all font-bold shadow-xs cursor-pointer shrink-0 ${isPageSearchOpen
+                        ? 'bg-amber-500/20 text-amber-500 border border-amber-500/40 ring-1 ring-amber-500/30'
                         : readerTheme === 'dark'
-                          ? 'bg-white/5 hover:bg-white/10 text-white/70 hover:text-white'
+                          ? 'bg-white/5 hover:bg-white/10 text-white/75 hover:text-white border border-white/10'
                           : readerTheme === 'sepia'
-                            ? 'bg-[#F0E5D4] hover:bg-[#8B5226] text-[#4A3523] hover:text-white'
-                            : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                            ? 'bg-[#F0E5D4]/70 hover:bg-[#8B5226] text-[#4A3523] hover:text-white border border-[#E2D6C0]'
+                            : 'bg-slate-100/70 hover:bg-slate-200 text-slate-700 border border-slate-200/80'
                       }`}
                     title="البحث داخل الصفحة الحالية"
                     aria-label="البحث داخل الصفحة الحالية"
                   >
-                    <Search className="h-4 w-4 md:h-4.5 md:w-4.5" />
+                    <Search className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   </button>
 
-                  {/* Previous Page (RTL: Right Arrow) */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      goPrev();
-                      showMobilePagination();
-                    }}
-                    disabled={currentPage <= 1}
-                    className={`flex items-center justify-center p-1.5 md:p-2 rounded-xl transition-all font-bold shadow-xs disabled:opacity-30 disabled:pointer-events-none group cursor-pointer shrink-0 ${readerTheme === 'dark'
-                        ? 'bg-white/5 hover:bg-white/10 text-white'
-                        : readerTheme === 'sepia'
-                          ? 'bg-[#F0E5D4] hover:bg-[#8B5226] text-[#4A3523] hover:text-white'
-                          : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-                      }`}
-                    title="الصفحة السابقة"
-                  >
-                    <ChevronRight className="h-4 w-4 md:h-5 md:w-5 group-hover:translate-x-0.5 transition-transform" />
-                  </button>
-
-                  {/* Inline Volume & Page Info / Direct Jump */}
+                  {/* Center: Unified Navigation Capsule (Prev + Volume/Page Info + Next) */}
                   <div
-                    className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-bold px-2 sm:px-3 py-1 rounded-xl transition-all border min-w-0 ${readerTheme === 'dark'
-                        ? 'border-white/10 bg-white/5'
+                    className={`flex items-center gap-0.5 sm:gap-1 px-1 py-0.5 sm:px-1.5 sm:py-1 rounded-2xl border shadow-sm transition-all shrink-0 ${readerTheme === 'dark'
+                        ? 'border-white/10 bg-white/5 text-white'
                         : readerTheme === 'sepia'
-                          ? 'border-[#E2D6C0] bg-black/[0.02]'
-                          : 'border-slate-200 bg-slate-50'
+                          ? 'border-[#E2D6C0] bg-black/[0.03] text-[#3D2C1D]'
+                          : 'border-slate-200/80 bg-slate-50/70 text-slate-800'
                       }`}
                   >
-                    {/* Volume Bottom Sheet Selector Button */}
-                    <div className="relative shrink-0" ref={volumePickerRef}>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsVolumePickerOpen(prev => !prev);
-                          showMobilePagination();
-                        }}
-                        className={`flex items-center gap-1 px-2 py-0.5 rounded-lg transition-all font-bold text-xs sm:text-sm cursor-pointer select-none active:scale-95 ${isVolumePickerOpen
-                            ? accentColor === 'amber'
-                              ? 'bg-amber-500/20 text-amber-600 dark:text-[#dfbf83] ring-1 ring-amber-500/40'
-                              : accentColor === 'emerald'
-                                ? 'bg-teal-500/20 text-teal-600 dark:text-teal-300 ring-1 ring-teal-500/40'
-                                : accentColor === 'blue'
-                                  ? 'bg-blue-500/20 text-blue-600 dark:text-blue-300 ring-1 ring-blue-500/40'
-                                  : 'bg-purple-500/20 text-brand-magenta dark:text-purple-300 ring-1 ring-purple-500/40'
-                            : 'hover:bg-black/5 dark:hover:bg-white/10'
-                          }`}
-                        title="اضغط لاختيار المجلد"
-                      >
-                        {(() => {
-                          const rawVol = (currentPrintCitation?.vol || printVolInput || '1').trim();
-                          const isAsciiNum = /^\d+$/.test(normalizeArabicDigits(rawVol));
-                          return (
-                            <>
-                              {isAsciiNum && (
-                                <span className="text-[10px] sm:text-xs font-bold opacity-75">المجلد</span>
-                              )}
-                              <span className={`font-black ${!isAsciiNum ? 'truncate max-w-[85px] sm:max-w-none' : ''}`}>
-                                {isAsciiNum ? toEasternArabicNumerals(rawVol) : rawVol}
-                              </span>
-                            </>
-                          );
-                        })()}
-                        <ChevronUp className={`w-3.5 h-3.5 opacity-70 transition-transform duration-200 ${isVolumePickerOpen ? 'rotate-180' : ''}`} />
-                      </button>
+                    {/* Previous Page (RTL: Right Arrow - السابق) */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        goPrev();
+                        showMobilePagination();
+                      }}
+                      disabled={currentPage <= 1}
+                      className="w-7 h-7 sm:w-7.5 sm:h-7.5 flex items-center justify-center rounded-lg sm:rounded-xl transition-all disabled:opacity-25 hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 cursor-pointer disabled:pointer-events-none shrink-0"
+                      title="الصفحة السابقة"
+                      aria-label="الصفحة السابقة"
+                    >
+                      <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                    </button>
 
-                      {/* Volume Picker Bottom Sheet Drawer (درج سفلي لعرض المجلدات مطابق للتصميم) */}
-                      {typeof document !== 'undefined' && createPortal(
-                        <AnimatePresence>
-                          {isVolumePickerOpen && (
-                            <div dir="rtl" className="fixed inset-0 z-[120] flex flex-col justify-end">
-                              {/* Backdrop */}
-                              <motion.div
-                                key="volume-picker-backdrop"
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 0.25 }}
-                                onClick={() => setIsVolumePickerOpen(false)}
-                                className="fixed inset-0 bg-black/50 backdrop-blur-xs cursor-pointer"
-                              />
+                    <div className="w-px h-3 bg-current opacity-15 shrink-0" />
 
-                              {/* Bottom Sheet */}
-                              <motion.div
-                                key="volume-picker-sheet"
-                                initial={{ y: '100%' }}
-                                animate={{ y: 0 }}
-                                exit={{ y: '100%' }}
-                                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                                onClick={(e) => e.stopPropagation()}
-                                className={`relative w-full max-w-lg mx-auto max-h-[75vh] flex flex-col rounded-t-3xl border-t shadow-2xl overflow-hidden z-10 ${readerTheme === 'dark'
-                                    ? 'bg-[#0f1422]/98 border-white/15 text-white shadow-black/80'
-                                    : readerTheme === 'sepia'
-                                      ? 'bg-[#FAF5ED]/98 border-[#E2D6C0] text-[#3D2C1D] shadow-2xl'
-                                      : 'bg-white/98 border-slate-200 text-slate-900 shadow-2xl'
-                                  }`}
-                              >
-                                {/* Drag Handle & Header */}
-                                <div className="shrink-0 px-5 pt-3 pb-3 border-b border-inherit/15">
-                                  <div className="w-10 h-1 rounded-full bg-black/15 dark:bg-white/20 mx-auto mb-3" />
-                                  <div className="flex items-center justify-between">
-                                    <h3 className="font-bold text-base sm:text-lg">كل المجلدات</h3>
-                                    <button
-                                      type="button"
-                                      onClick={() => setIsVolumePickerOpen(false)}
-                                      className="p-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-                                      title="إغلاق"
-                                    >
-                                      <X className="w-5 h-5" />
-                                    </button>
-                                  </div>
-                                </div>
+                    {/* Volume Selector (Only shown if book has multiple volumes!) */}
+                    {availableVolumes.length > 1 && (
+                      <div className="relative shrink-0 flex items-center" ref={volumePickerRef}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsVolumePickerOpen(prev => !prev);
+                            showMobilePagination();
+                          }}
+                          className={`flex items-center gap-0.5 px-1 py-0.5 rounded-lg transition-all font-bold text-[11px] sm:text-xs cursor-pointer select-none ${isVolumePickerOpen
+                              ? accentColor === 'amber'
+                                ? 'bg-amber-500/20 text-amber-600 dark:text-[#dfbf83] ring-1 ring-amber-500/40'
+                                : accentColor === 'emerald'
+                                  ? 'bg-teal-500/20 text-teal-600 dark:text-teal-300 ring-1 ring-teal-500/40'
+                                  : accentColor === 'blue'
+                                    ? 'bg-blue-500/20 text-blue-600 dark:text-blue-300 ring-1 ring-blue-500/40'
+                                    : 'bg-purple-500/20 text-brand-magenta dark:text-purple-300 ring-1 ring-purple-500/40'
+                              : 'hover:bg-black/5 dark:hover:bg-white/10 opacity-80 hover:opacity-100'
+                            }`}
+                          title="اضغط لاختيار المجلد"
+                        >
+                          <span className="truncate max-w-[50px] sm:max-w-[70px]">
+                            {(() => {
+                              const rawVol = (currentPrintCitation?.vol || printVolInput || '1').trim();
+                              const isAsciiNum = /^\d+$/.test(normalizeArabicDigits(rawVol));
+                              return isAsciiNum ? `جـ ${toEasternArabicNumerals(rawVol)}` : rawVol;
+                            })()}
+                          </span>
+                          <ChevronUp className={`w-2.5 h-2.5 opacity-60 transition-transform duration-200 ${isVolumePickerOpen ? 'rotate-180' : ''}`} />
+                        </button>
 
-                                {/* Volume List */}
-                                <div
-                                  className="flex-1 overflow-y-auto px-4 py-2.5 custom-scrollbar flex flex-col divide-y divide-inherit/10"
-                                  style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 1.5rem)' }}
+                        {/* Volume Picker Bottom Sheet Drawer */}
+                        {typeof document !== 'undefined' && createPortal(
+                          <AnimatePresence>
+                            {isVolumePickerOpen && (
+                              <div dir="rtl" className="fixed inset-0 z-[120] flex flex-col justify-end">
+                                <motion.div
+                                  key="volume-picker-backdrop"
+                                  initial={{ opacity: 0 }}
+                                  animate={{ opacity: 1 }}
+                                  exit={{ opacity: 0 }}
+                                  transition={{ duration: 0.25 }}
+                                  onClick={() => setIsVolumePickerOpen(false)}
+                                  className="fixed inset-0 bg-black/50 backdrop-blur-xs cursor-pointer"
+                                />
+
+                                <motion.div
+                                  key="volume-picker-sheet"
+                                  initial={{ y: '100%' }}
+                                  animate={{ y: 0 }}
+                                  exit={{ y: '100%' }}
+                                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                                  onClick={(e) => e.stopPropagation()}
+                                  className={`relative w-full max-w-lg mx-auto max-h-[75vh] flex flex-col rounded-t-3xl border-t shadow-2xl overflow-hidden z-10 ${readerTheme === 'dark'
+                                      ? 'bg-[#0f1422]/98 border-white/15 text-white shadow-black/80'
+                                      : readerTheme === 'sepia'
+                                        ? 'bg-[#FAF5ED]/98 border-[#E2D6C0] text-[#3D2C1D] shadow-2xl'
+                                        : 'bg-white/98 border-slate-200 text-slate-900 shadow-2xl'
+                                    }`}
                                 >
-                                  {availableVolumes.map((vol) => {
-                                    const isCurrent = String(vol) === String(currentPrintCitation?.vol || printVolInput || '1');
-                                    const isNum = /^\d+$/.test(normalizeArabicDigits(String(vol).trim()));
-                                    return (
+                                  <div className="shrink-0 px-5 pt-3 pb-2">
+                                    <div className="w-10 h-1 rounded-full bg-black/15 dark:bg-white/20 mx-auto mb-3" />
+                                    <div className="flex items-center justify-between">
+                                      <h3 className="font-bold text-base sm:text-lg">كل المجلدات</h3>
                                       <button
-                                        key={vol}
                                         type="button"
-                                        onClick={() => {
-                                          handleSelectVolume(vol);
-                                          setIsVolumePickerOpen(false);
-                                          showMobilePagination();
-                                        }}
-                                        className={`w-full flex items-center justify-between px-4 py-3.5 text-right text-sm sm:text-base font-bold transition-all cursor-pointer ${isCurrent
-                                            ? accentColor === 'amber'
-                                              ? 'bg-amber-500/15 text-amber-600 dark:text-[#dfbf83] font-black rounded-xl'
-                                              : accentColor === 'emerald'
-                                                ? 'bg-teal-500/15 text-teal-700 dark:text-teal-300 font-black rounded-xl'
-                                                : accentColor === 'blue'
-                                                  ? 'bg-blue-500/15 text-blue-600 dark:text-blue-300 font-black rounded-xl'
-                                                  : 'bg-purple-500/15 text-brand-magenta dark:text-purple-300 font-black rounded-xl'
-                                            : 'hover:bg-black/5 dark:hover:bg-white/5 text-slate-700 dark:text-slate-200'
-                                          }`}
+                                        onClick={() => setIsVolumePickerOpen(false)}
+                                        className="p-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                                        title="إغلاق"
                                       >
-                                        <span className="font-scheherazade text-base sm:text-lg">
-                                          {isNum ? `المجلد (${toEasternArabicNumerals(vol)})` : vol}
-                                        </span>
-                                        {isCurrent && (
-                                          <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-current/10 shrink-0">
-                                            الحالي
-                                          </span>
-                                        )}
+                                        <X className="w-5 h-5" />
                                       </button>
-                                    );
-                                  })}
-                                </div>
-                              </motion.div>
-                            </div>
-                          )}
-                        </AnimatePresence>,
-                        document.body
-                      )}
-                    </div>
+                                    </div>
+                                  </div>
 
-                    {/* Subtle Divider between Volume and Page */}
-                    <div className="w-px h-3.5 bg-current opacity-15 shrink-0" />
+                                  <div
+                                    className="flex-1 overflow-y-auto px-4 py-2 custom-scrollbar flex flex-col gap-1.5"
+                                    style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 1.5rem)' }}
+                                  >
+                                    {availableVolumes.map((vol) => {
+                                      const isCurrent = String(vol) === String(currentPrintCitation?.vol || printVolInput || '1');
+                                      const isNum = /^\d+$/.test(normalizeArabicDigits(String(vol).trim()));
+                                      return (
+                                        <button
+                                          key={vol}
+                                          type="button"
+                                          onClick={() => {
+                                            handleSelectVolume(vol);
+                                            setIsVolumePickerOpen(false);
+                                            showMobilePagination();
+                                          }}
+                                          className={`w-full flex items-center justify-between px-4 py-3 text-right text-sm sm:text-base font-bold rounded-2xl transition-all cursor-pointer ${isCurrent
+                                              ? accentColor === 'amber'
+                                                ? 'bg-amber-500/15 text-amber-600 dark:text-[#dfbf83] font-black'
+                                                : accentColor === 'emerald'
+                                                  ? 'bg-teal-500/15 text-teal-700 dark:text-teal-300 font-black'
+                                                  : accentColor === 'blue'
+                                                    ? 'bg-blue-500/15 text-blue-600 dark:text-blue-300 font-black'
+                                                    : 'bg-purple-500/15 text-brand-magenta dark:text-purple-300 font-black'
+                                              : 'hover:bg-black/5 dark:hover:bg-white/5 text-slate-700 dark:text-slate-200'
+                                            }`}
+                                        >
+                                          <span className="font-scheherazade text-base sm:text-lg">
+                                            {isNum ? `المجلد (${toEasternArabicNumerals(vol)})` : vol}
+                                          </span>
+                                          {isCurrent && (
+                                            <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-current/10 shrink-0">
+                                              الحالي
+                                            </span>
+                                          )}
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
+                                </motion.div>
+                              </div>
+                            )}
+                          </AnimatePresence>,
+                          document.body
+                        )}
 
-                    {/* Page Input */}
-                    <div className="flex items-center gap-0.5 sm:gap-1">
-                      <span className="text-[10px] sm:text-xs font-bold opacity-75">صـ</span>
+                        <div className="w-px h-3 bg-current opacity-15 mx-0.5 shrink-0" />
+                      </div>
+                    )}
+
+                    {/* Page Number (Direct Jump Input) */}
+                    <div className="flex items-center gap-0.5 text-xs font-bold px-0.5 select-none">
+                      <span className="text-[10px] sm:text-[11px] opacity-60 font-bold">صـ</span>
                       <input
                         type="text"
                         value={printPageInput}
@@ -8700,142 +8787,116 @@ export default function TurathReader({
                         }}
                         onBlur={() => handleJumpToPrintPage(printVolInput, printPageInput)}
                         placeholder={String(currentPage)}
-                        className="w-8 sm:w-12 text-center font-bold text-xs sm:text-sm bg-transparent border-b border-inherit focus:outline-none"
-                        title="رقم الصفحة"
+                        className="w-7 sm:w-8 text-center font-bold text-xs bg-black/5 dark:bg-white/10 rounded-md py-0.5 px-0.5 focus:outline-none focus:ring-1 focus:ring-current/40"
+                        title="رقم الصفحة (اضغط Enter للانتقال)"
                       />
                     </div>
 
-                    {/* Total pages (Volume total if available, otherwise Book total) */}
-                    {(currentVolumeInfo ? (currentVolumeInfo.endPrintPage || currentVolumeInfo.totalPages) : maxPage) && (
-                      <span
-                        className={`shrink-0 text-[10px] sm:text-xs md:text-sm font-sans font-bold tabular-nums rounded-full border transition-colors px-1.5 py-0.5 sm:px-2 md:px-2.5 md:py-1 ${readerTheme === 'dark'
-                            ? 'bg-white/5 border-white/15 text-white/70 hover:bg-white/10 hover:text-white'
-                            : readerTheme === 'sepia'
-                              ? 'bg-black/[0.03] border-[#E2D6C0] text-[#4A3523]/70 hover:bg-[#E2D6C0]/60 hover:text-[#4A3523]'
-                              : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-100 hover:text-slate-700'
-                          }`}
-                        title={
-                          currentVolumeInfo
-                            ? `إجمالي صفحات الجزء ${currentVolumeInfo.vol}: ${currentVolumeInfo.endPrintPage || currentVolumeInfo.totalPages} صـ (الكتاب كاملاً: ${maxPage} صـ)`
-                            : `إجمالي صفحات الكتاب: ${maxPage} صـ`
-                        }
-                      >
-                        <span className="text-[10px] sm:text-xs font-bold opacity-75">من</span>{' '}
-                        <span className="tabular-nums font-bold">
-                          {toEasternArabicNumerals(currentVolumeInfo ? (currentVolumeInfo.endPrintPage || currentVolumeInfo.totalPages) : maxPage)}
-                        </span>
-                        <span className="hidden md:inline text-[10px] sm:text-xs font-bold opacity-75"> صـ</span>
-                      </span>
-                    )}
-                  </div>
+                    <div className="w-px h-3 bg-current opacity-15 shrink-0" />
 
-                  {/* Next Page (RTL: Left Arrow) */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      goNext();
-                      showMobilePagination();
-                    }}
-                    disabled={currentPage >= (maxPage || 1)}
-                    className={`flex items-center justify-center p-1.5 md:p-2 rounded-xl transition-all font-bold shadow-xs disabled:opacity-30 disabled:pointer-events-none group cursor-pointer shrink-0 ${readerTheme === 'dark'
-                        ? 'bg-white/5 hover:bg-white/10 text-white'
-                        : readerTheme === 'sepia'
-                          ? 'bg-[#F0E5D4] hover:bg-[#8B5226] text-[#4A3523] hover:text-white'
-                          : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-                      }`}
-                    title="الصفحة التالية"
-                  >
-                    <ChevronLeft className="h-4 w-4 md:h-5 md:w-5 group-hover:-translate-x-0.5 transition-transform" />
-                  </button>
-
-                  {/* Audio Reader Toggle Icon Button - Paged mode */}
-                  {readingMode === 'paged' && (
+                    {/* Next Page (RTL: Left Arrow - التالي) */}
                     <button
                       type="button"
                       onClick={() => {
-                        const currentFormattedText = pageText?.matn ? `${pageText.matn} ${pageText.sharh || ''}` : (pageText?.main || '');
-                        const currentDisplayPage = currentPrintCitation?.page || printPageInput || String(currentPage);
-
-                        // Case 1: Audio is currently playing for another page -> switch and read current page!
-                        if (isAudioBarOpen && audioActivePage && audioActivePage !== currentPage) {
-                          stopAllSpeech();
-                          setAudioActivePage(currentPage);
-                          setAudioActivePageLabel(currentDisplayPage);
-                          setAudioActiveText(currentFormattedText);
-                          setIsReadingPage(true);
-                          showMobilePagination();
-                          return;
-                        }
-
-                        // Case 2: Audio bar is open on the same page -> close and stop
-                        if (isAudioBarOpen) {
-                          stopAllSpeech();
-                          setIsReadingPage(false);
-                          setIsAudioBarOpen(false);
-                          setAudioActivePage(null);
-                          setAudioActivePageLabel('');
-                          setAudioActiveText('');
-                          showMobilePagination();
-                          return;
-                        }
-
-                        // Case 3: Audio bar was closed -> open and start reading current page
-                        setAudioActivePage(currentPage);
-                        setAudioActivePageLabel(currentDisplayPage);
-                        setAudioActiveText(currentFormattedText);
-                        setIsAudioBarOpen(true);
-                        setIsReadingPage(true);
+                        goNext();
                         showMobilePagination();
                       }}
-                      className={`flex items-center justify-center p-1.5 md:p-2 rounded-xl transition-all font-bold shadow-xs cursor-pointer shrink-0 ${isAudioBarOpen || isReadingPage
-                          ? accentColor === 'amber'
-                            ? 'bg-amber-500/20 text-amber-500 border border-amber-500/40'
-                            : accentColor === 'emerald'
-                              ? 'bg-teal-500/20 text-teal-600 dark:text-teal-400 border border-teal-500/40'
-                              : accentColor === 'blue'
-                                ? 'bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/40'
-                                : 'bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-500/40'
-                          : readerTheme === 'dark'
-                            ? 'bg-white/5 hover:bg-white/10 text-white/70 hover:text-white'
-                            : readerTheme === 'sepia'
-                              ? 'bg-[#F0E5D4] hover:bg-[#8B5226] text-[#4A3523] hover:text-white'
-                              : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-                        }`}
-                      title={
-                        isAudioBarOpen && audioActivePage && audioActivePage !== currentPage
-                          ? `بدء قراءة الصفحة الحالية (صـ ${currentPrintCitation?.page || printPageInput || currentPage})`
-                          : isAudioBarOpen
-                          ? "إغلاق فريم الصوت"
-                          : "قراءة الصفحة صوتياً"
-                      }
-                      aria-label="قراءة الصفحة صوتياً"
+                      disabled={Boolean(maxPage && maxPage > 1 && currentPage >= maxPage)}
+                      className="w-7 h-7 sm:w-7.5 sm:h-7.5 flex items-center justify-center rounded-lg sm:rounded-xl transition-all disabled:opacity-25 hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 cursor-pointer disabled:pointer-events-none shrink-0"
+                      title="الصفحة التالية"
+                      aria-label="الصفحة التالية"
                     >
-                      <Volume2 className="h-4 w-4 md:h-4.5 md:w-4.5" />
+                      <ChevronLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                     </button>
-                  )}
+                  </div>
 
-                  {/* Page Actions 3-dots Menu (نسخ ومشاركة وقراءة الصفحة) - Paged mode */}
-                  {readingMode === 'paged' && (
-                    <div className="relative shrink-0 flex" ref={pageActionsRef}>
+                  {/* Left Flank: Grouped Tools (Audio + More Options) */}
+                  <div className="flex items-center gap-1 shrink-0">
+                    {/* Audio Reader Toggle Icon Button */}
+                    {readingMode === 'paged' && (
                       <button
                         type="button"
                         onClick={() => {
-                          setIsPageActionsOpen(!isPageActionsOpen);
+                          const currentFormattedText = pageText?.matn ? `${pageText.matn} ${pageText.sharh || ''}` : (pageText?.main || '');
+                          const currentDisplayPage = currentPrintCitation?.page || printPageInput || String(currentPage);
+
+                          if (isAudioBarOpen && audioActivePage && audioActivePage !== currentPage) {
+                            stopAllSpeech();
+                            setAudioActivePage(currentPage);
+                            setAudioActivePageLabel(currentDisplayPage);
+                            setAudioActiveText(currentFormattedText);
+                            setIsReadingPage(true);
+                            showMobilePagination();
+                            return;
+                          }
+
+                          if (isAudioBarOpen) {
+                            stopAllSpeech();
+                            setIsReadingPage(false);
+                            setIsAudioBarOpen(false);
+                            setAudioActivePage(null);
+                            setAudioActivePageLabel('');
+                            setAudioActiveText('');
+                            showMobilePagination();
+                            return;
+                          }
+
+                          setAudioActivePage(currentPage);
+                          setAudioActivePageLabel(currentDisplayPage);
+                          setAudioActiveText(currentFormattedText);
+                          setIsAudioBarOpen(true);
+                          setIsReadingPage(true);
                           showMobilePagination();
                         }}
-                        className={`flex items-center justify-center p-1.5 md:p-2 rounded-xl transition-all font-bold shadow-xs cursor-pointer ${isPageActionsOpen
-                            ? 'bg-amber-500/20 text-amber-500 border border-amber-500/40'
+                        className={`h-8 w-8 sm:h-8.5 sm:w-8.5 md:h-9 md:w-9 flex items-center justify-center rounded-xl transition-all font-bold shadow-xs cursor-pointer shrink-0 ${isAudioBarOpen || isReadingPage
+                            ? accentColor === 'amber'
+                              ? 'bg-amber-500/20 text-amber-500 border border-amber-500/40 ring-1 ring-amber-500/30'
+                              : accentColor === 'emerald'
+                                ? 'bg-teal-500/20 text-teal-600 dark:text-teal-400 border border-teal-500/40 ring-1 ring-teal-500/30'
+                                : accentColor === 'blue'
+                                  ? 'bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/40 ring-1 ring-blue-500/30'
+                                  : 'bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-500/40 ring-1 ring-purple-500/30'
                             : readerTheme === 'dark'
-                              ? 'bg-white/5 hover:bg-white/10 text-white/70 hover:text-white'
+                              ? 'bg-white/5 hover:bg-white/10 text-white/75 hover:text-white border border-white/10'
                               : readerTheme === 'sepia'
-                                ? 'bg-[#F0E5D4] hover:bg-[#8B5226] text-[#4A3523] hover:text-white'
-                                : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                                ? 'bg-[#F0E5D4]/70 hover:bg-[#8B5226] text-[#4A3523] hover:text-white border border-[#E2D6C0]'
+                                : 'bg-slate-100/70 hover:bg-slate-200 text-slate-700 border border-slate-200/80'
                           }`}
-                        title="خيارات ومشاركة الصفحة"
-                        aria-label="خيارات ومشاركة الصفحة"
+                        title={
+                          isAudioBarOpen && audioActivePage && audioActivePage !== currentPage
+                            ? `بدء قراءة الصفحة الحالية (صـ ${currentPrintCitation?.page || printPageInput || currentPage})`
+                            : isAudioBarOpen
+                            ? "إغلاق فريم الصوت"
+                            : "قراءة الصفحة صوتياً"
+                        }
+                        aria-label="قراءة الصفحة صوتياً"
                       >
-                        <MoreVertical className="h-4 w-4 md:h-4.5 md:w-4.5" />
+                        <Volume2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                       </button>
+                    )}
+
+                    {/* Page Actions 3-dots Menu */}
+                    {readingMode === 'paged' && (
+                      <div className="relative shrink-0 flex" ref={pageActionsRef}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsPageActionsOpen(!isPageActionsOpen);
+                            showMobilePagination();
+                          }}
+                          className={`h-8 w-8 sm:h-8.5 sm:w-8.5 md:h-9 md:w-9 flex items-center justify-center rounded-xl transition-all font-bold shadow-xs cursor-pointer shrink-0 ${isPageActionsOpen
+                              ? 'bg-amber-500/20 text-amber-500 border border-amber-500/40 ring-1 ring-amber-500/30'
+                              : readerTheme === 'dark'
+                                ? 'bg-white/5 hover:bg-white/10 text-white/75 hover:text-white border border-white/10'
+                                : readerTheme === 'sepia'
+                                  ? 'bg-[#F0E5D4]/70 hover:bg-[#8B5226] text-[#4A3523] hover:text-white border border-[#E2D6C0]'
+                                  : 'bg-slate-100/70 hover:bg-slate-200 text-slate-700 border border-slate-200/80'
+                            }`}
+                          title="خيارات ومشاركة الصفحة"
+                          aria-label="خيارات ومشاركة الصفحة"
+                        >
+                          <MoreVertical className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                        </button>
 
                       {isPageActionsOpen && (
                         <div
@@ -8847,26 +8908,6 @@ export default function TurathReader({
                                 : 'bg-white/98 border-gray-200 text-slate-900 shadow-xl'
                             }`}
                         >
-                          {/* Audio Reader Menu Item */}
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setIsAudioBarOpen(true);
-                              setIsPageActionsOpen(false);
-                            }}
-                            className="w-full flex items-center gap-2.5 p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-xs font-bold text-right transition-colors cursor-pointer"
-                          >
-                            <Volume2 className={`w-4 h-4 shrink-0 ${accentColor === 'amber'
-                                ? 'text-amber-500'
-                                : accentColor === 'emerald'
-                                  ? 'text-teal-600 dark:text-teal-400'
-                                  : accentColor === 'blue'
-                                    ? 'text-blue-600 dark:text-blue-400'
-                                    : 'text-purple-600 dark:text-purple-400'
-                              }`} />
-                            <span className="truncate">قراءة الصفحة صوتياً</span>
-                          </button>
-
                           {/* إضافة / إزالة من العلامات المرجعية */}
                           <button
                             type="button"
@@ -8930,6 +8971,7 @@ export default function TurathReader({
                       )}
                     </div>
                   )}
+                  </div>
                 </div>
               </footer>
             </div>
@@ -8940,13 +8982,17 @@ export default function TurathReader({
       {/* Mobile Bottom Navigation Bar (Docked at the bottom of the screen with core tabs) */}
       {!distractionFree && (
         <nav
-          className={`md:hidden shrink-0 w-full border-t z-50 backdrop-blur-2xl transition-colors duration-300 ${readerTheme === 'dark'
-              ? 'bg-[#0a0d14]/98 border-white/10 shadow-[0_-8px_25px_rgba(0,0,0,0.7)] text-white'
+          className={`md:hidden shrink-0 w-full border-t z-50 backdrop-blur-2xl transition-all duration-200 ${
+            isMobileKeyboardOpen
+              ? 'max-md:translate-y-full max-md:opacity-0 max-md:pointer-events-none max-md:h-0 max-md:p-0 max-md:border-none overflow-hidden'
+              : 'max-md:translate-y-0 max-md:opacity-100'
+          } ${readerTheme === 'dark'
+              ? 'bg-[#0a0d14]/75 border-white/10 shadow-[0_-8px_25px_rgba(0,0,0,0.7)] text-white backdrop-blur-2xl backdrop-saturate-150'
               : readerTheme === 'sepia'
-                ? 'bg-[#FAF5ED]/98 border-[#E2D6C0] shadow-[0_-6px_20px_rgba(80,50,20,0.08)] text-[#3D2C1D]'
-                : 'bg-white/98 border-gray-200/90 shadow-[0_-6px_20px_rgba(0,0,0,0.06)] text-slate-800'
+                ? 'bg-[#FAF5ED]/75 border-[#E2D6C0] shadow-[0_-6px_20px_rgba(80,50,20,0.08)] text-[#3D2C1D] backdrop-blur-2xl backdrop-saturate-150'
+                : 'bg-white/75 border-gray-200/90 shadow-[0_-6px_20px_rgba(0,0,0,0.06)] text-slate-800 backdrop-blur-2xl backdrop-saturate-150'
             }`}
-          style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 4px)' }}
+          style={{ paddingBottom: isMobileKeyboardOpen ? '0px' : 'max(env(safe-area-inset-bottom, 0px), 4px)' }}
           aria-label="شريط التبويبات السفلي"
         >
           <div className="flex items-stretch justify-around h-14 sm:h-16 w-full max-w-lg mx-auto px-0">

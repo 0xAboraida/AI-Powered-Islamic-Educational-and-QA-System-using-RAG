@@ -102,16 +102,18 @@ function AppContent() {
     setIsLibraryScrolled((prev) => (prev === scrolled ? prev : scrolled))
   }, [])
 
-  const openKnowledge = useCallback((tab: any = 'home') => {
-    setLibraryTab((prev: any) => (prev === tab ? prev : tab))
+  const openKnowledge = useCallback((tab?: any) => {
+    const validTabs: MainTab[] = ['home', 'categories', 'authors', 'narrators', 'featured', 'media', 'courses', 'favorites', 'downloads']
+    const resolvedTab: MainTab = (typeof tab === 'string' && validTabs.includes(tab as MainTab)) ? (tab as MainTab) : 'home'
+    setLibraryTab(resolvedTab)
     setHasVisitedKnowledge(true)
-    if (tab !== 'home') {
+    if (resolvedTab !== 'home') {
       setIsLibraryScrolled(true)
     } else {
       setIsLibraryScrolled(false)
     }
     window.scrollTo({ top: 0, behavior: 'instant' })
-    setView((prev) => (prev === 'knowledge' ? prev : 'knowledge'))
+    setView('knowledge')
   }, [])
   const openStudy = () => isAuthenticated ? navigate('study') : navigate('login')
   const openAdmin = () => navigate('admin')

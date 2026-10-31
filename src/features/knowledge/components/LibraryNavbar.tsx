@@ -445,14 +445,14 @@ export const LibraryNavbar: React.FC<LibraryNavbarProps> = ({
 
           <div
             onClick={() => {
-              if (activeMainTab !== 'home') {
-                handleGoToLibraryHome();
-              } else {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }
+              setIsScrolledPastSearch(false);
+              onScrolledPastSearchChange?.(false);
+              window.scrollTo({ top: 0, behavior: 'instant' });
+              if (onNavigateGlobal) onNavigateGlobal('home');
+              else onExit();
             }}
             className="flex items-center gap-2 sm:gap-2.5 cursor-pointer group select-none"
-            title="الرئيسية"
+            title="الصفحة الرئيسية لموقع زاد"
           >
             {accentColor === 'purple' ? (
               <img

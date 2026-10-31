@@ -190,8 +190,11 @@ export default function KnowledgeBase({
   };
 
   // Controlled tab from App.tsx, with fallback to internal state
-  const [internalTab, setInternalTab] = useState<MainTab>(activeTab || initialTab || 'home');
-  const activeMainTab = activeTab !== undefined ? activeTab : internalTab;
+  const VALID_MAIN_TABS: MainTab[] = ['home', 'categories', 'authors', 'narrators', 'featured', 'media', 'courses', 'favorites', 'downloads'];
+  const sanitizeTab = (t: any): MainTab => (typeof t === 'string' && VALID_MAIN_TABS.includes(t as MainTab) ? (t as MainTab) : 'home');
+
+  const [internalTab, setInternalTab] = useState<MainTab>(() => sanitizeTab(activeTab || initialTab));
+  const activeMainTab = sanitizeTab(activeTab !== undefined ? activeTab : internalTab);
 
   const onTabChangeRef = useRef(onTabChange);
   useEffect(() => {
@@ -217,7 +220,8 @@ export default function KnowledgeBase({
   const prevActiveTabRef = useRef(activeMainTab);
 
   const setActiveMainTab = useCallback((tabOrFn: MainTab | ((prev: MainTab) => MainTab)) => {
-    const nextTab = typeof tabOrFn === 'function' ? tabOrFn(activeMainTabRef.current) : tabOrFn;
+    const rawNext = typeof tabOrFn === 'function' ? tabOrFn(activeMainTabRef.current) : tabOrFn;
+    const nextTab = sanitizeTab(rawNext);
     prevActiveTabRef.current = nextTab;
     setInternalTab(nextTab);
     onTabChangeRef.current?.(nextTab);
@@ -246,7 +250,8 @@ export default function KnowledgeBase({
 
   // Synchronize internal state when activeTab or initialTab changes from parent
   useEffect(() => {
-    const incomingTab = activeTab !== undefined ? activeTab : initialTab;
+    const rawIncoming = activeTab !== undefined ? activeTab : initialTab;
+    const incomingTab = sanitizeTab(rawIncoming);
     if (incomingTab && incomingTab !== prevActiveTabRef.current) {
       prevActiveTabRef.current = incomingTab;
       setInternalTab(incomingTab);

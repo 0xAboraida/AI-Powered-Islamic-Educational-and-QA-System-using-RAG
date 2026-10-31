@@ -575,7 +575,7 @@ export default function Navbar({
             <li className="shrink-0">
               <button
                 type="button"
-                onClick={onOpenKnowledge}
+                onClick={() => onOpenKnowledge('home')}
                 className={`group relative flex flex-col items-center py-1 text-[12.5px] sm:text-[13px] lg:text-[15px] xl:text-[16.5px] transition-colors duration-300 whitespace-nowrap ${getTabLinkClass(activeTab === 'knowledge')}`}
               >
                 المكتبة

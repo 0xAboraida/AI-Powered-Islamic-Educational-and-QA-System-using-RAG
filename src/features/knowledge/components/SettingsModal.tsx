@@ -26,11 +26,11 @@ export default function SettingsModal({
 
   return (
     <div 
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150"
       onClick={onClose}
     >
       <div 
-        className="relative w-full max-w-md bg-white dark:bg-[#121624] rounded-3xl border border-slate-200 dark:border-white/10 p-6 sm:p-8 shadow-2xl animate-in zoom-in-95 duration-200"
+        className="relative w-full max-w-md bg-white dark:bg-[#121624] rounded-3xl border border-slate-200 dark:border-white/10 p-6 sm:p-8 shadow-2xl transform-gpu will-change-transform animate-in zoom-in-95 duration-150 ease-out"
         onClick={(e) => e.stopPropagation()}
         dir="rtl"
       >
