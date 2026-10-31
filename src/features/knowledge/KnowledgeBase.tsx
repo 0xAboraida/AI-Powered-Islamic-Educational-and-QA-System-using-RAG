@@ -12,6 +12,7 @@ import {
 import libraryBgLight from '@/assets/images/library background light 5.png'
 import libraryBgDark from '@/assets/images/library background dark5.png'
 import mobileLibraryBgDark from '@/assets/images/mobile library background dark 1.webp'
+import mobileLibraryBgLight from '@/assets/images/mobile library background light 1.webp'
 import { useTheme } from '../../contexts/ThemeContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { getAvatarUrl } from '../../api/client'
@@ -986,7 +987,7 @@ export default function KnowledgeBase({
                 />
                 {/* Mobile Background (< md) */}
                 <img
-                  src={theme === 'dark' ? mobileLibraryBgDark : libraryBgLight}
+                  src={theme === 'dark' ? mobileLibraryBgDark : mobileLibraryBgLight}
                   alt="خلفية المكتبة"
                   aria-hidden
                   className="block md:hidden h-full w-full object-cover object-bottom transition-all duration-500"
