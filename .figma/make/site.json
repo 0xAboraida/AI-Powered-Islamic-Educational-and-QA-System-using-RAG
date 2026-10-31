@@ -1,10 +1,15 @@
 {
-  "description": "This web application offers a sleek, responsive interface for the زاد mobile app, showcasing features through interactive cards and a user-friendly navigation system.",
+  "title": "زاد | المنصة الإسلامية الذكية للعلوم الشرعية والتراث",
+  "description": "زاد (Zad Islamic AI) هي منصة متكاملة للذكاء الاصطناعي الإسلامي، تتيح الحوار الذكي، دراسة كتب التراث، تصفح وتخريج الأحاديث، وتلخيص الدروس والمحاضرات الشرعية بموثوقية ودقة.",
+  "language": "ar",
   "robots": {
-    "index": false
+    "index": true
   },
   "icons": {
     "icon": "/favicon.png?v=2"
+  },
+  "openGraph": {
+    "image": "/logo.png?v=2"
   },
   "accessibility": {
     "addBypassLinks": false,

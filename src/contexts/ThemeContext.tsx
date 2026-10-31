@@ -20,13 +20,13 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     if (savedTheme === 'dark' || savedTheme === 'light') {
       return savedTheme;
     }
-    // Default to dark
-    return 'dark';
+    // Default to light
+    return 'light';
   });
 
   const [accentColor, setAccentColorState] = useState<AccentColor>(() => {
     const saved = localStorage.getItem('zad_accent_color');
-    return (saved === 'emerald' || saved === 'amber' || saved === 'blue' || saved === 'purple') ? saved : 'purple';
+    return (saved === 'emerald' || saved === 'amber' || saved === 'blue' || saved === 'purple') ? saved : 'amber';
   });
 
   const THEME_COLORS: Record<Theme, Record<AccentColor, string>> = {
@@ -56,7 +56,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       document.documentElement.classList.remove('dark');
     }
 
-    const currentThemeColor = THEME_COLORS[theme]?.[accentColor] || (theme === 'dark' ? '#12041f' : '#faf7ff');
+    const currentThemeColor = THEME_COLORS[theme]?.[accentColor] || (theme === 'dark' ? '#12041f' : '#fbf8f0');
 
     // Dynamic browser header / toolbar color for Chrome/Safari/Edge
     let metaThemeColor = document.querySelector('meta[name="theme-color"]');

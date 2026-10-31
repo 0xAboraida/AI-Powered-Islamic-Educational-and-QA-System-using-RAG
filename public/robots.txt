@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Disallow private and administrative internal endpoints
+Disallow: /admin
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://zad-islamic-ai.vercel.app/sitemap.xml

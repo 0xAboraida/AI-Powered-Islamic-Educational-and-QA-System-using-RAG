@@ -1,14 +1,48 @@
 <!doctype html>
-<html lang="<!-- figma:lang -->">
+<html lang="<!-- figma:lang -->" dir="rtl" data-accent="amber">
 
 <head>
   <!-- figma:head-start -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <meta name="theme-color" content="#12041f" />
+  <meta name="theme-color" content="#fbf8f0" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <script>
+    (function() {
+      try {
+        var theme = localStorage.getItem('zad_theme') || 'light';
+        var accent = localStorage.getItem('zad_accent_color') || 'amber';
+        document.documentElement.setAttribute('data-accent', accent);
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      } catch (e) {}
+    })();
+  </script>
   <title><!-- figma:title --></title>
+  
+  <!-- SEO & Search Engine Crawlers -->
+  <meta name="google-site-verification" content="q1W-qvGDJ3sUBtAQawO9s9i0eAeP3Mx88b_iSu_bZMo" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <meta name="keywords" content="زاد, تطبيق زاد, الذكاء الاصطناعي الإسلامي, كتب التراث, العلوم الشرعية, تخريج الأحاديث, الفقه الإسلامي, التفاسير, Zad, Zad Islamic AI, Turath" />
+  <meta name="author" content="Zad Islamic AI" />
+  
+  <!-- Structured Data (JSON-LD) for Google Rich Results -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "زاد | Zad Islamic AI",
+    "description": "منصة ذكية متكاملة في العلوم الشرعية الإسلامية ودراسة كتب التراث وتخريج الأحاديث والدروس العلمية.",
+    "applicationCategory": "EducationalApplication",
+    "inLanguage": "ar",
+    "operatingSystem": "All"
+  }
+  </script>
+
   <link rel="icon" type="image/png" href="/favicon.png?v=2" />
   <link rel="shortcut icon" href="/favicon.ico?v=2" />
   <link rel="apple-touch-icon" href="/logo.png?v=2" />
