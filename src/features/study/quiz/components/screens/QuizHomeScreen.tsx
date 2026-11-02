@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import {
   ClipboardList, Plus, History, Users, RefreshCw, PlayCircle, ChevronLeft, Trash2,
   Sparkles, HelpCircle, BarChart2, Target, Calendar, BookOpen, Database, Brain, User, Trophy,
-  ChevronDown, SlidersHorizontal, Clock, CheckCircle2, ListFilter, Layers
+  ChevronDown, SlidersHorizontal, Clock, CheckCircle2, ListFilter, Layers, Globe
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { studyApi, type QuizDto } from '../../../../../api/studyApi'
@@ -116,13 +116,15 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
     if (!targetChunkId) return true
     const qChunk = quiz?.chunkId || quiz?.chunk_id || quiz?.chunk
     if (!qChunk) return true
-    return String(qChunk).trim() === String(targetChunkId).trim()
+    const cleanQ = decodeURIComponent(String(qChunk)).trim()
+    const cleanT = decodeURIComponent(String(targetChunkId)).trim()
+    return cleanQ === cleanT || String(qChunk).trim() === String(targetChunkId).trim()
   }
 
   const loadQuizzes = async () => {
     setLoading(true)
     try {
-      // Send 2 parallel requests directly to Backend API (Source of Truth):
+      // Send 2 parallel requests directly to Backend API:
       const [myResult, communityResult] = await Promise.all([
         studyApi.getUserQuizzes().catch(() => [] as QuizDto[]),
         currentChunkId
@@ -140,6 +142,32 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
         else if (Array.isArray(resObj.items)) fetchedMy = resObj.items
       }
 
+      // Also merge locally cached quizzes from localStorage
+      try {
+        const rawLocal = localStorage.getItem('zad_saved_quizzes')
+        if (rawLocal) {
+          const localQuizzes = JSON.parse(rawLocal)
+          if (Array.isArray(localQuizzes)) {
+            fetchedMy = [...localQuizzes, ...fetchedMy]
+          }
+        }
+      } catch (err) {
+        console.warn('Error reading local saved quizzes:', err)
+      }
+
+      // Also merge locally cached community quizzes
+      try {
+        const rawComm = localStorage.getItem('zad_community_quizzes')
+        if (rawComm) {
+          const localComm = JSON.parse(rawComm)
+          if (Array.isArray(localComm)) {
+            fetchedCommunity = [...localComm, ...fetchedCommunity]
+          }
+        }
+      } catch (err) {
+        console.warn('Error reading local community quizzes:', err)
+      }
+
       let fetchedCommunity: any[] = []
       if (Array.isArray(communityResult)) {
         fetchedCommunity = communityResult
@@ -149,6 +177,17 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
         else if (Array.isArray(resObj.data)) fetchedCommunity = resObj.data
         else if (Array.isArray(resObj.items)) fetchedCommunity = resObj.items
       }
+
+      // Also merge local community quizzes
+      try {
+        const rawComm = localStorage.getItem('zad_community_quizzes')
+        if (rawComm) {
+          const localComm = JSON.parse(rawComm)
+          if (Array.isArray(localComm)) {
+            fetchedCommunity = [...localComm, ...fetchedCommunity]
+          }
+        }
+      } catch { }
 
       // Deduplicate user quizzes strictly by ID
       const seenMyIds = new Set<number>()
@@ -163,8 +202,18 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
       }
       uniqueMy.sort((a, b) => new Date(b?.createdAt || 0).getTime() - new Date(a?.createdAt || 0).getTime())
 
-      // Filter out user's own quizzes from community list
-      const uniqueCommunity = fetchedCommunity.filter(q => q && (q.id ? !seenMyIds.has(q.id) : true))
+      // Deduplicate community quizzes and filter out user's own quizzes
+      const seenCommIds = new Set<number>()
+      const uniqueCommunity: QuizDto[] = []
+      for (const q of fetchedCommunity) {
+        if (q && q.id && !seenCommIds.has(q.id) && !seenMyIds.has(q.id)) {
+          seenCommIds.add(q.id)
+          uniqueCommunity.push(q)
+        } else if (q && !q.id) {
+          uniqueCommunity.push(q)
+        }
+      }
+
       uniqueCommunity.sort((a, b) => new Date(b?.createdAt || 0).getTime() - new Date(a?.createdAt || 0).getTime())
 
       setMyQuizzes(uniqueMy)
@@ -189,15 +238,69 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
 
   useEffect(() => {
     loadQuizzes()
+    const handleQuizzesUpdated = () => loadQuizzes()
+    window.addEventListener('zad_quizzes_updated', handleQuizzesUpdated)
+    return () => window.removeEventListener('zad_quizzes_updated', handleQuizzesUpdated)
   }, [currentChunkId, viewMode])
+
+  const handleToggleShareQuiz = (e: React.MouseEvent, quiz: QuizDto) => {
+    e.stopPropagation()
+    const willShare = !(quiz as any).isShared
+
+    // 1. Update in local storage zad_saved_quizzes
+    try {
+      const rawLocal = localStorage.getItem('zad_saved_quizzes')
+      let localList: any[] = rawLocal ? JSON.parse(rawLocal) : []
+      if (Array.isArray(localList)) {
+        localList = localList.map(q => q.id === quiz.id ? { ...q, isShared: willShare } : q)
+        localStorage.setItem('zad_saved_quizzes', JSON.stringify(localList))
+      }
+    } catch { }
+
+    // 2. Update in zad_community_quizzes
+    try {
+      const rawComm = localStorage.getItem('zad_community_quizzes')
+      let commList: any[] = rawComm ? JSON.parse(rawComm) : []
+      if (!Array.isArray(commList)) commList = []
+
+      if (willShare) {
+        const exists = commList.some(c => c.id === quiz.id)
+        if (!exists) {
+          commList.unshift({
+            ...quiz,
+            isShared: true,
+            authorName: 'طالب في زاد (أنت)',
+            createdAt: new Date().toISOString()
+          })
+        }
+      } else {
+        commList = commList.filter(c => c.id !== quiz.id)
+      }
+      localStorage.setItem('zad_community_quizzes', JSON.stringify(commList))
+    } catch { }
+
+    // 3. Trigger reload
+    window.dispatchEvent(new CustomEvent('zad_quizzes_updated'))
+  }
 
   const handleDeleteLocalQuiz = (e: React.MouseEvent, quizId: number) => {
     e.stopPropagation()
     setMyQuizzes(prev => (Array.isArray(prev) ? prev.filter(q => q && q.id !== quizId) : []))
     setStats(s => ({ ...s, myCount: Math.max(0, s.myCount - 1) }))
+    try {
+      const rawLocal = localStorage.getItem('zad_saved_quizzes')
+      if (rawLocal) {
+        const localQuizzes = JSON.parse(rawLocal)
+        if (Array.isArray(localQuizzes)) {
+          const filtered = localQuizzes.filter((q: any) => q.id !== quizId)
+          localStorage.setItem('zad_saved_quizzes', JSON.stringify(filtered))
+        }
+      }
+    } catch { }
   }
 
   const renderQuizList = (quizzes: QuizDto[], title: string) => {
+    // Strictly isolate to the current lesson only
     const safeQuizzes = Array.isArray(quizzes) ? quizzes : []
     const filteredQuizzes = safeQuizzes.filter(q => q && isQuizMatchingChunk(q, currentChunkId))
 
@@ -219,7 +322,7 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
         <div className={`absolute -bottom-24 -left-24 w-48 h-48 ${theme.glowSecondary} rounded-full blur-3xl pointer-events-none`}></div>
 
         {/* Header Bar */}
-        <div className="flex items-center justify-between w-full mb-4 relative z-10 border-b pb-3.5 border-white/10">
+        <div className="flex items-center justify-between w-full mb-4 relative z-10 border-b pb-3.5 border-white/10 gap-3">
           <div className="flex items-center gap-2.5 min-w-0">
             <div className={`p-2 rounded-xl flex-shrink-0 ${theme.iconPill}`}>
               <Brain size={20} />
@@ -231,12 +334,13 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
                   {filteredQuizzes.length} اختبار
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400 mt-0.5 truncate hidden sm:block">سجل الاختبارات التقييمية لمراجعة تحصيلك العلمي</p>
+              <p className="text-[11px] text-slate-400 mt-0.5 truncate hidden sm:block">سجل الاختبارات التقييمية لمراجعة تحصيلك العلمي لهذا الدرس</p>
             </div>
           </div>
+
           <button
             onClick={() => setViewMode('menu')}
-            className={`px-3 py-1.5 text-xs font-extrabold rounded-xl transition-all duration-200 flex items-center gap-1 hover:scale-105 active:scale-95 shadow-md flex-shrink-0 ${isDark ? 'bg-white/10 hover:bg-white/20 text-white border border-white/10' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+            className={`px-3 py-1.5 text-xs font-extrabold rounded-xl transition-all duration-200 flex items-center gap-1 hover:scale-105 active:scale-95 shadow-md flex-shrink-0 cursor-pointer ${isDark ? 'bg-white/10 hover:bg-white/20 text-white border border-white/10' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
               }`}
           >
             <ChevronLeft size={15} /> العودة
@@ -447,9 +551,34 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
                     )}
                   </AnimatePresence>
 
-                  {/* Action Bar Bottom Row: Start Quiz Button Only */}
-                  <div className="flex items-center justify-end pt-1">
-                    <button className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-5 py-2 rounded-xl font-bold text-xs bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-md shadow-emerald-500/20 group-hover:shadow-emerald-500/40 group-hover:scale-105 active:scale-95 transition-all">
+                  {/* Action Bar Bottom Row: Start Quiz Button + Share Button */}
+                  <div className="flex items-center justify-between pt-1 gap-2 flex-wrap">
+                    {viewMode === 'my_quizzes' ? (
+                      <button
+                        type="button"
+                        onClick={(e) => handleToggleShareQuiz(e, quiz)}
+                        className={`px-3 py-1.5 text-xs font-bold rounded-xl border transition-all flex items-center gap-1.5 cursor-pointer ${
+                          (quiz as any).isShared
+                            ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30'
+                            : isDark
+                              ? 'bg-white/5 hover:bg-white/10 text-white/70 border-white/10'
+                              : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200'
+                        }`}
+                        title={(quiz as any).isShared ? 'منشور في مجتمع الزملاء (انقر لإلغاء النشر)' : 'مشاركة مع الزملاء'}
+                      >
+                        <Globe size={14} className={(quiz as any).isShared ? 'text-emerald-400' : 'opacity-70'} />
+                        <span>{(quiz as any).isShared ? 'منشور للزملاء 🌐' : 'مشاركة مع الزملاء'}</span>
+                      </button>
+                    ) : (
+                      <div className="flex items-center gap-1.5 text-xs opacity-75">
+                        <User size={14} className="text-emerald-400" />
+                        <span>إعداد: {quiz.authorName || 'زميل في زاد'}</span>
+                      </div>
+                    )}
+
+                    <button 
+                      onClick={() => onLoadQuiz?.(quiz)}
+                      className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-5 py-2 rounded-xl font-bold text-xs bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-md shadow-emerald-500/20 group-hover:shadow-emerald-500/40 group-hover:scale-105 active:scale-95 transition-all cursor-pointer">
                       <span>بدء الاختبار</span>
                       <PlayCircle size={16} className="-scale-x-100" />
                     </button>
@@ -503,19 +632,15 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-2 transition-transform duration-300 ${theme.iconPill}`}>
                   <History size={20} />
                 </div>
-                <span className={`font-extrabold text-xs sm:text-sm mb-0.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>اختباراتي السابقة</span>
-                <span className={`text-[11px] font-medium ${isDark ? 'text-white/60' : 'text-slate-500'}`}>{stats.myCount} اختبار متوفر</span>
+                <span className={`font-extrabold text-xs sm:text-sm mb-0.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>اختباراتي للدرس</span>
+                <span className={`text-[11px] font-medium ${isDark ? 'text-white/60' : 'text-slate-500'}`}>
+                  {myQuizzes.filter(q => isQuizMatchingChunk(q, currentChunkId)).length} اختبار متوفر
+                </span>
               </button>
 
               <button
                 type="button"
-                onClick={() => {
-                  if (!currentChunkId && stats.communityCount === 0) {
-                    alert('الرجاء اختيار درس من الفهرس أولاً لتصفح اختبارات زملائك الخاصة به.')
-                    return
-                  }
-                  setViewMode('community_quizzes')
-                }}
+                onClick={() => setViewMode('community_quizzes')}
                 className={`flex flex-col items-center p-4 rounded-2xl border transition-all duration-300 hover:-translate-y-1 active:scale-95 cursor-pointer text-center ${
                   isDark
                     ? `bg-[#12041f]/70 border-white/10 ${theme.cardOption} shadow-md`
@@ -525,8 +650,10 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-2 transition-transform duration-300 ${theme.iconPill}`}>
                   <Users size={20} />
                 </div>
-                <span className={`font-extrabold text-xs sm:text-sm mb-0.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>اختبارات الإخوة</span>
-                <span className={`text-[11px] font-medium ${isDark ? 'text-white/60' : 'text-slate-500'}`}>{stats.communityCount} اختبار متوفر</span>
+                <span className={`font-extrabold text-xs sm:text-sm mb-0.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>اختبارات الزملاء</span>
+                <span className={`text-[11px] font-medium ${isDark ? 'text-white/60' : 'text-slate-500'}`}>
+                  {communityQuizzes.filter(q => isQuizMatchingChunk(q, currentChunkId)).length} اختبار متوفر
+                </span>
               </button>
             </div>
 
@@ -551,8 +678,8 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
           </motion.div>
         )}
 
-        {viewMode === 'my_quizzes' && renderQuizList(myQuizzes, 'اختباراتي السابقة')}
-        {viewMode === 'community_quizzes' && renderQuizList(communityQuizzes, 'اختبارات مكتبة زاد')}
+        {viewMode === 'my_quizzes' && renderQuizList(myQuizzes, 'اختباراتي المسجلة')}
+        {viewMode === 'community_quizzes' && renderQuizList(communityQuizzes, 'اختبارات الزملاء والمكتبة')}
       </AnimatePresence>
     </div>
   )

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Brain, X, Loader2, Sparkles, History, Users, ChevronLeft, Calendar, User, ArrowRight, Database } from 'lucide-react'
+import { Brain, X, Loader2, Sparkles, History, Users, ChevronLeft, Calendar, User, ArrowRight, Database, Globe } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useStudyContext, type MindmapNode } from '../../../../contexts/StudyContext'
 import { VisualMindmap } from './VisualMindmap'
@@ -116,6 +116,7 @@ export function StudyMindmapPanel({
   const [viewMode, setViewMode] = useState<'menu' | 'my_mindmaps' | 'community_mindmaps' | 'visual'>(() => {
     return (mindmapData && Array.isArray(mindmapData) && mindmapData.length > 0) ? 'visual' : 'menu'
   })
+  const [filterScope, setFilterScope] = useState<'current' | 'all'>('current')
 
   const [myMindmaps, setMyMindmaps] = useState<StudyMindmapDto[]>([])
   const [communityMindmaps, setCommunityMindmaps] = useState<StudyMindmapDto[]>([])
@@ -133,31 +134,83 @@ export function StudyMindmapPanel({
     }
   }, [mindmapData])
 
-  // Load saved mindmaps from API whenever currentChunkId changes or panel mounts
+  // Load saved mindmaps from API and localStorage whenever currentChunkId changes or panel mounts
   const loadMindmaps = async () => {
     setLoadingLists(true)
     try {
       const [userRes, commRes] = await Promise.all([
-        studyApi.getMindmapsByChunk(currentChunkId || ''),
-        studyApi.getCommunityMindmapsByChunk(currentChunkId || '')
+        studyApi.getMindmapsByChunk(currentChunkId || '').catch(() => []),
+        studyApi.getCommunityMindmapsByChunk(currentChunkId || '').catch(() => [])
       ])
 
       let myFiltered = Array.isArray(userRes) ? userRes : []
       let commFiltered = Array.isArray(commRes) ? commRes : []
 
-      // Strict chunk isolation if chunk selected
-      if (currentChunkId) {
-        const decChunk = decodeURIComponent(currentChunkId)
-        myFiltered = myFiltered.filter(m => m.chunkId === currentChunkId || m.chunkId === decChunk)
-        commFiltered = commFiltered.filter(m => m.chunkId === currentChunkId || m.chunkId === decChunk)
+      // Also merge locally saved mindmaps from localStorage
+      try {
+        const rawLocal = localStorage.getItem('zad_saved_mindmaps')
+        if (rawLocal) {
+          const localMindmaps = JSON.parse(rawLocal)
+          if (Array.isArray(localMindmaps)) {
+            myFiltered = [...localMindmaps, ...myFiltered]
+          }
+        }
+      } catch (err) {
+        console.warn('Error reading local saved mindmaps:', err)
       }
 
-      // Deduplicate
-      const myIds = new Set(myFiltered.map(m => m.id))
-      commFiltered = commFiltered.filter(m => !myIds.has(m.id))
+      // Merge community mindmaps from localStorage
+      try {
+        const rawComm = localStorage.getItem('zad_community_mindmaps')
+        if (rawComm) {
+          const localComm = JSON.parse(rawComm)
+          if (Array.isArray(localComm)) {
+            commFiltered = [...localComm, ...commFiltered]
+          }
+        }
+      } catch (err) {
+        console.warn('Error reading local community mindmaps:', err)
+      }
 
-      setMyMindmaps(myFiltered)
-      setCommunityMindmaps(commFiltered)
+      // If activeMindmap exists in current context, ensure it's represented
+      if (activeMindmap && activeMindmap.length > 0 && currentChunkId) {
+        const hasCurrent = myFiltered.some(m => m.chunkId === currentChunkId || decodeURIComponent(m.chunkId || '') === decodeURIComponent(currentChunkId))
+        if (!hasCurrent) {
+          myFiltered.unshift({
+            id: Date.now(),
+            chunkId: currentChunkId,
+            title: 'خريطة الدرس الحالية',
+            treeData: activeMindmap,
+            authorName: 'طالب زاد',
+            createdAt: new Date().toISOString()
+          })
+        }
+      }
+
+      // Deduplicate user mindmaps strictly by ID
+      const seenIds = new Set<number>()
+      const uniqueMy: StudyMindmapDto[] = []
+      for (const m of myFiltered) {
+        if (m && m.id && !seenIds.has(m.id)) {
+          seenIds.add(m.id)
+          uniqueMy.push(m)
+        } else if (m && !m.id) {
+          uniqueMy.push(m)
+        }
+      }
+
+      // Deduplicate community mindmaps by ID
+      const seenCommIds = new Set<number>()
+      const uniqueComm: StudyMindmapDto[] = []
+      for (const m of commFiltered) {
+        if (m && m.id && !seenCommIds.has(m.id)) {
+          seenCommIds.add(m.id)
+          uniqueComm.push(m)
+        }
+      }
+
+      setMyMindmaps(uniqueMy)
+      setCommunityMindmaps(uniqueComm)
     } catch (err) {
       console.warn('Failed to load mindmaps from backend API:', err)
     } finally {
@@ -167,7 +220,57 @@ export function StudyMindmapPanel({
 
   useEffect(() => {
     loadMindmaps()
+    const handleUpdate = () => loadMindmaps()
+    window.addEventListener('zad_mindmaps_updated', handleUpdate)
+    return () => window.removeEventListener('zad_mindmaps_updated', handleUpdate)
   }, [currentChunkId])
+
+  const handleToggleShareMindmap = (e: React.MouseEvent, item: StudyMindmapDto) => {
+    e.stopPropagation()
+    const willShare = !(item as any).isShared
+
+    // 1. Update in local storage zad_saved_mindmaps
+    try {
+      const rawLocal = localStorage.getItem('zad_saved_mindmaps')
+      let localList: any[] = rawLocal ? JSON.parse(rawLocal) : []
+      if (Array.isArray(localList)) {
+        localList = localList.map(m => m.id === item.id ? { ...m, isShared: willShare } : m)
+        localStorage.setItem('zad_saved_mindmaps', JSON.stringify(localList))
+      }
+    } catch { }
+
+    // 2. Update in zad_community_mindmaps
+    try {
+      const rawComm = localStorage.getItem('zad_community_mindmaps')
+      let commList: any[] = rawComm ? JSON.parse(rawComm) : []
+      if (!Array.isArray(commList)) commList = []
+
+      if (willShare) {
+        const exists = commList.some(c => c.id === item.id)
+        if (!exists) {
+          commList.unshift({
+            ...item,
+            isShared: true,
+            authorName: 'طالب في زاد (أنت)',
+            createdAt: new Date().toISOString()
+          })
+        }
+      } else {
+        commList = commList.filter(c => c.id !== item.id)
+      }
+      localStorage.setItem('zad_community_mindmaps', JSON.stringify(commList))
+    } catch { }
+
+    // 3. Trigger reload
+    window.dispatchEvent(new CustomEvent('zad_mindmaps_updated'))
+  }
+
+  const isChunkMatch = (m: StudyMindmapDto) => {
+    if (!currentChunkId) return true
+    const decChunk = decodeURIComponent(currentChunkId).trim()
+    const mChunk = decodeURIComponent(m.chunkId || '').trim()
+    return mChunk === decChunk || m.chunkId === currentChunkId
+  }
 
   const parseTreeNodes = (raw: any): MindmapNode[] => {
     if (!raw) return []
@@ -205,6 +308,9 @@ export function StudyMindmapPanel({
   }
 
   const renderMindmapList = (items: StudyMindmapDto[], title: string) => {
+    // Strictly isolate to the current lesson only
+    const displayedItems = items.filter(isChunkMatch)
+
     return (
       <motion.div
         initial={{ opacity: 0, scale: 0.96, y: 12 }}
@@ -222,7 +328,7 @@ export function StudyMindmapPanel({
         <div className={`absolute -bottom-24 -left-24 w-48 h-48 ${mindmapTheme.glowSecondary} rounded-full blur-3xl pointer-events-none`}></div>
 
         {/* Header Bar */}
-        <div className="flex items-center justify-between w-full mb-5 relative z-10 border-b pb-3.5 border-white/10 gap-2">
+        <div className="flex items-center justify-between w-full mb-4 relative z-10 border-b pb-3.5 border-white/10 gap-3">
           <div className="flex items-center gap-2.5 min-w-0">
             <div className={`p-2 rounded-xl flex-shrink-0 ${mindmapTheme.iconPill}`}>
               <Brain size={20} />
@@ -231,15 +337,16 @@ export function StudyMindmapPanel({
               <div className="flex items-center gap-2 flex-wrap">
                 <h3 className={`text-base sm:text-lg font-extrabold ${isDark ? 'text-white' : 'text-slate-800'}`}>{title}</h3>
                 <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-bold shadow-sm ${mindmapTheme.badge}`}>
-                  {items.length} خريطة
+                  {displayedItems.length} خريطة
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400 mt-0.5 hidden sm:block">استعرض الشجرات الذهنية المحفوظة لتعميق الفهم البصري</p>
+              <p className="text-[11px] text-slate-400 mt-0.5 hidden sm:block">استعرض الشجرات الذهنية المحفوظة لتعميق الفهم البصري لهذا الدرس</p>
             </div>
           </div>
+
           <button
             onClick={() => setViewMode('menu')}
-            className={`px-3 py-1.5 text-xs font-extrabold rounded-xl transition-all duration-200 flex items-center gap-1 hover:scale-105 active:scale-95 shadow-md flex-shrink-0 ${isDark ? 'bg-white/10 hover:bg-white/20 text-white border border-white/10' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+            className={`px-3 py-1.5 text-xs font-extrabold rounded-xl transition-all duration-200 flex items-center gap-1 hover:scale-105 active:scale-95 shadow-md flex-shrink-0 cursor-pointer ${isDark ? 'bg-white/10 hover:bg-white/20 text-white border border-white/10' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
               }`}
           >
             <ChevronLeft size={15} /> العودة
@@ -253,16 +360,20 @@ export function StudyMindmapPanel({
               <Loader2 className={`animate-spin ${mindmapTheme.icon}`} size={32} />
               <p className={`text-xs font-semibold ${isDark ? 'text-white/70' : 'text-slate-500'}`}>جاري استرجاع الخرائط الذهنية...</p>
             </div>
-          ) : items.length === 0 ? (
+          ) : displayedItems.length === 0 ? (
             <div className={`w-full py-14 rounded-2xl border text-center relative z-10 flex flex-col items-center justify-center gap-2.5 ${isDark ? 'bg-white/5 border-white/10 text-white/60' : 'bg-slate-50 border-slate-200 text-slate-500'
               }`}>
               <Brain size={36} className="text-slate-500/60" />
-              <p className="font-bold text-sm">لا توجد خرائط ذهنية محفوظة هنا بعد.</p>
-              <p className="text-xs text-slate-400 max-w-xs">أنشئ خريطة ذهنية جديدة من الشاشة الرئيسية لبدء استكشاف مفاهيم الدرس.</p>
+              <p className="font-bold text-sm">لا توجد خرائط ذهنية محفوظة لمجال العرض الحالي.</p>
+              <p className="text-xs text-slate-400 max-w-xs">
+                {filterScope === 'current'
+                  ? 'يمكنك تبديل التصفية إلى "كل الدروس" أو توليد خريطة جديدة لهذا الدرس.'
+                  : 'أنشئ خريطة ذهنية جديدة من الشاشة الرئيسية لبدء استكشاف مفاهيم الدرس.'}
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-3">
-              {items.map((item, index) => {
+              {displayedItems.map((item, index) => {
                 const createdDate = item.createdAt ? new Date(item.createdAt).toLocaleDateString('ar-EG', { day: 'numeric', month: 'short' }) : 'مؤخراً'
                 const nodesList = parseTreeNodes(item.treeData)
                 const nodeCount = nodesList.length > 0 ? (nodesList[0]?.children?.length || 1) + 1 : 1
@@ -277,7 +388,7 @@ export function StudyMindmapPanel({
                       }`}
                   >
 
-                    {/* Top Row: Sequential Index Badge (#1, #2...) + Title + Button */}
+                    {/* Top Row: Sequential Index Badge (#1, #2...) + Title + Actions */}
                     <div className="flex items-center justify-between gap-3 w-full">
                       <div className="flex items-center gap-2.5 flex-1 min-w-0">
                         {/* Sequential Index Badge (#1, #2...) */}
@@ -291,16 +402,45 @@ export function StudyMindmapPanel({
                         </div>
                       </div>
 
-                      <button
-                        className={`px-3.5 py-1.5 text-xs font-black rounded-xl ${mindmapTheme.primaryBtn} group-hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 flex-shrink-0`}
-                      >
-                        <span>عرض</span>
-                        <ArrowRight size={14} className="rotate-180" />
-                      </button>
+                      <div className="flex items-center gap-1.5 flex-shrink-0">
+                        {/* Share to Community button for user's own mindmaps */}
+                        {viewMode === 'my_mindmaps' && (
+                          <button
+                            type="button"
+                            onClick={(e) => handleToggleShareMindmap(e, item)}
+                            className={`px-2.5 py-1.5 text-xs font-bold rounded-xl border transition-all flex items-center gap-1 cursor-pointer ${
+                              (item as any).isShared
+                                ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30'
+                                : isDark
+                                  ? 'bg-white/5 hover:bg-white/10 text-white/70 border-white/10'
+                                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200'
+                            }`}
+                            title={(item as any).isShared ? 'منشورة للزملاء (انقر لإلغاء النشر)' : 'مشاركة مع الزملاء'}
+                          >
+                            <Globe size={13} className={(item as any).isShared ? 'text-emerald-400' : 'opacity-70'} />
+                            <span>{(item as any).isShared ? 'منشور 🌐' : 'مشاركة'}</span>
+                          </button>
+                        )}
+
+                        <button
+                          className={`px-3.5 py-1.5 text-xs font-black rounded-xl ${mindmapTheme.primaryBtn} group-hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 flex-shrink-0`}
+                        >
+                          <span>عرض</span>
+                          <ArrowRight size={14} className="rotate-180" />
+                        </button>
+                      </div>
                     </div>
 
-                    {/* Metadata Row (Simplified: Date & Branch Count) */}
-                    <div className="flex items-center gap-2 text-[11px] font-medium pt-2 border-t border-white/5">
+                    {/* Metadata Row */}
+                    <div className="flex items-center gap-2 text-[11px] font-medium pt-2 border-t border-white/5 flex-wrap">
+                      {/* Author Name for Community Mindmaps */}
+                      {viewMode === 'community_mindmaps' && (
+                        <span className={`flex items-center gap-1 px-2 py-0.5 rounded-md border ${isDark ? 'bg-purple-500/15 border-purple-500/30 text-purple-300' : 'bg-purple-50 border-purple-200 text-purple-700'}`}>
+                          <User size={12} className="text-purple-400" />
+                          <span>{item.authorName || 'زميل في زاد'}</span>
+                        </span>
+                      )}
+
                       {/* 1. Branch Count */}
                       <span className={`flex items-center gap-1 px-2 py-0.5 rounded-md border ${isDark ? 'bg-cyan-500/15 border-cyan-500/30 text-cyan-300' : 'bg-cyan-50 border-cyan-200 text-cyan-700'
                         }`}>
@@ -314,6 +454,17 @@ export function StudyMindmapPanel({
                         <Calendar size={12} className="text-sky-400" />
                         <span>{createdDate}</span>
                       </span>
+
+                      {/* Lesson Scope Tag if viewing all lessons */}
+                      {filterScope === 'all' && (
+                        <span className={`flex items-center gap-1 px-2 py-0.5 rounded-md border text-[10px] ${
+                          isChunkMatch(item)
+                            ? (isDark ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800')
+                            : (isDark ? 'bg-white/5 border-white/10 text-white/50' : 'bg-slate-100 border-slate-200 text-slate-500')
+                        }`}>
+                          <span>{isChunkMatch(item) ? '📌 هذا الدرس' : 'درس آخر'}</span>
+                        </span>
+                      )}
                     </div>
                   </div>
                 )
@@ -465,19 +616,15 @@ export function StudyMindmapPanel({
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-2 transition-transform duration-300 ${mindmapTheme.iconPill}`}>
                     <History size={20} />
                   </div>
-                  <span className={`font-extrabold text-xs sm:text-sm mb-0.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>خرائطي السابقة</span>
-                  <span className={`text-[11px] font-medium ${isDark ? 'text-white/60' : 'text-slate-500'}`}>{myMindmaps.length} خريطة متوفرة</span>
+                  <span className={`font-extrabold text-xs sm:text-sm mb-0.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>تشجيراتي للدرس</span>
+                  <span className={`text-[11px] font-medium ${isDark ? 'text-white/60' : 'text-slate-500'}`}>
+                    {myMindmaps.filter(isChunkMatch).length} خريطة متوفرة
+                  </span>
                 </button>
 
                 <button
                   type="button"
-                  onClick={() => {
-                    if (!currentChunkId && communityMindmaps.length === 0) {
-                      alert('الرجاء اختيار درس من الفهرس أولاً لتصفح خرائط زملائك الخاصة به.')
-                      return
-                    }
-                    setViewMode('community_mindmaps')
-                  }}
+                  onClick={() => setViewMode('community_mindmaps')}
                   className={`flex flex-col items-center p-4 rounded-2xl border transition-all duration-300 hover:-translate-y-1 active:scale-95 cursor-pointer text-center ${
                     isDark
                       ? `bg-[#12041f]/70 border-white/10 ${mindmapTheme.cardOption} shadow-md`
@@ -487,10 +634,28 @@ export function StudyMindmapPanel({
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-2 transition-transform duration-300 ${mindmapTheme.iconPill}`}>
                     <Users size={20} />
                   </div>
-                  <span className={`font-extrabold text-xs sm:text-sm mb-0.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>خرائط الزملاء</span>
-                  <span className={`text-[11px] font-medium ${isDark ? 'text-white/60' : 'text-slate-500'}`}>{communityMindmaps.length} خريطة متوفرة</span>
+                  <span className={`font-extrabold text-xs sm:text-sm mb-0.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>تشجيرات الزملاء</span>
+                  <span className={`text-[11px] font-medium ${isDark ? 'text-white/60' : 'text-slate-500'}`}>
+                    {communityMindmaps.filter(isChunkMatch).length} خريطة متوفرة
+                  </span>
                 </button>
               </div>
+
+              {/* If activeMindmap exists, offer a button to view it directly */}
+              {activeMindmap && activeMindmap.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setViewMode('visual')}
+                  className={`w-full mt-1 py-3 px-5 rounded-2xl font-black text-xs sm:text-sm transition-all duration-200 border flex items-center justify-center gap-2 shadow-md hover:scale-[1.02] active:scale-[0.98] cursor-pointer ${
+                    isDark
+                      ? 'bg-sky-500/20 hover:bg-sky-500/30 border-sky-400/50 text-sky-200 shadow-sky-950/40'
+                      : 'bg-sky-50 hover:bg-sky-100 border-sky-300 text-sky-900 shadow-sm'
+                  }`}
+                >
+                  <Brain size={18} className="stroke-[2.5]" />
+                  <span>عرض الخريطة الحالية النشطة لهذا الدرس</span>
+                </button>
+              )}
 
               <button
                 disabled={!currentChunkId || loading || chunkLoading}

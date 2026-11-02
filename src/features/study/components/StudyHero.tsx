@@ -6,6 +6,7 @@ import {
 } from 'lucide-react'
 import studyModeHeroBg from '@/assets/images/study mode background light2.png'
 import { type ChunkMetadata } from '../../../contexts/StudyContext'
+import { StudyHeroCommunity, type CommunityMindmapItem, type CommunityQuizItem } from './StudyHeroCommunity'
 
 interface StudyHeroProps {
   accentColor: 'purple' | 'emerald' | 'amber' | 'blue'
@@ -17,6 +18,8 @@ interface StudyHeroProps {
   onEnterWorkspace: () => void
   onOpenBookSelector?: () => void
   onOpenHistory?: () => void
+  onSelectCommunityMindmap?: (mindmap: CommunityMindmapItem) => void
+  onSelectCommunityQuiz?: (quiz: CommunityQuizItem) => void
 }
 
 export function StudyHero({
@@ -29,6 +32,8 @@ export function StudyHero({
   onEnterWorkspace,
   onOpenBookSelector,
   onOpenHistory,
+  onSelectCommunityMindmap,
+  onSelectCommunityQuiz,
 }: StudyHeroProps) {
 
   // Theme-specific glow and title styles
@@ -169,7 +174,7 @@ export function StudyHero({
   const displaySectionTitle = headerSubtitle || chunkMeta?.hierarchy?.kitab || 'فصل في الصلوات المكتوبات'
 
   return (
-    <div className="relative min-h-screen w-full flex flex-col justify-center overflow-x-hidden text-right selection:bg-primary/20">
+    <div className="relative min-h-screen w-full flex flex-col justify-start overflow-y-auto overflow-x-hidden text-right selection:bg-primary/20">
       {/* Background Graphic - Fixed to Viewport, Crisp & 100% Pure with No Overlays */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         <img
@@ -180,7 +185,7 @@ export function StudyHero({
       </div>
 
       {/* Hero Center Content (Top padding accounts for Navbar) */}
-      <div className="relative z-20 flex-1 flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24 pb-8 max-w-6xl mx-auto w-full text-center my-auto">
+      <div className="relative z-20 flex-1 flex flex-col items-center justify-start px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24 pb-16 max-w-6xl mx-auto w-full text-center">
         {/* Hero Titles */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
@@ -407,6 +412,26 @@ export function StudyHero({
             </p>
           </div>
         </motion.div>
+
+        {/* 5. Community Hub: التشجيرات والاختبارات المنشورة في الصفحة الرئيسية للمدارسة */}
+        <StudyHeroCommunity
+          accentColor={accentColor}
+          isDark={isDark}
+          onSelectMindmap={(item) => {
+            if (onSelectCommunityMindmap) {
+              onSelectCommunityMindmap(item)
+            } else {
+              onEnterWorkspace()
+            }
+          }}
+          onSelectQuiz={(item) => {
+            if (onSelectCommunityQuiz) {
+              onSelectCommunityQuiz(item)
+            } else {
+              onEnterWorkspace()
+            }
+          }}
+        />
       </div>
     </div>
   )

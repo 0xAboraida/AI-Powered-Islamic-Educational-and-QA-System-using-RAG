@@ -1917,6 +1917,7 @@ ${typesGuide.join('\n')}
           if (!exists) {
             storedList.unshift(localQuizObj)
             localStorage.setItem('zad_saved_quizzes', JSON.stringify(storedList.slice(0, 50)))
+            window.dispatchEvent(new CustomEvent('zad_quizzes_updated'))
           }
         } catch (e) {
           console.warn('Failed saving quiz to localStorage fallback:', e)
@@ -2045,7 +2046,30 @@ ${typesGuide.join('\n')}
       }
 
       if (tree) {
-        setMindmapData(Array.isArray(tree) ? tree : [tree])
+        const nodes = Array.isArray(tree) ? tree : [tree]
+        setMindmapData(nodes)
+
+        // Save generated mindmap to localStorage cache so it always appears in "خرائطي السابقة"
+        try {
+          const localMindmapObj = {
+            id: Date.now(),
+            chunkId: currentChunkId,
+            title: chunkTitle ? `خريطة: ${chunkTitle}` : 'خريطة مفاهيم الدرس',
+            treeData: nodes,
+            authorName: 'طالب زاد',
+            createdAt: new Date().toISOString()
+          }
+          const storedStr = localStorage.getItem('zad_saved_mindmaps')
+          const storedList: any[] = storedStr ? JSON.parse(storedStr) : []
+          const exists = storedList.some(m => m.chunkId === currentChunkId && JSON.stringify(m.treeData) === JSON.stringify(nodes))
+          if (!exists) {
+            storedList.unshift(localMindmapObj)
+            localStorage.setItem('zad_saved_mindmaps', JSON.stringify(storedList.slice(0, 50)))
+            window.dispatchEvent(new CustomEvent('zad_mindmaps_updated'))
+          }
+        } catch (e) {
+          console.warn('Failed saving mindmap to localStorage:', e)
+        }
       } else {
         alert('تعذر استخراج الخريطة الذهنية لهذا الدرس، يرجى المحاولة مرة أخرى.')
       }
@@ -2132,6 +2156,18 @@ ${typesGuide.join('\n')}
           onEnterWorkspace={() => setStudyView('workspace')}
           onOpenBookSelector={handleStartNewSession}
           onOpenHistory={() => setIsHistoryModalOpen(true)}
+          onSelectCommunityMindmap={(mm) => {
+            if (mm.treeData && mm.treeData.length > 0) {
+              setMindmapData(mm.treeData)
+            }
+            setIsMindmapOpen(true)
+            setStudyView('workspace')
+          }}
+          onSelectCommunityQuiz={(qz) => {
+            handleLoadQuiz(qz)
+            setIsQuizOpen(true)
+            setStudyView('workspace')
+          }}
         />
 
         {/* Saved Sessions History Modal */}
