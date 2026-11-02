@@ -6,11 +6,14 @@ import {
   User, LogOut, Settings, LayoutDashboard, Sun, Moon, Sparkles, LogIn, Loader2,
   Activity, Zap, Server, Cpu, Home, BookOpen, GraduationCap, MessageSquare, Mic,
   ChevronLeft, ChevronDown, ShieldCheck, Database, Video, X, BookOpenCheck, Bell, Palette, Menu,
-  Share2, Smartphone, Copy, Check, Globe, Mail, Library, Layers, Users, Heart, HardDriveDownload, Bookmark
+  Share2, Smartphone, Copy, Check, Globe, Mail, Library, Layers, Users, Heart, HardDriveDownload, Bookmark,
+  Folder, MessageCircle, Brain, ClipboardList,
+  Maximize, Minimize
 } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import { useTheme } from '../../contexts/ThemeContext'
 import { getAvatarUrl } from '../../api/client'
+import { studyApi, type StudySessionDto } from '../../api/studyApi'
 import StoreBadges from '../ui/StoreBadges'
 import NotificationBell from './NotificationBell'
 import UserProfileModal from '../../features/profile/UserProfileModal'
@@ -68,11 +71,16 @@ export default function Navbar({
   const [isAdminMenuExpanded, setIsAdminMenuExpanded] = useState(false)
   const [isMobileAdminMenuExpanded, setIsMobileAdminMenuExpanded] = useState(false)
   const [isMobileLibraryExpanded, setIsMobileLibraryExpanded] = useState(activeTab === 'knowledge')
+  const [isMobileStudyExpanded, setIsMobileStudyExpanded] = useState(activeTab === 'study')
   const [recentBook, setRecentBook] = useState<any | null>(null)
+  const [recentStudySession, setRecentStudySession] = useState<StudySessionDto | null>(null)
 
   useEffect(() => {
     if (activeTab === 'knowledge') {
       setIsMobileLibraryExpanded(true)
+    }
+    if (activeTab === 'study') {
+      setIsMobileStudyExpanded(true)
     }
   }, [activeTab])
 
@@ -88,6 +96,14 @@ export default function Navbar({
       } catch (e) {
         setRecentBook(null)
       }
+
+      studyApi.getSessions()
+        .then((sessions) => {
+          if (Array.isArray(sessions) && sessions.length > 0) {
+            setRecentStudySession(sessions[0])
+          }
+        })
+        .catch(() => {})
     }
   }, [open])
 
@@ -97,6 +113,24 @@ export default function Navbar({
   const { user, isAuthenticated, logout } = useAuth()
   const { theme, toggleTheme, isDark, accentColor, setAccentColor } = useTheme()
   const isAdmin = user?.role?.toLowerCase() === 'admin' || user?.email?.toLowerCase().includes('admin')
+
+  const [isFullscreen, setIsFullscreen] = useState(false)
+
+  useEffect(() => {
+    const handleFsChange = () => {
+      setIsFullscreen(!!document.fullscreenElement)
+    }
+    document.addEventListener('fullscreenchange', handleFsChange)
+    return () => document.removeEventListener('fullscreenchange', handleFsChange)
+  }, [])
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {})
+    } else {
+      document.exitFullscreen().catch(() => {})
+    }
+  }
 
   // Dynamic accent styling for all sidebar navigation icons & active state
   const getNavIconBoxClass = () => {
@@ -614,7 +648,7 @@ export default function Navbar({
                 onClick={onOpenStudy}
                 className={`group relative flex flex-col items-center py-1 text-[12.5px] sm:text-[13px] lg:text-[15px] xl:text-[16.5px] transition-colors duration-300 whitespace-nowrap ${getTabLinkClass(activeTab === 'study')}`}
               >
-                وضع الدراسة
+                المدارسة الذكية
                 {activeTab === 'study' ? (
                   <motion.span
                     layoutId="desktopNavActiveIndicator"
@@ -1146,40 +1180,13 @@ export default function Navbar({
                 transition={{ duration: 0.25, delay: 0.08 }}
                 className={`flex-1 overflow-y-auto overscroll-contain px-4 py-4 space-y-4 text-right pb-8 slim-scrollbar ${getDrawerScrollbarThumbClass()}`}
               >
-                {/* Auth Section - Display welcome & login ONLY when NOT authenticated */}
-                {!isAuthenticated && (
-                  <div className={`rounded-2xl border p-4 text-right shadow-sm ${isDark
-                    ? getDrawerWelcomeCardClass()
-                    : 'border-stone-200/80 bg-white/90 shadow-stone-200/50'
-                    }`}>
-                    <h4 className={`text-sm font-bold ${isDark ? 'text-white' : 'text-stone-900'}`}>مرحباً بك</h4>
-                    <p className={`text-xs mt-1 leading-relaxed ${isDark ? 'text-white/70' : 'text-stone-500'}`}>
-                      قم بالتسجيل للاستفادة من خدمات الموقع
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setOpen(false)
-                        setIsLoginLoading(true)
-                        onTryChat()
-                        setTimeout(() => setIsLoginLoading(false), 1500)
-                      }}
-                      disabled={isLoginLoading}
-                      className="mt-3.5 flex w-full items-center justify-center gap-2 rounded-xl bg-[#53177d] hover:bg-[#431265] text-white py-2.5 px-4 text-xs font-bold shadow-sm shadow-[#53177d]/20 active:scale-[0.98] transition-all"
-                    >
-                      {isLoginLoading ? <Loader2 size={15} className="animate-spin" /> : <LogIn size={15} />}
-                      <span>تسجيل الدخول / إنشاء حساب</span>
-                    </button>
-                  </div>
-                )}
-
                 {/* 3. Main Navigation Items */}
                 <div className="space-y-1.5">
                   <div className={`pr-0.5 pl-2 text-[11px] font-semibold tracking-wider transition-colors ${getDrawerSectionHeadingClass()}`}>
                     التنقل الأساسي
                   </div>
 
-                  {/* الرئيسية */}
+                  {/* 1. الرئيسية */}
                   <a
                     href="#home"
                     onClick={(e) => {
@@ -1204,7 +1211,25 @@ export default function Navbar({
                     )}
                   </a>
 
-                  {/* المكتبة (Accordion / تفرع شجري) */}
+                  {/* 2. المحادثة النصية */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOpen(false)
+                      onTryChat()
+                    }}
+                    className={`flex w-full items-center justify-between rounded-xl border px-3.5 py-2.5 text-sm font-semibold active:scale-[0.99] transition-all cursor-pointer ${getNavItemCardClass()}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`flex h-8 w-8 items-center justify-center rounded-lg border transition-colors ${getNavIconBoxClass()}`}>
+                        <MessageSquare size={16} />
+                      </div>
+                      <span>المحادثة النصية</span>
+                    </div>
+                    <ChevronLeft size={16} className={isDark ? 'text-white/55' : 'text-stone-400'} />
+                  </button>
+
+                  {/* 3. المكتبة (Accordion / تفرع شجري) */}
                   <div className="space-y-1">
                     <div
                       className={`flex w-full items-center justify-between rounded-xl border px-3.5 py-2.5 text-sm active:scale-[0.99] transition-all cursor-pointer ${activeTab === 'knowledge' ? `font-bold ${getActiveNavClass()}` : `font-semibold ${getNavItemCardClass()}`}`}
@@ -1352,7 +1377,143 @@ export default function Navbar({
                     </AnimatePresence>
                   </div>
 
-                  {/* الشروحات والدورات (Video Icon) */}
+                  {/* 4. المدارسة الذكية (Accordion / تفرع شجري تفاعلي) */}
+                  <div className="space-y-1">
+                    <div
+                      className={`flex w-full items-center justify-between rounded-xl border px-3.5 py-2.5 text-sm active:scale-[0.99] transition-all select-none ${activeTab === 'study' ? `font-bold ${getActiveNavClass()}` : `font-semibold ${getNavItemCardClass()}`}`}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setOpen(false)
+                          onOpenStudy()
+                          window.dispatchEvent(new CustomEvent('open_study_panel', { detail: { panel: 'hero' } }))
+                        }}
+                        className="flex-1 flex items-center gap-3 text-right cursor-pointer"
+                      >
+                        <div className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${activeTab === 'study' ? 'brand-gradient text-white shadow-sm' : `border ${getNavIconBoxClass()}`}`}>
+                          <BookOpenCheck size={16} />
+                        </div>
+                        <span>المدارسة الذكية</span>
+                      </button>
+
+                      <div className="flex items-center gap-2">
+                        {activeTab === 'study' && (
+                          <span className={`h-2 w-2 rounded-full ${getActiveDotClass()}`} />
+                        )}
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setIsMobileStudyExpanded(!isMobileStudyExpanded)
+                          }}
+                          className="p-1 rounded-md hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                          title={isMobileStudyExpanded ? 'طي تفرع المدارسة الذكية' : 'توسيع تفرع المدارسة الذكية'}
+                        >
+                          <motion.div
+                            animate={{ rotate: isMobileStudyExpanded ? 180 : 0 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <ChevronDown size={16} className={isDark ? 'text-white/60' : 'text-stone-400'} />
+                          </motion.div>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Sub-branch items inside Study Accordion in Navbar Drawer */}
+                    <AnimatePresence initial={false}>
+                      {isMobileStudyExpanded && (
+                        <motion.div
+                          key="nav-study-accordion"
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.25, ease: 'easeInOut' }}
+                          className="overflow-hidden"
+                        >
+                          <div className="mr-3 pr-2.5 my-1.5 border-r-2 border-primary/25 space-y-1">
+                            {[
+                              { id: 'index', label: 'فهرس المحتوى', icon: <Folder size={14} />, badge: 51 },
+                              { id: 'document', label: 'نص الدرس', icon: <BookOpen size={14} /> },
+                              { id: 'chat', label: 'مساعد الدراسة', icon: <MessageCircle size={14} /> },
+                              { id: 'mindmap', label: 'الخريطة الذهنية', icon: <Brain size={14} /> },
+                              { id: 'quiz', label: 'اختبار وتقييم', icon: <ClipboardList size={14} /> },
+                            ].map((subItem) => (
+                              <button
+                                key={subItem.id}
+                                type="button"
+                                onClick={() => {
+                                  setOpen(false)
+                                  onOpenStudy()
+                                  window.dispatchEvent(new CustomEvent('open_study_panel', { detail: { panel: subItem.id } }))
+                                }}
+                                className={`w-full group flex items-center justify-between py-2 px-2.5 rounded-lg text-xs font-semibold transition-all cursor-pointer select-none ${
+                                  isDark
+                                    ? 'text-white/75 hover:bg-white/[0.05] hover:text-white border border-transparent'
+                                    : 'text-stone-700 hover:bg-stone-50 hover:text-stone-900 border border-transparent'
+                                }`}
+                              >
+                                <div className="flex items-center gap-2.5 min-w-0">
+                                  <span className={`shrink-0 transition-colors ${
+                                    isDark ? 'text-white/60 group-hover:text-white' : 'text-stone-500 group-hover:text-stone-900'
+                                  }`}>
+                                    {subItem.icon}
+                                  </span>
+                                  <span className="truncate">{subItem.label}</span>
+                                </div>
+                                {subItem.badge !== undefined && (
+                                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono shrink-0 transition-colors ${
+                                    isDark
+                                      ? 'bg-white/10 text-white/70'
+                                      : 'bg-stone-100 text-stone-600 border border-stone-200/60'
+                                  }`}>
+                                    {subItem.badge}
+                                  </span>
+                                )}
+                              </button>
+                            ))}
+
+                            {/* Recent Study Session inside Study Accordion in Navbar Drawer */}
+                            <div className={`mt-2 p-2.5 rounded-xl border space-y-1.5 shadow-2xs ${
+                              isDark
+                                ? 'bg-white/[0.03] border-white/10 text-white'
+                                : 'bg-stone-50/90 border-stone-200 text-stone-900'
+                            }`}>
+                              <div className="flex items-center gap-1.5 text-[11px] font-bold text-amber-600 dark:text-amber-400">
+                                <GraduationCap size={13} />
+                                <span>متابعة المدارسة الأخيرة</span>
+                              </div>
+                              <h5 className="font-bold text-xs truncate">
+                                {recentStudySession?.sectionTitle || recentStudySession?.bookTitle || 'عمدة الفقه • كتاب الطهارة'}
+                              </h5>
+                              <p className={`text-[10.5px] truncate font-medium ${
+                                isDark ? 'text-white/60' : 'text-stone-500'
+                              }`}>
+                                {recentStudySession?.domain || 'فقه حنبلي • مدارسة تفاعلية بالذكاء الاصطناعي'}
+                              </p>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setOpen(false)
+                                  onOpenStudy()
+                                  window.dispatchEvent(new CustomEvent('open_study_panel', { detail: { panel: 'workspace' } }))
+                                }}
+                                className={`w-full py-1.5 rounded-lg font-bold text-[11px] transition-all shadow-2xs cursor-pointer ${
+                                  isDark
+                                    ? 'bg-white text-stone-950 hover:bg-stone-100'
+                                    : 'bg-stone-900 text-white hover:bg-stone-800'
+                                }`}
+                              >
+                                إكمال المدارسة 🎓
+                              </button>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  {/* 5. الشروحات والدورات (Video Icon) */}
                   <button
                     type="button"
                     onClick={() => {
@@ -1373,58 +1534,15 @@ export default function Navbar({
                       <ChevronLeft size={16} className={isDark ? 'text-white/55' : 'text-stone-400'} />
                     )}
                   </button>
-                </div>
 
-                {/* 4. AI & Interactive Section */}
-                <div className={`space-y-1.5 pt-3 border-t ${isDark ? 'border-white/10' : 'border-stone-200/70'}`}>
-                  <div className={`pr-0.5 pl-2 text-[11px] font-semibold tracking-wider transition-colors ${getDrawerSectionHeadingClass()}`}>
-                    أدوات زاد التفاعلية
-                  </div>
-
-                  {/* وضع الدراسة (BookOpenCheck Icon) */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setOpen(false)
-                      onOpenStudy()
-                    }}
-                    className={`flex w-full items-center justify-between rounded-xl border px-3.5 py-2.5 text-sm font-semibold active:scale-[0.99] transition-all ${getNavItemCardClass()}`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`flex h-8 w-8 items-center justify-center rounded-lg border transition-colors ${getNavIconBoxClass()}`}>
-                        <BookOpenCheck size={16} />
-                      </div>
-                      <span>وضع الدراسة</span>
-                    </div>
-                    <ChevronLeft size={16} className={isDark ? 'text-white/55' : 'text-stone-400'} />
-                  </button>
-
-                  {/* المحادثة النصية */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setOpen(false)
-                      onTryChat()
-                    }}
-                    className={`flex w-full items-center justify-between rounded-xl border px-3.5 py-2.5 text-sm font-semibold active:scale-[0.99] transition-all ${getNavItemCardClass()}`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`flex h-8 w-8 items-center justify-center rounded-lg border transition-colors ${getNavIconBoxClass()}`}>
-                        <MessageSquare size={16} />
-                      </div>
-                      <span>المحادثة النصية</span>
-                    </div>
-                    <ChevronLeft size={16} className={isDark ? 'text-white/55' : 'text-stone-400'} />
-                  </button>
-
-                  {/* المحادثة الصوتية (تحت الإنشاء) */}
+                  {/* 6. المحادثة الصوتية (تحت الإنشاء) */}
                   <button
                     type="button"
                     onClick={() => {
                       setOpen(false)
                       if (onOpenVoiceChat) onOpenVoiceChat()
                     }}
-                    className={`flex w-full items-center justify-between rounded-xl border px-3.5 py-2.5 text-sm font-semibold active:scale-[0.99] transition-all ${getNavItemCardClass()}`}
+                    className={`flex w-full items-center justify-between rounded-xl border px-3.5 py-2.5 text-sm font-semibold active:scale-[0.99] transition-all cursor-pointer ${getNavItemCardClass()}`}
                   >
                     <div className="flex items-center gap-3">
                       <div className={`flex h-8 w-8 items-center justify-center rounded-lg border transition-colors ${getNavIconBoxClass()}`}>
@@ -1438,7 +1556,197 @@ export default function Navbar({
                   </button>
                 </div>
 
-                {/* Admin Management Tools (If admin) */}
+                {/* 5. Customization & Appearance Section (المظهر والتخصيص) */}
+                <div className={`space-y-2 pt-3 border-t ${isDark ? 'border-white/10' : 'border-stone-200/70'}`}>
+                  <div className={`pr-0.5 pl-2 text-[11px] font-semibold tracking-wider transition-colors ${getDrawerSectionHeadingClass()}`}>
+                    المظهر والتخصيص
+                  </div>
+
+                  {/* الإشعارات والتحديثات */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOpen(false)
+                      setTimeout(() => {
+                        window.dispatchEvent(new Event('open_zad_notifications'))
+                      }, 120)
+                    }}
+                    className={`flex w-full items-center justify-between rounded-xl border px-3.5 py-2.5 text-sm font-semibold active:scale-[0.99] transition-all ${getNavItemCardClass()}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`flex h-8 w-8 items-center justify-center rounded-lg border transition-colors ${getNavIconBoxClass()}`}>
+                        <Bell size={16} />
+                      </div>
+                      <span>الإشعارات والتحديثات</span>
+                    </div>
+                    <ChevronLeft size={16} className={isDark ? 'text-white/55' : 'text-stone-400'} />
+                  </button>
+
+                  {/* مظهر التطبيق (Toggle Switch) */}
+                  <div
+                    onClick={toggleTheme}
+                    role="button"
+                    tabIndex={0}
+                    className={`flex w-full items-center justify-between rounded-xl border px-3.5 py-2.5 text-sm font-semibold cursor-pointer active:scale-[0.99] transition-all select-none ${getNavItemCardClass()}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`flex h-8 w-8 items-center justify-center rounded-lg border transition-colors ${getNavIconBoxClass()}`}>
+                        {isDark ? <Moon size={16} /> : <Sun size={16} />}
+                      </div>
+                      <div className="text-right">
+                        <span className="block text-sm font-bold">الإضاءة</span>
+                        <span className={`text-[11px] font-normal ${isDark ? 'text-white/60' : 'text-stone-500'}`}>
+                          {isDark ? 'الوضع الليلي مفعّل' : 'الوضع النهاري مفعّل'}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Modern Animated Switch Component */}
+                    <div
+                      className={`relative flex h-7 w-14 items-center rounded-full p-1 transition-colors duration-300 ${getThemeToggleTrackClass()}`}
+                    >
+                      {/* Track background icons */}
+                      <div className="absolute inset-x-2 flex justify-between items-center text-[10px] pointer-events-none">
+                        <Moon size={12} className={isDark ? 'text-white/80' : 'text-black/25'} />
+                        <Sun size={12} className={!isDark ? 'text-amber-950/80' : 'text-white/25'} />
+                      </div>
+
+                      {/* Sliding Knob */}
+                      <motion.div
+                        layout
+                        transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                        className={`z-10 flex h-5 w-5 items-center justify-center rounded-full bg-white shadow-md ${isDark ? 'mr-0 ml-auto text-stone-800' : 'ml-0 mr-auto text-amber-600'
+                          }`}
+                      >
+                        {isDark ? <Moon size={11} strokeWidth={2.5} /> : <Sun size={11} strokeWidth={2.5} />}
+                      </motion.div>
+                    </div>
+                  </div>
+
+                  {/* تكبير الشاشة (ملء الشاشة) */}
+                  <button
+                    type="button"
+                    onClick={toggleFullscreen}
+                    className={`flex w-full items-center justify-between rounded-xl border px-3.5 py-2.5 text-sm font-semibold active:scale-[0.99] transition-all cursor-pointer ${getNavItemCardClass()}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`flex h-8 w-8 items-center justify-center rounded-lg border transition-colors ${getNavIconBoxClass()}`}>
+                        {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
+                      </div>
+                      <div className="text-right">
+                        <span className="block text-sm font-bold">تكبير الشاشة</span>
+                        <span className={`text-[11px] font-normal ${isDark ? 'text-white/60' : 'text-stone-500'}`}>
+                          {isFullscreen ? 'الخروج من وضع ملء الشاشة' : 'تفعيل وضع ملء الشاشة'}
+                        </span>
+                      </div>
+                    </div>
+                    {isFullscreen && (
+                      <span className={`text-[11px] font-medium px-2 py-0.5 rounded-md border ${getThemeBadgeClass()}`}>
+                        مفعّل
+                      </span>
+                    )}
+                  </button>
+
+                  {/* لون السمة (توزيع متوازن وأنيق) */}
+                  <div className={`rounded-xl border p-3 ${getNavItemCardClass()}`}>
+                    <div className="flex items-center justify-between mb-2.5">
+                      <div className="flex items-center gap-2 text-xs font-semibold">
+                        <Palette size={15} className={accentColor === 'emerald' ? 'text-teal-400' : accentColor === 'amber' ? 'text-[#dfbf83]' : accentColor === 'blue' ? 'text-blue-400' : 'text-purple-400'} />
+                        <span>لون السمة</span>
+                      </div>
+                      <span className={`text-[10px] font-bold ${accentColor === 'emerald' ? 'text-teal-400' : accentColor === 'amber' ? 'text-[#dfbf83]' : accentColor === 'blue' ? 'text-blue-400' : 'text-purple-400'}`}>
+                        {accentColor === 'purple' && 'أرجواني ملكي'}
+                        {accentColor === 'emerald' && 'فيروزي إسلامي'}
+                        {accentColor === 'amber' && 'عاجي إسلامي'}
+                        {accentColor === 'blue' && 'أزرق ياقوتي'}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-4 gap-2">
+                      {[
+                        { id: 'purple', name: 'أرجواني', gradient: 'from-purple-700 to-fuchsia-500', ring: 'ring-purple-400' },
+                        { id: 'emerald', name: 'فيروزي', gradient: 'from-teal-700 via-teal-500 to-cyan-400', ring: 'ring-teal-400' },
+                        { id: 'amber', name: 'عاجي', gradient: 'from-[#8e682d] via-[#c59b58] to-[#eedbb2]', ring: 'ring-[#dfbf83]' },
+                        { id: 'blue', name: 'ياقوتي', gradient: 'from-blue-700 to-indigo-500', ring: 'ring-blue-400' },
+                      ].map((item) => {
+                        const isSelected = accentColor === item.id
+                        return (
+                          <button
+                            key={item.id}
+                            type="button"
+                            onClick={() => setAccentColor(item.id as any)}
+                            className="group flex flex-col items-center gap-1.5 py-1 px-1 transition-all active:scale-95"
+                          >
+                            <span
+                              className={`h-7 w-7 rounded-full bg-gradient-to-tr ${item.gradient} transition-all duration-300 ${isSelected
+                                ? `ring-2 ${item.ring} ring-offset-2 ${isDark ? 'ring-offset-[#120324]' : 'ring-offset-white'} scale-115 shadow-lg`
+                                : 'scale-90 opacity-70 group-hover:opacity-100 group-hover:scale-95'
+                                }`}
+                            />
+                            <span
+                              className={`text-[10px] leading-tight transition-colors ${isSelected ? (isDark ? 'font-bold text-white' : 'font-bold text-stone-900') : isDark ? 'font-medium text-white/60' : 'font-medium text-stone-600'
+                                }`}
+                            >
+                              {item.name}
+                            </span>
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                {/* 6. Mobile App & Share Section (التطبيق والمشاركة) */}
+                <div className={`space-y-2 pt-3 border-t ${isDark ? 'border-white/10' : 'border-stone-200/70'}`}>
+                  <div className={`pr-0.5 pl-2 text-[11px] font-semibold tracking-wider transition-colors ${getDrawerSectionHeadingClass()}`}>
+                    التطبيق والمشاركة
+                  </div>
+
+                  {/* رابط تحميل التطبيق للأندرويد */}
+                  <a
+                    href="https://apkpure.com/p/com.example.zaad"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setOpen(false)}
+                    className={`flex w-full items-center justify-between rounded-xl border px-3.5 py-2.5 text-sm font-semibold active:scale-[0.99] transition-all ${getNavItemCardClass()}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`flex h-8 w-8 items-center justify-center rounded-lg border transition-colors ${getNavIconBoxClass()}`}>
+                        <Smartphone size={16} />
+                      </div>
+                      <div className="text-right">
+                        <span className="block text-sm font-bold">تطبيق زاد للأندرويد</span>
+                        <span className={`text-[11px] font-normal ${isDark ? 'text-white/60' : 'text-stone-500'}`}>
+                          تحميل مباشر عبر APKPure
+                        </span>
+                      </div>
+                    </div>
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${getThemeBadgeClass()}`}>
+                      تثبيت
+                    </span>
+                  </a>
+
+                  {/* زر مشاركة زاد */}
+                  <button
+                    type="button"
+                    onClick={() => setShowShareModal(true)}
+                    className={`flex w-full items-center justify-between rounded-xl border px-3.5 py-2.5 text-sm font-semibold active:scale-[0.99] transition-all ${getNavItemCardClass()}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`flex h-8 w-8 items-center justify-center rounded-lg border transition-colors ${getNavIconBoxClass()}`}>
+                        <Share2 size={16} />
+                      </div>
+                      <div className="text-right">
+                        <span className="block text-sm font-bold">مشاركة زاد</span>
+                        <span className={`text-[11px] font-normal ${isDark ? 'text-white/60' : 'text-stone-500'}`}>
+                          شارك الموقع أو رابط التطبيق
+                        </span>
+                      </div>
+                    </div>
+                    <ChevronLeft size={16} className={isDark ? 'text-white/55' : 'text-stone-400'} />
+                  </button>
+                </div>
+
+                {/* Admin Management Tools (If admin - فوق البروفايل) */}
                 {isAuthenticated && isAdmin && (
                   <div className={`rounded-xl border transition-all overflow-hidden ${getNavItemCardClass()}`}>
                     <button
@@ -1622,177 +1930,6 @@ export default function Navbar({
                   </div>
                 )}
 
-                {/* 5. Customization & Appearance Section (المظهر والتخصيص) */}
-                <div className={`space-y-2 pt-3 border-t ${isDark ? 'border-white/10' : 'border-stone-200/70'}`}>
-                  <div className={`pr-0.5 pl-2 text-[11px] font-semibold tracking-wider transition-colors ${getDrawerSectionHeadingClass()}`}>
-                    المظهر والتخصيص
-                  </div>
-
-                  {/* الإشعارات والتحديثات */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setOpen(false)
-                      setTimeout(() => {
-                        window.dispatchEvent(new Event('open_zad_notifications'))
-                      }, 120)
-                    }}
-                    className={`flex w-full items-center justify-between rounded-xl border px-3.5 py-2.5 text-sm font-semibold active:scale-[0.99] transition-all ${getNavItemCardClass()}`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`flex h-8 w-8 items-center justify-center rounded-lg border transition-colors ${getNavIconBoxClass()}`}>
-                        <Bell size={16} />
-                      </div>
-                      <span>الإشعارات والتحديثات</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${getThemeBadgeClass()}`}>
-                        جديد
-                      </span>
-                      <ChevronLeft size={16} className={isDark ? 'text-white/55' : 'text-stone-400'} />
-                    </div>
-                  </button>
-
-                  {/* مظهر التطبيق (Toggle Switch) */}
-                  <div
-                    onClick={toggleTheme}
-                    role="button"
-                    tabIndex={0}
-                    className={`flex w-full items-center justify-between rounded-xl border px-3.5 py-2.5 text-sm font-semibold cursor-pointer active:scale-[0.99] transition-all select-none ${getNavItemCardClass()}`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`flex h-8 w-8 items-center justify-center rounded-lg border transition-colors ${getNavIconBoxClass()}`}>
-                        {isDark ? <Moon size={16} /> : <Sun size={16} />}
-                      </div>
-                      <div className="text-right">
-                        <span className="block text-sm font-bold">الإضاءة</span>
-                        <span className={`text-[11px] font-normal ${isDark ? 'text-white/60' : 'text-stone-500'}`}>
-                          {isDark ? 'الوضع الليلي مفعّل' : 'الوضع النهاري مفعّل'}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Modern Animated Switch Component */}
-                    <div
-                      className={`relative flex h-7 w-14 items-center rounded-full p-1 transition-colors duration-300 ${getThemeToggleTrackClass()}`}
-                    >
-                      {/* Track background icons */}
-                      <div className="absolute inset-x-2 flex justify-between items-center text-[10px] pointer-events-none">
-                        <Moon size={12} className={isDark ? 'text-white/80' : 'text-black/25'} />
-                        <Sun size={12} className={!isDark ? 'text-amber-950/80' : 'text-white/25'} />
-                      </div>
-
-                      {/* Sliding Knob */}
-                      <motion.div
-                        layout
-                        transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                        className={`z-10 flex h-5 w-5 items-center justify-center rounded-full bg-white shadow-md ${isDark ? 'mr-0 ml-auto text-stone-800' : 'ml-0 mr-auto text-amber-600'
-                          }`}
-                      >
-                        {isDark ? <Moon size={11} strokeWidth={2.5} /> : <Sun size={11} strokeWidth={2.5} />}
-                      </motion.div>
-                    </div>
-                  </div>
-
-                  {/* لون السمة (توزيع متوازن وأنيق) */}
-                  <div className={`rounded-xl border p-3 ${getNavItemCardClass()}`}>
-                    <div className="flex items-center justify-between mb-2.5">
-                      <div className="flex items-center gap-2 text-xs font-semibold">
-                        <Palette size={15} className={accentColor === 'emerald' ? 'text-teal-400' : accentColor === 'amber' ? 'text-[#dfbf83]' : accentColor === 'blue' ? 'text-blue-400' : 'text-purple-400'} />
-                        <span>لون السمة</span>
-                      </div>
-                      <span className={`text-[10px] font-bold ${accentColor === 'emerald' ? 'text-teal-400' : accentColor === 'amber' ? 'text-[#dfbf83]' : accentColor === 'blue' ? 'text-blue-400' : 'text-purple-400'}`}>
-                        {accentColor === 'purple' && 'أرجواني ملكي'}
-                        {accentColor === 'emerald' && 'فيروزي إسلامي'}
-                        {accentColor === 'amber' && 'عاجي إسلامي'}
-                        {accentColor === 'blue' && 'أزرق ياقوتي'}
-                      </span>
-                    </div>
-                    <div className="grid grid-cols-4 gap-2">
-                      {[
-                        { id: 'purple', name: 'أرجواني', gradient: 'from-purple-700 to-fuchsia-500', ring: 'ring-purple-400' },
-                        { id: 'emerald', name: 'فيروزي', gradient: 'from-teal-700 via-teal-500 to-cyan-400', ring: 'ring-teal-400' },
-                        { id: 'amber', name: 'عاجي', gradient: 'from-[#8e682d] via-[#c59b58] to-[#eedbb2]', ring: 'ring-[#dfbf83]' },
-                        { id: 'blue', name: 'ياقوتي', gradient: 'from-blue-700 to-indigo-500', ring: 'ring-blue-400' },
-                      ].map((item) => {
-                        const isSelected = accentColor === item.id
-                        return (
-                          <button
-                            key={item.id}
-                            type="button"
-                            onClick={() => setAccentColor(item.id as any)}
-                            className="group flex flex-col items-center gap-1.5 py-1 px-1 transition-all active:scale-95"
-                          >
-                            <span
-                              className={`h-7 w-7 rounded-full bg-gradient-to-tr ${item.gradient} transition-all duration-300 ${isSelected
-                                ? `ring-2 ${item.ring} ring-offset-2 ${isDark ? 'ring-offset-[#120324]' : 'ring-offset-white'} scale-115 shadow-lg`
-                                : 'scale-90 opacity-70 group-hover:opacity-100 group-hover:scale-95'
-                                }`}
-                            />
-                            <span
-                              className={`text-[10px] leading-tight transition-colors ${isSelected ? (isDark ? 'font-bold text-white' : 'font-bold text-stone-900') : isDark ? 'font-medium text-white/60' : 'font-medium text-stone-600'
-                                }`}
-                            >
-                              {item.name}
-                            </span>
-                          </button>
-                        )
-                      })}
-                    </div>
-                  </div>
-                </div>
-
-                {/* 6. Mobile App & Share Section (التطبيق والمشاركة) */}
-                <div className={`space-y-2 pt-3 border-t ${isDark ? 'border-white/10' : 'border-stone-200/70'}`}>
-                  <div className={`pr-0.5 pl-2 text-[11px] font-semibold tracking-wider transition-colors ${getDrawerSectionHeadingClass()}`}>
-                    التطبيق والمشاركة
-                  </div>
-
-                  {/* رابط تحميل التطبيق للأندرويد */}
-                  <a
-                    href="https://apkpure.com/p/com.example.zaad"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => setOpen(false)}
-                    className={`flex w-full items-center justify-between rounded-xl border px-3.5 py-2.5 text-sm font-semibold active:scale-[0.99] transition-all ${getNavItemCardClass()}`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`flex h-8 w-8 items-center justify-center rounded-lg border transition-colors ${getNavIconBoxClass()}`}>
-                        <Smartphone size={16} />
-                      </div>
-                      <div className="text-right">
-                        <span className="block text-sm font-bold">تطبيق زاد للأندرويد</span>
-                        <span className={`text-[11px] font-normal ${isDark ? 'text-white/60' : 'text-stone-500'}`}>
-                          تحميل مباشر عبر APKPure
-                        </span>
-                      </div>
-                    </div>
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${getThemeBadgeClass()}`}>
-                      تثبيت
-                    </span>
-                  </a>
-
-                  {/* زر مشاركة زاد */}
-                  <button
-                    type="button"
-                    onClick={() => setShowShareModal(true)}
-                    className={`flex w-full items-center justify-between rounded-xl border px-3.5 py-2.5 text-sm font-semibold active:scale-[0.99] transition-all ${getNavItemCardClass()}`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`flex h-8 w-8 items-center justify-center rounded-lg border transition-colors ${getNavIconBoxClass()}`}>
-                        <Share2 size={16} />
-                      </div>
-                      <div className="text-right">
-                        <span className="block text-sm font-bold">مشاركة زاد</span>
-                        <span className={`text-[11px] font-normal ${isDark ? 'text-white/60' : 'text-stone-500'}`}>
-                          شارك الموقع أو رابط التطبيق
-                        </span>
-                      </div>
-                    </div>
-                    <ChevronLeft size={16} className={isDark ? 'text-white/55' : 'text-stone-400'} />
-                  </button>
-                </div>
-
                 {/* 7. User Profile (مدمج في أسفل السايدبار بالكامل بدون فريم كارت منفصل، ويتحرك مع التمرير) */}
                 {isAuthenticated && (
                   <div className={`-mx-4 -mb-4 mt-6 border-t transition-colors ${isDark ? 'border-white/10 bg-black/30' : 'border-stone-200/80 bg-stone-100/80'}`}>
@@ -1862,7 +1999,7 @@ export default function Navbar({
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
               dir="rtl"
               className={`relative z-10 w-full max-w-sm rounded-2xl border p-5 shadow-2xl backdrop-blur-xl ${isDark
-                ? 'border-white/10 bg-[#090b10]/98 text-white shadow-[-16px_0_50px_rgba(0,0,0,0.85)]'
+                ? 'border-white/10 bg-[#090b10]/98 text-white shadow-[0_20px_50px_rgba(0,0,0,0.85)]'
                 : 'border-stone-200/90 bg-white/98 text-stone-900 shadow-stone-400/20'
                 }`}
             >

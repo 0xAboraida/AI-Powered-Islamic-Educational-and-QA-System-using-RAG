@@ -5,6 +5,37 @@ import type { Question } from '../../../../contexts/StudyContext'
 import type { StudyQuizPanelProps } from '../types'
 import { isMatchingFullyAnswered, isMatchingCorrect, formatTimer } from '../utils/quizEvaluator'
 import { studyApi } from '../../../../api/studyApi'
+import { useTheme, type AccentColor } from '../../../../contexts/ThemeContext'
+
+function getQuizThemeTokens(accentColor: AccentColor = 'emerald') {
+  switch (accentColor) {
+    case 'amber':
+      return {
+        icon: 'text-[#dfbf83]',
+        progressBar: 'bg-gradient-to-r from-[#7a5720] via-[#c59a53] to-[#dfbf83] shadow-[0_0_12px_rgba(223,191,131,0.6)]',
+        progressTip: 'shadow-[0_0_6px_#edd8ae]',
+      }
+    case 'blue':
+      return {
+        icon: 'text-sky-400',
+        progressBar: 'bg-gradient-to-r from-[#154696] via-blue-500 to-sky-400 shadow-[0_0_12px_rgba(56,189,248,0.6)]',
+        progressTip: 'shadow-[0_0_6px_#7dd3fc]',
+      }
+    case 'purple':
+      return {
+        icon: 'text-purple-400',
+        progressBar: 'bg-gradient-to-r from-[#581c87] via-purple-500 to-fuchsia-400 shadow-[0_0_12px_rgba(192,132,252,0.6)]',
+        progressTip: 'shadow-[0_0_6px_#e879f9]',
+      }
+    case 'emerald':
+    default:
+      return {
+        icon: 'text-[#10b981]',
+        progressBar: 'bg-gradient-to-r from-[#046c4e] via-emerald-500 to-teal-400 shadow-[0_0_12px_rgba(52,211,153,0.6)]',
+        progressTip: 'shadow-[0_0_6px_#6ee7b7]',
+      }
+  }
+}
 
 // ── Screen components ──────────────────────────────────────────────────
 import { QuizHomeScreen } from './screens/QuizHomeScreen'
@@ -35,6 +66,8 @@ export function StudyQuizPanel({
   onLoadQuiz,
   chunkLoading,
 }: StudyQuizPanelProps) {
+  const { accentColor } = useTheme()
+  const quizTheme = getQuizThemeTokens(accentColor)
   const [hasSubmittedAttempt, setHasSubmittedAttempt] = useState(false)
 
   // Shorthand updater
@@ -331,10 +364,10 @@ export function StudyQuizPanel({
           }`}
       >
         {/* ── Header ── */}
-        <div className={`flex items-center justify-between px-4 py-3 border-b backdrop-blur-md shrink-0 gap-2 ${isDark ? 'border-white/10 bg-[#12041f]/70 text-white' : 'border-slate-200 bg-slate-50/90 text-slate-800'
+        <div className={`hidden md:flex items-center justify-between px-4 py-3 border-b backdrop-blur-md shrink-0 gap-2 ${isDark ? 'border-white/10 bg-[#12041f]/70 text-white' : 'border-slate-200 bg-slate-50/90 text-slate-800'
           }`} dir="rtl">
           <div className="flex items-center gap-2 text-sm font-bold shrink-0">
-            <ClipboardList size={18} className="text-[#10b981]" />
+            <ClipboardList size={18} className={quizTheme.icon} />
             <span>اختبار التقييم</span>
           </div>
 
@@ -390,16 +423,16 @@ export function StudyQuizPanel({
         {localQuestions && !flowState.isHomeScreen && !flowState.isSetupMode && !flowState.isReadyScreen && !isQuizCompleted && (
           <div className={`w-full h-1 relative overflow-hidden shrink-0 ${isDark ? 'bg-white/5' : 'bg-slate-200/80'}`}>
             <div
-              className="h-full bg-gradient-to-r from-emerald-400 via-sky-400 to-purple-400 shadow-[0_0_10px_rgba(56,189,248,0.7)] transition-all duration-500 relative"
+              className={`h-full ${quizTheme.progressBar} transition-all duration-500 relative`}
               style={{ width: `${(answeredCount / totalQuestions) * 100}%` }}
             >
-              <div className="absolute top-0 bottom-0 left-0 w-3 bg-white/90 rounded-full blur-[1px] shadow-[0_0_6px_#fff]" />
+              <div className={`absolute top-0 bottom-0 left-0 w-3 bg-white/95 rounded-full blur-[1px] ${quizTheme.progressTip}`} />
             </div>
           </div>
         )}
 
         {/* ── Content Area ── */}
-        <div className="flex-1 overflow-y-auto p-4 md:p-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] flex flex-col justify-start items-center w-full">
+        <div className="flex-1 overflow-y-auto p-2 sm:p-4 md:p-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] flex flex-col justify-start items-center w-full">
           <AnimatePresence mode="wait">
 
             {loading ? (

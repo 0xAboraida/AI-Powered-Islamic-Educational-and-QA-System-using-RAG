@@ -49,8 +49,11 @@ export function ChatHistoryDrawer({
 
       {/* History Drawer Panel */}
       <div
-        className={`absolute top-0 bottom-0 right-0 z-50 w-80 md:w-96 flex flex-col transition-transform duration-500 ease-[cubic-bezier(0.3,0.9,0.4,1)] ${isOpen ? 'translate-x-0' : 'translate-x-full'
-          } ${dark ? 'bg-[#1a0730]/80 backdrop-blur-xl border-l border-white/10' : 'bg-white/80 backdrop-blur-xl border-l border-primary/10 shadow-2xl'}`}
+        className={`absolute top-0 bottom-0 right-0 z-50 w-80 md:w-96 flex flex-col transition-all duration-500 ease-[cubic-bezier(0.3,0.9,0.4,1)] ${
+          isOpen
+            ? 'translate-x-0 opacity-100 visible'
+            : 'translate-x-full pointer-events-none opacity-0 invisible shadow-none'
+        } ${dark ? 'bg-[#1a0730]/80 backdrop-blur-xl border-l border-white/10' : 'bg-white/80 backdrop-blur-xl border-l border-primary/10 shadow-2xl'}`}
       >
         <div className={`flex items-center justify-between p-6 border-b ${dark ? 'border-white/10' : 'border-primary/10'}`}>
           <h2 className={`font-display text-2xl font-bold ${dark ? 'text-white' : 'text-primary'}`}>سجل المحادثات</h2>

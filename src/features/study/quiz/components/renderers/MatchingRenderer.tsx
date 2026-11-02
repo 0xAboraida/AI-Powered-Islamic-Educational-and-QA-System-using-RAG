@@ -2,19 +2,12 @@ import { useState, useRef, useEffect, useLayoutEffect, useMemo, useCallback } fr
 import { Network, CheckCircle2, XCircle, ArrowLeftRight, Sparkles } from 'lucide-react'
 import { motion } from 'framer-motion'
 import type { QuestionCardContentProps } from '../../types'
+import { useTheme } from '../../../../../contexts/ThemeContext'
+import { getQuizActiveThemeTokens } from '../../utils/quizThemeTokens'
 
-import { getNormalizedMatchingPairs } from '../../utils/quizEvaluator'
+import { getNormalizedMatchingPairs, formatIslamicQuizText } from '../../utils/quizEvaluator'
 
 const RIGHT_BADGES = ['أ', 'ب', 'ج', 'د', 'هـ', 'و']
-
-// Vibrant color accents for paired items
-const PAIR_COLORS = [
-  { border: 'border-sky-400', bg: 'bg-sky-500/15', text: 'text-sky-300', badge: 'bg-sky-500 text-white', hex: '#38bdf8' },
-  { border: 'border-purple-400', bg: 'bg-purple-500/15', text: 'text-purple-300', badge: 'bg-purple-500 text-white', hex: '#c084fc' },
-  { border: 'border-amber-400', bg: 'bg-amber-500/15', text: 'text-amber-300', badge: 'bg-amber-500 text-white', hex: '#fbbf24' },
-  { border: 'border-pink-400', bg: 'bg-pink-500/15', text: 'text-pink-300', badge: 'bg-pink-500 text-white', hex: '#f472b6' },
-  { border: 'border-emerald-400', bg: 'bg-emerald-500/15', text: 'text-emerald-300', badge: 'bg-emerald-500 text-white', hex: '#34d399' },
-]
 
 interface ConnectionLine {
   leftIdx: number
@@ -38,6 +31,42 @@ export function MatchingRenderer({
   onMatchingSelect,
   correctMatchingPairs
 }: QuestionCardContentProps) {
+  const { accentColor } = useTheme()
+  const theme = getQuizActiveThemeTokens(accentColor, isDark)
+
+  const pairColors = useMemo(() => [
+    {
+      border: isDark ? 'border-sky-400' : 'border-sky-500',
+      bg: isDark ? 'bg-sky-500/15' : 'bg-sky-50/90',
+      badge: 'bg-sky-600 text-white shadow-sm shadow-sky-600/30',
+      hex: isDark ? '#38bdf8' : '#0284c7',
+    },
+    {
+      border: isDark ? 'border-purple-400' : 'border-purple-500',
+      bg: isDark ? 'bg-purple-500/15' : 'bg-purple-50/90',
+      badge: 'bg-purple-600 text-white shadow-sm shadow-purple-600/30',
+      hex: isDark ? '#c084fc' : '#7c3aed',
+    },
+    {
+      border: isDark ? 'border-emerald-400' : 'border-emerald-600',
+      bg: isDark ? 'bg-emerald-500/15' : 'bg-emerald-50/90',
+      badge: 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/30',
+      hex: isDark ? '#34d399' : '#059669',
+    },
+    {
+      border: isDark ? 'border-teal-400' : 'border-teal-600',
+      bg: isDark ? 'bg-teal-500/15' : 'bg-teal-50/90',
+      badge: 'bg-teal-600 text-white shadow-sm shadow-teal-600/30',
+      hex: isDark ? '#2dd4bf' : '#0d9488',
+    },
+    {
+      border: isDark ? 'border-rose-400' : 'border-rose-500',
+      bg: isDark ? 'bg-rose-500/15' : 'bg-rose-50/90',
+      badge: 'bg-rose-600 text-white shadow-sm shadow-rose-600/30',
+      hex: isDark ? '#fb7185' : '#e11d48',
+    },
+  ], [isDark])
+
   const [activeLeftIndex, setActiveLeftIndex] = useState<number | null>(null)
   const [activeRightIndex, setActiveRightIndex] = useState<number | null>(null)
   const [connectionLines, setConnectionLines] = useState<ConnectionLine[]>([])
@@ -93,11 +122,11 @@ export function MatchingRenderer({
         const x2 = rRect.right - cRect.left
         const y2 = rRect.top + rRect.height / 2 - cRect.top
 
-        const colorTheme = PAIR_COLORS[leftIdx % PAIR_COLORS.length]
+        const colorTheme = pairColors[leftIdx % pairColors.length]
         lines.push({
           leftIdx,
           rightIdx,
-          pairIndex: leftIdx % PAIR_COLORS.length,
+          pairIndex: leftIdx % pairColors.length,
           x1,
           y1,
           x2,
@@ -120,7 +149,7 @@ export function MatchingRenderer({
       }
       return lines
     })
-  }, [pairs, safeSelections])
+  }, [pairs, safeSelections, pairColors])
 
   useLayoutEffect(() => {
     updateLines()
@@ -181,9 +210,7 @@ export function MatchingRenderer({
     <div className="space-y-4 my-3" dir="rtl">
       {/* Hint */}
       {!showFeedback && (
-        <div className={`flex items-center gap-2 text-xs font-extrabold px-3.5 py-2.5 rounded-2xl border ${
-          isDark ? 'bg-sky-500/10 border-sky-500/30 text-sky-300' : 'bg-sky-50 border-sky-200 text-sky-700'
-        }`}>
+        <div className={`flex items-center gap-2 text-xs font-extrabold px-3.5 py-2.5 rounded-xl border ${theme.matchingHint}`}>
           <ArrowLeftRight size={15} className="animate-pulse shrink-0" />
           <span>اضغط على المصطلح والتعريف المناسب لربطهما بسهم التوصيل (يمكنك الاختيار بأي ترتيب)</span>
         </div>
@@ -194,7 +221,7 @@ export function MatchingRenderer({
         {/* SVG Arrow Lines Canvas Overlay */}
         <svg className="absolute inset-0 pointer-events-none w-full h-full z-10 overflow-visible hidden md:block">
           <defs>
-            {PAIR_COLORS.map((c, i) => (
+            {pairColors.map((c, i) => (
               <marker
                 key={i}
                 id={`arrow-${i}`}
@@ -244,7 +271,7 @@ export function MatchingRenderer({
             const selectedRIdx = safeSelections[leftIdx]
             const hasSelection = selectedRIdx !== undefined
             const isActive = activeLeftIndex === leftIdx
-            const colorTheme = PAIR_COLORS[leftIdx % PAIR_COLORS.length]
+            const colorTheme = pairColors[leftIdx % pairColors.length]
 
             const correctRight = correctRightForLeft(leftIdx)
             const selectedRightLabel = hasSelection ? rightOptions[selectedRIdx] : null
@@ -256,29 +283,33 @@ export function MatchingRenderer({
 
             if (hasSelection && showFeedback) {
               termStyle = isPairCorrect
-                ? "bg-emerald-500/20 border-emerald-400 text-emerald-300 font-extrabold"
-                : "bg-rose-500/20 border-rose-400 text-rose-300 font-extrabold"
+                ? (isDark ? "bg-emerald-500/20 border-2 border-emerald-400 text-emerald-200 font-extrabold" : "bg-emerald-50 border-2 border-emerald-500 text-emerald-950 font-extrabold shadow-sm")
+                : (isDark ? "bg-rose-500/20 border-2 border-rose-400 text-rose-200 font-extrabold" : "bg-rose-50 border-2 border-rose-500 text-rose-950 font-extrabold shadow-sm")
             } else if (isActive) {
-              termStyle = "bg-gradient-to-r from-sky-500/25 to-blue-500/20 border-sky-400 text-sky-200 font-extrabold shadow-lg shadow-sky-500/20 ring-2 ring-sky-400/60 scale-[1.01]"
+              termStyle = isDark
+                ? "bg-amber-500/20 border-2 border-amber-400 text-white font-black shadow-lg shadow-amber-500/20 ring-2 ring-amber-400/50 scale-[1.01]"
+                : "bg-amber-50 border-2 border-amber-600 text-slate-950 font-black shadow-md ring-2 ring-amber-500/30 scale-[1.01]"
             } else if (hasSelection) {
-              termStyle = `${colorTheme.bg} ${colorTheme.border} ${colorTheme.text} font-bold shadow-sm`
+              termStyle = isDark
+                ? `${colorTheme.bg} border-2 ${colorTheme.border} text-white font-extrabold shadow-sm`
+                : `${colorTheme.bg} border-2 ${colorTheme.border} text-slate-950 font-extrabold shadow-sm`
             } else if (activeRightIndex !== null) {
-              termStyle += " border-dashed border-purple-400/60 hover:border-purple-400 hover:bg-purple-500/10"
+              termStyle += isDark
+                ? " border-dashed border-purple-400/60 hover:border-purple-400 hover:bg-purple-500/10"
+                : " border-dashed border-purple-400 hover:border-purple-500 hover:bg-purple-50/70"
             }
 
-            let termBadgeStyle = "bg-gradient-to-br from-sky-500 to-blue-600 text-white shadow-md shadow-sky-500/20"
+            let termBadgeStyle = "bg-sky-600 text-white shadow-md shadow-sky-500/20"
             if (hasSelection && showFeedback) {
               termBadgeStyle = isPairCorrect
-                ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/30"
-                : "bg-rose-500 text-white shadow-md shadow-rose-500/30"
+                ? "bg-emerald-600 text-white shadow-md shadow-emerald-500/30"
+                : "bg-rose-600 text-white shadow-md shadow-rose-500/30"
             } else if (isActive) {
-              termBadgeStyle = "bg-gradient-to-br from-sky-400 to-blue-500 text-white shadow-lg shadow-sky-500/40 ring-2 ring-sky-300 animate-pulse"
+              termBadgeStyle = "bg-amber-600 text-white shadow-lg shadow-amber-500/40 ring-2 ring-amber-300 animate-pulse"
             } else if (hasSelection) {
               termBadgeStyle = `${colorTheme.badge} text-white shadow-sm`
-            } else if (isDark) {
-              termBadgeStyle = "bg-sky-500/20 text-sky-300 border border-sky-400/30"
             } else {
-              termBadgeStyle = "bg-sky-100 text-sky-700 border border-sky-200"
+              termBadgeStyle = theme.matchingTermBadge
             }
 
             return (
@@ -288,14 +319,14 @@ export function MatchingRenderer({
                 whileTap={!(isReadOnly || (showFeedback && isAnswered)) ? { scale: 0.98 } : undefined}
                 onClick={() => handleLeftClick(leftIdx)}
                 disabled={isReadOnly || (showFeedback && isAnswered)}
-                className={`w-full text-right p-3.5 rounded-2xl border text-sm transition-all duration-200 flex items-center justify-between gap-3 cursor-pointer relative opacity-0 animate-[fadeInUp_0.4s_ease-out_forwards] ${termStyle}`}
+                className={`w-full text-right p-3 rounded-xl border text-xs sm:text-sm transition-all duration-200 flex items-center justify-between gap-3 cursor-pointer relative opacity-0 animate-[fadeInUp_0.4s_ease-out_forwards] ${termStyle}`}
                 style={{ animationDelay: `${0.2 + leftIdx * 0.08}s` }}
               >
                 <div className="flex items-center gap-2.5 flex-1 min-w-0">
-                  <span className={`w-7 h-7 md:w-8 md:h-8 rounded-xl text-xs md:text-sm font-black flex items-center justify-center shrink-0 transition-all duration-200 ${termBadgeStyle}`}>
+                  <span className={`w-6 h-6 sm:w-7 sm:h-7 rounded-lg text-xs font-black flex items-center justify-center shrink-0 transition-all duration-200 ${termBadgeStyle}`}>
                     {leftIdx + 1}
                   </span>
-                  <span className="font-bold truncate text-xs md:text-sm">{pair.left}</span>
+                  <span className="font-extrabold truncate text-xs md:text-sm">{formatIslamicQuizText(pair.left)}</span>
                 </div>
 
                 {/* Status / Feedback */}
@@ -304,8 +335,6 @@ export function MatchingRenderer({
                     {isPairCorrect ? <CheckCircle2 size={16} className="text-emerald-400" /> : <XCircle size={16} className="text-rose-400" />}
                   </div>
                 )}
-
-           
               </motion.button>
             )
           })}
@@ -321,41 +350,45 @@ export function MatchingRenderer({
             )
             const linkedLeftIdx = linkedLeftIdxStr !== undefined ? Number(linkedLeftIdxStr) : null
             const isLinked = linkedLeftIdx !== null
-            const linkedColorTheme = isLinked ? PAIR_COLORS[linkedLeftIdx % PAIR_COLORS.length] : null
+            const linkedColorTheme = isLinked ? pairColors[linkedLeftIdx % pairColors.length] : null
 
             let defStyle = isDark
-              ? "bg-white/5 border-white/10 text-white/80 hover:bg-purple-500/10 hover:border-purple-400/40"
-              : "bg-white border-slate-200 text-slate-700 hover:bg-purple-50/60 hover:border-purple-300 shadow-sm"
+              ? "bg-white/5 border-white/10 text-white/90 hover:bg-white/10"
+              : "bg-white border-slate-200 text-slate-800 hover:bg-slate-50 shadow-sm"
 
             if (isLinked && showFeedback) {
               const correctRight = correctRightForLeft(linkedLeftIdx!)
               const isCorrect = rightLabel === correctRight
               defStyle = isCorrect
-                ? "bg-emerald-500/20 border-emerald-400 text-emerald-300 font-extrabold"
-                : "bg-rose-500/20 border-rose-400 text-rose-300 font-extrabold"
+                ? (isDark ? "bg-emerald-500/20 border-2 border-emerald-400 text-emerald-200 font-extrabold" : "bg-emerald-50 border-2 border-emerald-500 text-emerald-950 font-extrabold shadow-sm")
+                : (isDark ? "bg-rose-500/20 border-rose-400 text-rose-200 font-extrabold" : "bg-rose-50 border-2 border-rose-500 text-rose-950 font-extrabold shadow-sm")
             } else if (isLinked && linkedColorTheme) {
-              defStyle = `${linkedColorTheme.bg} ${linkedColorTheme.border} ${linkedColorTheme.text} font-bold shadow-sm`
+              defStyle = isDark
+                ? `${linkedColorTheme.bg} border-2 ${linkedColorTheme.border} text-white font-extrabold shadow-sm`
+                : `${linkedColorTheme.bg} border-2 ${linkedColorTheme.border} text-slate-950 font-extrabold shadow-sm`
             } else if (activeRightIndex === rightIdx) {
-              defStyle = "bg-gradient-to-r from-purple-500/25 to-pink-500/20 border-purple-400 text-purple-200 font-extrabold shadow-lg shadow-purple-500/20 ring-2 ring-purple-400/60 scale-[1.01]"
+              defStyle = isDark
+                ? "bg-purple-500/20 border-2 border-purple-400 text-white font-black shadow-lg shadow-purple-500/20 ring-2 ring-purple-400/50 scale-[1.01]"
+                : "bg-purple-50 border-2 border-purple-600 text-slate-950 font-black shadow-md ring-2 ring-purple-500/30 scale-[1.01]"
             } else if (activeLeftIndex !== null) {
-              defStyle += " border-dashed border-sky-400/60 hover:border-sky-400 hover:bg-sky-500/10"
+              defStyle += isDark
+                ? " border-dashed border-sky-400/60 hover:border-sky-400 hover:bg-sky-500/10"
+                : " border-dashed border-sky-400 hover:border-sky-500 hover:bg-sky-50/70"
             }
 
-            let defBadgeStyle = "bg-gradient-to-br from-purple-500 to-pink-600 text-white shadow-md shadow-purple-500/20"
+            let defBadgeStyle = "bg-purple-600 text-white shadow-md shadow-purple-500/20"
             if (isLinked && showFeedback) {
               const correctRight = correctRightForLeft(linkedLeftIdx!)
               const isCorrect = rightLabel === correctRight
               defBadgeStyle = isCorrect
-                ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/30"
-                : "bg-rose-500 text-white shadow-md shadow-rose-500/30"
+                ? "bg-emerald-600 text-white shadow-md shadow-emerald-500/30"
+                : "bg-rose-600 text-white shadow-md shadow-rose-500/30"
             } else if (isLinked && linkedColorTheme) {
               defBadgeStyle = `${linkedColorTheme.badge} text-white shadow-sm`
             } else if (activeRightIndex === rightIdx) {
-              defBadgeStyle = "bg-gradient-to-br from-purple-400 to-pink-500 text-white shadow-lg shadow-purple-500/40 ring-2 ring-purple-300 animate-pulse"
-            } else if (isDark) {
-              defBadgeStyle = "bg-purple-500/20 text-purple-300 border border-purple-400/30"
+              defBadgeStyle = "bg-purple-600 text-white shadow-lg shadow-purple-500/40 ring-2 ring-purple-300 animate-pulse"
             } else {
-              defBadgeStyle = "bg-purple-100 text-purple-700 border border-purple-200"
+              defBadgeStyle = theme.matchingDefBadge
             }
 
             return (
@@ -365,14 +398,14 @@ export function MatchingRenderer({
                 whileTap={!(isReadOnly || (showFeedback && isAnswered)) ? { scale: 0.98 } : undefined}
                 onClick={() => handleRightClick(rightIdx)}
                 disabled={isReadOnly || (showFeedback && isAnswered)}
-                className={`w-full text-right p-3.5 rounded-2xl border text-sm transition-all duration-200 flex items-center justify-between gap-3 cursor-pointer relative opacity-0 animate-[fadeInUp_0.4s_ease-out_forwards] ${defStyle}`}
+                className={`w-full text-right p-3 rounded-xl border text-xs sm:text-sm transition-all duration-200 flex items-center justify-between gap-3 cursor-pointer relative opacity-0 animate-[fadeInUp_0.4s_ease-out_forwards] ${defStyle}`}
                 style={{ animationDelay: `${0.2 + rightIdx * 0.08}s` }}
               >
                 <div className="flex items-center gap-2.5 flex-1 min-w-0">
-                  <span className={`w-7 h-7 md:w-8 md:h-8 rounded-xl text-xs md:text-sm font-black flex items-center justify-center shrink-0 transition-all duration-200 ${defBadgeStyle}`}>
+                  <span className={`w-6 h-6 sm:w-7 sm:h-7 rounded-lg text-xs font-black flex items-center justify-center shrink-0 transition-all duration-200 ${defBadgeStyle}`}>
                     {rBadge}
                   </span>
-                  <span className="font-bold leading-relaxed text-xs md:text-sm">{rightLabel}</span>
+                  <span className="font-bold leading-relaxed text-xs md:text-sm">{formatIslamicQuizText(rightLabel)}</span>
                 </div>
               </motion.button>
             )

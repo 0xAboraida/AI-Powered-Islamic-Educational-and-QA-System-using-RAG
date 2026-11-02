@@ -9,7 +9,7 @@ import {
   Heart, Sun, Moon, Hash, Settings, Palette, LogOut,
   Smartphone, Share2, LogIn, ShieldCheck, Download, FileDown
 } from 'lucide-react'
-import libraryBgLight from '@/assets/images/library background light 5.png'
+import libraryBgLight from '@/assets/images/library-background-light-desktop.jpg'
 import libraryBgDark from '@/assets/images/library background dark5.png'
 import mobileLibraryBgDark from '@/assets/images/mobile library background dark 1.webp'
 import mobileLibraryBgLight from '@/assets/images/mobile library background light 1.webp'
@@ -795,12 +795,14 @@ export default function KnowledgeBase({
             featured: featuredBookIds.size > 0 ? publishedBooks.filter(b => featuredBookIds.has(b.id) || featuredBookIds.has(b.title)).length : 0,
             favorites: favoriteBooksList.length,
             downloads: downloadsCount,
+            books: liveStats.total_books || publishedBooks.length || 51,
           }}
           recentBook={recentBook}
           onClose={() => setIsSidebarOpen(false)}
           onNavigateGlobal={onNavigateGlobal}
           onExit={onExit}
           onLogin={onLogin}
+          onOpenProfile={() => setShowProfileModal(true)}
           onSelectTab={(tab) => {
             setIsSidebarOpen(false);
             setView('search');
@@ -915,12 +917,14 @@ export default function KnowledgeBase({
             featured: featuredBookIds.size > 0 ? publishedBooks.filter(b => featuredBookIds.has(b.id) || featuredBookIds.has(b.title)).length : 0,
             favorites: favoriteBooksList.length,
             downloads: downloadsCount,
+            books: liveStats.total_books || publishedBooks.length || 51,
           }}
           recentBook={recentBook}
           onClose={() => setIsSidebarOpen(false)}
           onNavigateGlobal={onNavigateGlobal}
           onExit={onExit}
           onLogin={onLogin}
+          onOpenProfile={() => setShowProfileModal(true)}
           onSelectTab={(tab) => {
             setIsSidebarOpen(false);
             setView('search');

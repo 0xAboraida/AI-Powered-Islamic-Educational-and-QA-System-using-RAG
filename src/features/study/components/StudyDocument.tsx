@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { X, BookOpen, ChevronLeft, ChevronRight, User, Book, Library, CalendarDays, Layers, Hash, Link } from 'lucide-react'
 import type { ChunkMetadata } from '../../../contexts/StudyContext'
 import { formatMarkdown, formatTurathLiveText } from '../utils/markdownParser'
+import { useTheme } from '../../../contexts/ThemeContext'
 
 export function StudyDocument({
   isDocumentOpen,
@@ -34,9 +35,70 @@ export function StudyDocument({
   isDark?: boolean
   onPageChange?: (direction: 'next' | 'prev') => void
 }) {
+  const { accentColor } = useTheme()
   const [viewMode, setViewMode] = useState<'paged' | 'continuous'>('paged')
   const [activePageIndex, setActivePageIndex] = useState<number>(0)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
+
+  const getBadgeClass = (variant: 'primary' | 'secondary' | 'accent' | 'neutral' | 'page') => {
+    if (isDark) {
+      switch (accentColor) {
+        case 'emerald':
+          if (variant === 'primary') return 'border-teal-500/40 bg-teal-950/40 text-teal-300'
+          if (variant === 'secondary') return 'border-emerald-500/35 bg-emerald-950/35 text-emerald-300'
+          if (variant === 'accent') return 'border-teal-400/35 bg-teal-900/35 text-teal-200'
+          if (variant === 'page') return 'border-teal-400/50 bg-teal-500/25 text-teal-100 font-bold'
+          return 'border-white/10 bg-white/5 text-white/80'
+        case 'amber':
+          if (variant === 'primary') return 'border-[#dfbf83]/40 bg-[#291e0e]/60 text-[#edd8ae]'
+          if (variant === 'secondary') return 'border-[#b88d46]/40 bg-[#1f160a]/50 text-[#dfbf83]'
+          if (variant === 'accent') return 'border-[#eed9b0]/35 bg-[#3d2c14]/40 text-[#f5ebd7]'
+          if (variant === 'page') return 'border-[#dfbf83]/60 bg-[#dfbf83]/25 text-white font-bold'
+          return 'border-white/10 bg-white/5 text-white/80'
+        case 'blue':
+          if (variant === 'primary') return 'border-blue-500/40 bg-blue-950/40 text-blue-300'
+          if (variant === 'secondary') return 'border-sky-500/35 bg-sky-950/35 text-sky-300'
+          if (variant === 'accent') return 'border-indigo-400/35 bg-indigo-900/35 text-indigo-200'
+          if (variant === 'page') return 'border-blue-400/50 bg-blue-500/25 text-blue-100 font-bold'
+          return 'border-white/10 bg-white/5 text-white/80'
+        case 'purple':
+        default:
+          if (variant === 'primary') return 'border-purple-500/40 bg-purple-950/40 text-purple-300'
+          if (variant === 'secondary') return 'border-fuchsia-500/35 bg-fuchsia-950/35 text-fuchsia-300'
+          if (variant === 'accent') return 'border-purple-400/35 bg-purple-900/35 text-purple-200'
+          if (variant === 'page') return 'border-purple-400/50 bg-purple-500/25 text-purple-100 font-bold'
+          return 'border-white/10 bg-white/5 text-white/80'
+      }
+    } else {
+      switch (accentColor) {
+        case 'emerald':
+          if (variant === 'primary') return 'border-teal-300/80 bg-teal-50 text-teal-900 shadow-xs'
+          if (variant === 'secondary') return 'border-emerald-300/70 bg-emerald-50 text-emerald-900 shadow-xs'
+          if (variant === 'accent') return 'border-teal-200 bg-teal-50/60 text-teal-800'
+          if (variant === 'page') return 'border-teal-400 bg-teal-100/90 text-teal-950 font-bold shadow-xs'
+          return 'border-stone-200 bg-stone-50 text-stone-700'
+        case 'amber':
+          if (variant === 'primary') return 'border-[#dfbf83] bg-[#fbf8f0] text-[#5e431a] shadow-xs'
+          if (variant === 'secondary') return 'border-[#ebd9b5] bg-[#f5ebd7]/50 text-[#78350f] shadow-xs'
+          if (variant === 'accent') return 'border-[#dfbf83]/60 bg-[#fbf6ee] text-[#8a652a]'
+          if (variant === 'page') return 'border-[#b88d46] bg-[#eed9b0]/60 text-[#422e11] font-bold shadow-xs'
+          return 'border-stone-200 bg-stone-50 text-stone-700'
+        case 'blue':
+          if (variant === 'primary') return 'border-blue-300/80 bg-blue-50 text-blue-900 shadow-xs'
+          if (variant === 'secondary') return 'border-sky-300/70 bg-sky-50 text-sky-900 shadow-xs'
+          if (variant === 'accent') return 'border-blue-200 bg-blue-50/60 text-blue-800'
+          if (variant === 'page') return 'border-blue-400 bg-blue-100/90 text-blue-950 font-bold shadow-xs'
+          return 'border-stone-200 bg-stone-50 text-stone-700'
+        case 'purple':
+        default:
+          if (variant === 'primary') return 'border-purple-300/80 bg-purple-50 text-purple-900 shadow-xs'
+          if (variant === 'secondary') return 'border-fuchsia-300/70 bg-fuchsia-50 text-fuchsia-900 shadow-xs'
+          if (variant === 'accent') return 'border-purple-200 bg-purple-50/60 text-purple-800'
+          if (variant === 'page') return 'border-purple-400 bg-purple-100/90 text-purple-950 font-bold shadow-xs'
+          return 'border-stone-200 bg-stone-50 text-stone-700'
+      }
+    }
+  }
 
   // Reset to first page when new chunk/chapter is opened
   useEffect(() => {
@@ -158,7 +220,7 @@ export function StudyDocument({
       >
         <div style={{ width: documentWidth ? documentWidth : '100%' }} className="flex h-full flex-col">
           {/* Header Bar matching Chat/Sidebar/Mindmap/Quiz panels */}
-          <div className={`flex items-center justify-between px-4 py-3 border-b backdrop-blur-md ${isDark ? 'border-white/10 bg-[#12041f]/70 text-white' : 'border-slate-200 bg-slate-50/90 text-slate-800'
+          <div className={`hidden md:flex items-center justify-between px-4 py-3 h-[53px] box-border border-b backdrop-blur-md ${isDark ? 'border-white/10 bg-[#12041f]/70 text-white' : 'border-slate-200 bg-slate-50/90 text-slate-800'
             }`}>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2 text-sm font-bold">
@@ -285,10 +347,10 @@ export function StudyDocument({
                       </div>
                     )}
 
-                    <div className="flex flex-wrap items-center justify-center gap-3 mt-2">
+                    <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 mt-2">
                       {chunkMeta.author && (
                         <span
-                          className="inline-flex items-center gap-1.5 rounded-full border border-[#10b981]/25 bg-[#10b981]/10 px-4 py-2 text-[13px] font-semibold text-[#10b981] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:shadow-[#10b981]/20 cursor-default opacity-0 animate-[fadeInUp_0.5s_ease-out_forwards]"
+                          className={`inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-[13px] font-semibold transition-all duration-300 hover:-translate-y-1 shadow-sm opacity-0 animate-[fadeInUp_0.5s_ease-out_forwards] ${getBadgeClass('primary')}`}
                           style={{ animationDelay: '0.1s' }}
                         >
                           <User size={14} />
@@ -297,7 +359,7 @@ export function StudyDocument({
                       )}
                       {(chunkMeta.domain || (chunkMeta as any).category) && (
                         <span
-                          className="inline-flex items-center gap-1.5 rounded-full border border-[#38bdf8]/25 bg-[#38bdf8]/10 px-4 py-2 text-[13px] font-semibold text-[#38bdf8] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:shadow-[#38bdf8]/20 cursor-default opacity-0 animate-[fadeInUp_0.5s_ease-out_forwards]"
+                          className={`inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-[13px] font-semibold transition-all duration-300 hover:-translate-y-1 shadow-sm opacity-0 animate-[fadeInUp_0.5s_ease-out_forwards] ${getBadgeClass('secondary')}`}
                           style={{ animationDelay: '0.2s' }}
                         >
                           <Book size={14} />
@@ -306,7 +368,7 @@ export function StudyDocument({
                       )}
                       {chunkMeta.madhhab && (
                         <span
-                          className="inline-flex items-center gap-1.5 rounded-full border border-[#f43f5e]/25 bg-[#f43f5e]/10 px-4 py-2 text-[13px] font-semibold text-[#f43f5e] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:shadow-[#f43f5e]/20 cursor-default opacity-0 animate-[fadeInUp_0.5s_ease-out_forwards]"
+                          className={`inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-[13px] font-semibold transition-all duration-300 hover:-translate-y-1 shadow-sm opacity-0 animate-[fadeInUp_0.5s_ease-out_forwards] ${getBadgeClass('accent')}`}
                           style={{ animationDelay: '0.3s' }}
                         >
                           <Library size={14} />
@@ -315,7 +377,7 @@ export function StudyDocument({
                       )}
                       {chunkMeta.hijri_century && (
                         <span
-                          className="inline-flex items-center gap-1.5 rounded-full border border-[#f59e0b]/25 bg-[#f59e0b]/10 px-4 py-2 text-[13px] font-semibold text-[#f59e0b] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:shadow-[#f59e0b]/20 cursor-default opacity-0 animate-[fadeInUp_0.5s_ease-out_forwards]"
+                          className={`inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-[13px] font-semibold transition-all duration-300 hover:-translate-y-1 shadow-sm opacity-0 animate-[fadeInUp_0.5s_ease-out_forwards] ${getBadgeClass('neutral')}`}
                           style={{ animationDelay: '0.4s' }}
                         >
                           <CalendarDays size={14} />
@@ -324,7 +386,7 @@ export function StudyDocument({
                       )}
                       {(chunkMeta.part !== undefined && chunkMeta.part !== null || chunkMeta.total_parts !== undefined && chunkMeta.total_parts !== null) && (
                         <span
-                          className="inline-flex items-center gap-1.5 rounded-full border border-[#14b8a6]/25 bg-[#14b8a6]/10 px-4 py-2 text-[13px] font-semibold text-[#14b8a6] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:shadow-[#14b8a6]/20 cursor-default opacity-0 animate-[fadeInUp_0.5s_ease-out_forwards]"
+                          className={`inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-[13px] font-semibold transition-all duration-300 hover:-translate-y-1 shadow-sm opacity-0 animate-[fadeInUp_0.5s_ease-out_forwards] ${getBadgeClass('neutral')}`}
                           style={{ animationDelay: '0.5s' }}
                         >
                           <Layers size={14} />
@@ -333,7 +395,7 @@ export function StudyDocument({
                       )}
                       {chunkMeta.page_id && (
                         <span
-                          className="inline-flex items-center gap-1.5 rounded-full border border-[#ec4899]/25 bg-[#ec4899]/10 px-4 py-2 text-[13px] font-semibold text-[#ec4899] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:shadow-[#ec4899]/20 cursor-default opacity-0 animate-[fadeInUp_0.5s_ease-out_forwards]"
+                          className={`inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-[13px] transition-all duration-300 hover:-translate-y-1 shadow-sm opacity-0 animate-[fadeInUp_0.5s_ease-out_forwards] ${getBadgeClass('page')}`}
                           style={{ animationDelay: '0.6s' }}
                         >
                           <Hash size={14} />
@@ -345,7 +407,7 @@ export function StudyDocument({
                           href={chunkMeta.source_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 rounded-full border border-blue-500/25 bg-blue-500/10 px-4 py-2 text-[13px] font-semibold text-blue-400 hover:bg-blue-500/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:shadow-blue-500/20 shadow-sm opacity-0 animate-[fadeInUp_0.5s_ease-out_forwards]"
+                          className={`inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-[13px] font-semibold transition-all duration-300 hover:-translate-y-1 shadow-sm opacity-0 animate-[fadeInUp_0.5s_ease-out_forwards] ${getBadgeClass('primary')}`}
                           style={{ animationDelay: '0.7s' }}
                         >
                           <Link size={14} />

@@ -73,8 +73,6 @@ export const LibraryNavbar: React.FC<LibraryNavbarProps> = ({
   const { isAuthenticated, user, logout } = useAuth();
   const isAdmin = user?.role === 'admin';
 
-  const [isSettingsMenuOpen, setIsSettingsMenuOpen] = useState(false);
-  const [isLoginLoading, setIsLoginLoading] = useState(false);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [internalDownloadsCount, setInternalDownloadsCount] = useState<number>(0);
 
@@ -99,21 +97,6 @@ export const LibraryNavbar: React.FC<LibraryNavbarProps> = ({
   }, []);
 
   const effectiveDownloadsCount = downloadsCount !== undefined ? downloadsCount : internalDownloadsCount;
-  const settingsMenuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (settingsMenuRef.current && !settingsMenuRef.current.contains(e.target as Node)) {
-        setIsSettingsMenuOpen(false);
-      }
-    };
-    if (isSettingsMenuOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isSettingsMenuOpen]);
 
   const handleShare = async () => {
     const url = 'https://zad-islamic-ai.vercel.app/';
@@ -382,7 +365,7 @@ export const LibraryNavbar: React.FC<LibraryNavbarProps> = ({
         isActive: false,
         action: () => (onNavigateGlobal ? onNavigateGlobal('lessons') : null)
       },
-      { id: 'study', label: 'وضع الدراسة', isActive: false, action: () => (onNavigateGlobal ? onNavigateGlobal('study') : null) },
+      { id: 'study', label: 'المدارسة الذكية', isActive: false, action: () => (onNavigateGlobal ? onNavigateGlobal('study') : null) },
       { id: 'chat', label: 'المحادثة النصية', isActive: false, action: () => (onNavigateGlobal ? onNavigateGlobal('chat') : null) },
       { id: 'voice', label: 'المحادثة الصوتية', isActive: false, action: () => (onNavigateGlobal ? onNavigateGlobal('voice') : null) },
     ];
@@ -540,237 +523,6 @@ export const LibraryNavbar: React.FC<LibraryNavbarProps> = ({
           )}
 
           <NotificationBell />
-
-          {/* قائمة الإعدادات والمظهر المطابقة تماماً للشاشة الرئيسية */}
-          <div className="relative" ref={settingsMenuRef}>
-            <button
-              type="button"
-              onClick={() => setIsSettingsMenuOpen(!isSettingsMenuOpen)}
-              className={`h-10 w-10 rounded-full border flex items-center justify-center transition-all backdrop-blur-md active:scale-95 cursor-pointer group ${getNavCircleBtnStyle()}`}
-              title="الإعدادات والمظهر"
-              aria-label="الإعدادات والمظهر"
-            >
-              <Settings className="h-4.5 w-4.5 transition-transform group-hover:rotate-45 duration-300" strokeWidth={2.2} />
-            </button>
-
-            {isSettingsMenuOpen && (
-              <div
-                dir="rtl"
-                className={`absolute left-0 top-full mt-3 w-80 sm:w-84 max-h-[85vh] overflow-y-auto rounded-3xl border p-3.5 shadow-2xl backdrop-blur-2xl transition-all text-right slim-scrollbar z-50 space-y-2.5 animate-in fade-in zoom-in-95 duration-200 ${getDropdownGlassClass()}`}
-              >
-                {/* 1. تاب البروفايل أو تسجيل الدخول */}
-                {isAuthenticated ? (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsSettingsMenuOpen(false);
-                      setShowProfileModal(true);
-                    }}
-                    className={`flex w-full items-center justify-between rounded-2xl border p-3 text-right transition-all duration-200 active:scale-[0.99] cursor-pointer ${getNavItemCardClass()}`}
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full brand-gradient text-white shadow-md overflow-hidden ring-2 ring-white/15">
-                        {user?.avatarUrl ? (
-                          <img
-                            src={getAvatarUrl(user.avatarUrl)}
-                            alt={user?.name || 'مستخدم'}
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          <User size={22} strokeWidth={2.2} />
-                        )}
-                      </div>
-                      <div className="min-w-0 flex-1 text-right">
-                        <div className="flex items-center gap-2">
-                          <span className={`truncate text-sm font-bold ${isDark ? 'text-white' : 'text-stone-900'}`}>
-                            {user?.name || (isAdmin ? 'مسؤول النظام' : 'مستخدم زاد')}
-                          </span>
-                          {isAdmin && (
-                            <span className={`shrink-0 rounded-full px-2 py-0.5 text-[9px] font-bold border ${getThemeBadgeClass()}`}>
-                              أدمن
-                            </span>
-                          )}
-                        </div>
-                        <p className={`truncate text-xs font-mono mt-0.5 ${isDark ? 'text-white/50' : 'text-stone-500'}`}>
-                          {user?.email || 'طالب علم'}
-                        </p>
-                      </div>
-                    </div>
-                    <div className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors ${isDark ? 'text-white/60 hover:text-white' : 'text-stone-500'}`}>
-                      <ChevronLeft size={18} />
-                    </div>
-                  </button>
-                ) : (
-                  <div className={`rounded-2xl border p-3.5 text-right shadow-sm ${isDark ? 'border-white/10 bg-white/[0.03]' : 'border-stone-200/80 bg-white/90 shadow-stone-200/50'}`}>
-                    <h4 className={`text-sm font-bold ${isDark ? 'text-white' : 'text-stone-900'}`}>مرحباً بك</h4>
-                    <p className={`text-xs mt-1 leading-relaxed ${isDark ? 'text-white/70' : 'text-stone-500'}`}>
-                      قم بالتسجيل للاستفادة من خدمات الموقع
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsSettingsMenuOpen(false);
-                        setIsLoginLoading(true);
-                        if (onLogin) onLogin();
-                        else if (onNavigateGlobal) onNavigateGlobal('chat');
-                        setTimeout(() => setIsLoginLoading(false), 1500);
-                      }}
-                      disabled={isLoginLoading}
-                      className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-[#53177d] hover:bg-[#431265] text-white py-2 px-3 text-xs font-bold shadow-sm shadow-[#53177d]/20 active:scale-[0.98] transition-all cursor-pointer"
-                    >
-                      {isLoginLoading ? <Loader2 size={14} className="animate-spin" /> : <LogIn size={14} />}
-                      <span>تسجيل الدخول / إنشاء حساب</span>
-                    </button>
-                  </div>
-                )}
-
-                {/* 2. الإضاءة (مطابق للشاشة الرئيسية) */}
-                <div
-                  onClick={toggleTheme}
-                  role="button"
-                  tabIndex={0}
-                  className={`flex w-full items-center justify-between rounded-xl border px-3.5 py-2.5 text-sm font-semibold cursor-pointer active:scale-[0.99] transition-all select-none ${getNavItemCardClass()}`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={`flex h-8 w-8 items-center justify-center rounded-lg border transition-colors ${getNavIconBoxClass()}`}>
-                      {isDark ? <Moon size={16} /> : <Sun size={16} />}
-                    </div>
-                    <div className="text-right">
-                      <span className="block text-sm font-bold">الإضاءة</span>
-                      <span className={`text-[11px] font-normal ${isDark ? 'text-white/60' : 'text-stone-500'}`}>
-                        {isDark ? 'الوضع الليلي مفعّل' : 'الوضع النهاري مفعّل'}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className={`relative flex h-7 w-14 items-center rounded-full p-1 transition-colors duration-300 ${getThemeToggleTrackClass()}`}>
-                    <div className="absolute inset-x-2 flex justify-between items-center text-[10px] pointer-events-none">
-                      <Moon size={12} className={isDark ? 'text-white/80' : 'text-black/25'} />
-                      <Sun size={12} className={!isDark ? 'text-amber-950/80' : 'text-white/25'} />
-                    </div>
-
-                    <motion.div
-                      layout
-                      transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                      className={`z-10 flex h-5 w-5 items-center justify-center rounded-full bg-white shadow-md ${isDark ? 'mr-0 ml-auto text-stone-800' : 'ml-0 mr-auto text-amber-600'
-                        }`}
-                    >
-                      {isDark ? <Moon size={11} strokeWidth={2.5} /> : <Sun size={11} strokeWidth={2.5} />}
-                    </motion.div>
-                  </div>
-                </div>
-
-                {/* 3. لون السمة (الـ 4 ألوان) */}
-                <div className={`rounded-xl border p-3 ${getNavItemCardClass()}`}>
-                  <div className="flex items-center justify-between mb-2.5">
-                    <div className="flex items-center gap-2 text-xs font-semibold">
-                      <Palette size={15} className={accentColor === 'emerald' ? 'text-teal-400' : accentColor === 'amber' ? 'text-[#dfbf83]' : accentColor === 'blue' ? 'text-blue-400' : 'text-purple-400'} />
-                      <span>لون السمة</span>
-                    </div>
-                    <span className={`text-[10px] font-bold ${accentColor === 'emerald' ? 'text-teal-400' : accentColor === 'amber' ? 'text-[#dfbf83]' : accentColor === 'blue' ? 'text-blue-400' : 'text-purple-400'}`}>
-                      {accentColor === 'purple' && 'أرجواني ملكي'}
-                      {accentColor === 'emerald' && 'فيروزي إسلامي'}
-                      {accentColor === 'amber' && 'عاجي إسلامي'}
-                      {accentColor === 'blue' && 'أزرق ياقوتي'}
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-4 gap-2">
-                    {[
-                      { id: 'purple', name: 'أرجواني', gradient: 'from-purple-700 to-fuchsia-500', ring: 'ring-purple-400' },
-                      { id: 'emerald', name: 'فيروزي', gradient: 'from-teal-700 via-teal-500 to-cyan-400', ring: 'ring-teal-400' },
-                      { id: 'amber', name: 'عاجي', gradient: 'from-[#8e682d] via-[#c59b58] to-[#eedbb2]', ring: 'ring-[#dfbf83]' },
-                      { id: 'blue', name: 'ياقوتي', gradient: 'from-blue-700 to-indigo-500', ring: 'ring-blue-400' },
-                    ].map((item) => {
-                      const isSelected = accentColor === item.id;
-                      return (
-                        <button
-                          key={item.id}
-                          type="button"
-                          onClick={() => setAccentColor(item.id as any)}
-                          className="group flex flex-col items-center gap-1.5 py-1 px-1 transition-all active:scale-95 cursor-pointer"
-                        >
-                          <span
-                            className={`h-7 w-7 rounded-full bg-gradient-to-tr ${item.gradient} transition-all duration-300 ${isSelected
-                              ? `ring-2 ${item.ring} ring-offset-2 ${isDark ? 'ring-offset-[#120324]' : 'ring-offset-white'} scale-115 shadow-lg`
-                              : 'scale-90 opacity-70 group-hover:opacity-100 group-hover:scale-95'
-                              }`}
-                          />
-                          <span
-                            className={`text-[10px] leading-tight transition-colors ${isSelected ? (isDark ? 'font-bold text-white' : 'font-bold text-stone-900') : isDark ? 'font-medium text-white/60' : 'font-medium text-stone-600'
-                              }`}
-                          >
-                            {item.name}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* 4. تطبيق زاد للأندرويد */}
-                <a
-                  href="https://apkpure.com/p/com.example.zaad"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => setIsSettingsMenuOpen(false)}
-                  className={`flex w-full items-center justify-between rounded-xl border px-3.5 py-2.5 text-sm font-semibold active:scale-[0.99] transition-all cursor-pointer ${getNavItemCardClass()}`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={`flex h-8 w-8 items-center justify-center rounded-lg border transition-colors ${getNavIconBoxClass()}`}>
-                      <Smartphone size={16} />
-                    </div>
-                    <div className="text-right">
-                      <span className="block text-sm font-bold">تطبيق زاد للأندرويد</span>
-                      <span className={`text-[11px] font-normal ${isDark ? 'text-white/60' : 'text-stone-500'}`}>
-                        تحميل مباشر عبر APKPure
-                      </span>
-                    </div>
-                  </div>
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${getThemeBadgeClass()}`}>
-                    تثبيت
-                  </span>
-                </a>
-
-                {/* 5. مشاركة زاد */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsSettingsMenuOpen(false);
-                    handleShare();
-                  }}
-                  className={`flex w-full items-center justify-between rounded-xl border px-3.5 py-2.5 text-sm font-semibold active:scale-[0.99] transition-all cursor-pointer ${getNavItemCardClass()}`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={`flex h-8 w-8 items-center justify-center rounded-lg border transition-colors ${getNavIconBoxClass()}`}>
-                      <Share2 size={16} />
-                    </div>
-                    <div className="text-right">
-                      <span className="block text-sm font-bold">مشاركة زاد</span>
-                      <span className={`text-[11px] font-normal ${isDark ? 'text-white/60' : 'text-stone-500'}`}>
-                        شارك الموقع أو رابط التطبيق
-                      </span>
-                    </div>
-                  </div>
-                  <ChevronLeft size={16} className={isDark ? 'text-white/55' : 'text-stone-400'} />
-                </button>
-
-                {/* 6. تسجيل الخروج */}
-                {isAuthenticated && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsSettingsMenuOpen(false);
-                      logout();
-                    }}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 px-3.5 py-2.5 text-xs font-bold text-red-400 hover:bg-red-500/20 hover:text-red-300 transition-colors active:scale-95 cursor-pointer"
-                  >
-                    <LogOut size={15} />
-                    <span>تسجيل خروج</span>
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
         </div>
 
       </div>

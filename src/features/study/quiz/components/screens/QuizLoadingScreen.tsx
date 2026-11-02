@@ -1,37 +1,90 @@
 import { ClipboardList, Loader2 } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { useTheme, type AccentColor } from '../../../../../contexts/ThemeContext'
 
 interface QuizLoadingScreenProps {
   isDark: boolean
 }
 
+function getQuizLoadingThemeTokens(accentColor: AccentColor = 'emerald', isDark: boolean = true) {
+  switch (accentColor) {
+    case 'blue':
+      return {
+        cardBorder: isDark ? 'border-sky-500/25 shadow-sky-950/20' : 'border-sky-100 shadow-xl',
+        cardBg: isDark ? 'bg-[#0b1626] text-white' : 'bg-[#fafcff] text-slate-900',
+        glowPrimary: 'bg-sky-500/10',
+        glowSecondary: 'bg-blue-600/10',
+        iconBox: isDark ? 'bg-[#0d223f] border-sky-500/40 text-sky-300' : 'bg-sky-50 border-sky-200 text-[#154696]',
+        spinner: 'text-sky-500/40',
+        titleColor: 'text-[#12396e] dark:text-sky-200',
+        pingGlow: 'bg-sky-500/20',
+        progressBar: 'bg-gradient-to-r from-sky-500 via-[#154696] to-sky-500',
+      }
+    case 'amber':
+      return {
+        cardBorder: isDark ? 'border-[#5e431a]/40 shadow-stone-950/40' : 'border-[#e6d8c3] shadow-xl',
+        cardBg: isDark ? 'bg-[#18120a] text-stone-100' : 'bg-[#fcfaf6] text-stone-900',
+        glowPrimary: 'bg-[#c99a4e]/10',
+        glowSecondary: 'bg-[#8a6328]/10',
+        iconBox: isDark ? 'bg-[#261b0c] border-[#8a6328]/50 text-[#dfbf83]' : 'bg-[#f5ede0] border-[#decbb0] text-[#7a5720]',
+        spinner: 'text-[#8a6328]/40',
+        titleColor: 'text-[#5c4118] dark:text-[#edd8ae]',
+        pingGlow: 'bg-[#c99a4e]/20',
+        progressBar: 'bg-gradient-to-r from-[#b88d46] via-[#7a5720] to-[#b88d46]',
+      }
+    case 'purple':
+      return {
+        cardBorder: isDark ? 'border-purple-500/25 shadow-purple-950/20' : 'border-purple-100 shadow-xl',
+        cardBg: isDark ? 'bg-[#140624] text-white' : 'bg-[#faf7fd] text-slate-900',
+        glowPrimary: 'bg-purple-500/10',
+        glowSecondary: 'bg-fuchsia-600/10',
+        iconBox: isDark ? 'bg-[#240a3d] border-purple-500/40 text-purple-300' : 'bg-purple-50 border-purple-200 text-[#581c87]',
+        spinner: 'text-purple-500/40',
+        titleColor: 'text-[#4a1572] dark:text-purple-200',
+        pingGlow: 'bg-purple-500/20',
+        progressBar: 'bg-gradient-to-r from-purple-500 via-[#581c87] to-purple-500',
+      }
+    case 'emerald':
+    default:
+      return {
+        cardBorder: isDark ? 'border-emerald-500/25 shadow-emerald-950/20' : 'border-emerald-100 shadow-xl',
+        cardBg: isDark ? 'bg-[#051c14] text-white' : 'bg-[#f7fcf9] text-slate-900',
+        glowPrimary: 'bg-emerald-500/10',
+        glowSecondary: 'bg-teal-600/10',
+        iconBox: isDark ? 'bg-[#092b1f] border-emerald-500/40 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-[#046c4e]',
+        spinner: 'text-emerald-500/40',
+        titleColor: 'text-[#065f46] dark:text-emerald-200',
+        pingGlow: 'bg-emerald-500/20',
+        progressBar: 'bg-gradient-to-r from-emerald-500 via-[#046c4e] to-emerald-500',
+      }
+  }
+}
+
 export function QuizLoadingScreen({ isDark }: QuizLoadingScreenProps) {
+  const { accentColor } = useTheme()
+  const theme = getQuizLoadingThemeTokens(accentColor, isDark)
+
   return (
     <div className="my-auto w-full flex flex-col items-center justify-center py-8" key="quiz-loading">
       <motion.div
         initial={{ opacity: 0, scale: 0.92, y: 15 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.92, y: -15 }}
-        className={`flex flex-col items-center justify-center text-center p-8 rounded-3xl border shadow-2xl backdrop-blur-xl max-w-sm w-full relative overflow-hidden ${
-          isDark
-            ? 'bg-[#12041f]/90 border-white/10 text-white shadow-emerald-500/10'
-            : 'bg-white border-slate-200 text-slate-900 shadow-xl'
-        }`}
+        className={`flex flex-col items-center justify-center text-center p-8 rounded-3xl border shadow-2xl backdrop-blur-xl max-w-sm w-full relative overflow-hidden transition-all duration-300 ${theme.cardBg} ${theme.cardBorder}`}
+        dir="rtl"
       >
-        <div className="absolute -top-12 -left-12 w-36 h-36 bg-emerald-500/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-12 -right-12 w-36 h-36 bg-teal-500/20 rounded-full blur-3xl animate-pulse delay-500"></div>
+        <div className={`absolute -top-12 -left-12 w-36 h-36 ${theme.glowPrimary} rounded-full blur-3xl animate-pulse`}></div>
+        <div className={`absolute -bottom-12 -right-12 w-36 h-36 ${theme.glowSecondary} rounded-full blur-3xl animate-pulse delay-500`}></div>
 
         <div className="relative mb-6 flex items-center justify-center">
-          <div className="absolute inset-0 rounded-full bg-emerald-500/20 blur-md animate-ping"></div>
-          <div className={`h-20 w-20 rounded-full flex items-center justify-center relative z-10 border shadow-xl ${
-            isDark ? 'bg-gradient-to-br from-[#1a0730] to-[#12041f] border-emerald-500/40 text-[#10b981]' : 'bg-emerald-50 border-emerald-200 text-emerald-600'
-          }`}>
+          <div className={`absolute inset-0 rounded-full ${theme.pingGlow} blur-md animate-ping`}></div>
+          <div className={`h-20 w-20 rounded-full flex items-center justify-center relative z-10 border shadow-xl transition-all ${theme.iconBox}`}>
             <ClipboardList size={38} className="animate-pulse" />
           </div>
-          <Loader2 size={92} className="absolute text-emerald-500/40 animate-spin stroke-[1.5]" />
+          <Loader2 size={92} className={`absolute ${theme.spinner} animate-spin stroke-[1.5]`} />
         </div>
 
-        <h3 className="text-xl font-bold mb-2">جاري إعداد وصياغة الأسئلة...</h3>
+        <h3 className={`text-xl font-black mb-2 ${theme.titleColor}`}>جاري إعداد وصياغة الأسئلة...</h3>
         <p className={`text-xs leading-relaxed max-w-xs ${isDark ? 'text-white/70' : 'text-slate-500'}`}>
           يقوم زاد الآن باستخراج محاور الدرس وإعداد تقييم مناسب وشامل لمستواك.
         </p>
@@ -39,7 +92,7 @@ export function QuizLoadingScreen({ isDark }: QuizLoadingScreenProps) {
         {/* Animated shimmer progress bar */}
         <div className="mt-6 w-full bg-slate-500/20 h-1.5 rounded-full overflow-hidden relative">
           <motion.div
-            className="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 rounded-full"
+            className={`h-full ${theme.progressBar} rounded-full`}
             initial={{ x: '-100%' }}
             animate={{ x: '100%' }}
             transition={{ repeat: Infinity, duration: 1.4, ease: 'easeInOut' }}

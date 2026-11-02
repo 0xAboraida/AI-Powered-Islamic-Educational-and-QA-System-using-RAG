@@ -148,7 +148,7 @@ function MountAutoFitViewController({ nodes }: { nodes: any[] }) {
   useEffect(() => {
     if (!nodes || nodes.length === 0) return;
     const timer = setTimeout(() => {
-      fitView({ duration: 450, padding: 0.2 });
+      fitView({ duration: 450, padding: 0.12 });
     }, 180);
     return () => clearTimeout(timer);
   }, [nodes.length, fitView]);
@@ -161,7 +161,7 @@ function LayoutCameraController({ layoutDir }: { layoutDir: 'RL' | 'TB' }) {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      fitView({ duration: 500, padding: 0.2 });
+      fitView({ duration: 500, padding: 0.12 });
     }, 60);
     return () => clearTimeout(timer);
   }, [layoutDir, fitView]);
@@ -242,17 +242,20 @@ const getLayoutedElements = (nodes: any[], edges: any[], direction = 'RL') => {
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
   
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+  const nodeW = isMobile ? 255 : 310;
   const isHorizontal = direction === 'RL';
+
   dagreGraph.setGraph({ 
     rankdir: direction,
-    nodesep: 40,
-    ranksep: isHorizontal ? 130 : 90,
+    nodesep: isMobile ? 24 : 40,
+    ranksep: isHorizontal ? (isMobile ? 75 : 130) : (isMobile ? 65 : 90),
   });
 
   nodes.filter(n => !n.hidden).forEach((node) => {
     const labelText = node.data?.label || '';
     const h = getNodeHeight(labelText);
-    dagreGraph.setNode(node.id, { width: 310, height: h });
+    dagreGraph.setNode(node.id, { width: nodeW, height: h });
   });
 
   edges.filter(e => !e.hidden).forEach((edge) => {
@@ -260,6 +263,8 @@ const getLayoutedElements = (nodes: any[], edges: any[], direction = 'RL') => {
   });
 
   dagre.layout(dagreGraph);
+
+  const halfW = nodeW / 2;
 
   if (direction === 'TB') {
     let minX = Infinity;
@@ -283,7 +288,7 @@ const getLayoutedElements = (nodes: any[], edges: any[], direction = 'RL') => {
         node.sourcePosition = 'bottom';
     
         node.position = {
-          x: (sumX - nodeWithPosition.x) - 155,
+          x: (sumX - nodeWithPosition.x) - halfW,
           y: nodeWithPosition.y - (h / 2),
         };
       }
@@ -299,7 +304,7 @@ const getLayoutedElements = (nodes: any[], edges: any[], direction = 'RL') => {
         node.sourcePosition = 'left';
     
         node.position = {
-          x: nodeWithPosition.x - 155,
+          x: nodeWithPosition.x - halfW,
           y: nodeWithPosition.y - (h / 2),
         };
       }
@@ -314,11 +319,12 @@ interface VisualMindmapContentProps {
   data: MindmapNode[];
   mindmapViewMode?: 'list' | 'visual';
   setMindmapViewMode?: (v: 'list' | 'visual') => void;
+  onBack?: () => void;
 }
 
-function VisualMindmapContent({ data, mindmapViewMode = 'visual', setMindmapViewMode }: VisualMindmapContentProps) {
+function VisualMindmapContent({ data, mindmapViewMode = 'visual', setMindmapViewMode, onBack }: VisualMindmapContentProps) {
   const { getNodes, getNodesBounds, fitView } = useReactFlow();
-  const { isDark } = useTheme();
+  const { isDark, accentColor } = useTheme();
 
   const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
@@ -339,31 +345,151 @@ function VisualMindmapContent({ data, mindmapViewMode = 'visual', setMindmapView
   const [currentMatchIndex, setCurrentMatchIndex] = useState<number>(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [focusTarget, setFocusTarget] = useState<{ id: string; ts: number } | null>(null);
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const flowRef = useRef<HTMLDivElement>(null);
   const hasInitialized = useRef(false);
   const lastRightClickRef = useRef<{ id: string; time: number } | null>(null);
 
   const themeColors = useMemo(() => {
-    if (!isDark) {
-      return {
-        bg: 'bg-[#f5f3ff]',
-        canvasBg: '#f5f3ff',
-        edgeColor: '#8a17c9',
-        border: 'border-purple-200/80',
-        text: 'text-slate-900',
-        panelBg: 'bg-white/90 backdrop-blur-xl border-purple-200/80 text-slate-800 shadow-[0_8px_30px_rgba(122,23,201,0.08)]',
-      };
-    }
-    return {
-      bg: 'bg-[#0f041c]/95',
-      canvasBg: '#0f041c',
-      edgeColor: '#38bdf8',
-      border: 'border-white/10',
-      text: 'text-white',
-      panelBg: 'bg-[#1a0730]/90 border-white/20 text-white',
+    const getEdgeColor = () => {
+      if (isDark) {
+        switch (accentColor) {
+          case 'emerald': return '#2dd4bf';
+          case 'amber': return '#dfbf83';
+          case 'purple': return '#c084fc';
+          case 'blue':
+          default:
+            return '#38bdf8';
+        }
+      } else {
+        switch (accentColor) {
+          case 'emerald': return '#0d9488';
+          case 'amber': return '#b88d46';
+          case 'blue': return '#0284c7';
+          case 'purple':
+          default:
+            return '#8a17c9';
+        }
+      }
     };
-  }, [isDark]);
+
+    if (!isDark) {
+      switch (accentColor) {
+        case 'blue':
+          return {
+            bg: 'bg-slate-50',
+            canvasBg: '#f8fafc',
+            edgeColor: getEdgeColor(),
+            border: 'border-slate-200',
+            text: 'text-slate-900',
+            panelBg: 'bg-white/95 backdrop-blur-xl border-slate-200 text-slate-800 shadow-sm',
+            activeBtn: 'bg-sky-500 text-white shadow-md shadow-sky-500/25',
+            activeRing: 'border-sky-400 shadow-[0_0_15px_rgba(56,189,248,0.35)]',
+            textAccent: 'text-sky-600',
+            badgeBg: 'bg-sky-500/15 border-sky-500/30 text-sky-700',
+          };
+        case 'emerald':
+          return {
+            bg: 'bg-slate-50',
+            canvasBg: '#f8fafc',
+            edgeColor: getEdgeColor(),
+            border: 'border-slate-200',
+            text: 'text-slate-900',
+            panelBg: 'bg-white/95 backdrop-blur-xl border-slate-200 text-slate-800 shadow-sm',
+            activeBtn: 'bg-teal-500 text-white shadow-md shadow-teal-500/25',
+            activeRing: 'border-teal-400 shadow-[0_0_15px_rgba(20,184,166,0.35)]',
+            textAccent: 'text-teal-600',
+            badgeBg: 'bg-teal-500/15 border-teal-500/30 text-teal-700',
+          };
+        case 'amber':
+          return {
+            bg: 'bg-slate-50',
+            canvasBg: '#f8fafc',
+            edgeColor: getEdgeColor(),
+            border: 'border-slate-200',
+            text: 'text-slate-900',
+            panelBg: 'bg-white/95 backdrop-blur-xl border-slate-200 text-slate-800 shadow-sm',
+            activeBtn: 'bg-[#7a5720] text-white font-bold shadow-md shadow-amber-500/25',
+            activeRing: 'border-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.35)]',
+            textAccent: 'text-amber-700',
+            badgeBg: 'bg-amber-500/15 border-amber-500/30 text-amber-800',
+          };
+        case 'purple':
+        default:
+          return {
+            bg: 'bg-slate-50',
+            canvasBg: '#f8fafc',
+            edgeColor: getEdgeColor(),
+            border: 'border-slate-200',
+            text: 'text-slate-900',
+            panelBg: 'bg-white/95 backdrop-blur-xl border-slate-200 text-slate-800 shadow-sm',
+            activeBtn: 'bg-purple-600 text-white shadow-md shadow-purple-500/25',
+            activeRing: 'border-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.4)]',
+            textAccent: 'text-purple-600',
+            badgeBg: 'bg-purple-500/20 border-purple-500/40 text-purple-700',
+          };
+      }
+    }
+
+    // Dark Mode
+    switch (accentColor) {
+      case 'blue':
+        return {
+          bg: 'bg-[#0b0f17]',
+          canvasBg: '#0b0f17',
+          edgeColor: getEdgeColor(),
+          border: 'border-slate-800',
+          text: 'text-white',
+          panelBg: 'bg-slate-900/95 border-slate-800 text-white shadow-sm',
+          activeBtn: 'bg-sky-500 text-white shadow-md shadow-sky-500/30',
+          activeRing: 'border-sky-400 shadow-[0_0_20px_rgba(56,189,248,0.4)]',
+          textAccent: 'text-sky-400',
+          badgeBg: 'bg-sky-500/20 border-sky-500/40 text-sky-300',
+        };
+      case 'emerald':
+        return {
+          bg: 'bg-[#0b0f17]',
+          canvasBg: '#0b0f17',
+          edgeColor: getEdgeColor(),
+          border: 'border-slate-800',
+          text: 'text-white',
+          panelBg: 'bg-slate-900/95 border-slate-800 text-white shadow-sm',
+          activeBtn: 'bg-teal-500 text-white shadow-md shadow-teal-500/30',
+          activeRing: 'border-teal-400 shadow-[0_0_20px_rgba(20,184,166,0.4)]',
+          textAccent: 'text-teal-400',
+          badgeBg: 'bg-teal-500/20 border-teal-500/40 text-teal-300',
+        };
+      case 'amber':
+        return {
+          bg: 'bg-[#0b0f17]',
+          canvasBg: '#0b0f17',
+          edgeColor: getEdgeColor(),
+          border: 'border-slate-800',
+          text: 'text-white',
+          panelBg: 'bg-slate-900/95 border-slate-800 text-white shadow-sm',
+          activeBtn: 'bg-[#dfbf83] text-stone-950 font-bold shadow-md shadow-amber-500/30',
+          activeRing: 'border-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.4)]',
+          textAccent: 'text-[#dfbf83]',
+          badgeBg: 'bg-amber-500/20 border-amber-500/40 text-amber-300',
+        };
+      case 'purple':
+      default:
+        return {
+          bg: 'bg-[#0b0f17]',
+          canvasBg: '#0b0f17',
+          edgeColor: getEdgeColor(),
+          border: 'border-slate-800',
+          text: 'text-white',
+          panelBg: 'bg-slate-900/95 border-slate-800 text-white shadow-sm',
+          activeBtn: 'bg-purple-600 text-white shadow-md shadow-purple-500/30',
+          activeRing: 'border-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.4)]',
+          textAccent: 'text-purple-400',
+          badgeBg: 'bg-purple-500/20 border-purple-500/40 text-purple-300',
+        };
+    }
+  }, [isDark, accentColor]);
 
   // Calculate total nodes for study progress tracker
   const totalNodesCount = useMemo(() => {
@@ -833,135 +959,180 @@ function VisualMindmapContent({ data, mindmapViewMode = 'visual', setMindmapView
           .mindmap-magnify-active .react-flow__node:hover .mindmap-node-appear:not([data-magnify-disabled="true"]) {
             transform: scale(var(--magnify-scale, 2.5)) !important;
             transform-origin: center center !important;
-            box-shadow: 0 0 70px rgba(122, 23, 201, 0.75), 0 10px 40px rgba(0, 0, 0, 0.9) !important;
-            border-color: #a855f7 !important;
+            box-shadow: ${isDark ? '0 12px 30px rgba(0, 0, 0, 0.7), 0 0 8px rgba(168, 85, 247, 0.2)' : '0 10px 24px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.05)'} !important;
+            ${isDark ? 'border-color: rgba(255, 255, 255, 0.3) !important;' : 'border-color: rgba(0, 0, 0, 0.15) !important;'}
             cursor: pointer;
           }
         ` : ''}
       `}</style>
 
       {/* Main Mindmap Canvas / List Box */}
-      <div className={`relative flex-1 h-full rounded-3xl overflow-hidden shadow-2xl border flex flex-col transition-colors duration-300 ${themeColors.bg} ${themeColors.border} ${isMagnifyMode && mindmapViewMode === 'visual' ? 'mindmap-magnify-active' : ''}`}>
+      <div className={`relative flex-1 h-full rounded-2xl overflow-hidden shadow-2xl border flex flex-col transition-colors duration-300 ${themeColors.bg} ${themeColors.border} ${isMagnifyMode && mindmapViewMode === 'visual' ? 'mindmap-magnify-active' : ''}`}>
         
         {/* UNIFIED TOP CONTROL BAR FOR BOTH MODES */}
-        <div className="p-3.5 flex items-center justify-between border-b border-current/10 backdrop-blur-md z-30 shrink-0 gap-2 flex-wrap sm:flex-nowrap" dir="rtl">
-          {/* RIGHT SIDE (RTL): Fullscreen Toggle + Segmented View Switcher ("تفاعلي | هرمي") */}
-          <div className="flex items-center gap-2 shrink-0">
-            {/* Fullscreen Button */}
-            <button
-              onClick={toggleFullscreen}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold shadow-sm border backdrop-blur-md transition-all active:scale-95 ${
-                isFullscreen
-                  ? 'bg-purple-600 text-white border-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.4)]'
-                  : `${themeColors.panelBg}`
-              }`}
-              title={isFullscreen ? "إغلاق ملء الشاشة" : "ملء الشاشة"}
-            >
-              {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
-              <span className="hidden sm:inline">{isFullscreen ? 'تصغير' : 'ملء الشاشة'}</span>
-            </button>
-
-            {/* Segmented View Mode Switcher ("تفاعلي | هرمي") */}
-            <div className={`flex items-center p-1 rounded-xl border shadow-sm backdrop-blur-md ${themeColors.panelBg}`}>
+        <div className="p-2 sm:p-2.5 flex items-center justify-between border-b border-slate-200 dark:border-slate-800/80 backdrop-blur-md z-30 shrink-0 gap-2" dir="rtl">
+          {/* RIGHT SIDE (RTL): Back Button + Expandable Search Button / Bar */}
+          <div className="flex items-center gap-2 flex-1">
+            {onBack && (
               <button
-                onClick={() => setMindmapViewMode?.('visual')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                  mindmapViewMode === 'visual'
-                    ? 'bg-purple-600 text-white shadow-md'
-                    : 'opacity-70 hover:opacity-100 hover:bg-current/10'
-                }`}
-                title="عرض تفاعلي"
+                type="button"
+                onClick={onBack}
+                className={`flex items-center justify-center gap-1 px-2.5 sm:px-3 h-8 sm:h-9 rounded-xl text-xs font-bold shadow-sm border backdrop-blur-md transition-all active:scale-95 ${themeColors.panelBg} hover:bg-current/10 shrink-0 cursor-pointer`}
+                title="رجوع لقائمة الخرائط"
               >
-                <Network size={14} />
-                <span>تفاعلي</span>
+                <ChevronRight size={17} className="shrink-0" />
+                <span className="hidden sm:inline">رجوع</span>
               </button>
-              <button
-                onClick={() => setMindmapViewMode?.('list')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                  mindmapViewMode === 'list'
-                    ? 'bg-purple-600 text-white shadow-md'
-                    : 'opacity-70 hover:opacity-100 hover:bg-current/10'
-                }`}
-                title="عرض هرمي"
-              >
-                <ListTree size={14} />
-                <span>هرمي</span>
-              </button>
-            </div>
-          </div>
-
-          {/* LEFT SIDE (RTL): Visual Mode Search & Tools Menu */}
-          {mindmapViewMode === 'visual' && (
-            <div className="flex items-center gap-2 shrink-0">
-              {/* Search Input Box */}
-              <div className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs shadow-sm border backdrop-blur-md ${themeColors.panelBg}`}>
-                <Search size={15} className="text-amber-500 dark:text-amber-400 shrink-0" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => handleSearch(e.target.value)}
-                  placeholder="بحث في الخريطة..."
-                  className="bg-transparent text-current placeholder-current/50 text-xs focus:outline-none w-24 sm:w-36"
-                  dir="rtl"
-                />
-                {searchQuery && (
-                  <button onClick={() => handleSearch('')} className="opacity-60 hover:opacity-100">
-                    <X size={14} />
+            )}
+            {mindmapViewMode === 'visual' && (
+              <div className="relative flex items-center">
+                {!isSearchExpanded && !searchQuery ? (
+                  <button
+                    onClick={() => {
+                      setIsSearchExpanded(true);
+                      setTimeout(() => searchInputRef.current?.focus(), 50);
+                    }}
+                    className={`flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-xl text-xs font-bold shadow-sm border backdrop-blur-md transition-all active:scale-95 ${themeColors.panelBg} hover:bg-current/10`}
+                    title="بحث في الخريطة"
+                  >
+                    <Search size={16} className={themeColors.textAccent} />
                   </button>
-                )}
-                {matchedNodeIds.length > 0 && (
-                  <div className="flex items-center gap-1 border-r border-current/20 pr-1 shrink-0">
-                    <span className="text-[11px] font-bold text-amber-500">
-                      {currentMatchIndex + 1}/{matchedNodeIds.length}
-                    </span>
-                    <button onClick={handlePrevMatch} className="p-0.5"><ChevronRight size={13} /></button>
-                    <button onClick={handleNextMatch} className="p-0.5"><ChevronLeft size={13} /></button>
-                  </div>
+                ) : (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className={`flex items-center gap-1.5 sm:gap-2 px-2.5 py-1.5 sm:py-2 rounded-xl text-xs shadow-sm border backdrop-blur-md ${themeColors.panelBg}`}
+                  >
+                    <Search size={15} className={`${themeColors.textAccent} shrink-0`} />
+                    <input
+                      ref={searchInputRef}
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => handleSearch(e.target.value)}
+                      placeholder="بحث في الخريطة..."
+                      className="bg-transparent text-current placeholder-current/50 text-xs focus:outline-none w-28 sm:w-44"
+                      dir="rtl"
+                    />
+                    {matchedNodeIds.length > 0 && (
+                      <div className="flex items-center gap-1 border-r border-current/20 pr-1 shrink-0">
+                        <span className={`text-[11px] font-bold ${themeColors.textAccent}`}>
+                          {currentMatchIndex + 1}/{matchedNodeIds.length}
+                        </span>
+                        <button onClick={handlePrevMatch} className="p-0.5 hover:bg-current/10 rounded"><ChevronRight size={13} /></button>
+                        <button onClick={handleNextMatch} className="p-0.5 hover:bg-current/10 rounded"><ChevronLeft size={13} /></button>
+                      </div>
+                    )}
+                    <button
+                      onClick={() => {
+                        handleSearch('');
+                        setIsSearchExpanded(false);
+                      }}
+                      className="opacity-60 hover:opacity-100 p-0.5 rounded hover:bg-current/10"
+                      title="إغلاق البحث"
+                    >
+                      <X size={14} />
+                    </button>
+                  </motion.div>
                 )}
               </div>
+            )}
+          </div>
 
-              {/* Floating Tools Dropdown Button */}
-              <div className="relative">
-                <button
-                  onClick={() => setIsToolsMenuOpen(!isToolsMenuOpen)}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold shadow-sm border backdrop-blur-md transition-all active:scale-95 ${
-                    isToolsMenuOpen
-                      ? 'bg-purple-600 text-white border-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.4)]'
-                      : `${themeColors.panelBg} hover:bg-current/10`
+          {/* LEFT SIDE (RTL): Tools Icon-Only Button */}
+          <div className="relative">
+            <button
+              onClick={() => setIsToolsMenuOpen(!isToolsMenuOpen)}
+              className={`flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-xl text-xs font-bold shadow-sm border backdrop-blur-md transition-all active:scale-95 ${
+                isToolsMenuOpen
+                  ? `${themeColors.activeBtn} ${themeColors.activeRing}`
+                  : `${themeColors.panelBg} hover:bg-current/10`
+              }`}
+              title="أدوات الخريطة"
+            >
+              <SlidersHorizontal size={16} />
+            </button>
+
+            {/* Floating Popover Menu */}
+            <AnimatePresence>
+              {isToolsMenuOpen && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95, y: -6 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: -6 }}
+                  transition={{ duration: 0.15 }}
+                  className={`absolute left-0 mt-2 w-64 p-3 rounded-2xl border shadow-2xl backdrop-blur-xl z-50 flex flex-col gap-2.5 max-h-[80vh] overflow-y-auto ${
+                    isDark
+                      ? 'bg-[#0f172a]/95 border-slate-700 text-white'
+                      : 'bg-white/95 border-slate-200 text-slate-900'
                   }`}
-                  title="أدوات الخريطة الإضافية"
                 >
-                  <SlidersHorizontal size={15} />
-                  <span>أدوات الخريطة</span>
-                  <ChevronDown size={14} className={`transition-transform duration-200 ${isToolsMenuOpen ? 'rotate-180' : ''}`} />
-                </button>
-
-                {/* Floating Popover Menu */}
-                <AnimatePresence>
-                  {isToolsMenuOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.95, y: -6 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.95, y: -6 }}
-                      transition={{ duration: 0.15 }}
-                      className={`absolute left-0 mt-2 w-64 p-3 rounded-2xl border shadow-2xl backdrop-blur-xl z-50 flex flex-col gap-2.5 max-h-[80vh] overflow-y-auto ${
-                        isDark
-                          ? 'bg-[#150524]/95 border-purple-500/30 text-white'
-                          : 'bg-white/95 border-purple-200 text-slate-900'
-                      }`}
-                    >
-                      {/* Fit View / Center Button ("توسيط") */}
+                  {/* Segmented View Mode Switcher ("تفاعلي | هرمي") inside Tools Menu */}
+                  <div className="flex flex-col gap-1 w-full">
+                    <span className="text-[11px] font-bold opacity-60 text-right px-1">طريقة العرض:</span>
+                    <div className={`flex items-center p-1 rounded-xl border shadow-sm ${themeColors.panelBg}`}>
                       <button
                         onClick={() => {
+                          setMindmapViewMode?.('visual');
                           setIsToolsMenuOpen(false);
-                          fitView({ duration: 400, padding: 0.2 });
                         }}
-                        className={`flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold shadow-sm transition-all border ${themeColors.panelBg} hover:bg-current/10 w-full`}
-                        title="توسيط الخريطة في الشاشة"
+                        className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                          mindmapViewMode === 'visual'
+                            ? `${themeColors.activeBtn}`
+                            : 'opacity-70 hover:opacity-100 hover:bg-current/10'
+                        }`}
+                        title="عرض تفاعلي"
                       >
-                        <Maximize2 size={16} className="text-amber-500 dark:text-amber-400 shrink-0" />
-                        <span>توسيط الخريطة</span>
+                        <Network size={14} />
+                        <span>تفاعلي</span>
                       </button>
+                      <button
+                        onClick={() => {
+                          setMindmapViewMode?.('list');
+                          setIsToolsMenuOpen(false);
+                        }}
+                        className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                          mindmapViewMode === 'list'
+                            ? `${themeColors.activeBtn}`
+                            : 'opacity-70 hover:opacity-100 hover:bg-current/10'
+                        }`}
+                        title="عرض هرمي"
+                      >
+                        <ListTree size={14} />
+                        <span>هرمي</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Fullscreen Button inside Tools Menu */}
+                  <button
+                    onClick={() => {
+                      toggleFullscreen();
+                      setIsToolsMenuOpen(false);
+                    }}
+                    className={`flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold shadow-sm transition-all border ${
+                      isFullscreen ? themeColors.activeBtn : `${themeColors.panelBg} hover:bg-current/10`
+                    } w-full`}
+                    title={isFullscreen ? "الخروج من ملء الشاشة" : "ملء الشاشة"}
+                  >
+                    {isFullscreen ? <Minimize size={15} className="shrink-0" /> : <Maximize size={15} className="shrink-0" />}
+                    <span>{isFullscreen ? 'الخروج من ملء الشاشة' : 'ملء الشاشة'}</span>
+                  </button>
+
+                  {/* Fit View / Center Button ("توسيط الخريطة") */}
+                  {mindmapViewMode === 'visual' && (
+                    <button
+                      onClick={() => {
+                        setIsToolsMenuOpen(false);
+                        fitView({ duration: 400, padding: 0.12 });
+                      }}
+                      className={`flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold shadow-sm transition-all border ${themeColors.panelBg} hover:bg-current/10 w-full`}
+                      title="توسيط الخريطة في الشاشة"
+                    >
+                      <Maximize2 size={16} className={`${themeColors.textAccent} shrink-0`} />
+                      <span>توسيط الخريطة</span>
+                    </button>
+                  )}
 
                       {/* Direction Switcher ("أفقي | رأسي") */}
                       <div className={`flex items-center p-1 rounded-xl border shadow-sm ${themeColors.panelBg}`}>
@@ -969,7 +1140,7 @@ function VisualMindmapContent({ data, mindmapViewMode = 'visual', setMindmapView
                           onClick={() => setLayoutDir('RL')}
                           className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                             layoutDir === 'RL' 
-                              ? 'bg-purple-600 text-white shadow-md' 
+                              ? `${themeColors.activeBtn}` 
                               : 'opacity-70 hover:opacity-100 hover:bg-current/10'
                           }`}
                           title="تخطيط أفقي"
@@ -981,7 +1152,7 @@ function VisualMindmapContent({ data, mindmapViewMode = 'visual', setMindmapView
                           onClick={() => setLayoutDir('TB')}
                           className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                             layoutDir === 'TB' 
-                              ? 'bg-purple-600 text-white shadow-md' 
+                              ? `${themeColors.activeBtn}` 
                               : 'opacity-70 hover:opacity-100 hover:bg-current/10'
                           }`}
                           title="تخطيط رأسي"
@@ -996,12 +1167,12 @@ function VisualMindmapContent({ data, mindmapViewMode = 'visual', setMindmapView
                         onClick={expandAll}
                         className={`flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold shadow-sm transition-all border ${
                           isAllExpanded
-                            ? 'bg-purple-500/20 border-purple-500/40 text-purple-700 dark:text-[#38bdf8]'
+                            ? `${themeColors.badgeBg}`
                             : `${themeColors.panelBg} hover:bg-current/10`
                         } w-full`}
                         title="فتح جميع الفروع"
                       >
-                        <UnfoldVertical size={16} className="text-purple-600 dark:text-purple-400 shrink-0" />
+                        <UnfoldVertical size={16} className={`${themeColors.textAccent} shrink-0`} />
                         <span>فتح جميع الفروع</span>
                       </button>
 
@@ -1010,12 +1181,12 @@ function VisualMindmapContent({ data, mindmapViewMode = 'visual', setMindmapView
                         onClick={collapseAll}
                         className={`flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold shadow-sm transition-all border ${
                           isAllCollapsed
-                            ? 'bg-purple-500/20 border-purple-500/40 text-purple-700 dark:text-[#38bdf8]'
+                            ? `${themeColors.badgeBg}`
                             : `${themeColors.panelBg} hover:bg-current/10`
                         } w-full`}
                         title="طي جميع الفروع"
                       >
-                        <FoldVertical size={16} className="text-purple-600 dark:text-purple-400 shrink-0" />
+                        <FoldVertical size={16} className={`${themeColors.textAccent} shrink-0`} />
                         <span>طي جميع الفروع</span>
                       </button>
 
@@ -1025,7 +1196,7 @@ function VisualMindmapContent({ data, mindmapViewMode = 'visual', setMindmapView
                           onClick={() => setIsMagnifyMode(!isMagnifyMode)}
                           className={`flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all w-full ${
                             isMagnifyMode 
-                              ? 'bg-[#12041f] text-[#38bdf8] border border-[#38bdf8]/40 shadow-sm' 
+                              ? `${themeColors.activeBtn}` 
                               : 'hover:bg-current/10'
                           }`}
                           title="التكبير الذكي عند مرور الماوس"
@@ -1042,7 +1213,7 @@ function VisualMindmapContent({ data, mindmapViewMode = 'visual', setMindmapView
                                 onClick={() => setMagnifyScale(scale)}
                                 className={`px-1.5 py-0.5 text-[11px] font-extrabold rounded-md transition-all ${
                                   magnifyScale === scale
-                                    ? 'bg-purple-600 text-white shadow-md scale-105'
+                                    ? `${themeColors.activeBtn} scale-105`
                                     : 'opacity-70 hover:opacity-100 hover:bg-current/10'
                                 }`}
                                 title={`نسبة التكبير ${scale}x`}
@@ -1088,8 +1259,6 @@ function VisualMindmapContent({ data, mindmapViewMode = 'visual', setMindmapView
                 </AnimatePresence>
               </div>
             </div>
-          )}
-        </div>
 
         {/* VIEW MODE CONTENT AREA */}
         <div className="flex-1 w-full h-full relative overflow-hidden">
@@ -1128,7 +1297,7 @@ function VisualMindmapContent({ data, mindmapViewMode = 'visual', setMindmapView
                   nodeTypes={nodeTypes}
                   connectionLineType={ConnectionLineType.Bezier}
                   fitView
-                  fitViewOptions={{ padding: 0.2, minZoom: 0.7 }}
+                  fitViewOptions={{ padding: 0.12, minZoom: 0.25 }}
                   minZoom={0.2}
                   maxZoom={1.5}
                   className={themeColors.bg}
@@ -1138,8 +1307,8 @@ function VisualMindmapContent({ data, mindmapViewMode = 'visual', setMindmapView
                   <SearchCameraController targetNodeId={currentFocusedNodeId} nodes={nodes} />
                   <LayoutCameraController layoutDir={layoutDir} />
                   <NodeFocusController focusTarget={focusTarget} nodes={nodes} />
-                  <Background color={isDark ? 'rgba(255,255,255,0.05)' : 'rgba(122,23,201,0.06)'} gap={16} />
-                  <Controls position="bottom-left" className={`${themeColors.panelBg} rounded-xl overflow-hidden p-1 shadow-lg border m-3 z-10`} />
+                  <Background color={isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'} gap={16} />
+                  <Controls position="bottom-right" showFitView={false} showInteractive={false} className={`${themeColors.panelBg} rounded-xl overflow-hidden p-1 shadow-lg border m-3 z-10`} />
                 </ReactFlow>
               </motion.div>
             )}
@@ -1150,10 +1319,10 @@ function VisualMindmapContent({ data, mindmapViewMode = 'visual', setMindmapView
       {/* Personal Note Editor Modal */}
       {activeNoteModal && (
         <div className="fixed inset-0 z-[999999] flex items-center justify-center bg-black/60 backdrop-blur-md p-4" dir="rtl">
-          <div className={`border rounded-3xl p-6 w-full max-w-lg shadow-2xl relative animate-in fade-in zoom-in duration-200 ${
+          <div className={`border rounded-2xl p-6 w-full max-w-lg shadow-2xl relative animate-in fade-in zoom-in duration-200 ${
             isDark 
-              ? 'bg-[#1a0730] border-amber-500/40 text-white' 
-              : 'bg-white border-purple-300 text-slate-900 shadow-[0_20px_50px_rgba(122,23,201,0.15)]'
+              ? 'bg-[#0f172a] border-amber-500/40 text-white' 
+              : 'bg-white border-slate-300 text-slate-900 shadow-2xl'
           }`}>
             <div className="flex items-center justify-between pb-3 border-b border-current/10 mb-4">
               <div className="flex items-center gap-2 text-amber-500 font-bold text-lg">
@@ -1169,7 +1338,7 @@ function VisualMindmapContent({ data, mindmapViewMode = 'visual', setMindmapView
             </div>
 
             <p className="opacity-80 text-sm mb-3 font-semibold line-clamp-2">
-              الفرع: <span className="text-purple-600 dark:text-[#38bdf8] font-bold">{activeNoteModal.label}</span>
+              الفرع: <span className={`${themeColors.textAccent} font-bold`}>{activeNoteModal.label}</span>
             </p>
 
             <textarea
@@ -1178,8 +1347,8 @@ function VisualMindmapContent({ data, mindmapViewMode = 'visual', setMindmapView
               placeholder="اكتب ملاحظتك الشخصية أو التلخيص الخاص بهذا الفرع هنا..."
               className={`w-full h-36 border rounded-xl p-3.5 text-sm focus:outline-none focus:border-amber-400 leading-relaxed resize-none ${
                 isDark 
-                  ? 'bg-[#12041f] border-white/20 text-white placeholder-white/40' 
-                  : 'bg-slate-50 border-purple-200 text-slate-900 placeholder-slate-400'
+                  ? 'bg-black/30 border-white/20 text-white placeholder-white/40' 
+                  : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400'
               }`}
             />
 
@@ -1224,10 +1393,26 @@ function VisualMindmapContent({ data, mindmapViewMode = 'visual', setMindmapView
   );
 }
 
-export function VisualMindmap({ data, mindmapViewMode = 'visual', setMindmapViewMode }: { data: MindmapNode[]; mindmapViewMode?: 'list' | 'visual'; setMindmapViewMode?: (v: 'list' | 'visual') => void; isDark?: boolean; }) {
+export function VisualMindmap({
+  data,
+  mindmapViewMode = 'visual',
+  setMindmapViewMode,
+  onBack,
+}: {
+  data: MindmapNode[];
+  mindmapViewMode?: 'list' | 'visual';
+  setMindmapViewMode?: (v: 'list' | 'visual') => void;
+  isDark?: boolean;
+  onBack?: () => void;
+}) {
   return (
     <ReactFlowProvider>
-      <VisualMindmapContent data={data} mindmapViewMode={mindmapViewMode} setMindmapViewMode={setMindmapViewMode} />
+      <VisualMindmapContent
+        data={data}
+        mindmapViewMode={mindmapViewMode}
+        setMindmapViewMode={setMindmapViewMode}
+        onBack={onBack}
+      />
     </ReactFlowProvider>
   );
 }

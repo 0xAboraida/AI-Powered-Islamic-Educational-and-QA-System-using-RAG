@@ -6,6 +6,89 @@ import {
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { studyApi, type QuizDto } from '../../../../../api/studyApi'
+import { useTheme, type AccentColor } from '../../../../../contexts/ThemeContext'
+
+function getQuizHomeThemeTokens(accentColor: AccentColor = 'emerald', isDark: boolean = true) {
+  switch (accentColor) {
+    case 'blue':
+      return {
+        cardBorder: isDark ? 'border-sky-500/25' : 'border-sky-200/80',
+        cardBg: isDark
+          ? 'bg-[#0b1626] text-white shadow-[0_12px_40px_rgba(0,0,0,0.5)]'
+          : 'bg-[#fafcff] border-sky-100 text-slate-900 shadow-xl',
+        glowPrimary: 'bg-sky-500/10',
+        glowSecondary: 'bg-blue-600/10',
+        iconBox: isDark ? 'bg-[#0d223f] border-sky-500/40 text-sky-300' : 'bg-sky-50 border-sky-200 text-sky-800',
+        titleColor: 'text-[#12396e] dark:text-sky-200',
+        primaryBtn: 'bg-[#154696] hover:bg-[#103878] active:bg-[#0c2b5d] text-white shadow-md border border-[#103878]/30 transition-all',
+        cardOption: isDark ? 'hover:border-sky-500/40 hover:bg-sky-900/20 hover:shadow-sky-500/20' : 'hover:border-sky-300 hover:bg-sky-50/70',
+        badge: isDark ? 'bg-sky-500/20 text-sky-300 border border-sky-500/30' : 'bg-sky-100 text-sky-800 border border-sky-200',
+        iconPill: isDark ? 'bg-sky-500/15 text-sky-300 border border-sky-500/30' : 'bg-sky-100 text-sky-800',
+        textAccent: 'text-[#154696] dark:text-sky-300',
+        borderAccent: isDark ? 'border-sky-500/30' : 'border-sky-200',
+        chipBg: isDark ? 'bg-sky-500/10 border-sky-500/20' : 'bg-sky-50/80 border-sky-200',
+        chipText: isDark ? 'text-sky-300' : 'text-sky-800',
+      }
+    case 'amber':
+      return {
+        cardBorder: isDark ? 'border-[#5e431a]/40' : 'border-[#e6d8c3]',
+        cardBg: isDark
+          ? 'bg-[#18120a] text-stone-100 shadow-[0_12px_40px_rgba(0,0,0,0.5)]'
+          : 'bg-[#fcfaf6] border-[#e6d8c3] text-stone-900 shadow-xl',
+        glowPrimary: 'bg-[#c99a4e]/10',
+        glowSecondary: 'bg-[#8a6328]/10',
+        iconBox: isDark ? 'bg-[#261b0c] border-[#8a6328]/50 text-[#dfbf83]' : 'bg-[#f5ede0] border-[#decbb0] text-[#7a5720]',
+        titleColor: 'text-[#5c4118] dark:text-[#edd8ae]',
+        primaryBtn: 'bg-[#7a5720] hover:bg-[#684918] active:bg-[#593d12] text-white shadow-md border border-[#684918]/30 transition-all',
+        cardOption: isDark ? 'hover:border-[#8a6328]/50 hover:bg-[#261b0c]/40 hover:shadow-stone-900/30' : 'hover:border-[#b88d46] hover:bg-[#f6ede0]',
+        badge: isDark ? 'bg-[#5e431a]/40 text-[#edd8ae] border border-[#8a6328]/40' : 'bg-[#f5ecdc] text-[#5e431a] border border-[#e2d2ba]',
+        iconPill: isDark ? 'bg-[#3b2a12] text-[#dfbf83] border border-[#8a6328]/40' : 'bg-[#f5ede0] text-[#7a5720]',
+        textAccent: 'text-[#6e4e1b] dark:text-[#edd8ae]',
+        borderAccent: isDark ? 'border-[#5e431a]/40' : 'border-[#e2d2ba]',
+        chipBg: isDark ? 'bg-[#5e431a]/20 border-[#8c672b]/30' : 'bg-[#f5ecdc]/80 border-[#e2d2ba]',
+        chipText: isDark ? 'text-[#edd8ae]' : 'text-[#5e431a]',
+      }
+    case 'purple':
+      return {
+        cardBorder: isDark ? 'border-purple-500/25' : 'border-purple-200/80',
+        cardBg: isDark
+          ? 'bg-[#140624] text-white shadow-[0_12px_40px_rgba(0,0,0,0.5)]'
+          : 'bg-[#faf7fd] border-purple-100 text-slate-900 shadow-xl',
+        glowPrimary: 'bg-purple-500/10',
+        glowSecondary: 'bg-fuchsia-600/10',
+        iconBox: isDark ? 'bg-[#240a3d] border-purple-500/40 text-purple-300' : 'bg-purple-50 border-purple-200 text-purple-800',
+        titleColor: 'text-[#4a1572] dark:text-purple-200',
+        primaryBtn: 'bg-[#581c87] hover:bg-[#4a1572] active:bg-[#3b0f5c] text-white shadow-md border border-[#4a1572]/30 transition-all',
+        cardOption: isDark ? 'hover:border-purple-500/40 hover:bg-purple-900/20 hover:shadow-purple-500/20' : 'hover:border-purple-300 hover:bg-purple-50/70',
+        badge: isDark ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'bg-purple-100 text-purple-800 border border-purple-200',
+        iconPill: isDark ? 'bg-purple-500/15 text-purple-300 border border-purple-500/30' : 'bg-purple-100 text-purple-800',
+        textAccent: 'text-[#581c87] dark:text-purple-300',
+        borderAccent: isDark ? 'border-purple-500/30' : 'border-purple-200',
+        chipBg: isDark ? 'bg-purple-500/10 border-purple-500/20' : 'bg-purple-50/80 border-purple-200',
+        chipText: isDark ? 'text-purple-300' : 'text-purple-800',
+      }
+    case 'emerald':
+    default:
+      return {
+        cardBorder: isDark ? 'border-emerald-500/25' : 'border-emerald-200/80',
+        cardBg: isDark
+          ? 'bg-[#051c14] text-white shadow-[0_12px_40px_rgba(0,0,0,0.5)]'
+          : 'bg-[#f7fcf9] border-emerald-100 text-slate-900 shadow-xl',
+        glowPrimary: 'bg-emerald-500/10',
+        glowSecondary: 'bg-teal-600/10',
+        iconBox: isDark ? 'bg-[#092b1f] border-emerald-500/40 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
+        titleColor: 'text-[#065f46] dark:text-emerald-200',
+        primaryBtn: 'bg-[#046c4e] hover:bg-[#03543d] active:bg-[#023e2d] text-white shadow-md border border-[#03543d]/30 transition-all',
+        cardOption: isDark ? 'hover:border-emerald-500/40 hover:bg-emerald-900/20 hover:shadow-emerald-500/20' : 'hover:border-emerald-300 hover:bg-emerald-50/70',
+        badge: isDark ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-emerald-100 text-emerald-800 border border-emerald-200',
+        iconPill: isDark ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30' : 'bg-emerald-100 text-emerald-800',
+        textAccent: 'text-[#046c4e] dark:text-emerald-300',
+        borderAccent: isDark ? 'border-emerald-500/30' : 'border-emerald-200',
+        chipBg: isDark ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-emerald-50/80 border-emerald-200',
+        chipText: isDark ? 'text-emerald-300' : 'text-emerald-800',
+      }
+  }
+}
 
 interface QuizHomeScreenProps {
   currentChunkId: string | null
@@ -18,6 +101,8 @@ interface QuizHomeScreenProps {
 type ViewMode = 'menu' | 'my_quizzes' | 'community_quizzes'
 
 export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQuiz, chunkLoading }: QuizHomeScreenProps) {
+  const { accentColor } = useTheme()
+  const theme = getQuizHomeThemeTokens(accentColor, isDark)
   const [viewMode, setViewMode] = useState<ViewMode>('menu')
   const [filterScope, setFilterScope] = useState<'current' | 'all'>('current')
 
@@ -122,26 +207,27 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96, y: -12 }}
         transition={{ duration: 0.3, ease: 'easeOut' }}
-        className={`p-4 sm:p-6 rounded-3xl border w-full max-w-4xl mx-auto relative overflow-hidden flex flex-col items-center transition-all duration-500 ${isDark
-            ? 'bg-gradient-to-br from-[#12041f]/95 via-[#160628]/90 to-emerald-950/20 border-emerald-500/20 text-white shadow-[0_10px_40px_rgba(0,0,0,0.5)] backdrop-blur-xl'
-            : 'bg-white border-emerald-200 text-slate-900 shadow-2xl'
-          }`}
+        className={`p-4 sm:p-6 rounded-3xl border w-full max-w-4xl mx-auto relative overflow-hidden flex flex-col items-center transition-all duration-500 ${
+          isDark
+            ? `${theme.cardBg} ${theme.cardBorder} text-white shadow-[0_10px_40px_rgba(0,0,0,0.5)] backdrop-blur-xl`
+            : `${theme.cardBg} ${theme.cardBorder} text-slate-900 shadow-2xl`
+        }`}
         dir="rtl"
       >
         {/* Top Glow Highlights */}
-        <div className="absolute -top-24 -right-24 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none animate-pulse"></div>
-        <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div className={`absolute -top-24 -right-24 w-48 h-48 ${theme.glowPrimary} rounded-full blur-3xl pointer-events-none animate-pulse`}></div>
+        <div className={`absolute -bottom-24 -left-24 w-48 h-48 ${theme.glowSecondary} rounded-full blur-3xl pointer-events-none`}></div>
 
         {/* Header Bar */}
         <div className="flex items-center justify-between w-full mb-4 relative z-10 border-b pb-3.5 border-white/10">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className={`p-2 rounded-xl flex-shrink-0 ${isDark ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' : 'bg-emerald-100 text-emerald-700'}`}>
+            <div className={`p-2 rounded-xl flex-shrink-0 ${theme.iconPill}`}>
               <Brain size={20} />
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <h3 className={`text-lg sm:text-xl font-extrabold truncate ${isDark ? 'text-white' : 'text-slate-800'}`}>{title}</h3>
-                <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-bold shadow-sm ${isDark ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-emerald-100 text-emerald-800'}`}>
+                <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-bold shadow-sm ${theme.badge}`}>
                   {filteredQuizzes.length} اختبار
                 </span>
               </div>
@@ -161,7 +247,7 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
 
         {loading ? (
           <div className="py-14 flex flex-col items-center justify-center relative z-10">
-            <RefreshCw className="animate-spin text-emerald-400 mb-3" size={32} />
+            <RefreshCw className={`animate-spin ${theme.textAccent} mb-3`} size={32} />
             <p className={`text-xs font-semibold ${isDark ? 'text-white/70' : 'text-slate-500'}`}>جاري استرجاع الاختبارات الخاصة بك...</p>
           </div>
         ) : filteredQuizzes.length === 0 ? (
@@ -386,31 +472,35 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
             initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -10 }}
-            className={`p-8 rounded-3xl border max-w-md w-full relative overflow-hidden text-center flex flex-col items-center gap-4 transition-all duration-500 ${isDark ? 'bg-gradient-to-br from-[#12041f]/95 via-[#12041f]/90 to-emerald-900/10 border-emerald-500/20 text-white shadow-[0_0_20px_rgba(16,185,129,0.05)] backdrop-blur-md' : 'bg-gradient-to-b from-emerald-50/50 via-white to-white border-emerald-200/90 text-slate-900 shadow-xl backdrop-blur-md'
-              }`}
+            className={`p-8 rounded-3xl border max-w-md w-full relative overflow-hidden text-center flex flex-col items-center gap-4 transition-all duration-500 ${
+              isDark
+                ? `${theme.cardBg} ${theme.cardBorder} text-white backdrop-blur-md`
+                : `${theme.cardBg} ${theme.cardBorder} text-slate-900 shadow-xl backdrop-blur-md`
+            }`}
             dir="rtl"
           >
-            <div className="absolute -top-12 -left-12 w-36 h-36 bg-emerald-500/20 rounded-full blur-3xl animate-pulse -z-10"></div>
-            <div className="absolute -bottom-12 -right-12 w-36 h-36 bg-teal-500/20 rounded-full blur-3xl animate-pulse delay-500 -z-10"></div>
+            <div className={`absolute -top-12 -left-12 w-36 h-36 ${theme.glowPrimary} rounded-full blur-3xl animate-pulse -z-10`}></div>
+            <div className={`absolute -bottom-12 -right-12 w-36 h-36 ${theme.glowSecondary} rounded-full blur-3xl animate-pulse delay-500 -z-10`}></div>
 
-            <div className={`w-20 h-20 rounded-3xl flex items-center justify-center mb-2 relative z-10 border shadow-xl transition-all ${isDark ? 'bg-gradient-to-br from-[#1a0730] to-[#12041f] border-emerald-500/40 text-emerald-400' : 'bg-emerald-50 border-emerald-200 text-emerald-600'
-              }`}>
+            <div className={`w-20 h-20 rounded-3xl flex items-center justify-center mb-2 relative z-10 border shadow-xl transition-all ${theme.iconBox}`}>
               <ClipboardList size={36} className="drop-shadow-md" />
             </div>
 
-            <h3 className="text-2xl font-black text-center bg-gradient-to-r from-emerald-400 via-teal-400 to-emerald-500 bg-clip-text text-transparent">
+            <h3 className={`text-2xl font-black text-center ${theme.titleColor}`}>
               اختبارات التقييم التفاعلية
             </h3>
-
 
             <div className="grid grid-cols-2 gap-3 w-full mt-1">
               <button
                 type="button"
                 onClick={() => setViewMode('my_quizzes')}
-                className={`flex flex-col items-center p-4 rounded-2xl border transition-all duration-300 hover:-translate-y-1 active:scale-95 cursor-pointer text-center ${isDark ? 'bg-[#12041f]/70 border-white/10 hover:border-emerald-500/40 hover:bg-emerald-900/20 hover:shadow-lg hover:shadow-emerald-500/20 shadow-md' : 'bg-white/90 border-emerald-100/80 hover:border-emerald-400 hover:bg-emerald-50/60 hover:shadow-lg shadow-sm'
-                  }`}
+                className={`flex flex-col items-center p-4 rounded-2xl border transition-all duration-300 hover:-translate-y-1 active:scale-95 cursor-pointer text-center ${
+                  isDark
+                    ? `bg-[#12041f]/70 border-white/10 ${theme.cardOption} shadow-md`
+                    : `bg-white/90 ${theme.cardOption} shadow-sm border-slate-200`
+                }`}
               >
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-2 transition-transform duration-300 ${isDark ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-emerald-100 text-emerald-600'}`}>
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-2 transition-transform duration-300 ${theme.iconPill}`}>
                   <History size={20} />
                 </div>
                 <span className={`font-extrabold text-xs sm:text-sm mb-0.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>اختباراتي السابقة</span>
@@ -426,10 +516,13 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
                   }
                   setViewMode('community_quizzes')
                 }}
-                className={`flex flex-col items-center p-4 rounded-2xl border transition-all duration-300 hover:-translate-y-1 active:scale-95 cursor-pointer text-center ${isDark ? 'bg-[#12041f]/70 border-white/10 hover:border-sky-500/40 hover:bg-sky-900/20 hover:shadow-lg hover:shadow-sky-500/20 shadow-md' : 'bg-white/90 border-sky-100/80 hover:border-sky-400 hover:bg-sky-50/60 hover:shadow-lg shadow-sm'
-                  }`}
+                className={`flex flex-col items-center p-4 rounded-2xl border transition-all duration-300 hover:-translate-y-1 active:scale-95 cursor-pointer text-center ${
+                  isDark
+                    ? `bg-[#12041f]/70 border-white/10 ${theme.cardOption} shadow-md`
+                    : `bg-white/90 ${theme.cardOption} shadow-sm border-slate-200`
+                }`}
               >
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-2 transition-transform duration-300 ${isDark ? 'bg-sky-500/20 text-sky-400 border border-sky-500/30' : 'bg-sky-100 text-sky-600'}`}>
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-2 transition-transform duration-300 ${theme.iconPill}`}>
                   <Users size={20} />
                 </div>
                 <span className={`font-extrabold text-xs sm:text-sm mb-0.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>اختبارات الإخوة</span>
@@ -449,7 +542,7 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
               className={`w-full mt-1 py-3.5 px-5 rounded-2xl font-black text-xs sm:text-sm transition-all duration-200 shadow-xl flex items-center justify-center gap-2 ${
                 (!currentChunkId || chunkLoading)
                   ? 'opacity-50 cursor-not-allowed bg-slate-500/20 text-white/50 border border-white/10 shadow-none'
-                  : 'bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 text-white hover:shadow-emerald-500/25 hover:scale-[1.02] active:scale-[0.98] border border-emerald-400/30'
+                  : `${theme.primaryBtn} hover:scale-[1.02] active:scale-[0.98] border`
               }`}
             >
               <Plus size={18} className="stroke-[2.5]" />

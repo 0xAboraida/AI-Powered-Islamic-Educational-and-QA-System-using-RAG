@@ -4,8 +4,10 @@ import {
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Question } from '../../../../../contexts/StudyContext'
-import { isMatchingFullyAnswered, isMatchingCorrect } from '../../utils/quizEvaluator'
+import { isMatchingFullyAnswered, isMatchingCorrect, formatIslamicQuizText } from '../../utils/quizEvaluator'
 import { QuestionCardContent } from '../QuestionCardContent'
+import { useTheme } from '../../../../../contexts/ThemeContext'
+import { getQuizActiveThemeTokens } from '../../utils/quizThemeTokens'
 
 interface QuizActiveViewProps {
   localQuestions: Question[]
@@ -38,6 +40,8 @@ export function QuizActiveView({
   answeredCount, totalQuestions,
   isDark, onDiscuss, onSubmit, onExit,
 }: QuizActiveViewProps) {
+  const { accentColor } = useTheme()
+  const theme = getQuizActiveThemeTokens(accentColor, isDark)
 
   // Helper to compute a sliding window of visible question pill indices (Max 5 at a time)
   const getVisiblePillIndices = (current: number, total: number, maxVisible: number = 5) => {
@@ -115,7 +119,7 @@ export function QuizActiveView({
                 </span>
               </div>
               <p className="text-xs md:text-sm leading-relaxed opacity-95 pr-1">
-                {q.explanation}
+                {formatIslamicQuizText(q.explanation)}
               </p>
             </div>
           </div>
@@ -150,16 +154,16 @@ export function QuizActiveView({
             const visibleIndices = getVisiblePillIndices(qIdx, totalQuestions, 5)
 
             return (
-              <div className="w-full max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-center gap-4" dir="rtl">
+              <div className="w-full max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-center gap-3 sm:gap-4" dir="rtl">
                 {/* Floating Question Number Navigator Pills (Right Side - Centered) */}
-                <div className="flex flex-row md:flex-col items-center justify-center gap-2 shrink-0 self-center my-auto w-full md:w-auto" dir="rtl">
+                <div className="flex flex-row md:flex-col items-center justify-center gap-1.5 sm:gap-2 shrink-0 self-center my-auto w-full md:w-auto" dir="rtl">
                   {visibleIndices[0] > 0 && (
                     <button
                       onClick={() => setCurrentQuestionIndex(visibleIndices[0] - 1)}
-                      className="p-2 rounded-xl text-xs opacity-60 hover:opacity-100 transition-all cursor-pointer text-emerald-400 hover:bg-emerald-500/10"
+                      className={`p-1.5 sm:p-2 rounded-lg sm:rounded-xl text-xs opacity-60 hover:opacity-100 transition-all cursor-pointer ${theme.stepperArrow}`}
                       title="الأسئلة السابقة"
                     >
-                      <ChevronRight size={18} className="rotate-90 md:rotate-0" />
+                      <ChevronRight size={16} className="rotate-90 md:rotate-0" />
                     </button>
                   )}
 
@@ -174,11 +178,11 @@ export function QuizActiveView({
                       <button
                         key={dotIdx}
                         onClick={() => setCurrentQuestionIndex(dotIdx)}
-                        className={`w-9 h-9 rounded-2xl text-xs font-black transition-all duration-200 cursor-pointer flex items-center justify-center border shadow-sm ${
+                        className={`w-8 h-8 md:w-9 md:h-9 rounded-xl text-xs font-black transition-all duration-200 cursor-pointer flex items-center justify-center border shadow-xs ${
                           isCurr
-                            ? 'bg-gradient-to-br from-emerald-400 to-teal-500 text-white border-emerald-300 shadow-emerald-500/30 scale-110 ring-4 ring-emerald-500/20'
+                            ? `${theme.stepperPillActive}`
                             : isAns
-                            ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/30 hover:scale-105'
+                            ? `${theme.stepperPillDone} hover:scale-105`
                             : isDark
                             ? 'bg-white/5 text-white/40 border-white/10 hover:bg-white/10 hover:text-white hover:scale-105'
                             : 'bg-slate-100 text-slate-500 border-slate-200 hover:bg-slate-200 hover:scale-105'
@@ -193,10 +197,10 @@ export function QuizActiveView({
                   {visibleIndices[visibleIndices.length - 1] < totalQuestions - 1 && (
                     <button
                       onClick={() => setCurrentQuestionIndex(visibleIndices[visibleIndices.length - 1] + 1)}
-                      className="p-2 rounded-xl text-xs opacity-60 hover:opacity-100 transition-all cursor-pointer text-emerald-400 hover:bg-emerald-500/10"
+                      className={`p-1.5 sm:p-2 rounded-lg sm:rounded-xl text-xs opacity-60 hover:opacity-100 transition-all cursor-pointer ${theme.stepperArrow}`}
                       title="الأسئلة التالية"
                     >
-                      <ChevronLeft size={18} className="rotate-90 md:rotate-0" />
+                      <ChevronLeft size={16} className="rotate-90 md:rotate-0" />
                     </button>
                   )}
                 </div>
@@ -208,11 +212,7 @@ export function QuizActiveView({
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -16, scale: 0.98 }}
                     transition={{ duration: 0.25, ease: 'easeOut' }}
-                    className={`p-6 md:p-8 rounded-3xl border shadow-2xl flex-1 max-w-2xl w-full relative overflow-hidden text-right ${
-                      isDark
-                        ? 'bg-[#12041f]/95 border-emerald-500/30 text-white shadow-emerald-500/10'
-                        : 'bg-white border-emerald-200 text-slate-900 shadow-xl'
-                    }`}
+                    className={`p-3.5 sm:p-5 md:p-8 rounded-2xl border shadow-xl flex-1 max-w-2xl w-full relative overflow-hidden text-right transition-all duration-300 ${theme.cardBg} ${theme.cardBorder}`}
                     dir="rtl"
                   >
 
@@ -235,43 +235,43 @@ export function QuizActiveView({
                 {renderFeedbackBlock(q, qIdx, isAnswered, isCorrect, selectedOpt, showFeedback)}
 
                 {/* Bottom Navigation */}
-                <div className="flex items-center justify-between gap-3 mt-6 pt-4 border-t border-current/10">
+                <div className="flex items-center justify-between gap-2 sm:gap-3 mt-4 pt-3.5 border-t border-current/10">
                   <button
                     disabled={qIdx === 0}
                     onClick={() => setCurrentQuestionIndex(Math.max(0, qIdx - 1))}
-                    className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 ${
+                    className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs font-bold border transition-all flex items-center gap-1.5 ${
                       qIdx === 0
                         ? 'opacity-30 cursor-not-allowed border-transparent'
                         : isDark ? 'bg-white/5 hover:bg-white/10 border-white/10 text-white cursor-pointer' : 'bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-800 cursor-pointer'
                     }`}
                   >
-                    <ChevronRight size={16} />
+                    <ChevronRight size={15} />
                     <span>السابق</span>
                   </button>
 
                   {/* Progress Indicator */}
-                  <span className="text-[11px] font-bold text-emerald-400">
+                  <span className={`text-[11px] font-bold ${theme.progressText}`}>
                     مُجاب {answeredCount} من {totalQuestions}
                   </span>
 
                   {qIdx < totalQuestions - 1 ? (
                     <button
                       onClick={() => setCurrentQuestionIndex(Math.min(totalQuestions - 1, qIdx + 1))}
-                      className="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-white shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
+                      className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs font-bold text-white shadow-md transition-all flex items-center gap-1.5 cursor-pointer ${theme.nextBtn}`}
                     >
                       <span>التالي</span>
-                      <ChevronLeft size={16} />
+                      <ChevronLeft size={15} />
                     </button>
                   ) : (
                     <button
                       disabled={answeredCount < totalQuestions}
                       onClick={onSubmit}
-                      className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-md ${
+                      className={`px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 shadow-md ${
                         answeredCount < totalQuestions
                           ? 'opacity-40 bg-slate-500/20 text-slate-400 border border-slate-500/30 cursor-not-allowed'
                           : timerMode === 'timed'
                           ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:shadow-amber-500/25 cursor-pointer animate-pulse'
-                          : 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white hover:shadow-emerald-500/25 cursor-pointer'
+                          : `${theme.submitBtn} cursor-pointer`
                       }`}
                       title={answeredCount < totalQuestions ? `أجب على كافة الأسئلة أولاً` : timerMode === 'timed' ? 'تسليم قبل انتهاء الوقت' : 'تسليم والتقييم'}
                     >
@@ -305,9 +305,7 @@ export function QuizActiveView({
             return (
               <div
                 key={idx}
-                className={`p-6 md:p-8 rounded-3xl border shadow-lg space-y-4 w-full max-w-2xl text-right ${
-                  isDark ? 'bg-[#12041f]/90 border-emerald-500/30 text-white' : 'bg-white border-slate-200 text-slate-900'
-                }`}
+                className={`p-3.5 sm:p-5 md:p-8 rounded-2xl border shadow-lg space-y-3.5 w-full max-w-2xl text-right transition-all duration-300 ${theme.cardBg} ${theme.cardBorder}`}
                 dir="rtl"
               >
                 <QuestionCardContent
@@ -341,7 +339,7 @@ export function QuizActiveView({
                   ? 'opacity-40 bg-slate-500/20 text-slate-400 border border-slate-500/30 cursor-not-allowed'
                   : timerMode === 'timed'
                   ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:shadow-amber-500/25 cursor-pointer'
-                  : 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white hover:shadow-emerald-500/25 cursor-pointer'
+                  : `${theme.submitBtn} cursor-pointer`
               }`}
               title={answeredCount < totalQuestions ? `يجب الإجابة على كافة الأسئلة (${answeredCount}/${totalQuestions})` : timerMode === 'timed' ? 'تسليم قبل انتهاء الوقت' : 'تسليم والتقييم'}
             >

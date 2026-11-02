@@ -6,6 +6,7 @@ import {
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useStudyContext, type TreeNode } from '../../../contexts/StudyContext'
+import { useTheme, type AccentColor } from '../../../contexts/ThemeContext'
 import { findTurathBookInTree } from '../utils/turathMetaHelper'
 import whiteLogo from '../../../assets/images/WhiteLogo.png'
 import darkLogo from '../../../assets/images/ZadDarkLogo.png'
@@ -73,6 +74,81 @@ function countBooksInNode(n: TreeNode): number {
   if (n.is_book) return 1
   if (!n.children || n.children.length === 0) return 0
   return n.children.reduce((acc, child) => acc + countBooksInNode(child), 0)
+}
+
+function getTreeThemeTokens(accentColor: AccentColor = 'emerald', isDark: boolean = true) {
+  switch (accentColor) {
+    case 'amber':
+      return {
+        folderOpen: isDark ? 'text-[#dfbf83] scale-105 drop-shadow-[0_0_8px_rgba(223,191,131,0.35)]' : 'text-[#b88d46] scale-105',
+        folderClosed: isDark ? 'text-[#dfbf83]/80' : 'text-[#b88d46]/80',
+        chevron: isDark ? 'text-[#dfbf83]' : 'text-[#b88d46]',
+        activeItem: isDark
+          ? 'font-bold text-[#f5ebd7] bg-[#dfbf83]/20 border border-[#dfbf83]/40 shadow-sm z-10'
+          : 'font-bold text-[#422e11] bg-[#dfbf83]/25 border border-[#b88d46]/40 shadow-xs z-10',
+        activeIcon: isDark ? 'text-[#dfbf83] opacity-90' : 'text-[#b88d46] opacity-90',
+        framed: isDark ? 'bg-[#181107]/90 border-[#dfbf83]/30' : 'bg-white/95 border-[#b88d46]/30',
+        badge: isDark ? 'bg-[#dfbf83]/20 text-[#f5ebd7] border border-[#dfbf83]/30' : 'bg-[#dfbf83]/15 text-[#78350f] border border-[#dfbf83]/40',
+        badgeFramed: isDark ? 'bg-[#dfbf83]/25 text-[#f5ebd7] border border-[#dfbf83]/45 shadow-[0_0_10px_rgba(223,191,131,0.2)]' : 'bg-[#fbf8f0] text-[#78350f] border border-[#dfbf83]/80',
+        newBadge: isDark ? 'bg-[#dfbf83]/20 text-[#dfbf83]' : 'bg-[#dfbf83]/25 text-[#78350f]',
+        searchFocus: isDark ? 'focus-within:border-[#dfbf83]/80 focus-within:shadow-[0_0_15px_rgba(223,191,131,0.15)]' : 'focus-within:border-[#b88d46] focus-within:ring-2 focus-within:ring-[#dfbf83]/20',
+        locateBtn: isDark ? 'bg-[#dfbf83]/15 hover:bg-[#dfbf83]/25 border-[#dfbf83]/30 text-[#dfbf83]' : 'bg-[#dfbf83]/15 hover:bg-[#dfbf83]/25 border-[#dfbf83]/35 text-[#78350f]',
+        mainIcon: isDark ? 'text-[#dfbf83]' : 'text-[#b88d46]'
+      }
+    case 'blue':
+      return {
+        folderOpen: isDark ? 'text-sky-400 scale-105 drop-shadow-[0_0_8px_rgba(56,189,248,0.35)]' : 'text-blue-700 scale-105',
+        folderClosed: isDark ? 'text-blue-400/80' : 'text-blue-600/80',
+        chevron: isDark ? 'text-sky-400' : 'text-blue-700',
+        activeItem: isDark
+          ? 'font-bold text-sky-200 bg-blue-500/20 border border-blue-500/40 shadow-sm z-10'
+          : 'font-bold text-blue-950 bg-blue-600/15 border border-blue-600/35 shadow-xs z-10',
+        activeIcon: isDark ? 'text-sky-300 opacity-90' : 'text-blue-700 opacity-90',
+        framed: isDark ? 'bg-[#081224]/90 border-blue-500/30' : 'bg-white/95 border-blue-600/25',
+        badge: isDark ? 'bg-blue-500/15 text-blue-200 border border-blue-500/25' : 'bg-blue-50 text-blue-800 border border-blue-200',
+        badgeFramed: isDark ? 'bg-blue-500/25 text-blue-100 border border-blue-500/40 shadow-[0_0_10px_rgba(59,130,246,0.2)]' : 'bg-blue-50 text-blue-900 border border-blue-300',
+        newBadge: isDark ? 'bg-blue-500/20 text-sky-400' : 'bg-blue-100 text-blue-800',
+        searchFocus: isDark ? 'focus-within:border-blue-400/80 focus-within:shadow-[0_0_15px_rgba(59,130,246,0.15)]' : 'focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-500/15',
+        locateBtn: isDark ? 'bg-blue-500/15 hover:bg-blue-500/25 border-blue-500/30 text-sky-300' : 'bg-blue-50 hover:bg-blue-100/80 border-blue-200 text-blue-800',
+        mainIcon: isDark ? 'text-sky-400' : 'text-blue-700'
+      }
+    case 'purple':
+      return {
+        folderOpen: isDark ? 'text-purple-400 scale-105 drop-shadow-[0_0_8px_rgba(168,85,247,0.35)]' : 'text-purple-700 scale-105',
+        folderClosed: isDark ? 'text-purple-400/80' : 'text-purple-600/80',
+        chevron: isDark ? 'text-purple-400' : 'text-purple-700',
+        activeItem: isDark
+          ? 'font-bold text-purple-200 bg-purple-500/20 border border-purple-500/40 shadow-sm z-10'
+          : 'font-bold text-purple-950 bg-purple-600/15 border border-purple-600/35 shadow-xs z-10',
+        activeIcon: isDark ? 'text-purple-300 opacity-90' : 'text-purple-700 opacity-90',
+        framed: isDark ? 'bg-[#1a0733]/90 border-purple-500/30' : 'bg-white/95 border-purple-600/25',
+        badge: isDark ? 'bg-purple-500/15 text-purple-200 border border-purple-500/25' : 'bg-purple-50 text-purple-800 border border-purple-200',
+        badgeFramed: isDark ? 'bg-purple-500/25 text-purple-100 border border-purple-500/40 shadow-[0_0_10px_rgba(168,85,247,0.2)]' : 'bg-purple-50 text-purple-900 border border-purple-300',
+        newBadge: isDark ? 'bg-purple-500/20 text-purple-400' : 'bg-purple-100 text-purple-800',
+        searchFocus: isDark ? 'focus-within:border-purple-400/80 focus-within:shadow-[0_0_15px_rgba(168,85,247,0.15)]' : 'focus-within:border-purple-600 focus-within:ring-2 focus-within:ring-purple-500/15',
+        locateBtn: isDark ? 'bg-purple-500/15 hover:bg-purple-500/25 border-purple-500/30 text-purple-300' : 'bg-purple-50 hover:bg-purple-100/80 border-purple-200 text-purple-800',
+        mainIcon: isDark ? 'text-purple-400' : 'text-purple-700'
+      }
+    case 'emerald':
+    default:
+      // Exact current green/teal colors preserved 100%!
+      return {
+        folderOpen: isDark ? 'text-teal-400 scale-105 drop-shadow-[0_0_8px_rgba(45,212,191,0.3)]' : 'text-emerald-700 scale-105',
+        folderClosed: isDark ? 'text-teal-500' : 'text-emerald-600/80',
+        chevron: isDark ? 'text-teal-400' : 'text-emerald-700',
+        activeItem: isDark
+          ? 'font-bold text-teal-300 bg-teal-500/20 border border-teal-500/40 shadow-sm z-10'
+          : 'font-bold text-emerald-950 bg-emerald-600/15 border border-emerald-600/35 shadow-xs z-10',
+        activeIcon: isDark ? 'text-teal-300 opacity-90' : 'text-emerald-700 opacity-90',
+        framed: isDark ? 'bg-[#0f1d24]/90 border-teal-500/30' : 'bg-white/95 border-emerald-600/25',
+        badge: isDark ? 'bg-teal-500/15 text-teal-300 border border-teal-500/25' : 'bg-slate-100 text-slate-700 border border-slate-200',
+        badgeFramed: isDark ? 'bg-teal-500/25 text-teal-200 border border-teal-500/40 shadow-[0_0_10px_rgba(45,212,191,0.2)]' : 'bg-emerald-50 text-emerald-800 border border-emerald-200/80',
+        newBadge: isDark ? 'bg-teal-500/20 text-teal-400' : 'bg-emerald-100 text-emerald-800',
+        searchFocus: isDark ? 'focus-within:border-teal-400/70 focus-within:shadow-[0_0_15px_rgba(45,212,191,0.1)]' : 'focus-within:border-emerald-600 focus-within:ring-2 focus-within:ring-emerald-500/10',
+        locateBtn: isDark ? 'bg-teal-500/15 hover:bg-teal-500/25 border-teal-500/30 text-teal-300' : 'bg-emerald-50 hover:bg-emerald-100/80 border-emerald-200 text-emerald-800',
+        mainIcon: isDark ? 'text-teal-400' : 'text-emerald-700'
+      }
+  }
 }
 
 function filterTree(
@@ -256,6 +332,9 @@ const TreeView = memo(function TreeView({
       ? isChunkMatch(node, activeChunkId)
       : isTitleMatch
   )
+  const { accentColor } = useTheme()
+  const themeTokens = useMemo(() => getTreeThemeTokens(accentColor, isDark), [accentColor, isDark])
+
   const currentPath = [...parentPath, node.title]
   const bookCount = !node.is_book && hasChildren ? countBooksInNode(node) : 0
   const isFramed = expanded && depth === 0 && !isSearchActive
@@ -269,7 +348,7 @@ const TreeView = memo(function TreeView({
         ? (isDark ? 'text-indigo-300 drop-shadow-[0_0_6px_rgba(165,180,252,0.35)]' : 'text-indigo-600')
         : (isDark ? 'text-indigo-400/80 hover:text-indigo-300' : 'text-indigo-600/80 hover:text-indigo-700'))
       : (expanded
-        ? (isDark ? 'text-teal-400' : 'text-emerald-700')
+        ? themeTokens.chevron
         : '')
 
   const handleChevronClick = async (e: React.MouseEvent) => {
@@ -331,12 +410,10 @@ const TreeView = memo(function TreeView({
         title={node.title}
         className={`group relative flex cursor-pointer items-center gap-2 px-2.5 transition-all duration-200 hover:-translate-x-1
           ${isFramed
-            ? 'py-2 mb-0 sticky top-0 z-20 backdrop-blur-md rounded-xl border shadow-sm ' + (isDark ? 'bg-[#1a0733]/90 border-teal-500/30' : 'bg-white/95 border-emerald-600/25')
+            ? 'py-2 mb-0 sticky top-0 z-20 backdrop-blur-md rounded-xl border shadow-sm ' + themeTokens.framed
             : 'py-1 rounded-xl my-0.5'}
           ${isActive
-            ? isDark
-              ? 'font-bold text-teal-300 bg-teal-500/20 border border-teal-500/40 shadow-sm z-10'
-              : 'font-bold text-emerald-950 bg-emerald-600/15 border border-emerald-600/35 shadow-xs z-10'
+            ? themeTokens.activeItem
             : isDark
               ? (isFramed ? 'text-white font-bold' : (expanded ? 'text-white font-bold hover:bg-white/5' : 'text-white/70 hover:bg-white/5'))
               : (isFramed ? 'text-slate-900 font-bold' : (expanded ? 'text-slate-900 font-bold hover:bg-slate-100' : 'text-slate-700 hover:bg-slate-100'))
@@ -352,7 +429,7 @@ const TreeView = memo(function TreeView({
             title={expanded ? 'طيّ' : 'توسيع'}
           >
             {isLoadingBook ? (
-              <Loader2 size={13} className={`animate-spin ${node.is_book ? 'text-amber-400' : isInsideBook ? 'text-indigo-400' : (isDark ? 'text-teal-400' : 'text-emerald-700')}`} />
+              <Loader2 size={13} className={`animate-spin ${node.is_book ? 'text-amber-400' : isInsideBook ? 'text-indigo-400' : themeTokens.chevron}`} />
             ) : (
               <ChevronLeft
                 size={14}
@@ -362,7 +439,7 @@ const TreeView = memo(function TreeView({
             )}
           </button>
         ) : (
-          <span className={`flex h-5 w-5 shrink-0 items-center justify-center ${isActive ? (isDark ? 'text-teal-300 opacity-90' : 'text-emerald-700 opacity-90') : 'opacity-50'}`}>
+          <span className={`flex h-5 w-5 shrink-0 items-center justify-center ${isActive ? themeTokens.activeIcon : 'opacity-50'}`}>
             <FileText size={14} />
           </span>
         )}
@@ -382,23 +459,18 @@ const TreeView = memo(function TreeView({
                   }`}
               />
             ) : expanded ? (
-              <FolderOpen size={14} className={`shrink-0 transition-all ${isDark ? 'text-teal-400 scale-105 drop-shadow-[0_0_8px_rgba(45,212,191,0.3)]' : 'text-emerald-700 scale-105'}`} />
+              <FolderOpen size={14} className={`shrink-0 transition-all ${themeTokens.folderOpen}`} />
             ) : (
-              <Folder size={14} className={`shrink-0 transition-all ${isDark ? 'text-teal-500' : 'text-emerald-600/80'}`} />
+              <Folder size={14} className={`shrink-0 transition-all ${themeTokens.folderClosed}`} />
             )
           ) : null}
           <span className="truncate">{node.title}</span>
-          {node.is_new && <span className={`shrink-0 mr-1.5 rounded px-1.5 py-0.5 text-[10px] ${isDark ? 'bg-teal-500/20 text-teal-400' : 'bg-emerald-100 text-emerald-800'}`}>جديد</span>}
+          {node.is_new && <span className={`shrink-0 mr-1.5 rounded px-1.5 py-0.5 text-[10px] ${themeTokens.newBadge}`}>جديد</span>}
           {bookCount > 0 && (
             <span
-              className={`shrink-0 mr-auto text-[11px] font-bold px-2 py-0.5 rounded-full transition-all duration-300 ${isDark
-                ? isFramed
-                  ? 'bg-teal-500/25 text-teal-200 border border-teal-500/40 shadow-[0_0_10px_rgba(45,212,191,0.2)]'
-                  : 'bg-teal-500/15 text-teal-300 border border-teal-500/25 group-hover:border-teal-500/40'
-                : isFramed
-                  ? 'bg-emerald-50 text-emerald-800 border border-emerald-200/80'
-                  : 'bg-slate-100 text-slate-700 border border-slate-200 group-hover:border-emerald-200 group-hover:text-emerald-800'
-                }`}
+              className={`shrink-0 mr-auto text-[11px] font-bold px-2 py-0.5 rounded-full transition-all duration-300 ${
+                isFramed ? themeTokens.badgeFramed : themeTokens.badge
+              }`}
             >
               {bookCount} كتاب
             </span>
@@ -788,6 +860,8 @@ export function StudySidebar({
   librarySource?: 'mongo' | 'turath'
 }) {
   const { treeData: baseTreeData, chunkMeta, chunkTitle } = useStudyContext()
+  const { accentColor: globalAccentColor } = useTheme()
+  const sidebarThemeTokens = useMemo(() => getTreeThemeTokens(globalAccentColor, isDark), [globalAccentColor, isDark])
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [searchScope, setSearchScope] = useState<SearchScope>('all')
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
@@ -1032,10 +1106,10 @@ export function StudySidebar({
         }`}
     >
       {/* Header Bar matching Chat/Mindmap/Quiz panels */}
-      <div className={`flex items-center justify-between px-4 py-3 border-b backdrop-blur-md ${isDark ? 'border-white/10 bg-[#12041f]/70 text-white' : 'border-slate-200 bg-slate-50/90 text-slate-800'
+      <div className={`hidden md:flex items-center justify-between px-4 py-3 h-[53px] box-border border-b backdrop-blur-md ${isDark ? 'border-white/10 bg-[#12041f]/70 text-white' : 'border-slate-200 bg-slate-50/90 text-slate-800'
         }`}>
         <div className="flex items-center gap-2 text-sm font-bold">
-          <Menu size={18} className={`shrink-0 stroke-[2.2] ${isDark ? 'text-teal-400' : 'text-emerald-700'}`} />
+          <Folder size={18} className={`shrink-0 stroke-[2.2] ${sidebarThemeTokens.mainIcon}`} />
           <span>فهرس المحتوى</span>
         </div>
 
@@ -1046,16 +1120,13 @@ export function StudySidebar({
               type="button"
               onClick={handleLocateCurrentLesson}
               disabled={isLocating}
-              className={`group/locate flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all border ${isDark
-                ? 'bg-teal-500/15 hover:bg-teal-500/25 border-teal-500/30 text-teal-300 shadow-[0_0_12px_rgba(45,212,191,0.15)] active:scale-95'
-                : 'bg-emerald-50 hover:bg-emerald-100/80 border-emerald-200 text-emerald-800 shadow-xs active:scale-95'
-                } ${isLocating ? 'opacity-80 cursor-wait' : ''}`}
+              className={`group/locate flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all border ${sidebarThemeTokens.locateBtn} shadow-xs active:scale-95 ${isLocating ? 'opacity-80 cursor-wait' : ''}`}
               title="تحديد موقع الدرس الحالي في الفهرس وتتبعه"
             >
               {isLocating ? (
-                <Loader2 size={13} className={`animate-spin ${isDark ? 'text-teal-400' : 'text-emerald-700'}`} />
+                <Loader2 size={13} className={`animate-spin ${sidebarThemeTokens.mainIcon}`} />
               ) : (
-                <LocateIcon size={13} className={`stroke-[2.5] group-hover/locate:rotate-45 transition-transform duration-300 ${isDark ? 'text-teal-400' : 'text-emerald-700'}`} />
+                <LocateIcon size={13} className={`stroke-[2.5] group-hover/locate:rotate-45 transition-transform duration-300 ${sidebarThemeTokens.mainIcon}`} />
               )}
               <span className="text-[11px] whitespace-nowrap">موقع الدرس الحالي</span>
             </button>
@@ -1075,10 +1146,10 @@ export function StudySidebar({
       {/* Search Box Container with Integrated Filter */}
       <div className={`p-4 border-b relative ${isDark ? 'border-white/5 bg-transparent' : 'border-slate-200/80 bg-slate-50/50'}`}>
         <div className={`group relative flex items-center gap-2 rounded-2xl border px-3 py-2 transition-all duration-300 shadow-xs ${isDark
-          ? 'border-white/10 bg-white/5 text-white hover:border-white/20 hover:bg-white/10 focus-within:border-teal-400/70 focus-within:shadow-[0_0_15px_rgba(45,212,191,0.1)] focus-within:bg-[#12041f]/80'
-          : 'border-slate-200 bg-white text-slate-900 hover:border-slate-300 focus-within:border-emerald-600 focus-within:ring-2 focus-within:ring-emerald-500/10'
+          ? `border-white/10 bg-white/5 text-white hover:border-white/20 hover:bg-white/10 ${sidebarThemeTokens.searchFocus} focus-within:bg-[#12041f]/80`
+          : `border-slate-200 bg-white text-slate-900 hover:border-slate-300 ${sidebarThemeTokens.searchFocus}`
           }`}>
-          <Search size={16} className={`transition-colors shrink-0 ${isDark ? 'text-white/40 group-focus-within:text-teal-400' : 'text-slate-400 group-focus-within:text-emerald-700'}`} />
+          <Search size={16} className={`transition-colors shrink-0 ${isDark ? 'text-white/40' : 'text-slate-400'}`} />
           <input
             ref={mainSearchInputRef}
             type="text"

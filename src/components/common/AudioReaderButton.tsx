@@ -514,26 +514,26 @@ export function AudioReaderButton({
       ) : isPlaying || isPaused || isLoading ? (
         /* Full Interactive Audio Controls Bar (Standard / Vertical layout) */
         <div
-          className={`flex ${orientation === 'vertical' ? 'flex-col items-center' : 'items-center'} gap-1.5 p-1 rounded-xl shadow-lg border backdrop-blur-md transition-all duration-300 ${
+          className={`flex ${orientation === 'vertical' ? 'flex-col items-center' : 'items-center'} gap-1 sm:gap-1.5 p-0.5 sm:p-1 rounded-xl shadow-md border backdrop-blur-md transition-all duration-300 ${
             dark
               ? 'bg-slate-900/90 border-white/10 text-white shadow-black/30'
-              : 'bg-white/95 border-slate-200 text-slate-800 shadow-md'
+              : 'bg-white/95 border-slate-200 text-slate-800 shadow-sm'
           }`}
         >
           {/* Main Play / Pause Button */}
           <button
             onClick={() => (isPodcastMode ? handleStartPodcast() : handleStartOrToggleSpeech())}
             type="button"
-            className={`flex items-center justify-center gap-1.5 ${orientation === 'vertical' ? 'p-1.5 w-8 h-8' : 'px-2.5 py-1'} rounded-lg text-[12px] font-bold transition-all duration-200 cursor-pointer ${
+            className={`flex items-center justify-center gap-1 ${orientation === 'vertical' ? 'p-1.5 w-7 h-7' : 'px-2 py-0.5 sm:py-1 h-7 sm:h-7.5'} rounded-lg text-[11px] font-bold transition-all duration-200 cursor-pointer ${
               isPaused
                 ? `${themeClasses.text} bg-black/5 dark:bg-white/10 border border-current/20`
                 : `${themeClasses.bg} text-white shadow-sm`
             }`}
           >
             {isPaused ? (
-              <Play size={13} className={`fill-current ${themeClasses.text}`} />
+              <Play size={11} className={`fill-current ${themeClasses.text}`} />
             ) : (
-              <Pause size={13} className="fill-current text-white" />
+              <Pause size={11} className="fill-current text-white" />
             )}
             {showTextLabel && <span>{isPaused ? 'استئناف' : isPodcastMode ? 'البودكاست' : 'مؤقت'}</span>}
           </button>
@@ -547,13 +547,17 @@ export function AudioReaderButton({
             }}
             type="button"
             title="تغيير شخصية المعلم الصوتي"
-            className={`flex items-center justify-center gap-1 ${orientation === 'vertical' ? 'p-1.5 w-8 h-8' : 'px-2 py-1'} rounded-lg text-[12px] font-bold transition-all duration-200 cursor-pointer ${
+            className={`flex items-center justify-center gap-1 ${orientation === 'vertical' ? 'p-1.5 w-7 h-7' : 'px-1.5 sm:px-2 py-0.5 sm:py-1 h-7 sm:h-7.5'} rounded-lg text-[11px] font-bold transition-all duration-200 cursor-pointer whitespace-nowrap ${
               dark
                 ? 'text-white/80 hover:bg-white/10 border border-white/10'
                 : 'text-slate-800 hover:bg-slate-100 border border-slate-200'
             }`}
           >
-            {orientation === 'vertical' ? <UserCheck size={14} className={themeClasses.text} /> : <span>{selectedVoiceObj.name}</span>}
+            {orientation === 'vertical' ? (
+              <UserCheck size={13} className={themeClasses.text} />
+            ) : (
+              <span className="whitespace-nowrap leading-none">{selectedVoiceObj.name}</span>
+            )}
           </button>
 
           {/* Mute Button */}
@@ -561,7 +565,7 @@ export function AudioReaderButton({
             onClick={handleToggleMute}
             type="button"
             title={isMuted ? 'إلغاء كتم الصوت' : 'كتم الصوت'}
-            className={`flex items-center justify-center p-1.5 ${orientation === 'vertical' ? 'w-8 h-8' : ''} rounded-lg text-[12px] font-bold transition-all duration-200 cursor-pointer ${
+            className={`flex items-center justify-center p-1 sm:p-1.5 ${orientation === 'vertical' ? 'w-7 h-7' : 'w-7 h-7 sm:w-7.5 sm:h-7.5'} rounded-lg text-[11px] font-bold transition-all duration-200 cursor-pointer ${
               isMuted
                 ? `${themeClasses.text} bg-black/5 dark:bg-white/10`
                 : dark
@@ -569,7 +573,7 @@ export function AudioReaderButton({
                 : 'text-slate-700 hover:bg-slate-100'
             }`}
           >
-            {isMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
+            {isMuted ? <VolumeX size={13} /> : <Volume2 size={13} />}
           </button>
 
           {/* Speed Selector Toggle */}
@@ -581,14 +585,14 @@ export function AudioReaderButton({
             }}
             type="button"
             title="تغيير سرعة القراءة"
-            className={`flex ${orientation === 'vertical' ? 'flex-col justify-center' : 'items-center'} gap-0.5 ${orientation === 'vertical' ? 'p-1.5 w-8 h-8' : 'px-2 py-1'} rounded-lg text-[12px] font-extrabold transition-all duration-200 cursor-pointer ${
+            className={`flex ${orientation === 'vertical' ? 'flex-col justify-center' : 'items-center'} gap-0.5 ${orientation === 'vertical' ? 'p-1.5 w-7 h-7' : 'px-1.5 py-0.5 sm:px-2 sm:py-1 h-7 sm:h-7.5'} rounded-lg text-[11px] font-extrabold transition-all duration-200 cursor-pointer ${
               dark
                 ? 'text-white/80 hover:bg-white/10 border border-white/10'
                 : 'text-slate-800 hover:bg-slate-100 border border-slate-200'
             }`}
           >
-            {orientation !== 'vertical' && <Gauge size={12} className={themeClasses.text} />}
-            <span className={orientation === 'vertical' ? 'text-[9px] leading-none' : ''}>{currentSpeed}x</span>
+            {orientation !== 'vertical' && <Gauge size={11} className={themeClasses.text} />}
+            <span className={orientation === 'vertical' ? 'text-[9px] leading-none' : 'leading-none'}>{currentSpeed}x</span>
           </button>
 
           {/* Download Audio Button with Confirmation Prompt */}
@@ -596,7 +600,7 @@ export function AudioReaderButton({
             onClick={triggerDownloadConfirmation}
             type="button"
             title="تحميل المقطع الصوتي كـ WAV"
-            className={`flex items-center justify-center p-1.5 ${orientation === 'vertical' ? 'w-8 h-8' : ''} rounded-lg text-[12px] font-bold transition-all duration-200 cursor-pointer ${
+            className={`flex items-center justify-center p-1 sm:p-1.5 ${orientation === 'vertical' ? 'w-7 h-7' : 'w-7 h-7 sm:w-7.5 sm:h-7.5'} rounded-lg text-[11px] font-bold transition-all duration-200 cursor-pointer ${
               isDownloaded
                 ? `${themeClasses.text} bg-black/5 dark:bg-white/10`
                 : dark
@@ -605,11 +609,11 @@ export function AudioReaderButton({
             }`}
           >
             {isDownloading ? (
-              <Loader2 size={13} className={`animate-spin ${themeClasses.text}`} />
+              <Loader2 size={12} className={`animate-spin ${themeClasses.text}`} />
             ) : isDownloaded ? (
-              <Check size={13} className={themeClasses.text} />
+              <Check size={12} className={themeClasses.text} />
             ) : (
-              <Download size={13} />
+              <Download size={12} />
             )}
           </button>
 
@@ -618,13 +622,13 @@ export function AudioReaderButton({
             onClick={handleFullStopSpeech}
             type="button"
             title="إنهاء القراءة"
-            className={`flex items-center justify-center p-1.5 ${orientation === 'vertical' ? 'w-8 h-8' : ''} rounded-lg text-[12px] font-bold transition-all duration-200 cursor-pointer ${
+            className={`flex items-center justify-center p-1 sm:p-1.5 ${orientation === 'vertical' ? 'w-7 h-7' : 'w-7 h-7 sm:w-7.5 sm:h-7.5'} rounded-lg text-[11px] font-bold transition-all duration-200 cursor-pointer ${
               dark
                 ? 'text-rose-400 hover:bg-rose-500/20'
                 : 'text-rose-700 hover:bg-rose-100'
             }`}
           >
-            <Square size={12} className="fill-current" />
+            <Square size={10} className="fill-current" />
           </button>
         </div>
       ) : (
@@ -645,7 +649,7 @@ export function AudioReaderButton({
             {isLoading ? (
               <Loader2 size={14} className={`animate-spin ${themeClasses.text}`} />
             ) : (
-              <Volume2 size={14} strokeWidth={2.5} />
+              <Volume2 size={14} strokeWidth={2.2} />
             )}
 
             {showTextLabel && (
@@ -675,11 +679,11 @@ export function AudioReaderButton({
       {/* Speed Selector Dropdown Menu */}
       {showSpeedMenu && (
         <div
-          className={`absolute bottom-full mb-2 z-50 p-1.5 rounded-xl shadow-2xl border flex gap-1 backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150 ${
+          className={`absolute bottom-full mb-2 z-50 p-1 rounded-xl shadow-2xl border flex gap-1 backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150 ${
             variant === 'deck'
               ? 'right-2 sm:right-auto sm:left-1/2 sm:-translate-x-1/2'
               : menuPlacement === 'top'
-              ? 'bottom-full mb-1.5 left-0'
+              ? 'bottom-full mb-1.5 right-0'
               : menuPlacement === 'left'
               ? 'top-0 right-full mr-1.5'
               : 'top-0 left-full ml-1.5'
@@ -694,7 +698,7 @@ export function AudioReaderButton({
               key={speed}
               onClick={(e) => handleSelectSpeed(speed, e)}
               type="button"
-              className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+              className={`px-2 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                 currentSpeed === speed
                   ? `${themeClasses.bg} text-white shadow-xs`
                   : dark
@@ -711,11 +715,11 @@ export function AudioReaderButton({
       {/* Voice Selector Popover Menu */}
       {showVoiceMenu && (
         <div
-          className={`absolute bottom-full mb-2 z-50 w-72 max-w-[92vw] p-2.5 rounded-2xl shadow-2xl border flex flex-col gap-1 backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150 ${
+          className={`absolute bottom-full mb-2 z-50 w-48 sm:w-52 max-w-[calc(100vw-2rem)] p-2 rounded-2xl shadow-2xl border flex flex-col gap-0.5 backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150 ${
             variant === 'deck'
               ? 'right-0 sm:right-auto sm:left-1/2 sm:-translate-x-1/2'
               : menuPlacement === 'top'
-              ? 'bottom-full mb-1.5 left-0'
+              ? 'bottom-full mb-1.5 right-0'
               : menuPlacement === 'left'
               ? 'top-0 right-full mr-1.5'
               : 'top-0 left-full ml-1.5'
@@ -725,9 +729,9 @@ export function AudioReaderButton({
               : 'bg-white/98 border-slate-200 text-slate-800 shadow-xl'
           }`}
         >
-          <div className={`px-2.5 py-1 text-[11px] font-bold mb-1 flex items-center justify-between border-b border-black/5 dark:border-white/10 ${themeClasses.text}`}>
-            <span>اختر شخصية المعلم الصوتي:</span>
-            <UserCheck size={13} />
+          <div className={`px-2 py-1 text-[11px] font-bold mb-0.5 flex items-center justify-between border-b border-black/5 dark:border-white/10 ${themeClasses.text}`}>
+            <span>شخصية القارئ الصوتي:</span>
+            <UserCheck size={12} />
           </div>
           {AVAILABLE_VOICES.map((v) => {
             const isSelected = currentVoice === v.id
@@ -736,7 +740,7 @@ export function AudioReaderButton({
                 key={v.id}
                 onClick={(e) => handleSelectVoice(v.id, e)}
                 type="button"
-                className={`flex items-center justify-between gap-2.5 p-2 rounded-xl text-right transition-all duration-200 cursor-pointer ${
+                className={`flex items-center justify-between gap-2 px-2 py-1.5 rounded-xl text-right transition-all duration-150 cursor-pointer ${
                   isSelected
                     ? dark
                       ? `${themeClasses.badgeDark} shadow-xs`
@@ -746,21 +750,8 @@ export function AudioReaderButton({
                     : 'hover:bg-slate-50 text-slate-700 hover:text-slate-900'
                 }`}
               >
-                <div className="flex flex-col text-right">
-                  <span className="text-[12px] font-bold leading-tight">{v.name}</span>
-                  <span className={`text-[10px] font-medium leading-tight mt-0.5 ${
-                    isSelected
-                      ? dark
-                        ? `${themeClasses.descDark} font-semibold`
-                        : `${themeClasses.descLight} font-semibold`
-                      : dark
-                      ? 'text-slate-400'
-                      : 'text-slate-500'
-                  }`}>
-                    {v.description}
-                  </span>
-                </div>
-                {isSelected && <Check size={14} className={`${themeClasses.text} shrink-0`} />}
+                <span className="text-[11.5px] font-bold leading-tight">{v.name}</span>
+                {isSelected && <Check size={13} className={`${themeClasses.text} shrink-0`} />}
               </button>
             )
           })}

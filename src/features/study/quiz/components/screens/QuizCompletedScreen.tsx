@@ -1,6 +1,8 @@
-import { List, RotateCcw, Plus, Check, X, HelpCircle, ClipboardList, ClipboardCheck, ChevronLeft, Bot } from 'lucide-react'
+import { List, RotateCcw, Plus, ClipboardCheck, ChevronLeft, Bot } from 'lucide-react'
 import { motion } from 'framer-motion'
 import type { Question } from '../../../../../contexts/StudyContext'
+import { useTheme } from '../../../../../contexts/ThemeContext'
+import { getQuizCompletedThemeTokens } from '../../utils/quizThemeTokens'
 
 interface QuizCompletedScreenProps {
   localQuestions: Question[]
@@ -25,6 +27,9 @@ export function QuizCompletedScreen({
   isDark,
   onShowDetailedReview, onDiscussWrong, onRetry, onNewQuiz,
 }: QuizCompletedScreenProps) {
+  const { accentColor } = useTheme()
+  const theme = getQuizCompletedThemeTokens(accentColor, isDark)
+
   const unansweredCount = Math.max(0, totalQuestions - (correctCount + incorrectCount))
   const isTimed = timerMode === 'timed'
 
@@ -57,27 +62,25 @@ export function QuizCompletedScreen({
   }
 
   return (
-    <div className="my-auto w-full flex flex-col items-center justify-center py-6" key="quiz-completed">
+    <div className="my-auto w-full flex flex-col items-center justify-center py-4 sm:py-6" key="quiz-completed">
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 15 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: -15 }}
         transition={{ duration: 0.35, ease: 'easeOut' }}
-        className={`p-6 sm:p-8 rounded-3xl border shadow-2xl max-w-lg w-full relative overflow-hidden text-center flex flex-col items-center ${
-          isDark
-            ? 'bg-[#0d0714]/95 border-emerald-500/20 text-white shadow-emerald-500/10'
-            : 'bg-white border-emerald-200 text-slate-900 shadow-xl'
-        }`}
+        className={`p-4 sm:p-6 md:p-8 rounded-2xl border shadow-2xl max-w-lg w-full relative overflow-hidden text-center flex flex-col items-center transition-colors ${
+          theme.cardBg
+        } ${theme.cardBorder}`}
         dir="rtl"
       >
         {/* Background Subtle Ambient Glow */}
-        <div className="absolute -top-24 -right-24 w-60 h-60 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div className="absolute -bottom-24 -left-24 w-60 h-60 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div className={`absolute -top-24 -right-24 w-60 h-60 ${theme.ambientGlow} rounded-full blur-3xl pointer-events-none`}></div>
+        <div className="absolute -bottom-24 -left-24 w-60 h-60 bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
         {/* ─── 1. TOP GAUGE AREA ─── */}
-        <div className="relative w-44 h-44 flex items-center justify-center my-2 group">
+        <div className="relative w-40 h-40 sm:w-44 sm:h-44 flex items-center justify-center my-2 group">
           {/* SVG Gauge */}
-          <svg className="w-full h-full transform -rotate-90 filter drop-shadow-[0_0_15px_rgba(16,185,129,0.25)]" viewBox="0 0 120 120">
+          <svg className="w-full h-full transform -rotate-90 filter drop-shadow-md" viewBox="0 0 120 120">
             <circle
               cx="60" cy="60" r="50"
               className={isDark ? "stroke-white/10" : "stroke-slate-200"}
@@ -96,154 +99,154 @@ export function QuizCompletedScreen({
             />
             <defs>
               <linearGradient id="score-gradient-img" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#10b981" />
-                <stop offset="100%" stopColor="#14b8a6" />
+                <stop offset="0%" stopColor={theme.gaugeGradientStart} />
+                <stop offset="100%" stopColor={theme.gaugeGradientEnd} />
               </linearGradient>
             </defs>
           </svg>
 
           {/* Score Text in Center */}
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-            <span className="text-4xl font-black tracking-tight text-[#10b981]">
+            <span className={`text-4xl sm:text-5xl font-black tracking-tight ${theme.scoreText}`}>
               {safeScorePct}%
             </span>
-            <span className="text-[11px] font-bold opacity-75 text-emerald-200/80 mt-0.5">
+            <span className={`text-[11px] font-bold ${theme.scoreSubtitle} mt-0.5`}>
               النتيجة النهائية
             </span>
           </div>
 
           {/* Floating Badge Icon on Bottom-Left of Circle */}
-          <div className="absolute bottom-2 left-4 w-9 h-9 rounded-2xl bg-[#121c24] border border-emerald-500/40 text-emerald-400 flex items-center justify-center shadow-lg shadow-emerald-500/10 group-hover:scale-110 transition-transform">
+          <div className={`absolute bottom-2 left-4 w-9 h-9 rounded-xl border flex items-center justify-center shadow-md group-hover:scale-110 transition-transform ${theme.floatingBadge}`}>
             <ClipboardCheck size={18} />
           </div>
         </div>
 
         {/* ─── 2. TITLE & SUBTITLE ─── */}
-        <h3 className="text-2xl sm:text-3xl font-black mb-1.5 mt-2 tracking-tight text-white">
+        <h3 className="text-xl sm:text-2xl md:text-3xl font-black mb-1.5 mt-2 tracking-tight text-slate-900 dark:text-white">
           {getTitleText()}
         </h3>
-        <p className="text-xs font-medium text-slate-400 mb-6 max-w-sm">
+        <p className="text-xs font-medium text-slate-600 dark:text-slate-400 mb-5 sm:mb-6 max-w-sm">
           {getSubtitleText()}
         </p>
 
         {/* ─── 3. STAT CARDS ROW (4 Stat Cards with Bottom Color Line) ─── */}
-        <div className={`grid ${isTimed ? 'grid-cols-4 gap-2 sm:gap-2.5' : 'grid-cols-3 gap-2.5'} w-full mb-6 text-xs`}>
+        <div className={`grid ${isTimed ? 'grid-cols-4 gap-2 sm:gap-2.5' : 'grid-cols-3 gap-2.5'} w-full mb-5 sm:mb-6 text-xs`}>
           {/* Card 1: Correct (Rightmost in RTL) */}
-          <div className={`p-3.5 rounded-2xl border flex flex-col items-center justify-center text-center relative overflow-hidden transition-all duration-200 hover:scale-[1.03] ${
-            isDark ? 'bg-[#131127]/80 border-white/5' : 'bg-slate-50 border-slate-200'
-          } border-b-2 border-b-emerald-500`}>
-            <span className="text-emerald-400 font-black text-2xl sm:text-3xl leading-none">{correctCount}</span>
-            <span className="text-slate-300 font-bold text-[10px] sm:text-[11px] mt-2 opacity-90">إجابات صحيحة</span>
+          <div className={`p-2.5 sm:p-3 rounded-xl border flex flex-col items-center justify-center text-center relative overflow-hidden transition-all duration-200 hover:scale-[1.02] ${
+            isDark ? 'bg-white/5 border-white/10' : 'bg-slate-50/90 border-slate-200'
+          } border-b-2 border-b-emerald-500 shadow-sm`}>
+            <span className="text-emerald-500 dark:text-emerald-400 font-black text-xl sm:text-2xl md:text-3xl leading-none">{correctCount}</span>
+            <span className="text-slate-600 dark:text-slate-300 font-bold text-[10px] sm:text-[11px] mt-1.5">إجابات صحيحة</span>
           </div>
 
           {/* Card 2: Incorrect */}
-          <div className={`p-3.5 rounded-2xl border flex flex-col items-center justify-center text-center relative overflow-hidden transition-all duration-200 hover:scale-[1.03] ${
-            isDark ? 'bg-[#131127]/80 border-white/5' : 'bg-slate-50 border-slate-200'
-          } border-b-2 border-b-rose-500`}>
-            <span className="text-rose-400 font-black text-2xl sm:text-3xl leading-none">{incorrectCount}</span>
-            <span className="text-slate-300 font-bold text-[10px] sm:text-[11px] mt-2 opacity-90">إجابات خاطئة</span>
+          <div className={`p-2.5 sm:p-3 rounded-xl border flex flex-col items-center justify-center text-center relative overflow-hidden transition-all duration-200 hover:scale-[1.02] ${
+            isDark ? 'bg-white/5 border-white/10' : 'bg-slate-50/90 border-slate-200'
+          } border-b-2 border-b-rose-500 shadow-sm`}>
+            <span className="text-rose-500 dark:text-rose-400 font-black text-xl sm:text-2xl md:text-3xl leading-none">{incorrectCount}</span>
+            <span className="text-slate-600 dark:text-slate-300 font-bold text-[10px] sm:text-[11px] mt-1.5">إجابات خاطئة</span>
           </div>
 
           {/* Card 3: Unanswered (If Timed) */}
           {isTimed && (
-            <div className={`p-3.5 rounded-2xl border flex flex-col items-center justify-center text-center relative overflow-hidden transition-all duration-200 hover:scale-[1.03] ${
-              isDark ? 'bg-[#131127]/80 border-white/5' : 'bg-slate-50 border-slate-200'
-            } border-b-2 border-b-sky-500`}>
-              <span className="text-sky-400 font-black text-2xl sm:text-3xl leading-none">{unansweredCount}</span>
-              <span className="text-slate-300 font-bold text-[10px] sm:text-[11px] mt-2 opacity-90">أسئلة بدون إجابة</span>
+            <div className={`p-2.5 sm:p-3 rounded-xl border flex flex-col items-center justify-center text-center relative overflow-hidden transition-all duration-200 hover:scale-[1.02] ${
+              isDark ? 'bg-white/5 border-white/10' : 'bg-slate-50/90 border-slate-200'
+            } border-b-2 border-b-sky-500 shadow-sm`}>
+              <span className="text-sky-500 dark:text-sky-400 font-black text-xl sm:text-2xl md:text-3xl leading-none">{unansweredCount}</span>
+              <span className="text-slate-600 dark:text-slate-300 font-bold text-[10px] sm:text-[11px] mt-1.5">بدون إجابة</span>
             </div>
           )}
 
           {/* Card 4: Total Questions (Leftmost in RTL) */}
-          <div className={`p-3.5 rounded-2xl border flex flex-col items-center justify-center text-center relative overflow-hidden transition-all duration-200 hover:scale-[1.03] ${
-            isDark ? 'bg-[#131127]/80 border-white/5' : 'bg-slate-50 border-slate-200'
-          } border-b-2 border-b-amber-500`}>
-            <span className="text-amber-400 font-black text-2xl sm:text-3xl leading-none">{totalQuestions}</span>
-            <span className="text-slate-300 font-bold text-[10px] sm:text-[11px] mt-2 opacity-90">إجمالي الأسئلة</span>
+          <div className={`p-2.5 sm:p-3 rounded-xl border flex flex-col items-center justify-center text-center relative overflow-hidden transition-all duration-200 hover:scale-[1.02] ${
+            isDark ? 'bg-white/5 border-white/10' : 'bg-slate-50/90 border-slate-200'
+          } border-b-2 border-b-amber-500 shadow-sm`}>
+            <span className="text-amber-500 dark:text-amber-400 font-black text-xl sm:text-2xl md:text-3xl leading-none">{totalQuestions}</span>
+            <span className="text-slate-600 dark:text-slate-300 font-bold text-[10px] sm:text-[11px] mt-1.5">إجمالي الأسئلة</span>
           </div>
         </div>
 
         {/* ─── 4. ACTION BUTTONS STACK ─── */}
-        <div className="flex flex-col gap-3 w-full">
+        <div className="flex flex-col gap-2.5 sm:gap-3 w-full">
           {/* Button 1: Detailed Review Card */}
           <button
             onClick={onShowDetailedReview}
-            className={`group w-full p-3.5 rounded-2xl border flex items-center justify-between transition-all duration-200 hover:scale-[1.01] active:scale-[0.98] cursor-pointer text-right ${
+            className={`group w-full p-3 sm:p-3.5 rounded-xl border flex items-center justify-between transition-all duration-200 hover:scale-[1.01] active:scale-[0.98] cursor-pointer text-right shadow-sm hover:shadow-md ${
               isDark
-                ? 'bg-[#0d1f1a]/80 border-emerald-500/40 hover:border-emerald-400 text-white shadow-lg shadow-emerald-500/5'
-                : 'bg-emerald-50 border-emerald-200 text-slate-800'
+                ? 'bg-white/[0.04] border-white/10 hover:border-white/25 text-white'
+                : 'bg-white border-slate-200/90 hover:border-slate-300 text-slate-900'
             }`}
           >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-600/20 border border-emerald-400/40 flex items-center justify-center text-emerald-400 shrink-0 shadow-inner group-hover:scale-105 transition-transform">
-                <List size={22} />
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-lg ${theme.reviewIconBg} border ${theme.reviewIconBorder} flex items-center justify-center ${theme.reviewIcon} shrink-0 shadow-xs group-hover:scale-105 transition-transform`}>
+                <List size={20} />
               </div>
               <div>
-                <h4 className="text-xs font-black text-emerald-400 leading-tight">عرض تفاصيل الإجابات</h4>
-                <p className="text-[10px] opacity-75 text-slate-300 mt-0.5">مراجعة شاملة لجميع الأسئلة والإجابات والتفسيرات</p>
+                <h4 className="text-xs sm:text-sm font-black text-slate-950 dark:text-white leading-tight">عرض تفاصيل الإجابات</h4>
+                <p className="text-[11px] text-slate-600 dark:text-slate-300 mt-0.5 font-medium">مراجعة شاملة لجميع الأسئلة والإجابات والتفسيرات</p>
               </div>
             </div>
-            <ChevronLeft size={18} className="text-emerald-400/80 shrink-0 group-hover:-translate-x-1.5 transition-transform duration-200" />
+            <ChevronLeft size={18} className="text-slate-400 dark:text-slate-500 group-hover:-translate-x-1 transition-all duration-200" />
           </button>
 
-          {/* Button 2: Zad Bot Discussion Card */}
+          {/* Button 2: Zad Bot Discussion Card (AI Purple/Indigo Identity) */}
           <button
             onClick={onDiscussWrong}
-            className={`group w-full p-3.5 rounded-2xl border flex items-center justify-between transition-all duration-200 hover:scale-[1.01] active:scale-[0.98] cursor-pointer text-right ${
+            className={`group w-full p-3 sm:p-3.5 rounded-xl border flex items-center justify-between transition-all duration-200 hover:scale-[1.01] active:scale-[0.98] cursor-pointer text-right shadow-sm hover:shadow-md ${
               isDark
-                ? 'bg-[#11192e]/80 border-sky-500/40 hover:border-sky-400 text-white shadow-lg shadow-sky-500/5'
-                : 'bg-sky-50 border-sky-200 text-slate-800'
+                ? 'bg-white/[0.04] border-white/10 hover:border-purple-500/30 text-white'
+                : 'bg-white border-slate-200/90 hover:border-purple-300 text-slate-900'
             }`}
           >
-            <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-2xl bg-gradient-to-br from-sky-500/20 to-blue-600/20 border border-sky-400/40 flex items-center justify-center text-sky-400 shrink-0 shadow-inner group-hover:scale-105 transition-transform ${
-                incorrectCount > 0 ? 'ring-2 ring-sky-400/30 animate-pulse' : ''
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-purple-500/15 dark:bg-purple-500/20 border border-purple-500/30 dark:border-purple-400/40 flex items-center justify-center text-purple-600 dark:text-purple-300 shrink-0 shadow-xs group-hover:scale-105 transition-transform ${
+                incorrectCount > 0 ? 'ring-2 ring-purple-400/30 animate-pulse' : ''
               }`}>
-                <Bot size={22} />
+                <Bot size={20} />
               </div>
               <div>
-                <h4 className="text-xs font-black text-sky-400 leading-tight">ناقش أخطاءك مع زاد</h4>
-                <p className="text-[10px] opacity-75 text-slate-300 mt-0.5">يحللك الأخطاء ويساعدك على الفهم بشكل أفضل</p>
+                <h4 className="text-xs sm:text-sm font-black text-slate-950 dark:text-white leading-tight">ناقش أخطاءك مع زاد</h4>
+                <p className="text-[11px] text-slate-600 dark:text-slate-300 mt-0.5 font-medium">يحللك الأخطاء ويساعدك على الفهم بشكل أفضل</p>
               </div>
             </div>
-            <ChevronLeft size={18} className="text-sky-400/80 shrink-0 group-hover:-translate-x-1.5 transition-transform duration-200" />
+            <ChevronLeft size={18} className="text-slate-400 dark:text-slate-500 group-hover:text-purple-500 group-hover:-translate-x-1 transition-all duration-200" />
           </button>
 
           {/* Row 3: Bottom 2 Buttons */}
-          <div className="grid grid-cols-2 gap-3 w-full">
-            {/* Right: New Custom Quiz */}
+          <div className="grid grid-cols-2 gap-2.5 sm:gap-3 w-full">
+            {/* Right: New Custom Quiz (Theme Colored) */}
             <button
               onClick={onNewQuiz}
-              className={`group p-3 rounded-2xl border flex items-center gap-3 transition-all duration-200 hover:scale-[1.01] active:scale-[0.98] cursor-pointer text-right ${
+              className={`group p-2.5 sm:p-3 rounded-xl border flex items-center gap-2.5 sm:gap-3 transition-all duration-200 hover:scale-[1.01] active:scale-[0.98] cursor-pointer text-right shadow-sm hover:shadow-md ${
                 isDark
-                  ? 'bg-[#0f1724]/80 border-teal-500/30 hover:border-teal-400/60 text-white'
-                  : 'bg-slate-50 border-slate-200 text-slate-800'
+                  ? 'bg-white/[0.04] border-white/10 hover:border-white/25 text-white'
+                  : 'bg-white border-slate-200/90 hover:border-slate-300 text-slate-900'
               }`}
             >
-              <div className="w-9 h-9 rounded-xl bg-teal-500/15 border border-teal-500/30 text-teal-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                <Plus size={18} className="group-hover:rotate-90 transition-transform duration-300" />
+              <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-lg ${theme.newQuizIconBg} ${theme.newQuizIcon} flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform`}>
+                <Plus size={17} className="group-hover:rotate-90 transition-transform duration-300" />
               </div>
               <div>
-                <h5 className="text-xs font-black text-teal-400 leading-tight">تخصيص اختبار جديد</h5>
-                <p className="text-[10px] opacity-60 text-slate-300 mt-0.5">أنشئ اختباراً يناسبك</p>
+                <h5 className="text-xs sm:text-sm font-black text-slate-950 dark:text-white leading-tight">تخصيص اختبار</h5>
+                <p className="text-[10.5px] text-slate-600 dark:text-slate-400 mt-0.5 font-medium">اختبار جديد</p>
               </div>
             </button>
 
-            {/* Left: Retry Quiz */}
+            {/* Left: Retry Quiz (Amber / Refresh Accent) */}
             <button
               onClick={onRetry}
-              className={`group p-3 rounded-2xl border flex items-center gap-3 transition-all duration-200 hover:scale-[1.01] active:scale-[0.98] cursor-pointer text-right ${
+              className={`group p-2.5 sm:p-3 rounded-xl border flex items-center gap-2.5 sm:gap-3 transition-all duration-200 hover:scale-[1.01] active:scale-[0.98] cursor-pointer text-right shadow-sm hover:shadow-md ${
                 isDark
-                  ? 'bg-[#151328]/80 border-white/10 hover:border-white/20 text-white'
-                  : 'bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-800'
+                  ? 'bg-white/[0.04] border-white/10 hover:border-white/25 text-white'
+                  : 'bg-white border-slate-200/90 hover:border-slate-300 text-slate-900'
               }`}
             >
-              <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/10 text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                <RotateCcw size={17} className="group-hover:-rotate-180 transition-transform duration-500" />
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <RotateCcw size={16} className="group-hover:-rotate-180 transition-transform duration-500" />
               </div>
               <div>
-                <h5 className="text-xs font-black text-white leading-tight">إعادة الاختبار</h5>
-                <p className="text-[10px] opacity-60 text-slate-300 mt-0.5">حاول مرة أخرى</p>
+                <h5 className="text-xs sm:text-sm font-black text-slate-950 dark:text-white leading-tight">إعادة الاختبار</h5>
+                <p className="text-[10.5px] text-slate-600 dark:text-slate-400 mt-0.5 font-medium">حاول مرة أخرى</p>
               </div>
             </button>
           </div>
@@ -252,3 +255,4 @@ export function QuizCompletedScreen({
     </div>
   )
 }
+

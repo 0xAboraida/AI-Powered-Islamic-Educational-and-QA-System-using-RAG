@@ -1,5 +1,8 @@
 import { Zap } from 'lucide-react'
 import type { QuestionCardContentProps } from '../../types'
+import { useTheme } from '../../../../../contexts/ThemeContext'
+import { getQuizActiveThemeTokens } from '../../utils/quizThemeTokens'
+import { formatIslamicQuizText } from '../../utils/quizEvaluator'
 
 export function FillBlankRenderer({
   q,
@@ -10,23 +13,25 @@ export function FillBlankRenderer({
   isDark,
   isReadOnly = false
 }: QuestionCardContentProps) {
+  const { accentColor } = useTheme()
+  const theme = getQuizActiveThemeTokens(accentColor, isDark)
   const options = q.options || []
 
   return (
-    <div className="grid grid-cols-2 gap-2.5 my-3">
+    <div className="grid grid-cols-2 gap-2 my-2.5">
       {options.map((opt, optIdx) => {
         const isSelected = selectedOpt === optIdx
         let optStyle = isDark
-          ? "bg-white/5 text-white/80 hover:bg-sky-500/10 border-white/10"
-          : "bg-white text-slate-700 hover:bg-sky-50/60 border-slate-200 shadow-sm"
+          ? `bg-white/5 text-white/80 ${theme.optionHover} border-white/10`
+          : `bg-white text-slate-800 ${theme.optionHover} border-slate-200 shadow-sm`
 
         if (isSelected) {
           if (showFeedback) {
             optStyle = optIdx === q.correct_answer_index
-              ? "bg-emerald-500/20 text-emerald-300 border-emerald-400 font-black shadow-md"
-              : "bg-rose-500/20 text-rose-300 border-rose-400 font-black shadow-md"
+              ? "bg-emerald-500/20 text-emerald-300 border-2 border-emerald-400 font-black shadow-md"
+              : "bg-rose-500/20 text-rose-300 border-2 border-rose-400 font-black shadow-md"
           } else {
-            optStyle = "bg-sky-500/25 text-sky-200 border-sky-400 font-extrabold shadow-md ring-1 ring-sky-400/50"
+            optStyle = theme.fillBlankSelected
           }
         } else if (showFeedback && isAnswered && optIdx === q.correct_answer_index) {
           optStyle = "bg-emerald-500/10 text-emerald-400 border-emerald-500/50 font-bold border-dashed"
@@ -37,11 +42,11 @@ export function FillBlankRenderer({
             key={optIdx}
             disabled={isReadOnly || (isAnswered && showFeedback)}
             onClick={() => onSelectOption && onSelectOption(optIdx)}
-            className={`p-3 rounded-xl border text-xs font-bold transition-all duration-200 flex items-center justify-between cursor-pointer opacity-0 animate-[fadeInUp_0.4s_ease-out_forwards] ${optStyle}`}
+            className={`p-2.5 sm:p-3 rounded-lg border text-xs font-bold transition-all duration-200 flex items-center justify-between cursor-pointer opacity-0 animate-[fadeInUp_0.4s_ease-out_forwards] ${optStyle}`}
             style={{ animationDelay: `${0.2 + optIdx * 0.08}s` }}
           >
-            <span>{opt}</span>
-            <Zap size={14} className={isSelected && !showFeedback ? 'text-sky-400 opacity-100' : 'opacity-40'} />
+            <span>{formatIslamicQuizText(opt)}</span>
+            <Zap size={14} className={isSelected && !showFeedback ? `${theme.optionCheckIcon} opacity-100` : 'opacity-40'} />
           </button>
         )
       })}

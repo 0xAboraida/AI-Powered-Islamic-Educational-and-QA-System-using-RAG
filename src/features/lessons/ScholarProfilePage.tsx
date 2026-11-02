@@ -540,7 +540,7 @@ export const ScholarProfilePage = ({ scholarId, onBack }: { scholarId: string, o
         className={`fixed inset-y-0 left-0 z-50 bg-neutral-950 border-r border-neutral-800 shadow-[0_0_50px_rgba(0,0,0,0.9)] flex flex-col transition-all duration-300 ease-out transform ${isExpanded
           ? 'w-full sm:w-[90vw] md:w-[85vw] lg:w-[80vw] max-w-6xl'
           : 'w-full sm:w-[520px] md:w-[600px] lg:w-[660px]'
-          } ${selectedSeries ? 'translate-x-0' : '-translate-x-full'}`}
+          } ${selectedSeries ? 'translate-x-0 opacity-100 visible' : '-translate-x-full pointer-events-none opacity-0 invisible shadow-none'}`}
         dir="rtl"
       >
         {selectedSeries && (

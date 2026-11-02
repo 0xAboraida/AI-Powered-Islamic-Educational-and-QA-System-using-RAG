@@ -5,6 +5,7 @@ interface VoiceRecordButtonProps {
   dark?: boolean
   browserSupportsSpeechRecognition: boolean
   onClick: () => void
+  className?: string
 }
 
 export default function VoiceRecordButton({
@@ -12,6 +13,7 @@ export default function VoiceRecordButton({
   dark = false,
   browserSupportsSpeechRecognition,
   onClick,
+  className = '',
 }: VoiceRecordButtonProps) {
   return (
     <button
@@ -24,14 +26,16 @@ export default function VoiceRecordButton({
         }
         onClick()
       }}
-      className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-all duration-300 ${listening
+      className={`flex shrink-0 items-center justify-center rounded-full transition-all duration-300 ${
+        className || 'h-9 w-9 sm:h-11 sm:w-11'
+      } ${listening
           ? 'bg-red-500/10 text-red-500 hover:bg-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.3)] animate-pulse'
           : dark
             ? 'text-white/60 hover:text-white hover:bg-white/10'
-            : 'text-brand-deep/50 hover:text-brand-magenta hover:bg-brand-magenta/5'
+            : 'text-slate-500 hover:text-slate-800 hover:bg-black/5'
         }`}
     >
-      <svg viewBox="0 0 24 24" fill="none" className="h-7 w-7">
+      <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5 sm:h-6 sm:w-6">
         <path
           d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Z"
           stroke="currentColor"

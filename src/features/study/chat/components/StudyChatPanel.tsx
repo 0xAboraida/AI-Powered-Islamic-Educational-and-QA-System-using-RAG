@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from 'react'
-import { MessageCircle, X } from 'lucide-react'
-import TextareaAutosize from 'react-textarea-autosize'
-import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
-import VoiceRecordButton from '../../../../components/ui/VoiceRecordButton'
+import React, { useState, useEffect, useRef } from 'react'
+import { MessageCircle, X, Send } from 'lucide-react'
+import { useTheme } from '../../../../contexts/ThemeContext'
 import type { Message } from '../../../../contexts/StudyContext'
 import whiteLogo from '@/assets/images/WhiteLogo.png'
 import { Bubble, TypingBubble } from '../../../chat/components/ChatBubble'
@@ -46,15 +44,7 @@ export function StudyChatPanel({
   startResizing?: (e: React.MouseEvent) => void
   isDark?: boolean
 }) {
-  const [baseInput, setBaseInput] = useState('')
-  const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition()
-
-  useEffect(() => {
-    if (listening) {
-      const newText = baseInput ? `${baseInput} ${transcript}` : transcript
-      setInput(newText.trim())
-    }
-  }, [transcript, listening, baseInput])
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const activeKeyId = sessionId || currentChunkId
 
@@ -123,64 +113,57 @@ export function StudyChatPanel({
           <div ref={chatEndRef} className="h-28 w-full shrink-0" />
         </div>
 
-        {/* Input Bar */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 z-20 pb-6 pointer-events-none">
+        {/* Input Bar (مطابق تماماً لمساعد زاد في قارئ المكتبة) */}
+        <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 z-20 pb-3 sm:pb-5 pointer-events-none">
           <form
             onSubmit={(e) => {
               e.preventDefault()
+              if (!input.trim() || !currentChunkId || loading) return
               handleSend()
+              if (textareaRef.current) {
+                textareaRef.current.style.height = 'auto'
+              }
             }}
-            className="flex w-full max-w-2xl mx-auto items-end gap-3 pointer-events-auto"
+            className="flex flex-col w-full max-w-2xl mx-auto gap-2 relative pointer-events-auto"
           >
-            <div className="gradient-border min-w-0 flex-1 rounded-[24px] p-[2.5px] shadow-xl shadow-primary/25 transition-all duration-300">
-              <div className={`flex items-end gap-2 rounded-[22px] py-1.5 pr-4 pl-2 backdrop-blur-md ${isDark ? 'bg-[#1a0730]/90 text-white' : 'bg-white text-slate-900 border border-slate-200'
-                }`}>
-                <VoiceRecordButton
-                  listening={listening}
-                  dark={isDark}
-                  browserSupportsSpeechRecognition={browserSupportsSpeechRecognition}
-                  onClick={() => {
-                    if (listening) {
-                      SpeechRecognition.stopListening()
-                    } else {
-                      setBaseInput(input)
-                      resetTranscript()
-                      SpeechRecognition.startListening({ language: 'ar-SA', continuous: true })
+            <div className="gradient-border min-w-0 flex-1 rounded-[22px] p-[2px] shadow-lg shadow-primary/20 transition-all duration-300">
+              <div className={`flex items-end gap-2 rounded-[20px] py-1.5 pr-4 pl-2 transition-all duration-300 ${
+                isDark ? 'bg-[#0f1422]' : 'bg-white'
+              }`}>
+                <textarea
+                  ref={textareaRef}
+                  rows={1}
+                  className={`font-sans min-w-0 flex-1 resize-none bg-transparent py-2 text-sm outline-none placeholder:opacity-50 [&::-webkit-scrollbar]:hidden ${
+                    isDark ? 'text-white placeholder:text-white/40' : 'text-slate-900 placeholder:text-slate-400'
+                  }`}
+                  value={input}
+                  onChange={(e) => {
+                    setInput(e.target.value)
+                    if (textareaRef.current) {
+                      textareaRef.current.style.height = 'auto'
+                      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`
                     }
                   }}
-                />
-                <TextareaAutosize
-                  minRows={1}
-                  maxRows={4}
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
                       e.preventDefault()
+                      if (!input.trim() || !currentChunkId || loading) return
                       handleSend()
+                      if (textareaRef.current) {
+                        textareaRef.current.style.height = 'auto'
+                      }
                     }
                   }}
-                  placeholder={currentChunkId ? "اكتب سؤالك الشرعي هنا لزاد…" : "اختر درساً أولاً لتبدأ المحادثة…"}
+                  placeholder="اكتب سؤالك هنا..."
                   disabled={!currentChunkId || loading}
-                  aria-label="اكتب سؤالك"
-                  className={`font-sans min-w-0 flex-1 resize-none bg-transparent py-2.5 text-base outline-none disabled:opacity-50 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] ${isDark ? 'text-white placeholder:text-white/50' : 'text-slate-900 placeholder:text-slate-400'
-                    }`}
                 />
                 <button
                   type="submit"
-                  aria-label="اسأل زاد"
                   disabled={!input.trim() || !currentChunkId || loading}
-                  className="brand-gradient flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-white shadow-lg shadow-primary/30 transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-50 disabled:hover:translate-y-0 cursor-pointer"
+                  onMouseDown={(e) => e.preventDefault()}
+                  className="brand-gradient flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white shadow-lg shadow-primary/30 transition-transform hover:-translate-y-0.5 disabled:opacity-40 disabled:hover:translate-y-0 cursor-pointer"
                 >
-                  <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5 -scale-x-100">
-                    <path
-                      d="M6 12h13M13 6l6 6-6 6"
-                      stroke="currentColor"
-                      strokeWidth="1.9"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                  <Send className="h-4 w-4 rtl:-scale-x-100" />
                 </button>
               </div>
             </div>

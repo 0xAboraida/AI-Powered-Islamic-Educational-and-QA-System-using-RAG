@@ -990,7 +990,11 @@ export function Bubble({
                     hidePodcast={true}
                     colorTheme={accentColor}
                     menuPlacement="top"
-                    className="!h-8 !w-8 !p-0 !justify-center !rounded-xl hover:scale-105 transition-transform"
+                    className={`!h-8 !w-8 !p-0 !justify-center !rounded-xl !shadow-none text-[13px] font-bold transition-all duration-200 hover:scale-105 cursor-pointer ${
+                      dark
+                        ? '!text-white/70 hover:!text-white !bg-white/5 hover:!bg-white/10 !border-white/10'
+                        : '!text-slate-600 hover:!text-slate-900 !bg-slate-100/80 hover:!bg-slate-200/80 !border-slate-200'
+                    }`}
                   />
 
                   <button

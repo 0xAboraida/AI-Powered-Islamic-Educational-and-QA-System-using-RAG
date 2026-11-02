@@ -1,7 +1,9 @@
 import { List, ChevronLeft, CheckCircle2, XCircle, BookOpen, MessageCircle } from 'lucide-react'
 import type { Question } from '../../../../../contexts/StudyContext'
-import { isMatchingFullyAnswered, isMatchingCorrect } from '../../utils/quizEvaluator'
+import { isMatchingFullyAnswered, isMatchingCorrect, formatIslamicQuizText } from '../../utils/quizEvaluator'
 import { QuestionCardContent } from '../QuestionCardContent'
+import { useTheme } from '../../../../../contexts/ThemeContext'
+import { getQuizActiveThemeTokens } from '../../utils/quizThemeTokens'
 
 interface QuizDetailedReviewProps {
   localQuestions: Question[]
@@ -18,20 +20,23 @@ export function QuizDetailedReview({
   localQuestions, selectedAnswers, matchingAnswers, shuffledMatchingOptions,
   totalQuestions, isDark, onBack, onDiscuss,
 }: QuizDetailedReviewProps) {
+  const { accentColor } = useTheme()
+  const theme = getQuizActiveThemeTokens(accentColor, isDark)
+
   return (
-    <div className="w-full flex flex-col items-center py-4" key="quiz-detailed-review" dir="rtl">
+    <div className="w-full flex flex-col items-center py-3 sm:py-4" key="quiz-detailed-review" dir="rtl">
       <div className="w-full max-w-2xl space-y-4">
         {/* Sticky Header */}
-        <div className={`p-4 rounded-2xl border flex items-center justify-between backdrop-blur-md sticky top-0 z-20 shadow-md ${
+        <div className={`p-3.5 sm:p-4 rounded-xl border flex items-center justify-between backdrop-blur-md sticky top-0 z-20 shadow-md ${
           isDark ? 'bg-[#12041f]/90 border-white/10 text-white' : 'bg-white/90 border-slate-200 text-slate-900'
         }`}>
-          <div className="flex items-center gap-2 font-bold text-sm">
-            <List size={18} className="text-emerald-400" />
+          <div className="flex items-center gap-2 font-bold text-xs sm:text-sm">
+            <List size={18} className={theme.promptText} />
             <span>مراجعة إجابات الاختبار التفصيلية</span>
           </div>
           <button
             onClick={onBack}
-            className="px-3 py-1.5 rounded-xl bg-emerald-500 text-white text-xs font-bold shadow-md hover:bg-emerald-600 transition-all flex items-center gap-1.5 cursor-pointer"
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold shadow-md transition-all flex items-center gap-1.5 cursor-pointer ${theme.nextBtn}`}
           >
             <ChevronLeft size={16} />
             <span>العودة للنتيجة</span>
@@ -39,7 +44,7 @@ export function QuizDetailedReview({
         </div>
 
         {/* Questions */}
-        <div className="space-y-8 pb-8">
+        <div className="space-y-6 sm:space-y-8 pb-8">
           {localQuestions.map((q, idx) => {
             const selectedOpt = selectedAnswers[idx]
             const isAnswered = q.type === 'matching'
@@ -52,24 +57,22 @@ export function QuizDetailedReview({
             return (
               <div
                 key={idx}
-                className={`p-6 pt-7 md:p-8 md:pt-8 rounded-3xl border shadow-xl space-y-4 transition-all relative ${
-                  isDark
-                    ? 'bg-[#1c0836] border-purple-500/30 text-white shadow-purple-950/50 ring-1 ring-white/5'
-                    : 'bg-white border-slate-300 text-slate-900 shadow-md ring-1 ring-slate-900/5'
-                }`}
+                className={`p-4 sm:p-6 md:p-8 rounded-2xl border shadow-xl space-y-4 transition-all relative ${
+                  theme.cardBg
+                } ${theme.cardBorder}`}
               >
                 {/* Floating Question Number & Answer Status Badges Outside Top-Right Corner */}
-                <div className="absolute -top-4 right-5 z-10 flex items-center gap-2" dir="rtl">
-                  <span className="px-3.5 py-1 rounded-xl text-xs font-black bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/20 border border-emerald-300/40 flex items-center gap-1">
+                <div className="absolute -top-3.5 right-4 z-10 flex items-center gap-1.5 sm:gap-2" dir="rtl">
+                  <span className={`px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-lg text-[11px] sm:text-xs font-black shadow-md border ${theme.qNumBadge} flex items-center gap-1`}>
                     سؤال {idx + 1} من {totalQuestions}
                   </span>
 
-                  <span className={`px-3 py-1 rounded-xl text-xs font-extrabold flex items-center gap-1.5 shadow-lg ${
+                  <span className={`px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-lg text-[11px] sm:text-xs font-extrabold flex items-center gap-1.5 shadow-md ${
                     isCorrect
                       ? 'bg-emerald-500 text-white border border-emerald-300/40 shadow-emerald-500/20'
                       : 'bg-rose-500 text-white border border-rose-300/40 shadow-rose-500/20'
                   }`}>
-                    {isCorrect ? <CheckCircle2 size={14} /> : <XCircle size={14} />}
+                    {isCorrect ? <CheckCircle2 size={13} /> : <XCircle size={13} />}
                     <span>{isCorrect ? 'إجابة صحيحة' : 'إجابة خاطئة'}</span>
                   </span>
                 </div>
@@ -102,7 +105,7 @@ export function QuizDetailedReview({
                         </span>
                       </div>
                       <p className="text-xs md:text-sm leading-relaxed opacity-95 pr-1">
-                        {q.explanation}
+                        {formatIslamicQuizText(q.explanation)}
                       </p>
                     </div>
                   </div>
@@ -117,7 +120,7 @@ export function QuizDetailedReview({
                           ? q.options[selectedOpt]
                           : (q.type === 'matching' ? 'إجابات التوصيل والربط الخاصة بي' : 'لم يتم الإجابة')
                       )}
-                      className="text-xs font-black text-[#38bdf8] hover:bg-[#38bdf8]/20 flex items-center gap-2 bg-[#38bdf8]/10 px-4 py-2 rounded-xl border border-[#38bdf8]/30 shadow-md shadow-[#38bdf8]/10 transition-all active:scale-95 cursor-pointer"
+                      className="text-xs font-black text-[#38bdf8] hover:bg-[#38bdf8]/20 flex items-center gap-2 bg-[#38bdf8]/10 px-3.5 py-1.5 rounded-lg border border-[#38bdf8]/30 shadow-md shadow-[#38bdf8]/10 transition-all active:scale-95 cursor-pointer"
                     >
                       <MessageCircle size={15} />
                       <span>تناقش مع زاد حول هذا الإشكال</span>

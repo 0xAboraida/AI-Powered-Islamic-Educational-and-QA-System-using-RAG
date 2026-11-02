@@ -59,14 +59,14 @@ export default function NotificationBell({ variant = 'default', className = '' }
     if (isDark) {
       switch (accentColor) {
         case 'emerald':
-          return 'bg-[#080b12]/92 sm:bg-[#080b12]/96 border-teal-500/25 shadow-[-16px_20px_60px_rgba(0,0,0,0.85)]'
+          return 'bg-[#080b12]/92 sm:bg-[#080b12]/96 border-teal-500/25 shadow-[0_20px_60px_rgba(0,0,0,0.85)]'
         case 'amber':
-          return 'bg-[#0b0c10]/92 sm:bg-[#0b0c10]/96 border-[#dfbf83]/25 shadow-[-16px_20px_60px_rgba(0,0,0,0.85)]'
+          return 'bg-[#0b0c10]/92 sm:bg-[#0b0c10]/96 border-[#dfbf83]/25 shadow-[0_20px_60px_rgba(0,0,0,0.85)]'
         case 'blue':
-          return 'bg-[#080c18]/92 sm:bg-[#080c18]/96 border-blue-500/25 shadow-[-16px_20px_60px_rgba(0,0,0,0.85)]'
+          return 'bg-[#080c18]/92 sm:bg-[#080c18]/96 border-blue-500/25 shadow-[0_20px_60px_rgba(0,0,0,0.85)]'
         case 'purple':
         default:
-          return 'bg-[#0c0717]/92 sm:bg-[#0c0717]/96 border-purple-500/25 shadow-[-16px_20px_60px_rgba(0,0,0,0.85)]'
+          return 'bg-[#0c0717]/92 sm:bg-[#0c0717]/96 border-purple-500/25 shadow-[0_20px_60px_rgba(0,0,0,0.85)]'
       }
     } else {
       switch (accentColor) {

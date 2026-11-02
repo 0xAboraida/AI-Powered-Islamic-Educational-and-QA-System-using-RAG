@@ -79,7 +79,7 @@ export function StickyStudyPlanHeader({
   return (
     <div
       ref={headerRef}
-      className={`sticky top-0 z-30 w-full border-b backdrop-blur-2xl transition-all ${isDark
+      className={`${hasPlan ? 'block' : 'hidden md:block'} sticky top-0 z-30 w-full h-[50px] sm:h-[53px] box-border border-b backdrop-blur-2xl transition-all ${isDark
         ? isCompleted100
           ? 'bg-[#0f1d24]/95 border-emerald-500/40 text-white shadow-lg shadow-emerald-950/40'
           : 'bg-[#12041f]/90 border-white/10 text-white shadow-md'
@@ -89,17 +89,18 @@ export function StickyStudyPlanHeader({
         }`}
     >
       {/* Single Merged Bar */}
-      <div className="flex items-center justify-between px-4 py-3.5 min-h-[54px]">
+      <div className="flex items-center justify-between px-2.5 sm:px-4 h-full">
         {/* Right Section: Logo/Title + Progress Pill */}
-        <div className="flex items-center gap-3 min-w-0">
-          <div className="flex items-center gap-2 text-sm font-black shrink-0">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1 sm:flex-initial">
+          {/* Logo only on desktop/tablet to prevent repeating Zad logo on mobile */}
+          <div className="hidden sm:flex items-center gap-2 text-sm font-black shrink-0">
             <MessageCircle size={18} className="text-purple-500 shrink-0 stroke-[2.2]" />
             <span className={`font-extrabold text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>زاد</span>
           </div>
 
           {hasPlan && (
-            <div className={`flex items-center gap-2 min-w-0 border-r pr-3 ${isDark ? 'border-white/15' : 'border-slate-200'}`}>
-              <span className={`text-[10px] font-black px-2 py-0.5 rounded-full border shrink-0 flex items-center gap-1 ${isCompleted100
+            <div className={`flex items-center gap-1.5 sm:gap-2 min-w-0 sm:border-r sm:pr-3 ${isDark ? 'border-white/15' : 'border-slate-200'}`}>
+              <span className={`text-[10px] font-black px-1.5 sm:px-2 py-0.5 rounded-full border shrink-0 flex items-center gap-1 ${isCompleted100
                 ? isDark
                   ? 'text-emerald-300 bg-emerald-500/25 border-emerald-400/50 shadow-[0_0_12px_rgba(16,185,129,0.3)] animate-pulse'
                   : 'text-emerald-800 bg-emerald-100 border-emerald-300 shadow-sm animate-pulse'
@@ -111,7 +112,7 @@ export function StickyStudyPlanHeader({
                 {pct}%
               </span>
               {nextUncompletedStep ? (
-                <span className={`text-[11px] font-bold truncate max-w-[130px] sm:max-w-[200px] ${isDark ? 'text-sky-200' : 'text-slate-700'}`}>
+                <span className={`text-[11px] font-bold truncate max-w-[105px] xs:max-w-[145px] sm:max-w-[200px] ${isDark ? 'text-sky-200' : 'text-slate-700'}`}>
                   {nextUncompletedStep.title}
                 </span>
               ) : (
@@ -124,12 +125,12 @@ export function StickyStudyPlanHeader({
         </div>
 
         {/* Left Section: Action Button + Sleek Plan Trigger Button + Close */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           {hasPlan && nextUncompletedStep && (
             <button
               disabled={loading}
               onClick={handleAdvanceCurrentStep}
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-black transition-all ${loading
+              className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 rounded-xl text-xs font-black transition-all ${loading
                 ? isDark
                   ? 'bg-white/10 text-white/40 border border-white/10 cursor-not-allowed opacity-70 shadow-none'
                   : 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed opacity-70 shadow-none'
@@ -137,8 +138,8 @@ export function StickyStudyPlanHeader({
                 }`}
             >
               {loading ? <Loader2 size={13} className="animate-spin text-emerald-400" /> : <Check size={13} />}
-              <span className="hidden sm:inline">
-                {loading ? 'جاري الشرح...' : 'فهمت هذه النقطة ✔'}
+              <span className="inline text-[11px] sm:text-xs font-black whitespace-nowrap">
+                {loading ? 'جاري...' : 'فهمت هذه النقطة ✔'}
               </span>
             </button>
           )}
@@ -147,7 +148,7 @@ export function StickyStudyPlanHeader({
           {hasPlan && (
             <button
               onClick={() => setIsExpanded(!isExpanded)}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl border transition-all text-xs font-bold cursor-pointer shadow-sm ${isExpanded
+              className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 rounded-xl border transition-all text-xs font-bold cursor-pointer shadow-sm ${isExpanded
                 ? isDark
                   ? 'bg-sky-500/20 border-sky-400/60 text-sky-200 ring-1 ring-sky-400/30'
                   : 'bg-sky-100 border-sky-300 text-sky-800 ring-1 ring-sky-300/40'
@@ -166,7 +167,7 @@ export function StickyStudyPlanHeader({
           {onClose && (
             <button
               onClick={onClose}
-              className={`flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${isDark ? 'bg-white/5 hover:bg-white/10 text-white/60 hover:text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-400 hover:text-slate-700'
+              className={`hidden md:flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${isDark ? 'bg-white/5 hover:bg-white/10 text-white/60 hover:text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-400 hover:text-slate-700'
                 }`}
               title="إغلاق التاب"
             >
@@ -198,7 +199,7 @@ export function StickyStudyPlanHeader({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -8, scale: 0.96 }}
               transition={{ duration: 0.18 }}
-              className={`absolute top-[100%] left-3 sm:left-4 right-auto w-[calc(100%-1.5rem)] sm:w-[420px] max-w-[calc(100vw-2rem)] z-50 mt-2 p-3.5 space-y-2.5 rounded-2xl backdrop-blur-2xl border max-h-80 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] ${isDark
+              className={`absolute top-[100%] inset-x-2.5 sm:inset-x-auto sm:left-4 sm:right-auto w-[calc(100%-1.25rem)] sm:w-[420px] max-w-[calc(100vw-1.25rem)] z-50 mt-2 p-3 sm:p-3.5 space-y-2.5 rounded-2xl backdrop-blur-2xl border max-h-80 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] shadow-2xl ${isDark
                 ? 'bg-[#0d041c]/95 border-sky-500/30 shadow-2xl shadow-purple-950/90 ring-1 ring-white/10 text-white'
                 : 'bg-white/98 border-slate-200 shadow-xl ring-1 ring-slate-200/60 text-slate-900'
                 }`}

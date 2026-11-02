@@ -268,7 +268,7 @@ export default function UserProfileModal({ isOpen, onClose }: UserProfileModalPr
             transition={{ type: 'spring', damping: 26, stiffness: 320 }}
             className={`relative flex w-full max-w-lg flex-col overflow-hidden rounded-[2rem] border shadow-2xl backdrop-blur-2xl max-h-[92dvh] ${getThemeModalBorderClass()} ${
               isDark
-                ? 'bg-[#090b10]/98 text-white shadow-[-16px_0_50px_rgba(0,0,0,0.85)]'
+                ? 'bg-[#090b10]/98 text-white shadow-[0_20px_50px_rgba(0,0,0,0.85)]'
                 : 'bg-[#fcfbf9]/98 text-stone-900 shadow-[0_20px_50px_rgba(0,0,0,0.12)]'
             }`}
           >

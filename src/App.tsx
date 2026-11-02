@@ -150,7 +150,24 @@ function AppContent() {
       return <VoiceScreen onExit={() => navigate('home')} onOpenText={() => navigate('chat')} />
     }
     if (view === 'study') {
-      return <StudyMode onExit={() => navigate('home')} />
+      return (
+        <StudyMode
+          onExit={() => navigate('home')}
+          onNavigateHome={() => navigate('home')}
+          onTryChat={openChat}
+          onOpenKnowledge={openKnowledge}
+          onOpenVoiceChat={openVoice}
+          onOpenLessons={openLessons}
+          onOpenAdmin={openAdmin}
+          onOpenTurathRag={openTurathRag}
+          onOpenEngineControl={openEngineControl}
+          onOpenDataIngestion={openDataIngestion}
+          onOpenV2PipelineAdmin={openV2PipelineAdmin}
+          onOpenAdminLibrary={openAdminLibrary}
+          onOpenYoutubeImporter={openYoutubeImporter}
+          onOpenSystemObservability={openSystemObservability}
+        />
+      )
     }
     if (view === 'turath_rag') {
       return <TurathRagPage onExit={() => navigate('home')} />
