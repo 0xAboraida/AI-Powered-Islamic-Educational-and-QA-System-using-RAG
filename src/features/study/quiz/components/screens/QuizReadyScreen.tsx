@@ -141,8 +141,8 @@ export function QuizReadyScreen({
           onClick={onStart}
           className={`w-full py-4 px-6 rounded-2xl font-extrabold text-sm flex items-center justify-center gap-2.5 cursor-pointer ${theme.startBtn}`}
         >
-          <Play size={20} fill="currentColor" />
           <span>ابدأ الاختبار الآن</span>
+          <Play size={18} fill="currentColor" className="rotate-180" />
         </button>
 
         {/* Back to setup */}

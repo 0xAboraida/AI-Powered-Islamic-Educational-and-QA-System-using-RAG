@@ -421,7 +421,6 @@ export default function Signup({
             h-[50px]
             font-bold
             text-[14px]
-            shadow-xl shadow-primary/30
             transition-all
             disabled:opacity-60
             flex
@@ -475,12 +474,7 @@ export default function Signup({
           <button
             type="button"
             onClick={onNavigateLogin}
-            className={`
-              text-[13px]
-              font-semibold
-              transition-colors
-              ${dark ? 'text-[#c084fc] hover:text-white' : 'text-primary hover:text-primary/70'}
-            `}
+            className="text-[13px] font-semibold transition-colors text-primary hover:text-primary/70 dark:hover:text-white"
           >
             تسجيل الدخول
           </button>

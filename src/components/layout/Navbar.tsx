@@ -389,24 +389,29 @@ export default function Navbar({
   }
 
   const getNavActionBtnClass = () => {
+    if (isDark) {
+      switch (accentColor) {
+        case 'emerald':
+          return 'bg-white/[0.04] hover:bg-white/[0.09] border-white/10 hover:border-teal-400/50 text-slate-300 hover:text-teal-200 shadow-xs hover:shadow-teal-500/20'
+        case 'amber':
+          return 'bg-white/[0.04] hover:bg-white/[0.09] border-white/10 hover:border-[#dfbf83]/50 text-slate-300 hover:text-[#eed8ad] shadow-xs hover:shadow-[#dfbf83]/20'
+        case 'blue':
+          return 'bg-white/[0.04] hover:bg-white/[0.09] border-white/10 hover:border-blue-400/50 text-slate-300 hover:text-blue-200 shadow-xs hover:shadow-blue-500/20'
+        case 'purple':
+        default:
+          return 'bg-white/[0.04] hover:bg-white/[0.09] border-white/10 hover:border-purple-400/50 text-slate-300 hover:text-purple-200 shadow-xs hover:shadow-purple-500/20'
+      }
+    }
     switch (accentColor) {
       case 'emerald':
-        return isDark
-          ? 'bg-teal-500/10 border-teal-500/25 text-teal-300 hover:bg-teal-500/20 hover:border-teal-500/40 shadow-sm'
-          : 'bg-white/80 border-teal-200 text-teal-800 hover:bg-teal-50 shadow-sm'
+        return 'bg-white/80 hover:bg-white border-teal-200 hover:border-teal-300 text-teal-800 shadow-xs'
       case 'amber':
-        return isDark
-          ? 'bg-[#dfbf83]/10 border-[#dfbf83]/25 text-[#eed9b0] hover:bg-[#dfbf83]/20 hover:border-[#dfbf83]/40 shadow-sm'
-          : 'bg-white/80 border-[#ebd9b5] text-[#8a652a] hover:bg-[#fbf8f0] shadow-sm'
+        return 'bg-white/80 hover:bg-white border-[#ebd9b5] hover:border-[#dfbf83] text-[#8a652a] shadow-xs'
       case 'blue':
-        return isDark
-          ? 'bg-blue-500/10 border-blue-500/25 text-blue-300 hover:bg-blue-500/20 hover:border-blue-500/40 shadow-sm'
-          : 'bg-white/80 border-blue-200 text-blue-800 hover:bg-blue-50 shadow-sm'
+        return 'bg-white/80 hover:bg-white border-blue-200 hover:border-blue-300 text-blue-800 shadow-xs'
       case 'purple':
       default:
-        return isDark
-          ? 'bg-purple-500/10 border-purple-500/25 text-purple-300 hover:bg-purple-500/20 hover:border-purple-500/40 shadow-sm'
-          : 'bg-white/80 border-purple-200 text-purple-800 hover:bg-purple-50 shadow-sm'
+        return 'bg-white/80 hover:bg-white border-purple-200 hover:border-purple-300 text-purple-800 shadow-xs'
     }
   }
 

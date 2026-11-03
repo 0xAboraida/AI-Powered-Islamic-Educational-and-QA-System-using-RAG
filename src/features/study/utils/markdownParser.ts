@@ -273,12 +273,72 @@ export interface TurathLiveTextResult {
   continuationNotice: string
 }
 
+export function getTurathThemeColors(accentColor: string = 'emerald', isDark: boolean = true) {
+  switch (accentColor) {
+    case 'amber':
+      return {
+        accent: isDark ? '#eed8ad' : '#855e24',
+        accentLight: isDark ? 'rgba(223,191,131,0.15)' : 'rgba(223,191,131,0.18)',
+        accentBorder: isDark ? 'rgba(223,191,131,0.35)' : 'rgba(184,141,70,0.4)',
+        cardBorder: isDark ? 'rgba(223,191,131,0.25)' : 'rgba(223,191,131,0.55)',
+        cardShadow: isDark ? '0 20px 25px -5px rgba(0,0,0,0.3)' : '0 10px 30px rgba(223,191,131,0.18)',
+        badgeBg: isDark ? '#1f160a' : '#ffffff',
+        badgeBorder: isDark ? 'rgba(223,191,131,0.45)' : 'rgba(184,141,70,0.45)',
+        badgeShadow: isDark ? '0 4px 16px rgba(0,0,0,0.5)' : '0 4px 14px rgba(223,191,131,0.25)',
+        titleColor: isDark ? '#eed8ad' : '#6b471c',
+        headingColor: isDark ? '#f5ebd7' : '#5e431a',
+      }
+    case 'blue':
+      return {
+        accent: isDark ? '#38bdf8' : '#0284c7',
+        accentLight: isDark ? 'rgba(56,189,248,0.1)' : 'rgba(2,132,199,0.08)',
+        accentBorder: isDark ? 'rgba(56,189,248,0.3)' : 'rgba(2,132,199,0.25)',
+        cardBorder: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(56,189,248,0.35)',
+        cardShadow: isDark ? '0 20px 25px -5px rgba(0,0,0,0.3)' : '0 10px 30px rgba(56,189,248,0.1)',
+        badgeBg: isDark ? '#1a0733' : '#ffffff',
+        badgeBorder: isDark ? 'rgba(56,189,248,0.45)' : 'rgba(2,132,199,0.35)',
+        badgeShadow: isDark ? '0 4px 16px rgba(0,0,0,0.5)' : '0 4px 14px rgba(56,189,248,0.2)',
+        titleColor: isDark ? '#38bdf8' : '#0369a1',
+        headingColor: isDark ? '#ffffff' : '#075985',
+      }
+    case 'purple':
+      return {
+        accent: isDark ? '#c084fc' : '#7e22ce',
+        accentLight: isDark ? 'rgba(192,132,252,0.12)' : 'rgba(126,34,206,0.08)',
+        accentBorder: isDark ? 'rgba(192,132,252,0.3)' : 'rgba(126,34,206,0.25)',
+        cardBorder: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(168,85,247,0.35)',
+        cardShadow: isDark ? '0 20px 25px -5px rgba(0,0,0,0.3)' : '0 10px 30px rgba(168,85,247,0.12)',
+        badgeBg: isDark ? '#1a0730' : '#ffffff',
+        badgeBorder: isDark ? 'rgba(192,132,252,0.45)' : 'rgba(126,34,206,0.35)',
+        badgeShadow: isDark ? '0 4px 16px rgba(0,0,0,0.5)' : '0 4px 14px rgba(168,85,247,0.2)',
+        titleColor: isDark ? '#c084fc' : '#581c87',
+        headingColor: isDark ? '#ffffff' : '#4c1d95',
+      }
+    case 'emerald':
+    default:
+      return {
+        accent: isDark ? '#2dd4bf' : '#0f766e',
+        accentLight: isDark ? 'rgba(45,212,191,0.12)' : 'rgba(15,118,110,0.08)',
+        accentBorder: isDark ? 'rgba(45,212,191,0.3)' : 'rgba(15,118,110,0.25)',
+        cardBorder: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(20,184,166,0.35)',
+        cardShadow: isDark ? '0 20px 25px -5px rgba(0,0,0,0.3)' : '0 10px 30px rgba(20,184,166,0.12)',
+        badgeBg: isDark ? '#041413' : '#ffffff',
+        badgeBorder: isDark ? 'rgba(45,212,191,0.45)' : 'rgba(15,118,110,0.35)',
+        badgeShadow: isDark ? '0 4px 16px rgba(0,0,0,0.5)' : '0 4px 14px rgba(20,184,166,0.2)',
+        titleColor: isDark ? '#2dd4bf' : '#0f766e',
+        headingColor: isDark ? '#ffffff' : '#064e3b',
+      }
+  }
+}
+
 export function formatTurathLiveText(
   text: string,
   isDark: boolean = true,
-  defaultPage?: number | string
+  defaultPage?: number | string,
+  accentColor: string = 'emerald'
 ): TurathLiveTextResult {
   if (!text) return { __html: '', pages: [], continuationNotice: '' }
+  const tc = getTurathThemeColors(accentColor, isDark)
 
   // 0. If the content is an injected UI notice card (e.g. parent section notice), return directly without book text parsing
   if (text.includes('turath-empty-parent-notice')) {
@@ -369,10 +429,8 @@ export function formatTurathLiveText(
           const safePg = pgNum || '1'
           const refId = `turath-ref-${safePg}-${normNum}`
           const fnId = `turath-fn-${safePg}-${normNum}`
-          return `<a href="#${fnId}" id="${refId}" class="turath-citation-ref" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; margin:0 3px; font-family:'Amiri','Noto Naskh Arabic',serif; vertical-align:super; font-size:0.85em; font-weight:700; color:${isDark ? '#38bdf8' : '#0284c7'
-            }; background:${isDark ? 'rgba(56,189,248,0.1)' : 'rgba(2,132,199,0.08)'
-            }; border:1px solid ${isDark ? 'rgba(56,189,248,0.3)' : 'rgba(2,132,199,0.25)'
-            }; padding:0 5px; min-width:20px; height:20px; line-height:20px; border-radius:9999px; cursor:pointer; transition:all 0.2s;" title="انتقل إلى الحاشية ${cleanNum}" onclick="event.preventDefault(); event.stopPropagation(); const target = document.getElementById('${fnId}'); if(target) { target.scrollIntoView({behavior:'smooth', block:'center'}); target.style.transition='background 0.5s'; target.style.backgroundColor='${isDark ? 'rgba(56,189,248,0.22)' : 'rgba(2,132,199,0.15)'}'; setTimeout(() => target.style.backgroundColor='transparent', 1500); }">${cleanNum}</a>`
+          return `<a href="#${fnId}" id="${refId}" class="turath-citation-ref" style="text-decoration:none; display:inline-block; vertical-align:super; line-height:1; margin:0 2px; font-family:'Amiri','Noto Naskh Arabic',serif; font-size:0.7em; font-weight:700; color:${tc.accent
+            }; opacity:0.8; padding:1px 3px; border-radius:4px; cursor:pointer; transition:all 0.2s ease;" onmouseover="this.style.opacity='1'; this.style.backgroundColor='${tc.accentLight}';" onmouseout="this.style.opacity='0.8'; this.style.backgroundColor='transparent';" title="انتقل إلى الحاشية (${cleanNum})" onclick="event.preventDefault(); event.stopPropagation(); const target = document.getElementById('${fnId}'); if(target) { target.scrollIntoView({behavior:'smooth', block:'center'}); target.style.transition='background 0.5s'; target.style.backgroundColor='${tc.accentLight}'; setTimeout(() => target.style.backgroundColor='transparent', 1500); }">(${cleanNum})</a>`
         }
       )
 
@@ -405,10 +463,8 @@ export function formatTurathLiveText(
           const safePg = pgNum || '1'
           const refId = `turath-ref-${safePg}-${normNum}`
           const fnId = `turath-fn-${safePg}-${normNum}`
-          return `<a href="#${fnId}" id="${refId}" class="turath-citation-ref" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; margin:0 3px; font-family:'Amiri','Noto Naskh Arabic',serif; vertical-align:super; font-size:0.85em; font-weight:700; color:${isDark ? '#38bdf8' : '#0284c7'
-            }; background:${isDark ? 'rgba(56,189,248,0.1)' : 'rgba(2,132,199,0.08)'
-            }; border:1px solid ${isDark ? 'rgba(56,189,248,0.3)' : 'rgba(2,132,199,0.25)'
-            }; padding:0 5px; min-width:20px; height:20px; line-height:20px; border-radius:9999px; cursor:pointer; transition:all 0.2s;" title="انتقل إلى الحاشية ${rawNum}" onclick="event.preventDefault(); event.stopPropagation(); const target = document.getElementById('${fnId}'); if(target) { target.scrollIntoView({behavior:'smooth', block:'center'}); target.style.transition='background 0.5s'; target.style.backgroundColor='${isDark ? 'rgba(56,189,248,0.22)' : 'rgba(2,132,199,0.15)'}'; setTimeout(() => target.style.backgroundColor='transparent', 1500); }">${rawNum}</a>`
+          return `<a href="#${fnId}" id="${refId}" class="turath-citation-ref" style="text-decoration:none; display:inline-block; vertical-align:super; line-height:1; margin:0 2px; font-family:'Amiri','Noto Naskh Arabic',serif; font-size:0.7em; font-weight:700; color:${tc.accent
+            }; opacity:0.8; padding:1px 3px; border-radius:4px; cursor:pointer; transition:all 0.2s ease;" onmouseover="this.style.opacity='1'; this.style.backgroundColor='${tc.accentLight}';" onmouseout="this.style.opacity='0.8'; this.style.backgroundColor='transparent';" title="انتقل إلى الحاشية (${rawNum})" onclick="event.preventDefault(); event.stopPropagation(); const target = document.getElementById('${fnId}'); if(target) { target.scrollIntoView({behavior:'smooth', block:'center'}); target.style.transition='background 0.5s'; target.style.backgroundColor='${tc.accentLight}'; setTimeout(() => target.style.backgroundColor='transparent', 1500); }">(${rawNum})</a>`
         })
       }
 
@@ -482,7 +538,7 @@ export function formatTurathLiveText(
 
         const html = `\n\n<div class="turath-title-block" style="margin: 1.4em 0 1.8em; text-align: center; width: 100%;">
           <h2 style="font-family: inherit; font-size: 1.2em; font-weight: 300; color: ${
-            isDark ? '#ffffff' : '#075985'
+            isDark ? tc.titleColor : tc.headingColor
           }; margin: 0; line-height: 1.6; display: inline-block;">
             ${formattedTitle}
           </h2>
@@ -583,7 +639,7 @@ export function formatTurathLiveText(
           if (/^[\d١٢٣٤٥٦٧٨٩٠\^]+$/.test(inner.trim()) || /^\d+\s*\/\s*\d+$/.test(inner.trim())) {
             return match;
           }
-          return `<span style="display:inline; color:${isDark ? '#38bdf8' : '#0284c7'
+          return `<span style="display:inline; color:${tc.accent
             }; font-weight:normal; margin:0 2px;">${match}</span>`;
         }
       )
@@ -605,9 +661,9 @@ export function formatTurathLiveText(
       // Volume and page references: (1 / 232)
       t = t.replace(
         /\((\d+\s*\/\s*\d+)\)/g,
-        `<span style="display:inline-flex;align-items:center;background:${isDark ? 'rgba(56,189,248,0.1)' : 'rgba(2,132,199,0.1)'
-        };color:${isDark ? '#38bdf8' : '#0284c7'
-        };border:1px solid ${isDark ? 'rgba(56,189,248,0.25)' : 'rgba(2,132,199,0.25)'
+        `<span style="display:inline-flex;align-items:center;background:${tc.accentLight
+        };color:${tc.accent
+        };border:1px solid ${tc.accentBorder
         };padding:1px 8px;border-radius:9999px;font-size:0.75em;font-weight:600;margin:0 4px;direction:ltr">$1</span>`
       )
 
@@ -625,7 +681,7 @@ export function formatTurathLiveText(
     }
 
     const highlightLineStartMarkers = (line: string): string => {
-      const color = isDark ? '#38bdf8' : '#0284c7'; // Sky-400 for dark, Sky-700 for light
+      const color = tc.accent;
 
       // 1. Matches strictly at the start of the line (with optional colon/dash)
       const startPattern = /^(?:(?:و|ف|ثم\s+)?(?:(?:الوجه|القسم|الشرط|السبب|الركن|القول|المذهب|الدليل|النوع|الصنف|الأمر)\s+)?(?:الأول|الثاني|الثالث|الرابع|الخامس|السادس|السابع|الثامن|التاسع|العاشر|الحادي عشر|الثاني عشر|أولا|ثانيا|ثالثا|رابعا|خامسا|سادسا|سابعا|ثامنا|تاسعا|عاشرا|أولاً|ثانياً|ثالثاً|رابعاً|خامساً|سادساً|سابعاً|ثامناً|تاسعاً|عاشراً|قلت|فيه|فصل|تنبيه|مسألة|فرع|فائدة|مطلب|خاتمة|تتمة|مقدمة|س|ج|سؤال|جواب))(?=\s|[:.-]|$)(?:\s*[:.-]+)?/u;
@@ -814,13 +870,13 @@ export function formatTurathLiveText(
         if (cleanNum) {
           return `
             <div id="${fnId}" class="turath-footnote-item" style="margin-bottom: 0.8em; line-height: 1.85; font-size: 0.9em; opacity: ${isDark ? '0.92' : '0.88'
-            }; border-radius: 8px; padding: 4px 6px; transition: background 0.4s ease; direction: rtl; text-align: right;">
-              <div style="display: flex; flex-direction: row; align-items: flex-start; gap: 10px; width: 100%;">
+            }; border-radius: 8px; padding: 3px 0 3px 4px; transition: background 0.4s ease; direction: rtl; text-align: right;">
+              <div style="display: flex; flex-direction: row; align-items: flex-start; gap: 7px; width: 100%;">
                 <div style="flex-shrink: 0; margin-top: -3px;">
-                  <a href="#${refId}" class="turath-fn-backref" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; font-family:'Amiri','Noto Naskh Arabic',serif; font-size:1em; font-weight:700; color:${isDark ? '#38bdf8' : '#0284c7'
-            }; background:${isDark ? 'rgba(56,189,248,0.1)' : 'rgba(2,132,199,0.08)'
-            }; border:1px solid ${isDark ? 'rgba(56,189,248,0.3)' : 'rgba(2,132,199,0.25)'
-            }; padding:0 8px; min-width:26px; height:26px; line-height:26px; border-radius:9999px; cursor:pointer; transition:all 0.2s; box-shadow: ${isDark ? '0 2px 8px rgba(56,189,248,0.1)' : 'none'};" title="العودة إلى موضع الإحالة في النص (${cleanNum})" onmouseover="this.style.boxShadow='${isDark ? '0 4px 12px rgba(56,189,248,0.3)' : '0 2px 6px rgba(2,132,199,0.2)'}'; this.style.backgroundColor='${isDark ? 'rgba(56,189,248,0.2)' : 'rgba(2,132,199,0.15)'}';" onmouseout="this.style.boxShadow='${isDark ? '0 2px 8px rgba(56,189,248,0.1)' : 'none'}'; this.style.backgroundColor='${isDark ? 'rgba(56,189,248,0.1)' : 'rgba(2,132,199,0.08)'}';" onclick="event.preventDefault(); event.stopPropagation(); const ref = document.getElementById('${refId}'); if(ref) { ref.scrollIntoView({behavior:'smooth', block:'center'}); ref.style.transition='all 0.5s'; ref.style.boxShadow='0 0 14px ${isDark ? '#38bdf8' : '#0284c7'}'; ref.style.backgroundColor='${isDark ? 'rgba(56,189,248,0.3)' : 'rgba(2,132,199,0.2)'}'; setTimeout(() => { ref.style.boxShadow='none'; ref.style.backgroundColor='${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.03)'}'; }, 1600); }">${cleanNum}</a>
+                  <a href="#${refId}" class="turath-fn-backref" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; font-family:'Amiri','Noto Naskh Arabic',serif; font-size:0.95em; font-weight:700; color:${tc.accent
+            }; background:${tc.accentLight
+            }; border:1px solid ${tc.accentBorder
+            }; padding:0 5px; min-width:24px; height:24px; line-height:24px; border-radius:9999px; cursor:pointer; transition:all 0.2s; box-shadow: ${isDark ? `0 2px 8px ${tc.accentBorder}` : 'none'};" title="العودة إلى موضع الإحالة في النص (${cleanNum})" onmouseover="this.style.boxShadow='${isDark ? `0 4px 12px ${tc.accentBorder}` : `0 2px 6px ${tc.accentBorder}`}'; this.style.backgroundColor='${tc.accentLight}';" onmouseout="this.style.boxShadow='${isDark ? `0 2px 8px ${tc.accentBorder}` : 'none'}'; this.style.backgroundColor='${tc.accentLight}';" onclick="event.preventDefault(); event.stopPropagation(); const ref = document.getElementById('${refId}'); if(ref) { ref.scrollIntoView({behavior:'smooth', block:'center'}); ref.style.transition='all 0.5s'; ref.style.boxShadow='0 0 14px ${tc.accent}'; ref.style.backgroundColor='${tc.accentLight}'; setTimeout(() => { ref.style.boxShadow='none'; ref.style.backgroundColor='${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.03)'}'; }, 1600); }">${cleanNum}</a>
                 </div>
                 <div style="flex: 1; min-width: 0; text-align: justify; text-justify: inter-word;">
                   <div style="display: inline; line-height: 1.85;">${firstLineMarkup}</div>
@@ -834,7 +890,7 @@ export function formatTurathLiveText(
         // Unnumbered footnote line
         return `
           <div style="margin-bottom: 0.65em; line-height: 1.85; font-size: 0.9em; opacity: ${isDark ? '0.88' : '0.85'
-          }; text-align: justify; padding: 4px 6px; padding-right: 34px; direction: rtl;">
+          }; text-align: justify; padding: 4px 4px; padding-right: 28px; direction: rtl;">
             ${firstLineMarkup}
             ${extraLinesMarkup}
           </div>
@@ -845,13 +901,13 @@ export function formatTurathLiveText(
         <div class="turath-footnote-section" style="margin-top: 2.4em; padding-top: 0.8em; direction: rtl; text-align: right;">
           <div style="position: relative; margin: 2em 0 1.5em; display: flex; align-items: center; justify-content: center;">
             <div style="position: absolute; inset: 0; display: flex; align-items: center;">
-              <div style="width: 100%; border-top: 1.5px dashed ${isDark ? 'rgba(56,189,248,0.35)' : 'rgba(2,132,199,0.35)'};"></div>
+              <div style="width: 100%; border-top: 1.5px dashed ${tc.accentBorder};"></div>
             </div>
-            <div style="position: relative; padding: 0.25em 1.2em; font-size: 0.78em; font-weight: 800; border-radius: 9999px; background: ${isDark ? '#1a0730' : '#ffffff'}; border: 1.5px solid ${isDark ? 'rgba(56,189,248,0.4)' : 'rgba(2,132,199,0.4)'}; color: ${isDark ? '#38bdf8' : '#0284c7'}; font-family:'Cairo',sans-serif;">
+            <div style="position: relative; padding: 0.25em 1.2em; font-size: 0.78em; font-weight: 800; border-radius: 9999px; background: ${tc.badgeBg}; border: 1.5px solid ${tc.badgeBorder}; color: ${tc.accent}; font-family:'Cairo',sans-serif;">
               الحواشي
             </div>
           </div>
-          <div style="padding-right: 4px;">
+          <div class="turath-footnote-list" style="padding-right: 0;">
             ${formattedFootnotes}
           </div>
         </div>
@@ -860,9 +916,9 @@ export function formatTurathLiveText(
 
     // F. Assemble Page Card: Classical Amiri typography, solid luxury background, centered bottom page badge
     return `
-      <div class="turath-page-card font-amiri" style="font-family: 'Amiri', 'Traditional Arabic', serif; margin-bottom: 3.5em; border: 1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(56,189,248,0.35)'
-      }; border-radius: 24px; background: ${isDark ? '#160D21' : '#ffffff'
-      }; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 2.2em 2.4em 2.8em; box-shadow: ${isDark ? '0 20px 25px -5px rgba(0,0,0,0.3), 0 8px 10px -6px rgba(0,0,0,0.3)' : '0 10px 30px rgba(56,189,248,0.1)'
+      <div class="turath-page-card font-amiri" style="font-family: 'Amiri', 'Traditional Arabic', serif; margin-bottom: 2.5em; border: 1px solid ${isDark ? 'rgba(255,255,255,0.1)' : tc.cardBorder
+      }; border-radius: 14px; background: ${isDark ? '#160D21' : '#ffffff'
+      }; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: ${isDark ? '0 20px 25px -5px rgba(0,0,0,0.3), 0 8px 10px -6px rgba(0,0,0,0.3)' : tc.cardShadow
       }; position: relative; transition: all 0.3s ease; direction: rtl; text-align: right;">
         <div class="turath-page-main">
           ${mainBodyHtml}
@@ -871,16 +927,16 @@ export function formatTurathLiveText(
         ${footnotesHtml}
         ${pgNum
         ? `
-          <div style="position: absolute; bottom: -17px; left: 0; right: 0; display: flex; align-items: center; justify-content: center; z-index: 10; pointer-events: none;">
-            <div style="pointer-events: auto; display: inline-flex; align-items: center; justify-content: center; gap: 0.45em; padding: 0.38em 1.5em; border-radius: 9999px; background: ${isDark ? '#1a0733' : '#ffffff'
-        }; color: ${isDark ? '#38bdf8' : '#0284c7'
-        }; font-family: 'Cairo', system-ui, sans-serif; border: 1.5px solid ${isDark ? 'rgba(56,189,248,0.45)' : 'rgba(2,132,199,0.35)'
-        }; box-shadow: ${isDark ? '0 4px 16px rgba(0,0,0,0.5)' : '0 4px 14px rgba(56,189,248,0.2)'
+          <div style="position: absolute; bottom: -15px; left: 0; right: 0; display: flex; align-items: center; justify-content: center; z-index: 10; pointer-events: none;">
+            <div style="pointer-events: auto; display: inline-flex; align-items: center; justify-content: center; gap: 0.35em; padding: 0.22em 0.85em; border-radius: 9999px; background: ${tc.badgeBg
+        }; color: ${tc.accent
+        }; font-family: 'Cairo', system-ui, sans-serif; border: 1.5px solid ${tc.badgeBorder
+        }; box-shadow: ${tc.badgeShadow
         }; direction: rtl;">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: ${isDark ? '#38bdf8' : '#0284c7'
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: ${tc.accent
         };"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-              <span style="font-size: 0.86em; font-weight: 700; line-height: 1;">صفحة</span>
-              <span style="font-size: 0.94em; font-weight: 800; line-height: 1; font-family: 'Cairo', system-ui, sans-serif; font-variant-numeric: tabular-nums; direction: ltr;">${pgNum}</span>
+              <span style="font-size: 0.76em; font-weight: 700; line-height: 1;">صفحة</span>
+              <span style="font-size: 0.84em; font-weight: 800; line-height: 1; font-family: 'Cairo', system-ui, sans-serif; font-variant-numeric: tabular-nums; direction: ltr;">${pgNum}</span>
             </div>
           </div>
         `

@@ -25,10 +25,14 @@ export default function Login({
   isEmbedded?: boolean
   dark?: boolean
 }) {
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState(() => {
+    return localStorage.getItem('zad_remembered_email') || ''
+  })
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [rememberMe, setRememberMe] = useState(false)
+  const [rememberMe, setRememberMe] = useState(() => {
+    return !!localStorage.getItem('zad_remembered_email')
+  })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -90,6 +94,12 @@ export default function Login({
 
         const rawRole = returnedUser.role || tokenRole || (isExactAdminEmail ? 'admin' : 'user')
         const role = String(rawRole).toLowerCase()
+
+        if (rememberMe) {
+          localStorage.setItem('zad_remembered_email', email.trim())
+        } else {
+          localStorage.removeItem('zad_remembered_email')
+        }
 
         login(token, {
           id: returnedUser.id || '1',
@@ -293,7 +303,7 @@ export default function Login({
                   rounded-[5px]
                   transition-all
                   ${dark
-                    ? 'border-white/20 bg-white/5 hover:border-white/40 peer-checked:bg-[#9333ea] peer-checked:border-[#9333ea]'
+                    ? 'border-white/20 bg-white/5 hover:border-white/40 peer-checked:bg-primary peer-checked:border-primary'
                     : 'border-black/15 bg-black/[0.03] hover:border-primary/40 peer-checked:bg-primary peer-checked:border-primary'
                   }
                 `}
@@ -340,12 +350,7 @@ export default function Login({
 
           <button
             type="button"
-            className={`
-              text-[12px]
-              font-semibold
-              transition-colors
-              ${dark ? 'text-[#c084fc] hover:text-white' : 'text-primary hover:text-primary/70'}
-            `}
+            className="text-[12px] font-semibold transition-colors text-primary hover:text-primary/70 dark:hover:text-white"
           >
             نسيت كلمة المرور؟
           </button>
@@ -367,7 +372,6 @@ export default function Login({
             h-[50px]
             font-bold
             text-[14px]
-            shadow-xl shadow-primary/30
             transition-all
             disabled:opacity-60
             flex
@@ -421,12 +425,7 @@ export default function Login({
           <button
             type="button"
             onClick={onNavigateSignup}
-            className={`
-              text-[13px]
-              font-semibold
-              transition-colors
-              ${dark ? 'text-[#c084fc] hover:text-white' : 'text-primary hover:text-primary/70'}
-            `}
+            className="text-[13px] font-semibold transition-colors text-primary hover:text-primary/70 dark:hover:text-white"
           >
             إنشاء حساب
           </button>

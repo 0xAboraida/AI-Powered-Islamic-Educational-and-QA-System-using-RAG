@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
-import { X, BookOpen, ChevronLeft, ChevronRight, User, Book, Library, CalendarDays, Layers, Hash, Link } from 'lucide-react'
+import { X, BookOpen, ChevronLeft, ChevronRight, User, Book, Library, CalendarDays, Layers, Hash, Link, Bookmark } from 'lucide-react'
 import type { ChunkMetadata } from '../../../contexts/StudyContext'
 import { formatMarkdown, formatTurathLiveText } from '../utils/markdownParser'
 import { useTheme } from '../../../contexts/ThemeContext'
@@ -100,6 +100,124 @@ export function StudyDocument({
     }
   }
 
+  const getBookTitleColorClass = () => {
+    if (isDark) {
+      switch (accentColor) {
+        case 'emerald':
+          return 'text-teal-200 drop-shadow-[0_2px_8px_rgba(20,184,166,0.3)]'
+        case 'amber':
+          return 'text-[#eed8ad] drop-shadow-[0_2px_8px_rgba(223,191,131,0.3)]'
+        case 'blue':
+          return 'text-sky-200 drop-shadow-[0_2px_8px_rgba(56,189,248,0.3)]'
+        case 'purple':
+        default:
+          return 'text-purple-200 drop-shadow-[0_2px_8px_rgba(168,85,247,0.3)]'
+      }
+    } else {
+      switch (accentColor) {
+        case 'emerald':
+          return 'text-teal-900 drop-shadow-xs'
+        case 'amber':
+          return 'text-[#78350f] drop-shadow-xs'
+        case 'blue':
+          return 'text-blue-900 drop-shadow-xs'
+        case 'purple':
+        default:
+          return 'text-[#4c1d95] drop-shadow-xs'
+      }
+    }
+  }
+
+  const docTheme = useMemo(() => {
+    switch (accentColor) {
+      case 'amber':
+        return {
+          icon: isDark ? 'text-[#eed8ad]' : 'text-[#855e24]',
+          link: isDark ? 'text-[#eed8ad] hover:text-[#f7ebd4]' : 'text-[#855e24] hover:text-[#6b471c]',
+          navDivider: isDark ? 'via-[#dfbf83]/40' : 'via-[#b88d46]/45',
+          navBadge: isDark
+            ? 'bg-[#dfbf83]/10 border border-[#dfbf83]/30 shadow-[0_0_20px_rgba(223,191,131,0.15)] text-[#eed8ad]'
+            : 'bg-[#fcf7ed] border border-[#dfbf83] text-[#6b471c] shadow-xs',
+          navIcon: isDark ? 'text-[#eed8ad]' : 'text-[#855e24]',
+          navText: isDark ? 'text-[#eed8ad]' : 'text-[#6b471c]',
+          headerIcon: isDark ? 'text-[#eed8ad]' : 'text-[#855e24]',
+          toggleActive: isDark
+            ? 'bg-[#dfbf83]/20 text-[#eed8ad] border border-[#dfbf83]/35 shadow-xs'
+            : 'bg-white text-[#6b471c] shadow-xs border border-[#dfbf83]/50',
+          pageBtn: isDark
+            ? 'bg-[#1f160a] hover:bg-[#2b1f0e] text-[#eed8ad] border-[#dfbf83]/40 shadow-[0_4px_16px_rgba(0,0,0,0.5)]'
+            : 'bg-white hover:bg-[#fbf7f0] text-[#6b471c] border-[#dfbf83] shadow-[0_4px_14px_rgba(223,191,131,0.25)]',
+          emptyGlow: isDark ? 'shadow-[0_0_50px_rgba(223,191,131,0.15)]' : 'bg-amber-50 border-amber-200 shadow-md',
+          emptyIcon: isDark ? 'text-[#eed8ad]' : 'text-[#855e24]',
+          emptyBg: isDark ? 'bg-[#dfbf83]/10' : 'bg-amber-100/40',
+        }
+      case 'blue':
+        return {
+          icon: isDark ? 'text-sky-400' : 'text-sky-600',
+          link: isDark ? 'text-sky-400 hover:text-sky-300' : 'text-sky-600 hover:text-sky-700',
+          navDivider: isDark ? 'via-[#38bdf8]/40' : 'via-sky-500/50',
+          navBadge: isDark
+            ? 'bg-[#38bdf8]/10 border border-[#38bdf8]/25 shadow-[0_0_20px_rgba(56,189,248,0.15)] text-[#38bdf8]'
+            : 'bg-sky-50 border border-sky-300 text-sky-800 shadow-xs',
+          navIcon: isDark ? 'text-[#38bdf8]' : 'text-sky-700',
+          navText: isDark ? 'text-[#38bdf8]' : 'text-sky-800',
+          headerIcon: isDark ? 'text-sky-400' : 'text-sky-600',
+          toggleActive: isDark
+            ? 'bg-sky-500/25 text-sky-300 border border-sky-500/35 shadow-xs'
+            : 'bg-white text-sky-700 shadow-xs border border-sky-200',
+          pageBtn: isDark
+            ? 'bg-[#1a0733] hover:bg-white/10 text-sky-300 border-[#38bdf8]/40 shadow-[0_4px_16px_rgba(0,0,0,0.5)]'
+            : 'bg-white hover:bg-sky-50 text-sky-700 border-sky-300 shadow-[0_4px_14px_rgba(56,189,248,0.2)]',
+          emptyGlow: isDark ? 'shadow-[0_0_50px_rgba(56,189,248,0.15)]' : 'bg-sky-50 border-sky-100 shadow-md',
+          emptyIcon: isDark ? 'text-[#38bdf8]' : 'text-sky-600',
+          emptyBg: isDark ? 'bg-[#38bdf8]/10' : 'bg-sky-100/40',
+        }
+      case 'purple':
+        return {
+          icon: isDark ? 'text-purple-400' : 'text-purple-600',
+          link: isDark ? 'text-purple-400 hover:text-purple-300' : 'text-purple-600 hover:text-purple-700',
+          navDivider: isDark ? 'via-[#c084fc]/40' : 'via-purple-500/50',
+          navBadge: isDark
+            ? 'bg-[#c084fc]/10 border border-[#c084fc]/25 shadow-[0_0_20px_rgba(192,132,252,0.15)] text-[#c084fc]'
+            : 'bg-purple-50 border border-purple-300 text-purple-800 shadow-xs',
+          navIcon: isDark ? 'text-[#c084fc]' : 'text-purple-700',
+          navText: isDark ? 'text-[#c084fc]' : 'text-purple-800',
+          headerIcon: isDark ? 'text-purple-400' : 'text-purple-600',
+          toggleActive: isDark
+            ? 'bg-purple-500/25 text-purple-300 border border-purple-500/35 shadow-xs'
+            : 'bg-white text-purple-700 shadow-xs border border-purple-200',
+          pageBtn: isDark
+            ? 'bg-[#180a2b] hover:bg-white/10 text-purple-300 border-[#c084fc]/40 shadow-[0_4px_16px_rgba(0,0,0,0.5)]'
+            : 'bg-white hover:bg-purple-50 text-purple-700 border-purple-300 shadow-[0_4px_14px_rgba(192,132,252,0.2)]',
+          emptyGlow: isDark ? 'shadow-[0_0_50px_rgba(192,132,252,0.15)]' : 'bg-purple-50 border-purple-100 shadow-md',
+          emptyIcon: isDark ? 'text-[#c084fc]' : 'text-purple-600',
+          emptyBg: isDark ? 'bg-[#c084fc]/10' : 'bg-purple-100/40',
+        }
+      case 'emerald':
+      default:
+        return {
+          icon: isDark ? 'text-teal-400' : 'text-teal-600',
+          link: isDark ? 'text-teal-400 hover:text-teal-300' : 'text-teal-600 hover:text-teal-700',
+          navDivider: isDark ? 'via-[#2dd4bf]/40' : 'via-teal-500/50',
+          navBadge: isDark
+            ? 'bg-[#2dd4bf]/10 border border-[#2dd4bf]/25 shadow-[0_0_20px_rgba(45,212,191,0.15)] text-[#2dd4bf]'
+            : 'bg-teal-50 border border-teal-300 text-teal-800 shadow-xs',
+          navIcon: isDark ? 'text-[#2dd4bf]' : 'text-teal-700',
+          navText: isDark ? 'text-[#2dd4bf]' : 'text-teal-800',
+          headerIcon: isDark ? 'text-teal-400' : 'text-teal-600',
+          toggleActive: isDark
+            ? 'bg-teal-500/25 text-teal-300 border border-teal-500/35 shadow-xs'
+            : 'bg-white text-teal-700 shadow-xs border border-teal-200',
+          pageBtn: isDark
+            ? 'bg-[#061e1b] hover:bg-white/10 text-teal-300 border-[#2dd4bf]/40 shadow-[0_4px_16px_rgba(0,0,0,0.5)]'
+            : 'bg-white hover:bg-teal-50 text-teal-700 border-teal-300 shadow-[0_4px_14px_rgba(45,212,191,0.2)]',
+          emptyGlow: isDark ? 'shadow-[0_0_50px_rgba(45,212,191,0.15)]' : 'bg-teal-50 border-teal-100 shadow-md',
+          emptyIcon: isDark ? 'text-[#2dd4bf]' : 'text-teal-600',
+          emptyBg: isDark ? 'bg-[#2dd4bf]/10' : 'bg-teal-100/40',
+        }
+    }
+  }, [accentColor, isDark])
+
   // Reset to first page when new chunk/chapter is opened
   useEffect(() => {
     setActivePageIndex(0)
@@ -107,8 +225,8 @@ export function StudyDocument({
 
   const turathResult = useMemo(() => {
     if (!currentChunkId?.startsWith('turath_')) return null
-    return formatTurathLiveText(chunkText, isDark, chunkMeta?.page_id)
-  }, [chunkText, isDark, chunkMeta?.page_id, currentChunkId])
+    return formatTurathLiveText(chunkText, isDark, chunkMeta?.page_id, accentColor)
+  }, [chunkText, isDark, chunkMeta?.page_id, currentChunkId, accentColor])
 
   // When a chapter starts at the very bottom of a book page (or ends at the very top of one),
   // that page holds only a line or two. Showing it alone in paged mode looks like missing content,
@@ -224,7 +342,7 @@ export function StudyDocument({
             }`}>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2 text-sm font-bold">
-                <BookOpen size={18} className="text-sky-500 shrink-0 stroke-[2.2]" />
+                <BookOpen size={18} className={`${docTheme.headerIcon} shrink-0 stroke-[2.2]`} />
                 <span>نص الدرس</span>
               </div>
 
@@ -238,9 +356,7 @@ export function StudyDocument({
                       scrollToTextStart()
                     }}
                     className={`px-2.5 py-1 rounded-md transition-all flex items-center gap-1.5 ${viewMode === 'paged'
-                      ? isDark
-                        ? 'bg-sky-500/25 text-sky-300 font-bold border border-sky-500/35 shadow-sm'
-                        : 'bg-white text-sky-700 font-bold shadow-sm'
+                      ? docTheme.toggleActive
                       : isDark
                         ? 'text-white/60 hover:text-white'
                         : 'text-slate-500 hover:text-slate-800'
@@ -257,9 +373,7 @@ export function StudyDocument({
                       scrollToTextStart()
                     }}
                     className={`px-2.5 py-1 rounded-md transition-all flex items-center gap-1.5 ${viewMode === 'continuous'
-                      ? isDark
-                        ? 'bg-sky-500/25 text-sky-300 font-bold border border-sky-500/35 shadow-sm'
-                        : 'bg-white text-sky-700 font-bold shadow-sm'
+                      ? docTheme.toggleActive
                       : isDark
                         ? 'text-white/60 hover:text-white'
                         : 'text-slate-500 hover:text-slate-800'
@@ -283,151 +397,116 @@ export function StudyDocument({
             </button>
           </div>
 
-          <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-6 study-document-scrollbar">
+          <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-2 sm:p-5 md:p-6 study-document-scrollbar">
             {!currentChunkId ? (
-              <div className={`flex flex-col items-center justify-center rounded-3xl border p-12 text-center backdrop-blur-md shadow-xl mt-10 ${isDark ? 'border-white/10 bg-gradient-to-b from-white/5 to-transparent' : 'border-slate-200 bg-slate-50'
+              <div className={`flex flex-col items-center justify-center rounded-2xl border p-8 sm:p-12 text-center backdrop-blur-md shadow-xl mt-6 sm:mt-10 ${isDark ? 'border-white/10 bg-gradient-to-b from-white/5 to-transparent' : 'border-slate-200 bg-slate-50'
                 }`}>
-                <div className={`mb-6 flex h-28 w-28 items-center justify-center rounded-full relative border ${isDark ? 'bg-white/5 border-white/10 shadow-[0_0_50px_rgba(56,189,248,0.15)]' : 'bg-sky-50 border-sky-100 shadow-md'
+                <div className={`mb-4 sm:mb-6 flex h-20 w-20 sm:h-28 sm:w-28 items-center justify-center rounded-full relative border ${isDark ? `bg-white/5 border-white/10 ${docTheme.emptyGlow}` : docTheme.emptyGlow
                   }`}>
-                  <BookOpen size={56} className="text-[#38bdf8] opacity-80 drop-shadow-md" />
-                  <div className="absolute inset-0 bg-[#38bdf8]/10 blur-xl rounded-full"></div>
+                  <BookOpen size={42} className={`${docTheme.emptyIcon} opacity-80 drop-shadow-md sm:w-14 sm:h-14`} />
+                  <div className={`absolute inset-0 ${docTheme.emptyBg} blur-xl rounded-full`}></div>
                 </div>
-                <h3 className={`mb-3 font-display text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>ابدأ رحلة التعلم</h3>
-                <p className={`max-w-md text-[15px] leading-relaxed ${isDark ? 'text-white/60' : 'text-slate-600'}`}>
+                <h3 className={`mb-2 sm:mb-3 font-display text-xl sm:text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>ابدأ رحلة التعلم</h3>
+                <p className={`max-w-md text-xs sm:text-[15px] leading-relaxed ${isDark ? 'text-white/60' : 'text-slate-600'}`}>
                   يرجى اختيار درس من الفهرس الجانبي لعرض النص الأساسي، وتوليد الخرائط الذهنية، والبدء في التفاعل مع زاد .
                 </p>
               </div>
             ) : (
               <>
                 {chunkMeta && (
-                  <div className={`group mb-8 flex flex-col items-center justify-center rounded-3xl border p-8 text-center backdrop-blur-md opacity-0 animate-[scaleFadeIn_0.5s_ease-out_forwards] transition-all duration-500 hover:-translate-y-1 ${isDark ? 'border-white/10 bg-white/[0.04] hover:border-white/20 hover:shadow-[0_8px_30px_rgba(138,23,201,0.15)] shadow-xl' : 'border-slate-200 bg-white/95 hover:shadow-xl shadow-md'
-                    }`}>
-                    <div className="flex flex-col items-center justify-center mb-6 mt-2 relative">
-                      <h3 className={`font-amiri text-[30px] md:text-[36px] font-bold leading-relaxed text-center relative z-10 px-4 pb-2 tracking-normal ${isDark ? 'text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]' : 'text-[#4c1d95] drop-shadow-sm'
-                        }`}>
+                  <div className={`group mb-5 flex flex-col items-stretch justify-center rounded-xl border p-4 sm:p-5 md:p-6 backdrop-blur-md opacity-0 animate-[scaleFadeIn_0.5s_ease-out_forwards] transition-all duration-300 w-full max-w-full sm:max-w-3xl mx-auto shadow-md ${
+                    isDark ? 'border-white/10 bg-white/[0.04]' : 'border-slate-200 bg-white/95'
+                  }`} dir="rtl">
+                    <div className="flex flex-col items-center justify-center mb-2.5 mt-0.5 relative w-full text-center">
+                      <h3 className={`font-amiri text-2xl sm:text-3xl md:text-[34px] font-bold leading-snug text-center relative z-10 tracking-normal ${getBookTitleColorClass()}`}>
                         {chunkMeta.book_title || 'اسم الكتاب غير متوفر'}
                       </h3>
                     </div>
 
-                    {chunkMeta.hierarchy && (chunkMeta.hierarchy.kitab || (chunkMeta.hierarchy.sections && chunkMeta.hierarchy.sections.length > 0)) && (
-                      <div className="mb-8 flex flex-col items-center justify-center text-center gap-2">
-                        {(() => {
-                          const levels = [
-                            ...(chunkMeta.hierarchy.kitab ? [chunkMeta.hierarchy.kitab] : []),
-                            ...(chunkMeta.hierarchy.sections || [])
-                          ]
-                          const parents = levels.slice(0, -1)
-                          const current = levels[levels.length - 1]
+                    {/* Clean Right-Aligned Metadata List without Box Frames */}
+                    <div className="flex flex-col items-start gap-2 w-full pt-1 text-right">
+                      {(() => {
+                        const levels = [
+                          ...(chunkMeta.hierarchy?.kitab ? [chunkMeta.hierarchy.kitab] : []),
+                          ...(chunkMeta.hierarchy?.sections || [])
+                        ].filter(Boolean)
+                        if (levels.length === 0) return null
 
-                          return (
-                            <>
-                              {parents.length > 0 && (
-                                <div className={`flex flex-wrap items-center justify-center gap-1.5 text-[13.5px] font-medium ${isDark ? 'text-white/60' : 'text-slate-600'}`}>
-                                  {parents.map((level, idx) => (
-                                    <div key={idx} className="flex items-center gap-1.5">
-                                      <span className={`rounded-lg px-3 py-1.5 shadow-sm transition-colors cursor-default ${isDark ? 'bg-white/5 hover:bg-white/10 text-white/90' : 'bg-white border border-slate-200 hover:bg-slate-100 text-slate-800'}`}>
-                                        {level}
-                                      </span>
-                                      {idx < parents.length - 1 && <ChevronLeft size={12} className="opacity-40 mx-0.5" />}
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
-                              {current && (
-                                <div className="mt-2 flex items-start justify-center gap-2.5 max-w-3xl mx-auto">
-                                  <ChevronLeft size={18} className="text-[#38bdf8]/60 mt-2.5 shrink-0" strokeWidth={2.5} />
-                                  <div className="px-4 text-[15px] font-bold text-[#38bdf8] leading-relaxed bg-[#38bdf8]/5 border border-[#38bdf8]/10 py-2 rounded-xl shadow-sm text-right">
-                                    {current}
-                                  </div>
-                                </div>
-                              )}
-                            </>
-                          )
-                        })()}
-                      </div>
-                    )}
-
-                    <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 mt-2">
+                        return (
+                          <div className={`flex items-center flex-wrap gap-2 text-xs sm:text-[13px] ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+                            <Bookmark size={14} className={`shrink-0 ${docTheme.icon}`} />
+                            <div className="flex flex-wrap items-center gap-1.5">
+                              <span>العنوان:</span>
+                              {levels.map((level, idx) => (
+                                <React.Fragment key={idx}>
+                                  <span className="font-bold">{level}</span>
+                                  {idx < levels.length - 1 && (
+                                    <ChevronLeft size={11} className="shrink-0 opacity-50" />
+                                  )}
+                                </React.Fragment>
+                              ))}
+                            </div>
+                          </div>
+                        )
+                      })()}
                       {chunkMeta.author && (
-                        <span
-                          className={`inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-[13px] font-semibold transition-all duration-300 hover:-translate-y-1 shadow-sm opacity-0 animate-[fadeInUp_0.5s_ease-out_forwards] ${getBadgeClass('primary')}`}
-                          style={{ animationDelay: '0.1s' }}
-                        >
-                          <User size={14} />
-                          المؤلف: {chunkMeta.author}{chunkMeta.author_death ? ` (${chunkMeta.author_death})` : ''}
-                        </span>
+                        <div className={`flex items-center gap-2 text-xs sm:text-[13px] ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+                          <User size={14} className={`shrink-0 ${docTheme.icon}`} />
+                          <span>المؤلف: <span className="font-bold">{chunkMeta.author}{chunkMeta.author_death ? ` (${chunkMeta.author_death})` : ''}</span></span>
+                        </div>
                       )}
                       {(chunkMeta.domain || (chunkMeta as any).category) && (
-                        <span
-                          className={`inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-[13px] font-semibold transition-all duration-300 hover:-translate-y-1 shadow-sm opacity-0 animate-[fadeInUp_0.5s_ease-out_forwards] ${getBadgeClass('secondary')}`}
-                          style={{ animationDelay: '0.2s' }}
-                        >
-                          <Book size={14} />
-                          المجال: {chunkMeta.domain || (chunkMeta as any).category}
-                        </span>
+                        <div className={`flex items-center gap-2 text-xs sm:text-[13px] ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+                          <Book size={14} className={`shrink-0 ${docTheme.icon}`} />
+                          <span>القسم: <span className="font-bold">{chunkMeta.domain || (chunkMeta as any).category}</span></span>
+                        </div>
                       )}
                       {chunkMeta.madhhab && (
-                        <span
-                          className={`inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-[13px] font-semibold transition-all duration-300 hover:-translate-y-1 shadow-sm opacity-0 animate-[fadeInUp_0.5s_ease-out_forwards] ${getBadgeClass('accent')}`}
-                          style={{ animationDelay: '0.3s' }}
-                        >
-                          <Library size={14} />
-                          المذهب: {chunkMeta.madhhab}
-                        </span>
+                        <div className={`flex items-center gap-2 text-xs sm:text-[13px] ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+                          <Library size={14} className={`shrink-0 ${docTheme.icon}`} />
+                          <span>المذهب: <span className="font-bold">{chunkMeta.madhhab}</span></span>
+                        </div>
                       )}
                       {chunkMeta.hijri_century && (
-                        <span
-                          className={`inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-[13px] font-semibold transition-all duration-300 hover:-translate-y-1 shadow-sm opacity-0 animate-[fadeInUp_0.5s_ease-out_forwards] ${getBadgeClass('neutral')}`}
-                          style={{ animationDelay: '0.4s' }}
-                        >
-                          <CalendarDays size={14} />
-                          {chunkMeta.hijri_century}
-                        </span>
+                        <div className={`flex items-center gap-2 text-xs sm:text-[13px] ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+                          <CalendarDays size={14} className={`shrink-0 ${docTheme.icon}`} />
+                          <span>القرن: <span className="font-bold">{chunkMeta.hijri_century}</span></span>
+                        </div>
                       )}
                       {(chunkMeta.part !== undefined && chunkMeta.part !== null || chunkMeta.total_parts !== undefined && chunkMeta.total_parts !== null) && (
-                        <span
-                          className={`inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-[13px] font-semibold transition-all duration-300 hover:-translate-y-1 shadow-sm opacity-0 animate-[fadeInUp_0.5s_ease-out_forwards] ${getBadgeClass('neutral')}`}
-                          style={{ animationDelay: '0.5s' }}
-                        >
-                          <Layers size={14} />
-                          الجزء: {chunkMeta.part || '-'}{chunkMeta.total_parts ? ` / ${chunkMeta.total_parts}` : ''}
-                        </span>
+                        <div className={`flex items-center gap-2 text-xs sm:text-[13px] ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+                          <Layers size={14} className={`shrink-0 ${docTheme.icon}`} />
+                          <span>الجزء: <span className="font-bold">{chunkMeta.part || '-'}{chunkMeta.total_parts ? ` / ${chunkMeta.total_parts}` : ''}</span></span>
+                        </div>
                       )}
                       {chunkMeta.page_id && (
-                        <span
-                          className={`inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-[13px] transition-all duration-300 hover:-translate-y-1 shadow-sm opacity-0 animate-[fadeInUp_0.5s_ease-out_forwards] ${getBadgeClass('page')}`}
-                          style={{ animationDelay: '0.6s' }}
-                        >
-                          <Hash size={14} />
-                          الصفحة: {chunkMeta.page_id}
-                        </span>
+                        <div className={`flex items-center gap-2 text-xs sm:text-[13px] ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+                          <Hash size={14} className={`shrink-0 ${docTheme.icon}`} />
+                          <span>الصفحة: <span className="font-bold">{chunkMeta.page_id}</span></span>
+                        </div>
                       )}
                       {chunkMeta.source_url && (
                         <a
                           href={chunkMeta.source_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className={`inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-[13px] font-semibold transition-all duration-300 hover:-translate-y-1 shadow-sm opacity-0 animate-[fadeInUp_0.5s_ease-out_forwards] ${getBadgeClass('primary')}`}
-                          style={{ animationDelay: '0.7s' }}
+                          className={`flex items-center gap-2 text-xs sm:text-[13px] ${docTheme.link} hover:underline transition-colors mt-0.5`}
                         >
-                          <Link size={14} />
-                          رابط المصدر
+                          <Link size={14} className={`shrink-0 ${docTheme.icon}`} />
+                          <span className="font-bold">رابط المصدر</span>
                         </a>
                       )}
                     </div>
                   </div>
                 )}
 
-                <div id="study-text-start" className="mt-10 mb-6 flex items-center gap-4 w-full px-2">
-                  <div className={`h-px flex-1 bg-gradient-to-l from-transparent ${isDark ? 'via-[#38bdf8]/40' : 'via-sky-500/60'} to-transparent`}></div>
-                  <div className={`group flex items-center gap-3 px-6 py-2.5 rounded-full backdrop-blur-md relative overflow-hidden transition-all ${isDark
-                    ? 'bg-[#38bdf8]/10 border border-[#38bdf8]/25 shadow-[0_0_20px_rgba(56,189,248,0.15)] hover:bg-[#38bdf8]/15 hover:shadow-[0_0_25px_rgba(56,189,248,0.25)]'
-                    : 'bg-sky-100 border border-sky-300 shadow-md hover:bg-sky-200 hover:shadow-lg'}`}>
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                    <BookOpen size={18} className={isDark ? 'text-[#38bdf8]' : 'text-sky-700'} />
-                    <span className={`font-bold text-[16px] tracking-wide ${isDark ? 'text-[#38bdf8]' : 'text-sky-800'}`}>نص الدرس</span>
+                <div id="study-text-start" className="mt-6 mb-4 flex items-center gap-3 w-full px-1">
+                  <div className={`h-px flex-1 bg-gradient-to-l from-transparent ${docTheme.navDivider} to-transparent`}></div>
+                  <div className={`group flex items-center gap-2.5 px-4 sm:px-6 py-1.5 sm:py-2 rounded-lg backdrop-blur-md relative overflow-hidden transition-all ${docTheme.navBadge}`}>
+                    <BookOpen size={16} className={docTheme.navIcon} />
+                    <span className={`font-bold text-xs sm:text-[14px] tracking-wide ${docTheme.navText}`}>نص الدرس</span>
                   </div>
-                  <div className={`h-px flex-1 bg-gradient-to-r from-transparent ${isDark ? 'via-[#38bdf8]/40' : 'via-sky-500/60'} to-transparent`}></div>
+                  <div className={`h-px flex-1 bg-gradient-to-r from-transparent ${docTheme.navDivider} to-transparent`}></div>
                 </div>
 
                 <div className="relative">
@@ -437,11 +516,11 @@ export function StudyDocument({
                     data-library-content="true"
                     className={
                       currentChunkId?.startsWith('turath_')
-                        ? `text-[18px] leading-[1.8] font-amiri tracking-wide relative transition-all animate-[fadeInUp_0.8s_ease-out_forwards] ${isDark ? 'text-white/90' : 'text-slate-900'
+                        ? `text-[17px] sm:text-[18px] leading-[1.8] font-amiri tracking-wide relative transition-all animate-[fadeInUp_0.8s_ease-out_forwards] ${isDark ? 'text-white/90' : 'text-slate-900'
                         }`
-                        : `rounded-3xl border-2 p-8 text-[18px] leading-[1.9] font-amiri tracking-wide relative overflow-hidden backdrop-blur-md transition-all animate-[fadeInUp_0.8s_ease-out_forwards] ${isDark
+                        : `rounded-xl border p-3.5 sm:p-6 md:p-8 text-[17px] sm:text-[18px] leading-[1.8] sm:leading-[1.9] font-amiri tracking-wide relative overflow-hidden backdrop-blur-md transition-all animate-[fadeInUp_0.8s_ease-out_forwards] ${isDark
                           ? 'border-white/10 bg-white/[0.04] text-white/90 shadow-xl'
-                          : 'border-[#38bdf8]/50 bg-white text-slate-900 shadow-xl shadow-[#38bdf8]/15 ring-1 ring-[#38bdf8]/25'
+                          : 'border-slate-200 bg-white text-slate-900 shadow-xl'
                         }`
                     }
                     dangerouslySetInnerHTML={
@@ -455,22 +534,20 @@ export function StudyDocument({
 
                   {/* Turath Book Authentic Page Navigator (Floating on bottom edges) */}
                   {currentChunkId?.startsWith('turath_') && viewMode === 'paged' && onPageChange && !chunkText?.includes('turath-empty-parent-notice') && (
-                    <div className="absolute -bottom-[17px] left-0 right-0 flex items-center justify-between px-8 pointer-events-none z-20">
+                    <div className="absolute -bottom-[15px] left-0 right-0 flex items-center justify-between px-2 sm:px-5 md:px-8 pointer-events-none z-20">
                       <button
                         type="button"
                         onClick={handlePrevPage}
                         disabled={isFirstPage}
-                        className={`pointer-events-auto flex items-center justify-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-bold transition-all border ${isFirstPage
+                        className={`pointer-events-auto flex items-center justify-center gap-1 rounded-full px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-[11px] sm:text-xs font-bold transition-all border ${isFirstPage
                           ? isDark
-                            ? 'opacity-40 cursor-not-allowed text-white/40 border-white/10 bg-[#1a0733]'
-                            : 'opacity-50 cursor-not-allowed text-slate-400 border-slate-200 bg-slate-50'
-                          : isDark
-                            ? 'bg-[#1a0733] hover:bg-white/10 text-white border-[#38bdf8]/40 shadow-[0_4px_16px_rgba(0,0,0,0.5)]'
-                            : 'bg-white hover:bg-slate-50 text-sky-700 border-sky-300 shadow-[0_4px_14px_rgba(56,189,248,0.2)]'
+                            ? 'opacity-35 cursor-not-allowed text-white/30 border-white/10 bg-black/40'
+                            : 'opacity-40 cursor-not-allowed text-slate-400 border-slate-200 bg-slate-50'
+                          : docTheme.pageBtn
                           }`}
                         title="الصفحة السابقة"
                       >
-                        <ChevronRight size={14} />
+                        <ChevronRight size={13} />
                         <span>السابقة</span>
                       </button>
 
@@ -478,18 +555,16 @@ export function StudyDocument({
                         type="button"
                         onClick={handleNextPage}
                         disabled={isLastPage}
-                        className={`pointer-events-auto flex items-center justify-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-bold transition-all border ${isLastPage
+                        className={`pointer-events-auto flex items-center justify-center gap-1 rounded-full px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-[11px] sm:text-xs font-bold transition-all border ${isLastPage
                           ? isDark
-                            ? 'opacity-40 cursor-not-allowed text-sky-300/40 border-white/10 bg-[#1a0733]'
-                            : 'opacity-50 cursor-not-allowed text-slate-400 border-slate-200 bg-slate-50'
-                          : isDark
-                            ? 'bg-[#1a0733] hover:bg-white/10 text-sky-300 border-[#38bdf8]/40 shadow-[0_4px_16px_rgba(0,0,0,0.5)]'
-                            : 'bg-white hover:bg-sky-50 text-sky-700 border-sky-300 shadow-[0_4px_14px_rgba(56,189,248,0.2)]'
+                            ? 'opacity-35 cursor-not-allowed text-white/30 border-white/10 bg-black/40'
+                            : 'opacity-40 cursor-not-allowed text-slate-400 border-slate-200 bg-slate-50'
+                          : docTheme.pageBtn
                           }`}
                         title="الصفحة التالية"
                       >
                         <span>التالية</span>
-                        <ChevronLeft size={14} />
+                        <ChevronLeft size={13} />
                       </button>
                     </div>
                   )}

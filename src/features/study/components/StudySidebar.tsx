@@ -151,6 +151,136 @@ function getTreeThemeTokens(accentColor: AccentColor = 'emerald', isDark: boolea
   }
 }
 
+function getFilterThemeTokens(accentColor: AccentColor = 'emerald', isDark: boolean = true) {
+  switch (accentColor) {
+    case 'amber':
+      return {
+        filterBtnActive: isDark
+          ? 'bg-[#dfbf83]/25 text-[#f5ebd7] border border-[#dfbf83]/50 shadow-[0_0_10px_rgba(223,191,131,0.25)]'
+          : 'bg-[#fbf8f0] text-[#78350f] border border-[#dfbf83] shadow-xs',
+        filterBtnIcon: isDark ? 'text-[#dfbf83]' : 'text-[#855e24]',
+        filterBadge: isDark ? 'bg-[#dfbf83] text-[#291e0e]' : 'bg-[#855e24] text-white',
+        popoverBorder: isDark ? 'border-[#dfbf83]/30' : 'border-[#ebd9b5]',
+        resetBtn: isDark ? 'text-[#dfbf83] hover:text-[#eed8ad]' : 'text-[#855e24] hover:text-[#5e431a]',
+        selectOpen: isDark
+          ? 'border-[#dfbf83]/80 bg-[#160f05] ring-1 ring-[#dfbf83]/30 shadow-[0_0_12px_rgba(223,191,131,0.15)]'
+          : 'border-[#dfbf83] bg-white ring-1 ring-[#dfbf83]/40 shadow-sm',
+        selectSelected: isDark
+          ? 'border-[#dfbf83]/40 bg-[#dfbf83]/10 text-white'
+          : 'border-[#dfbf83] bg-[#fbf8f0] text-[#78350f]',
+        selectIconSelected: isDark ? 'bg-[#dfbf83]/20 text-[#eed8ad]' : 'bg-[#f5ebd7] text-[#78350f]',
+        selectCountBadge: isDark
+          ? 'bg-[#dfbf83]/25 text-[#f5ebd7] border border-[#dfbf83]/30'
+          : 'bg-[#fbf8f0] text-[#78350f] border border-[#dfbf83]/60',
+        selectChevron: isDark ? 'text-[#dfbf83]' : 'text-[#855e24]',
+        dropdownBorder: isDark ? 'border-[#dfbf83]/30' : 'border-[#ebd9b5]',
+        optionSelected: isDark ? 'bg-[#dfbf83]/20 text-[#eed8ad] font-bold' : 'bg-[#fbf8f0] text-[#78350f] font-bold',
+        optionCheck: isDark ? 'text-[#dfbf83]' : 'text-[#855e24]',
+        scopeSelected: isDark
+          ? 'bg-[#dfbf83]/20 border-[#dfbf83]/40 text-[#eed8ad] shadow-[0_0_10px_rgba(223,191,131,0.15)]'
+          : 'bg-white border-[#dfbf83] text-[#78350f] shadow-xs',
+        applyBtn: isDark
+          ? 'bg-gradient-to-r from-[#b88d46] to-[#dfbf83] hover:from-[#a77c38] hover:to-[#dfbf83] text-[#1f160a] font-black shadow-[0_4px_16px_rgba(223,191,131,0.25)] border border-[#dfbf83]/40 active:scale-[0.985]'
+          : 'bg-[#855e24] hover:bg-[#6e4c19] text-white shadow-xs active:scale-[0.985]',
+        chip: isDark ? 'bg-[#dfbf83]/15 text-[#eed8ad] border border-[#dfbf83]/30' : 'bg-[#fbf8f0] text-[#78350f] border border-[#dfbf83]/50'
+      }
+    case 'blue':
+      return {
+        filterBtnActive: isDark
+          ? 'bg-blue-500/25 text-blue-200 border border-blue-500/50 shadow-[0_0_10px_rgba(59,130,246,0.25)]'
+          : 'bg-blue-50 text-blue-800 border border-blue-300 shadow-xs',
+        filterBtnIcon: isDark ? 'text-sky-400' : 'text-blue-700',
+        filterBadge: isDark ? 'bg-sky-400 text-slate-950' : 'bg-blue-700 text-white',
+        popoverBorder: isDark ? 'border-blue-500/30' : 'border-blue-200',
+        resetBtn: isDark ? 'text-sky-400/90 hover:text-sky-300' : 'text-blue-700 hover:text-blue-800',
+        selectOpen: isDark
+          ? 'border-blue-400/80 bg-[#060e1f] ring-1 ring-blue-400/30 shadow-[0_0_12px_rgba(59,130,246,0.15)]'
+          : 'border-blue-400 bg-white ring-1 ring-blue-400/40 shadow-sm',
+        selectSelected: isDark
+          ? 'border-blue-500/40 bg-blue-500/10 text-white'
+          : 'border-blue-300 bg-blue-50/70 text-blue-900',
+        selectIconSelected: isDark ? 'bg-blue-500/20 text-blue-200' : 'bg-blue-100 text-blue-800',
+        selectCountBadge: isDark
+          ? 'bg-blue-500/25 text-blue-200 border border-blue-500/30'
+          : 'bg-blue-50 text-blue-800 border border-blue-200',
+        selectChevron: isDark ? 'text-sky-400' : 'text-blue-700',
+        dropdownBorder: isDark ? 'border-blue-500/30' : 'border-blue-200',
+        optionSelected: isDark ? 'bg-blue-500/20 text-blue-200 font-bold' : 'bg-blue-50 text-blue-900 font-bold',
+        optionCheck: isDark ? 'text-sky-400' : 'text-blue-700',
+        scopeSelected: isDark
+          ? 'bg-blue-500/20 border-blue-500/40 text-blue-200 shadow-[0_0_10px_rgba(59,130,246,0.15)]'
+          : 'bg-white border-blue-300 text-blue-900 shadow-xs',
+        applyBtn: isDark
+          ? 'bg-gradient-to-r from-blue-600 to-sky-600 hover:from-blue-500 hover:to-sky-500 text-white shadow-[0_4px_16px_rgba(37,99,235,0.25)] border border-blue-400/30 active:scale-[0.985]'
+          : 'bg-blue-700 hover:bg-blue-800 text-white shadow-xs active:scale-[0.985]',
+        chip: isDark ? 'bg-blue-500/15 text-blue-200 border border-blue-500/30' : 'bg-blue-50 text-blue-800 border border-blue-200'
+      }
+    case 'purple':
+      return {
+        filterBtnActive: isDark
+          ? 'bg-purple-500/25 text-purple-200 border border-purple-500/50 shadow-[0_0_10px_rgba(168,85,247,0.25)]'
+          : 'bg-purple-50 text-purple-800 border border-purple-300 shadow-xs',
+        filterBtnIcon: isDark ? 'text-purple-400' : 'text-purple-700',
+        filterBadge: isDark ? 'bg-purple-400 text-slate-950' : 'bg-purple-700 text-white',
+        popoverBorder: isDark ? 'border-purple-500/30' : 'border-purple-200',
+        resetBtn: isDark ? 'text-purple-400/90 hover:text-purple-300' : 'text-purple-700 hover:text-purple-800',
+        selectOpen: isDark
+          ? 'border-purple-400/80 bg-[#160429] ring-1 ring-purple-400/30 shadow-[0_0_12px_rgba(168,85,247,0.15)]'
+          : 'border-purple-400 bg-white ring-1 ring-purple-400/40 shadow-sm',
+        selectSelected: isDark
+          ? 'border-purple-500/40 bg-purple-500/10 text-white'
+          : 'border-purple-300 bg-purple-50/70 text-purple-900',
+        selectIconSelected: isDark ? 'bg-purple-500/20 text-purple-200' : 'bg-purple-100 text-purple-800',
+        selectCountBadge: isDark
+          ? 'bg-purple-500/25 text-purple-200 border border-purple-500/30'
+          : 'bg-purple-50 text-purple-800 border border-purple-200',
+        selectChevron: isDark ? 'text-purple-400' : 'text-purple-700',
+        dropdownBorder: isDark ? 'border-purple-500/30' : 'border-purple-200',
+        optionSelected: isDark ? 'bg-purple-500/20 text-purple-200 font-bold' : 'bg-purple-50 text-purple-900 font-bold',
+        optionCheck: isDark ? 'text-purple-400' : 'text-purple-700',
+        scopeSelected: isDark
+          ? 'bg-purple-500/20 border-purple-500/40 text-purple-200 shadow-[0_0_10px_rgba(168,85,247,0.15)]'
+          : 'bg-white border-purple-300 text-purple-900 shadow-xs',
+        applyBtn: isDark
+          ? 'bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 text-white shadow-[0_4px_16px_rgba(147,51,234,0.25)] border border-purple-400/30 active:scale-[0.985]'
+          : 'bg-purple-700 hover:bg-purple-800 text-white shadow-xs active:scale-[0.985]',
+        chip: isDark ? 'bg-purple-500/15 text-purple-200 border border-purple-500/30' : 'bg-purple-50 text-purple-800 border border-purple-200'
+      }
+    case 'emerald':
+    default:
+      return {
+        filterBtnActive: isDark
+          ? 'bg-teal-500/25 text-teal-300 border border-teal-500/50 shadow-[0_0_10px_rgba(45,212,191,0.25)]'
+          : 'bg-emerald-50 text-emerald-800 border border-emerald-300 shadow-xs',
+        filterBtnIcon: isDark ? 'text-teal-400' : 'text-emerald-700',
+        filterBadge: isDark ? 'bg-teal-400 text-slate-950' : 'bg-emerald-700 text-white',
+        popoverBorder: isDark ? 'border-teal-500/30' : 'border-slate-200',
+        resetBtn: isDark ? 'text-teal-400/90 hover:text-teal-300' : 'text-emerald-700 hover:text-emerald-800',
+        selectOpen: isDark
+          ? 'border-teal-400/80 bg-[#120524] ring-1 ring-teal-400/30 shadow-[0_0_12px_rgba(45,212,191,0.15)]'
+          : 'border-teal-400 bg-white ring-1 ring-teal-400/40 shadow-sm',
+        selectSelected: isDark
+          ? 'border-teal-500/40 bg-teal-500/10 text-white'
+          : 'border-emerald-300 bg-emerald-50/70 text-emerald-900',
+        selectIconSelected: isDark ? 'bg-teal-500/20 text-teal-300' : 'bg-emerald-100 text-emerald-800',
+        selectCountBadge: isDark
+          ? 'bg-teal-500/25 text-teal-300 border border-teal-500/30'
+          : 'bg-emerald-50 text-emerald-800 border border-emerald-200',
+        selectChevron: isDark ? 'text-teal-400' : 'text-emerald-700',
+        dropdownBorder: isDark ? 'border-teal-500/30' : 'border-slate-200',
+        optionSelected: isDark ? 'bg-teal-500/20 text-teal-300 font-bold' : 'bg-emerald-50 text-emerald-900 font-bold',
+        optionCheck: isDark ? 'text-teal-400' : 'text-emerald-700',
+        scopeSelected: isDark
+          ? 'bg-teal-500/20 border-teal-500/40 text-teal-300 shadow-[0_0_10px_rgba(45,212,191,0.15)]'
+          : 'bg-white border-emerald-300 text-emerald-900 shadow-xs',
+        applyBtn: isDark
+          ? 'bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-400 hover:to-teal-500 text-white shadow-[0_4px_16px_rgba(20,184,166,0.25)] border border-teal-400/30 active:scale-[0.985]'
+          : 'bg-emerald-700 hover:bg-emerald-800 text-white shadow-xs active:scale-[0.985]',
+        chip: isDark ? 'bg-teal-500/15 text-teal-300 border border-teal-500/30' : 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+      }
+  }
+}
+
 function filterTree(
   nodes: TreeNode[],
   query: string,
@@ -533,7 +663,8 @@ function SearchableSelect({
   allLabel,
   searchPlaceholder,
   icon: Icon,
-  isDark = true
+  isDark = true,
+  filterTokens
 }: {
   value: string
   onChange: (val: string) => void
@@ -543,6 +674,7 @@ function SearchableSelect({
   icon: React.ComponentType<{ size?: number; className?: string }>
   isDark?: boolean
   accentColor?: string
+  filterTokens?: ReturnType<typeof getFilterThemeTokens>
 }) {
   const [isOpen, setIsOpen] = useState(false)
   const [inputValue, setInputValue] = useState('')
@@ -629,22 +761,23 @@ function SearchableSelect({
           setIsOpen(true)
         }}
         className={`flex items-center justify-between w-full px-2.5 py-1.5 rounded-xl border text-xs transition-all duration-200 cursor-text ${isOpen
-          ? isDark
+          ? filterTokens?.selectOpen || (isDark
             ? 'border-teal-400/80 bg-[#120524] ring-1 ring-teal-400/30 shadow-[0_0_12px_rgba(45,212,191,0.15)]'
-            : 'border-teal-400 bg-white ring-1 ring-teal-400/40 shadow-sm'
+            : 'border-teal-400 bg-white ring-1 ring-teal-400/40 shadow-sm')
           : isDark
             ? isCustomSelected
-              ? 'border-teal-500/40 bg-teal-500/10 text-white'
+              ? (filterTokens?.selectSelected || 'border-teal-500/40 bg-teal-500/10 text-white')
               : 'border-white/10 bg-[#180933]/70 hover:border-white/20 text-white'
             : isCustomSelected
-              ? 'border-emerald-300 bg-emerald-50/70 text-emerald-900'
+              ? (filterTokens?.selectSelected || 'border-emerald-300 bg-emerald-50/70 text-emerald-900')
               : 'border-slate-200 bg-slate-50 hover:border-slate-300 text-slate-800'
           }`}
       >
         {/* Right side: Icon badge (Unified cohesive styling) */}
-        <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg transition-colors ml-2 pointer-events-none ${isDark
-          ? isCustomSelected ? 'bg-teal-500/20 text-teal-300' : 'bg-white/5 text-white/60'
-          : isCustomSelected ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-500'
+        <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg transition-colors ml-2 pointer-events-none ${
+          isCustomSelected
+            ? (filterTokens?.selectIconSelected || (isDark ? 'bg-teal-500/20 text-teal-300' : 'bg-emerald-100 text-emerald-800'))
+            : (isDark ? 'bg-white/5 text-white/60' : 'bg-slate-100 text-slate-500')
           }`}>
           <Icon size={13} />
         </span>
@@ -670,7 +803,8 @@ function SearchableSelect({
         {/* Left side: Book count badge + Clear button + Chevron */}
         <div className="flex items-center gap-1.5 shrink-0 mr-1">
           {!isOpen && isCustomSelected && typeof selectedOption?.count === 'number' && (
-            <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold shrink-0 pointer-events-none ${isDark ? 'bg-teal-500/25 text-teal-300 border border-teal-500/30' : 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+            <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold shrink-0 pointer-events-none ${
+              filterTokens?.selectCountBadge || (isDark ? 'bg-teal-500/25 text-teal-300 border border-teal-500/30' : 'bg-emerald-50 text-emerald-800 border border-emerald-200')
               }`}>
               {selectedOption.count} كتاب
             </span>
@@ -698,7 +832,7 @@ function SearchableSelect({
           >
             <ChevronDown
               size={13}
-              className={`transition-transform duration-200 ${isOpen ? (isDark ? 'rotate-180 text-teal-400' : 'rotate-180 text-emerald-700') : 'opacity-60'}`}
+              className={`transition-transform duration-200 ${isOpen ? `rotate-180 ${filterTokens?.selectChevron || (isDark ? 'text-teal-400' : 'text-emerald-700')}` : 'opacity-60'}`}
             />
           </button>
         </div>
@@ -713,8 +847,8 @@ function SearchableSelect({
             exit={{ opacity: 0, y: -4, scale: 0.98 }}
             transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
             className={`absolute top-full right-0 left-0 mt-1.5 z-[60] rounded-xl border p-1.5 shadow-2xl backdrop-blur-xl ${isDark
-              ? 'bg-[#180933]/98 border-teal-500/30 text-white shadow-[0_16px_36px_rgba(0,0,0,0.9)]'
-              : 'bg-white border-slate-200 text-slate-800 shadow-2xl'
+              ? `bg-[#180933]/98 ${filterTokens?.dropdownBorder || 'border-teal-500/30'} text-white shadow-[0_16px_36px_rgba(0,0,0,0.9)]`
+              : `bg-white ${filterTokens?.dropdownBorder || 'border-slate-200'} text-slate-800 shadow-2xl`
               }`}
           >
             <div className="max-h-48 overflow-y-auto space-y-0.5 pr-0.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-teal-500/30">
@@ -724,16 +858,14 @@ function SearchableSelect({
                   type="button"
                   onClick={() => handleSelect('all')}
                   className={`flex items-center justify-between w-full px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors text-right ${value === 'all'
-                    ? isDark
-                      ? 'bg-teal-500/20 text-teal-300 font-bold'
-                      : 'bg-emerald-50 text-emerald-900 font-bold'
+                    ? (filterTokens?.optionSelected || (isDark ? 'bg-teal-500/20 text-teal-300 font-bold' : 'bg-emerald-50 text-emerald-900 font-bold'))
                     : isDark
                       ? 'hover:bg-white/5 text-white/80'
                       : 'hover:bg-slate-100 text-slate-700'
                     }`}
                 >
                   <span>{allLabel}</span>
-                  {value === 'all' && <Check size={12} className={isDark ? "text-teal-400 shrink-0" : "text-emerald-700 shrink-0"} />}
+                  {value === 'all' && <Check size={12} className={`${filterTokens?.optionCheck || (isDark ? "text-teal-400" : "text-emerald-700")} shrink-0`} />}
                 </button>
               )}
 
@@ -746,9 +878,7 @@ function SearchableSelect({
                     type="button"
                     onClick={() => handleSelect(opt.value)}
                     className={`flex items-center justify-between w-full px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors text-right ${isSelected
-                      ? isDark
-                        ? 'bg-teal-500/20 text-teal-300 font-bold'
-                        : 'bg-emerald-50 text-emerald-900 font-bold'
+                      ? (filterTokens?.optionSelected || (isDark ? 'bg-teal-500/20 text-teal-300 font-bold' : 'bg-emerald-50 text-emerald-900 font-bold'))
                       : isDark
                         ? 'hover:bg-white/5 text-white/80'
                         : 'hover:bg-slate-100 text-slate-700'
@@ -762,7 +892,7 @@ function SearchableSelect({
                           {opt.count}
                         </span>
                       )}
-                      {isSelected && <Check size={12} className="text-teal-400" />}
+                      {isSelected && <Check size={12} className={filterTokens?.optionCheck || "text-teal-400"} />}
                     </div>
                   </button>
                 )
@@ -862,6 +992,7 @@ export function StudySidebar({
   const { treeData: baseTreeData, chunkMeta, chunkTitle } = useStudyContext()
   const { accentColor: globalAccentColor } = useTheme()
   const sidebarThemeTokens = useMemo(() => getTreeThemeTokens(globalAccentColor, isDark), [globalAccentColor, isDark])
+  const filterTokens = useMemo(() => getFilterThemeTokens(globalAccentColor, isDark), [globalAccentColor, isDark])
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [searchScope, setSearchScope] = useState<SearchScope>('all')
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
@@ -1194,18 +1325,16 @@ export function StudySidebar({
             <button
               onClick={() => setIsFilterOpen(prev => !prev)}
               className={`relative flex items-center justify-center h-7 px-2 rounded-xl transition-all gap-1 text-[11px] font-bold ${hasActiveFilters || isFilterOpen
-                ? isDark
-                  ? 'bg-teal-500/25 text-teal-300 border border-teal-500/50 shadow-[0_0_10px_rgba(45,212,191,0.25)]'
-                  : 'bg-emerald-50 text-emerald-800 border border-emerald-300 shadow-xs'
+                ? filterTokens.filterBtnActive
                 : isDark
                   ? 'text-white/50 hover:text-white hover:bg-white/10'
                   : 'text-slate-400 hover:text-slate-700 hover:bg-slate-100'
                 }`}
               title="تخصيص الفلترة"
             >
-              <SlidersHorizontal size={14} className={hasActiveFilters || isFilterOpen ? (isDark ? 'text-teal-400' : 'text-emerald-700') : ''} />
+              <SlidersHorizontal size={14} className={hasActiveFilters || isFilterOpen ? filterTokens.filterBtnIcon : ''} />
               {hasActiveFilters && (
-                <span className={`flex h-3.5 w-3.5 items-center justify-center rounded-full text-[9px] font-black ${isDark ? 'bg-teal-400 text-slate-950' : 'bg-emerald-700 text-white'}`}>
+                <span className={`flex h-3.5 w-3.5 items-center justify-center rounded-full text-[9px] font-black ${filterTokens.filterBadge}`}>
                   {activeFiltersCount}
                 </span>
               )}
@@ -1223,14 +1352,14 @@ export function StudySidebar({
               exit={{ opacity: 0, y: -6, scale: 0.98 }}
               transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
               className={`absolute top-full right-4 left-4 z-50 rounded-2xl border p-4 shadow-2xl backdrop-blur-2xl ${isDark
-                ? 'bg-[#15072c]/95 border-teal-500/30 text-white shadow-[0_16px_40px_rgba(0,0,0,0.85)]'
-                : 'bg-white/98 border-slate-200 text-slate-800 shadow-xl'
+                ? `bg-[#15072c]/95 ${filterTokens.popoverBorder} text-white shadow-[0_16px_40px_rgba(0,0,0,0.85)]`
+                : `bg-white/98 ${filterTokens.popoverBorder} text-slate-800 shadow-xl`
                 }`}
             >
               {/* Header: Single unified row without redundant duplicate titles */}
               <div className="flex items-center justify-between pb-2.5 border-b border-white/10 dark:border-white/10 mb-3">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800 dark:text-white/90">
-                  <SlidersHorizontal size={13} className={isDark ? "text-teal-400" : "text-emerald-700"} />
+                  <SlidersHorizontal size={13} className={filterTokens.filterBtnIcon} />
                   <span>حصر نطاق البحث:</span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -1238,7 +1367,7 @@ export function StudySidebar({
                     <button
                       type="button"
                       onClick={handleResetFilters}
-                      className={`flex items-center gap-1 text-[11px] font-semibold transition-colors ${isDark ? 'text-teal-400/90 hover:text-teal-300' : 'text-emerald-700 hover:text-emerald-800'}`}
+                      className={`flex items-center gap-1 text-[11px] font-semibold transition-colors ${filterTokens.resetBtn}`}
                     >
                       <RotateCcw size={11} />
                       <span>إعادة تعيين</span>
@@ -1266,6 +1395,7 @@ export function StudySidebar({
                   searchPlaceholder="اكتب اسم القسم للبحث السريع..."
                   icon={Layers}
                   isDark={isDark}
+                  filterTokens={filterTokens}
                 />
                 <SearchableSelect
                   value={selectedAuthor}
@@ -1275,6 +1405,7 @@ export function StudySidebar({
                   searchPlaceholder="اكتب اسم المؤلف للبحث السريع..."
                   icon={User}
                   isDark={isDark}
+                  filterTokens={filterTokens}
                 />
               </div>
 
@@ -1293,9 +1424,7 @@ export function StudySidebar({
                         type="button"
                         onClick={() => setSearchScope(sc)}
                         className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-bold transition-all relative text-center border ${isSelected
-                          ? isDark
-                            ? 'bg-teal-500/20 border-teal-500/40 text-teal-300 shadow-[0_0_10px_rgba(45,212,191,0.15)]'
-                            : 'bg-white border-emerald-300 text-emerald-900 shadow-xs'
+                          ? filterTokens.scopeSelected
                           : isDark
                             ? 'border-transparent text-white/50 hover:text-white hover:bg-white/5'
                             : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
@@ -1318,10 +1447,7 @@ export function StudySidebar({
                       mainSearchInputRef.current?.focus()
                     }, 60)
                   }}
-                  className={`w-full py-2 px-4 rounded-xl text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2 ${isDark
-                    ? 'bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-400 hover:to-teal-500 text-white shadow-[0_4px_16px_rgba(20,184,166,0.25)] border border-teal-400/30 active:scale-[0.985]'
-                    : 'bg-emerald-700 hover:bg-emerald-800 text-white shadow-xs active:scale-[0.985]'
-                    }`}
+                  className={`w-full py-2 px-4 rounded-xl text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2 ${filterTokens.applyBtn}`}
                 >
                   <Check size={14} className="stroke-[2.5]" />
                   <span>تطبيق التصفية</span>
@@ -1342,8 +1468,7 @@ export function StudySidebar({
               className="flex flex-wrap items-center gap-1.5 pt-2.5 overflow-hidden"
             >
               {selectedCategory !== 'all' && (
-                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold border transition-all ${isDark ? 'bg-teal-500/15 text-teal-300 border-teal-500/30' : 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                  }`}>
+                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold border transition-all ${filterTokens.chip}`}>
                   <span>القسم: {selectedCategory}</span>
                   <button onClick={() => setSelectedCategory('all')} className="hover:text-red-400 transition-colors p-0.5">
                     <X size={11} />
@@ -1351,8 +1476,7 @@ export function StudySidebar({
                 </span>
               )}
               {selectedAuthor !== 'all' && (
-                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold border transition-all ${isDark ? 'bg-teal-500/15 text-teal-300 border-teal-500/30' : 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                  }`}>
+                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold border transition-all ${filterTokens.chip}`}>
                   <span>المؤلف: {selectedAuthor}</span>
                   <button onClick={() => setSelectedAuthor('all')} className="hover:text-red-400 transition-colors p-0.5">
                     <X size={11} />
@@ -1360,8 +1484,7 @@ export function StudySidebar({
                 </span>
               )}
               {searchScope !== 'all' && (
-                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold border transition-all ${isDark ? 'bg-teal-500/15 text-teal-300 border-teal-500/30' : 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                  }`}>
+                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold border transition-all ${filterTokens.chip}`}>
                   <span>البحث في: {SCOPE_LABELS[searchScope]}</span>
                   <button onClick={() => setSearchScope('all')} className="hover:text-red-400 transition-colors p-0.5">
                     <X size={11} />

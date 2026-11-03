@@ -459,10 +459,7 @@ export function StudyTimerWidget({
                 <Timer size={19} className="shrink-0 text-slate-500 dark:text-white/50" />
                 <span className="truncate">مؤقت المدارسة</span>
               </div>
-              <div className="flex items-center gap-1.5 shrink-0">
-                <span className="text-[11px] font-sans text-muted-foreground px-1.5 py-0.5 rounded border border-slate-200/80 dark:border-white/10">
-                  بدء
-                </span>
+              <div className="flex items-center gap-1 shrink-0">
                 <ChevronDown size={14} className={`text-muted-foreground transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
               </div>
             </button>

@@ -381,54 +381,53 @@ export function StudyMindmapPanel({
                 return (
                   <div
                     key={item.id}
-                    onClick={() => handleSelectMindmapDto(item)}
-                    className={`w-full group p-3.5 sm:p-4 rounded-2xl border-l border-t border-b border-r-4 transition-all duration-300 cursor-pointer flex flex-col gap-3 relative overflow-hidden ${isDark
+                    className={`w-full group p-3.5 sm:p-4 rounded-xl border-l border-t border-b border-r-4 transition-all duration-300 flex flex-col gap-2.5 relative overflow-hidden ${isDark
                       ? `bg-white/5 border-white/10 ${mindmapTheme.borderAccent} hover:bg-white/10 shadow-md backdrop-blur-xl`
                       : `bg-white border-slate-200 ${mindmapTheme.borderAccent} hover:shadow-xl`
                       }`}
                   >
-
-                    {/* Top Row: Sequential Index Badge (#1, #2...) + Title + Actions */}
-                    <div className="flex items-center justify-between gap-3 w-full">
-                      <div className="flex items-center gap-2.5 flex-1 min-w-0">
-                        {/* Sequential Index Badge (#1, #2...) */}
-                        <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-extrabold text-sm sm:text-base flex-shrink-0 transition-all duration-300 ${mindmapTheme.itemBadge} group-hover:scale-110`}>
-                          {index + 1}
-                        </div>
-                        <div className="flex flex-col justify-center min-w-0 flex-1">
-                          <h4 className={`font-black text-sm sm:text-base leading-snug break-words transition-colors ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                            {item.title || 'خريطة ذهنية للدرس'}
-                          </h4>
-                        </div>
+                    {/* Top Row: Sequential Index Badge + Full Width Title */}
+                    <div className="flex items-start gap-2.5 w-full">
+                      {/* Sequential Index Badge (#1, #2...) */}
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-extrabold text-xs sm:text-sm flex-shrink-0 mt-0.5 transition-all duration-300 ${mindmapTheme.itemBadge} group-hover:scale-105`}>
+                        {index + 1}
                       </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className={`font-black text-sm sm:text-base leading-snug transition-colors ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                          {item.title || 'خريطة ذهنية للدرس'}
+                        </h4>
+                      </div>
+                    </div>
 
-                      <div className="flex items-center gap-1.5 flex-shrink-0">
-                        {/* Share to Community button for user's own mindmaps */}
-                        {viewMode === 'my_mindmaps' && (
-                          <button
-                            type="button"
-                            onClick={(e) => handleToggleShareMindmap(e, item)}
-                            className={`px-2.5 py-1.5 text-xs font-bold rounded-xl border transition-all flex items-center gap-1 cursor-pointer ${
-                              (item as any).isShared
-                                ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30'
-                                : isDark
-                                  ? 'bg-white/5 hover:bg-white/10 text-white/70 border-white/10'
-                                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200'
-                            }`}
-                            title={(item as any).isShared ? 'منشورة للزملاء (انقر لإلغاء النشر)' : 'مشاركة مع الزملاء'}
-                          >
-                            <Globe size={13} className={(item as any).isShared ? 'text-emerald-400' : 'opacity-70'} />
-                            <span>{(item as any).isShared ? 'منشور 🌐' : 'مشاركة'}</span>
-                          </button>
-                        )}
+                    {/* Middle Row: Action Buttons Under the Title */}
+                    <div className="flex items-center gap-2 w-full pt-1">
+                      <button
+                        type="button"
+                        onClick={() => handleSelectMindmapDto(item)}
+                        className={`flex-1 py-2 px-3 text-xs font-black rounded-xl ${mindmapTheme.primaryBtn} hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 shadow-sm cursor-pointer`}
+                      >
+                        <span>عرض الخريطة</span>
+                        <ArrowRight size={14} className="rotate-180" />
+                      </button>
 
+                      {/* Share to Community button for user's own mindmaps */}
+                      {viewMode === 'my_mindmaps' && (
                         <button
-                          className={`px-3.5 py-1.5 text-xs font-black rounded-xl ${mindmapTheme.primaryBtn} group-hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 flex-shrink-0`}
+                          type="button"
+                          onClick={(e) => handleToggleShareMindmap(e, item)}
+                          className={`py-2 px-3 text-xs font-bold rounded-xl border transition-all flex items-center justify-center gap-1.5 cursor-pointer flex-shrink-0 ${
+                            (item as any).isShared
+                              ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30'
+                              : isDark
+                                ? 'bg-white/5 hover:bg-white/10 text-white/80 border-white/10'
+                                : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200'
+                          }`}
+                          title={(item as any).isShared ? 'منشورة للزملاء (انقر لإلغاء النشر)' : 'مشاركة مع الزملاء'}
                         >
-                          <span>عرض</span>
-                          <ArrowRight size={14} className="rotate-180" />
+                          <Globe size={13} className={(item as any).isShared ? 'text-emerald-400' : 'opacity-70'} />
+                          <span>{(item as any).isShared ? 'منشور 🌐' : 'مشاركة'}</span>
                         </button>
-                      </div>
+                      )}
                     </div>
 
                     {/* Metadata Row */}

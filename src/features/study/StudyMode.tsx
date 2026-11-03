@@ -2313,8 +2313,38 @@ ${typesGuide.join('\n')}
             </div>
           </div>
 
-          {/* LEFT (RTL): NotificationBell + Timer Toggle Button */}
+          {/* LEFT (RTL): NotificationBell + Timer Toggle Button + History Button */}
           <div className="flex items-center gap-2 shrink-0">
+            {/* زر سجل المدارسة والأداء */}
+            <button
+              id="study-mobile-history-btn"
+              type="button"
+              onClick={() => setIsHistoryModalOpen(true)}
+              className={`h-10 w-10 rounded-full border flex items-center justify-center transition-all backdrop-blur-md active:scale-95 cursor-pointer group ${
+                isHistoryModalOpen
+                  ? isDark
+                    ? (accentColor === 'amber'
+                        ? 'bg-amber-500/20 text-[#eed8ad] border-[#dfbf83] shadow-sm'
+                        : accentColor === 'emerald'
+                        ? 'bg-teal-500/20 text-teal-300 border-teal-400 shadow-sm'
+                        : accentColor === 'blue'
+                        ? 'bg-blue-500/20 text-blue-300 border-blue-400 shadow-sm'
+                        : 'bg-purple-500/20 text-purple-300 border-purple-500/50 shadow-sm')
+                    : (accentColor === 'amber'
+                        ? 'bg-amber-100 text-[#8a652a] border-amber-300 shadow-sm'
+                        : accentColor === 'emerald'
+                        ? 'bg-teal-100 text-teal-800 border-teal-300 shadow-sm'
+                        : accentColor === 'blue'
+                        ? 'bg-blue-100 text-blue-800 border-blue-300 shadow-sm'
+                        : 'bg-purple-100 text-purple-800 border-purple-300 shadow-sm')
+                  : getNavCircleBtnStyle()
+              }`}
+              title="سجل المدارسة والجلسات السابقة"
+              aria-label="سجل المدارسة"
+            >
+              <History className="h-5 w-5 shrink-0 transition-transform group-hover:scale-110" strokeWidth={2.2} />
+            </button>
+
             {/* زر المؤقت بجانب الإشعارات يميناً (أيقونة فقط بنفس حجم الإشعارات) */}
             <button
               id="study-mobile-timer-btn"
@@ -2376,6 +2406,7 @@ ${typesGuide.join('\n')}
           <StudyWorkspaceSidebar
             isExpanded={isWorkspaceSidebarExpanded}
             onToggleExpanded={handleToggleWorkspaceSidebar}
+            onOpenPlatformSidebar={() => setIsPlatformSidebarOpen(true)}
             isSidebarOpen={isSidebarOpen}
             onToggleSidebar={() => {
               if (!isSidebarOpen) {
