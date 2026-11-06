@@ -1437,13 +1437,11 @@ export default function Navbar({
                           className="overflow-hidden"
                         >
                           <div className="mr-3 pr-2.5 my-1.5 border-r-2 border-primary/25 space-y-1">
-                            {[
-                              { id: 'index', label: 'فهرس المحتوى', icon: <Folder size={14} />, badge: 51 },
-                              { id: 'document', label: 'نص الدرس', icon: <BookOpen size={14} /> },
-                              { id: 'chat', label: 'مساعد الدراسة', icon: <MessageCircle size={14} /> },
-                              { id: 'mindmap', label: 'الخريطة الذهنية', icon: <Brain size={14} /> },
-                              { id: 'quiz', label: 'اختبار وتقييم', icon: <ClipboardList size={14} /> },
-                            ].map((subItem) => (
+                            {([
+                              { id: 'hero', label: 'الرئيسية (واجهة المدارسة)', icon: <Sparkles size={14} className="text-amber-500" /> },
+                              { id: 'workspace', label: 'مساحة المدارسة', icon: <BookOpenCheck size={14} className="text-emerald-500" /> },
+                              { id: 'community', label: 'مجتمع زاد التفاعلي', icon: <Users size={14} className="text-sky-500" /> },
+                            ] as Array<{ id: string; label: string; icon: React.ReactNode; badge?: number | string }>).map((subItem) => (
                               <button
                                 key={subItem.id}
                                 type="button"

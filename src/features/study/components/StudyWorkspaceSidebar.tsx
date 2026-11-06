@@ -23,6 +23,7 @@ import whiteLogo from '@/assets/images/WhiteLogo.webp'
 export interface StudyWorkspaceSidebarProps {
   isExpanded: boolean
   onToggleExpanded: () => void
+  onExpandSidebar?: () => void
   onOpenPlatformSidebar?: () => void
   isSidebarOpen: boolean
   onToggleSidebar: () => void
@@ -48,6 +49,7 @@ export interface StudyWorkspaceSidebarProps {
 export function StudyWorkspaceSidebar({
   isExpanded,
   onToggleExpanded,
+  onExpandSidebar,
   onOpenPlatformSidebar,
   isSidebarOpen,
   onToggleSidebar,
@@ -208,37 +210,24 @@ export function StudyWorkspaceSidebar({
       } ${getSidebarContainerClass()}`}
     >
       {/* ========================================================================= */}
-      {/* 1. HEADER: PLATFORM MENU + BRAND LOGO & TITLE + EXPAND/COLLAPSE ICON     */}
+      {/* 1. HEADER: BRAND LOGO & TITLE + EXPAND/COLLAPSE ICON                     */}
       {/* ========================================================================= */}
       <div
-        className={`min-h-[58px] pt-2.5 pb-2 box-border px-3 shrink-0 flex items-center transition-colors ${
-          isExpanded ? 'justify-between gap-1.5' : 'flex-col gap-1.5 justify-center'
+        className={`min-h-[58px] pt-2.5 pb-2 box-border px-3.5 shrink-0 flex items-center transition-colors ${
+          isExpanded ? 'justify-between' : 'justify-center'
         }`}
       >
         {isExpanded ? (
           <>
-            <div className="flex items-center gap-2 min-w-0">
-              {/* Main Website / Platform Drawer Trigger */}
-              <button
-                type="button"
-                onClick={onOpenPlatformSidebar}
-                aria-label="القائمة الرئيسية للمنصة"
-                title="القائمة الرئيسية للمنصة"
-                className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-700 hover:text-slate-900 hover:bg-slate-100/90 dark:text-slate-300 dark:hover:text-white dark:hover:bg-white/10 transition-all cursor-pointer active:scale-95 shrink-0"
-              >
-                <Menu size={20} strokeWidth={2.2} />
-              </button>
-
-              <div
-                onClick={onReturnToHero}
-                className="flex items-center gap-2 min-w-0 cursor-pointer group"
-                title="الرئيسية للمدارسة"
-              >
-                {renderThemeLogo('h-8 w-8')}
-                <span className={`font-sans text-[15px] font-bold tracking-tight truncate translate-y-0.5 ${getHeaderTitleColorClass()}`}>
-                  المدارسة الذكية
-                </span>
-              </div>
+            <div
+              onClick={onReturnToHero}
+              className="flex items-center gap-2.5 min-w-0 cursor-pointer group select-none"
+              title="الرئيسية للمدارسة"
+            >
+              {renderThemeLogo('h-8 w-8')}
+              <span className={`font-sans text-[16px] font-bold tracking-tight truncate translate-y-0.5 ${getHeaderTitleColorClass()}`}>
+                المدارسة الذكية
+              </span>
             </div>
 
             {/* Collapse button */}
@@ -253,29 +242,16 @@ export function StudyWorkspaceSidebar({
             </button>
           </>
         ) : (
-          <>
-            {/* 1. Expand button in collapsed mode (First) */}
-            <button
-              type="button"
-              onClick={onToggleExpanded}
-              aria-label="توسيع الشريط الجانبي"
-              title="توسيع الشريط الجانبي"
-              className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-700 hover:text-slate-900 hover:bg-slate-100/90 dark:text-slate-300 dark:hover:text-white dark:hover:bg-white/10 transition-all cursor-pointer active:scale-95"
-            >
-              <PanelRightOpen size={20} strokeWidth={2} />
-            </button>
-
-            {/* 2. Main Website / Platform Drawer Trigger in collapsed mode (Second) */}
-            <button
-              type="button"
-              onClick={onOpenPlatformSidebar}
-              aria-label="القائمة الرئيسية للمنصة"
-              title="القائمة الرئيسية للمنصة"
-              className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-700 hover:text-slate-900 hover:bg-slate-100/90 dark:text-slate-300 dark:hover:text-white dark:hover:bg-white/10 transition-all cursor-pointer active:scale-95"
-            >
-              <Menu size={20} strokeWidth={2.2} />
-            </button>
-          </>
+          /* Expand button in collapsed mode */
+          <button
+            type="button"
+            onClick={onToggleExpanded}
+            aria-label="توسيع الشريط الجانبي"
+            title="توسيع الشريط الجانبي"
+            className="flex h-10 w-10 items-center justify-center rounded-lg text-slate-700 hover:text-slate-900 hover:bg-slate-100/90 dark:text-slate-300 dark:hover:text-white dark:hover:bg-white/10 transition-all cursor-pointer active:scale-95"
+          >
+            <PanelRightOpen size={20} strokeWidth={2} />
+          </button>
         )}
       </div>
 
@@ -283,7 +259,7 @@ export function StudyWorkspaceSidebar({
       {/* 2. SCROLLABLE CONTENT: ALL ITEMS SCROLL UNDER FIXED HEADER                */}
       {/* ========================================================================= */}
       <div className="flex-1 overflow-y-auto overscroll-contain px-2.5 py-1.5 space-y-2 text-right [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-        {/* PRIMARY ACTIONS: NEW STUDY SESSION + RETURN TO HOME */}
+        {/* PRIMARY ACTIONS: NEW STUDY SESSION + RETURN TO HOME + MAIN PLATFORM SIDEBAR */}
         <div className="pt-0.5 space-y-1.5">
           {/* 1. جلسة مدارسة جديدة */}
           <button
@@ -309,6 +285,19 @@ export function StudyWorkspaceSidebar({
           >
             <ArrowRight size={20} className="shrink-0 text-slate-500 dark:text-white/50" />
             {isExpanded && <span className="truncate">العودة إلى الصفحة الرئيسية</span>}
+          </button>
+
+          {/* 3. القائمة الرئيسية للمنصة */}
+          <button
+            type="button"
+            onClick={onOpenPlatformSidebar}
+            title={isExpanded ? 'فتح القائمة الرئيسية للمنصة' : 'القائمة الرئيسية للمنصة'}
+            className={`w-full flex items-center rounded-lg border border-transparent hover:bg-slate-100/70 dark:hover:bg-white/5 text-slate-700 dark:text-white/70 hover:text-slate-900 dark:hover:text-white transition-all duration-150 cursor-pointer ${
+              isExpanded ? 'gap-3 px-3.5 py-2 text-sm font-medium font-sans text-right' : 'justify-center h-10 w-10 mx-auto'
+            }`}
+          >
+            <Menu size={20} className="shrink-0 text-slate-500 dark:text-white/50" />
+            {isExpanded && <span className="truncate">القائمة الرئيسية للمنصة</span>}
           </button>
         </div>
 
@@ -502,7 +491,17 @@ export function StudyWorkspaceSidebar({
 
           {/* 2. Study Timer / Pomodoro Widget */}
           <div className={isExpanded ? 'w-full' : 'flex justify-center'}>
-            <StudyTimerWidget isDark={isDark} isFullWidth={isExpanded} />
+            <StudyTimerWidget
+              isDark={isDark}
+              isFullWidth={isExpanded}
+              onRequestExpand={() => {
+                if (onExpandSidebar) {
+                  onExpandSidebar()
+                } else if (!isExpanded) {
+                  onToggleExpanded()
+                }
+              }}
+            />
           </div>
         </div>
       </div>

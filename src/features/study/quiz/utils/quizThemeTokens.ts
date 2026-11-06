@@ -34,7 +34,7 @@ export function getQuizActiveThemeTokens(accentColor: AccentColor = 'emerald', i
   switch (accentColor) {
     case 'blue':
       return {
-        cardBorder: isDark ? 'border-sky-500/25 shadow-sky-950/20' : 'border-sky-100 shadow-xl',
+        cardBorder: isDark ? 'border-sky-500/25 shadow-sky-950/20' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
         cardBg: isDark ? 'bg-[#0b1626] text-white' : 'bg-[#fafcff] text-slate-900',
         qCardBg: isDark ? 'bg-[#0e213d] text-white' : 'bg-sky-50/60 text-slate-900',
         qCardBorder: isDark ? 'border-sky-500/30' : 'border-sky-200',
@@ -58,7 +58,7 @@ export function getQuizActiveThemeTokens(accentColor: AccentColor = 'emerald', i
       }
     case 'amber':
       return {
-        cardBorder: isDark ? 'border-[#5e431a]/40 shadow-stone-950/40' : 'border-[#e6d8c3] shadow-xl',
+        cardBorder: isDark ? 'border-[#5e431a]/40 shadow-stone-950/40' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
         cardBg: isDark ? 'bg-[#18120a] text-stone-100' : 'bg-[#fcfaf6] text-stone-900',
         qCardBg: isDark ? 'bg-[#261b0c] text-stone-100' : 'bg-[#faf4ea] text-stone-900',
         qCardBorder: isDark ? 'border-[#8a6328]/50' : 'border-[#e2d2ba]',
@@ -82,7 +82,7 @@ export function getQuizActiveThemeTokens(accentColor: AccentColor = 'emerald', i
       }
     case 'purple':
       return {
-        cardBorder: isDark ? 'border-purple-500/25 shadow-purple-950/20' : 'border-purple-100 shadow-xl',
+        cardBorder: isDark ? 'border-purple-500/25 shadow-purple-950/20' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
         cardBg: isDark ? 'bg-[#140624] text-white' : 'bg-[#faf7fd] text-slate-900',
         qCardBg: isDark ? 'bg-[#240a3d] text-white' : 'bg-purple-50/60 text-slate-900',
         qCardBorder: isDark ? 'border-purple-500/30' : 'border-purple-200',
@@ -107,7 +107,7 @@ export function getQuizActiveThemeTokens(accentColor: AccentColor = 'emerald', i
     case 'emerald':
     default:
       return {
-        cardBorder: isDark ? 'border-emerald-500/25 shadow-emerald-950/20' : 'border-emerald-100 shadow-xl',
+        cardBorder: isDark ? 'border-emerald-500/25 shadow-emerald-950/20' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
         cardBg: isDark ? 'bg-[#051c14] text-white' : 'bg-[#f7fcf9] text-slate-900',
         qCardBg: isDark ? 'bg-[#092b1f] text-white' : 'bg-emerald-50/60 text-slate-900',
         qCardBorder: isDark ? 'border-emerald-500/30' : 'border-emerald-200',
@@ -157,9 +157,9 @@ export function getQuizCompletedThemeTokens(accentColor: AccentColor = 'emerald'
   switch (accentColor) {
     case 'blue':
       return {
-        cardBorder: isDark ? 'border-sky-500/25 shadow-sky-950/20' : 'border-sky-100 shadow-xl',
+        cardBorder: isDark ? 'border-sky-500/25 shadow-sky-950/20' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
         cardBg: isDark ? 'bg-[#0b1626] text-white' : 'bg-[#fafcff] text-slate-900',
-        ambientGlow: 'bg-sky-500/10',
+        ambientGlow: isDark ? 'bg-sky-500/10' : 'hidden',
         gaugeGradientStart: '#154696',
         gaugeGradientEnd: '#38bdf8',
         scoreText: 'text-[#154696] dark:text-sky-400',
@@ -182,9 +182,9 @@ export function getQuizCompletedThemeTokens(accentColor: AccentColor = 'emerald'
       }
     case 'amber':
       return {
-        cardBorder: isDark ? 'border-[#5e431a]/40 shadow-stone-950/40' : 'border-[#e6d8c3] shadow-xl',
+        cardBorder: isDark ? 'border-[#5e431a]/40 shadow-stone-950/40' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
         cardBg: isDark ? 'bg-[#18120a] text-stone-100' : 'bg-[#fcfaf6] text-stone-900',
-        ambientGlow: 'bg-[#dfbf83]/10',
+        ambientGlow: isDark ? 'bg-[#dfbf83]/10' : 'hidden',
         gaugeGradientStart: '#c59a53',
         gaugeGradientEnd: '#dfbf83',
         scoreText: 'text-[#7a5720] dark:text-[#dfbf83]',
@@ -207,9 +207,9 @@ export function getQuizCompletedThemeTokens(accentColor: AccentColor = 'emerald'
       }
     case 'purple':
       return {
-        cardBorder: isDark ? 'border-purple-500/25 shadow-purple-950/20' : 'border-purple-100 shadow-xl',
+        cardBorder: isDark ? 'border-purple-500/25 shadow-purple-950/20' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
         cardBg: isDark ? 'bg-[#140624] text-white' : 'bg-[#faf7fd] text-slate-900',
-        ambientGlow: 'bg-purple-500/10',
+        ambientGlow: isDark ? 'bg-purple-500/10' : 'hidden',
         gaugeGradientStart: '#7c3aed',
         gaugeGradientEnd: '#c084fc',
         scoreText: 'text-[#581c87] dark:text-purple-400',
@@ -233,9 +233,9 @@ export function getQuizCompletedThemeTokens(accentColor: AccentColor = 'emerald'
     case 'emerald':
     default:
       return {
-        cardBorder: isDark ? 'border-emerald-500/25 shadow-emerald-950/20' : 'border-emerald-100 shadow-xl',
+        cardBorder: isDark ? 'border-emerald-500/25 shadow-emerald-950/20' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
         cardBg: isDark ? 'bg-[#051c14] text-white' : 'bg-[#f7fcf9] text-slate-900',
-        ambientGlow: 'bg-emerald-500/10',
+        ambientGlow: isDark ? 'bg-emerald-500/10' : 'hidden',
         gaugeGradientStart: '#10b981',
         gaugeGradientEnd: '#14b8a6',
         scoreText: 'text-[#046c4e] dark:text-emerald-400',

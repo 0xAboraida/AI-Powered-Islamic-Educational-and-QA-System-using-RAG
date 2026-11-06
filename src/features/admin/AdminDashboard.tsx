@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import bgDark from '@/assets/images/image.webp'
 import TurathAdminManager from './TurathAdminManager'
+import { studyApi } from '../../api/studyApi'
 
 const TUTOR_ENGINE_URL = import.meta.env.VITE_TUTOR_ENGINE_URL || 'https://abourida-zad-tutor-engine-space.hf.space'
 const API_BASE = TUTOR_ENGINE_URL
@@ -88,24 +89,42 @@ export default function AdminDashboard({
 
   // Library Provider Switcher (Mongo RAG vs Turath Global)
   const [librarySource, setLibrarySource] = useState<'mongo' | 'turath'>(() => {
-    return (localStorage.getItem('zad_study_library_source') as 'mongo' | 'turath') || 'mongo'
+    return (localStorage.getItem('zad_study_library_source') as 'mongo' | 'turath') || 'turath'
   })
 
   // Master Section Tab (Mongo vs Turath)
   const [activeSectionTab, setActiveSectionTab] = useState<'mongo' | 'turath'>(() => {
-    return (localStorage.getItem('zad_study_library_source') as 'mongo' | 'turath') || 'mongo'
+    return (localStorage.getItem('zad_study_library_source') as 'mongo' | 'turath') || 'turath'
   })
 
-  const handleSwitchLibrarySource = (source: 'mongo' | 'turath') => {
+  // Sync global server-side setting on mount
+  useEffect(() => {
+    studyApi.getGlobalLibrarySource().then((serverSource) => {
+      if (serverSource && (serverSource === 'turath' || serverSource === 'mongo')) {
+        setLibrarySource(serverSource)
+        setActiveSectionTab(serverSource)
+        localStorage.setItem('zad_study_library_source', serverSource)
+      }
+    }).catch(() => {})
+  }, [])
+
+  const handleSwitchLibrarySource = async (source: 'mongo' | 'turath') => {
     setLibrarySource(source)
+    setActiveSectionTab(source)
     localStorage.setItem('zad_study_library_source', source)
     window.dispatchEvent(new CustomEvent('zad_library_source_changed', { detail: { source } }))
     window.dispatchEvent(new Event('zad_library_updated'))
+    
+    // Persist globally to backend database for all users
+    studyApi.setGlobalLibrarySource(source).catch(err => {
+      console.warn('Failed to persist library source setting to server:', err)
+    })
+
     addLog(
       'info',
       source === 'turath'
-        ? 'تم تفعيل: مكتبة تراث الإسلامية الكبرى (8,589 كتاب محقق)'
-        : 'تم تفعيل: نظام زاد الكلاسيكي (Mongo RAG - 198 كتاب)'
+        ? 'تم تفعيل وحفظ: مكتبة تراث الإسلامية الكبرى (8,589 كتاب محقق) كالمصدر الافتراضي لجميع الطلاب'
+        : 'تم تفعيل وحفظ: نظام زاد الكلاسيكي (Mongo RAG - 198 كتاب) لجميع الطلاب'
     )
   }
 
@@ -578,7 +597,7 @@ export default function AdminDashboard({
         </div>
 
         {/* Global Active Engine Selector (Centralized & Clean) */}
-        <div className="hidden md:flex items-center gap-1.5 rounded-2xl bg-black/50 p-1 border border-white/10 shadow-inner backdrop-blur-md">
+        <div className="flex items-center gap-1.5 rounded-2xl bg-black/50 p-1 border border-white/10 shadow-inner backdrop-blur-md overflow-x-auto">
           <span className="text-xs font-semibold text-white/60 px-2.5">المحرك المعتمد:</span>
           <button
             type="button"
@@ -676,11 +695,25 @@ export default function AdminDashboard({
                 <p className="text-[11px] opacity-75 font-normal">إدارة ظهور 8,589 كتاب محقق عبر 40 مجالاً إسلامياً</p>
               </div>
             </div>
-            {librarySource === 'turath' && (
-              <span className="shrink-0 rounded-full bg-sky-400/20 px-2.5 py-1 text-[10px] font-bold text-sky-200 border border-sky-400/30">
-                المحرك المعتمد
-              </span>
-            )}
+            <div className="flex items-center gap-2">
+              {librarySource === 'turath' ? (
+                <span className="shrink-0 rounded-full bg-sky-400/20 px-2.5 py-1 text-[10px] font-bold text-sky-200 border border-sky-400/30">
+                  المحرك المعتمد ✓
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleSwitchLibrarySource('turath')
+                  }}
+                  className="shrink-0 rounded-full bg-sky-500/30 hover:bg-sky-500/50 px-2.5 py-1 text-[10px] font-bold text-sky-200 border border-sky-400/40 transition-all active:scale-95"
+                  title="اعتماد محرك تراث لجميع الطلاب"
+                >
+                  اعتماد لجميع الطلاب ⚡
+                </button>
+              )}
+            </div>
           </button>
 
           <button
@@ -701,11 +734,25 @@ export default function AdminDashboard({
                 <p className="text-[11px] opacity-75 font-normal">إدارة فهارس وقاعدة Mongo Atlas والـ RAG (198 كتاب)</p>
               </div>
             </div>
-            {librarySource === 'mongo' && (
-              <span className="shrink-0 rounded-full bg-emerald-400/20 px-2.5 py-1 text-[10px] font-bold text-emerald-200 border border-emerald-400/30">
-                المحرك المعتمد
-              </span>
-            )}
+            <div className="flex items-center gap-2">
+              {librarySource === 'mongo' ? (
+                <span className="shrink-0 rounded-full bg-emerald-400/20 px-2.5 py-1 text-[10px] font-bold text-emerald-200 border border-emerald-400/30">
+                  المحرك المعتمد ✓
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleSwitchLibrarySource('mongo')
+                  }}
+                  className="shrink-0 rounded-full bg-emerald-500/30 hover:bg-emerald-500/50 px-2.5 py-1 text-[10px] font-bold text-emerald-200 border border-emerald-400/40 transition-all active:scale-95"
+                  title="اعتماد محرك زاد (Mongo) لجميع الطلاب"
+                >
+                  اعتماد لجميع الطلاب ⚡
+                </button>
+              )}
+            </div>
           </button>
         </div>
 
@@ -736,6 +783,21 @@ export default function AdminDashboard({
               </div>
 
               <div className="flex items-center gap-2">
+                {librarySource !== 'mongo' ? (
+                  <button
+                    type="button"
+                    onClick={() => handleSwitchLibrarySource('mongo')}
+                    className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-xs font-bold text-white shadow-md hover:brightness-110 active:scale-95 transition-all ring-1 ring-emerald-400/40"
+                    title="تفعيل محرك زاد Mongo واعتماده لجميع الطلاب"
+                  >
+                    <span>⚡ اعتماد محرك زاد لجميع الطلاب</span>
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-1.5 rounded-xl bg-emerald-500/20 border border-emerald-500/30 px-3 py-1.5 text-xs font-bold text-emerald-300">
+                    <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>المحرك المعتمد حالياً</span>
+                  </div>
+                )}
                 <button
                   onClick={handleCheckIntegrity}
                   disabled={checkingIntegrity}

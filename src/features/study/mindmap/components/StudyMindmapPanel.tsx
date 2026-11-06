@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Brain, X, Loader2, Sparkles, History, Users, ChevronLeft, Calendar, User, ArrowRight, Database, Globe } from 'lucide-react'
+import { Brain, X, Loader2, Sparkles, History, Users, ChevronLeft, Calendar, User, ArrowRight, Database, Globe, Lock } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useStudyContext, type MindmapNode } from '../../../../contexts/StudyContext'
 import { VisualMindmap } from './VisualMindmap'
@@ -13,12 +13,12 @@ function getMindmapThemeTokens(accentColor: AccentColor = 'blue', isDark: boolea
         icon: 'text-[#046c4e] dark:text-emerald-300',
         badge: isDark ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-emerald-100 text-emerald-800 border border-emerald-200',
         iconBox: isDark ? 'bg-[#092b1f] border-emerald-500/40 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-[#046c4e]',
-        cardBorder: isDark ? 'border-emerald-500/25' : 'border-emerald-200/80',
+        cardBorder: isDark ? 'border-emerald-500/25' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
         cardBg: isDark
           ? 'bg-[#051c14] text-white shadow-[0_12px_40px_rgba(0,0,0,0.5)]'
-          : 'bg-[#f7fcf9] border-emerald-100 text-slate-900 shadow-xl',
-        glowPrimary: 'bg-emerald-500/10',
-        glowSecondary: 'bg-teal-600/10',
+          : 'bg-[#f7fcf9] border-emerald-100 text-slate-900',
+        glowPrimary: isDark ? 'bg-emerald-500/10' : 'hidden',
+        glowSecondary: isDark ? 'bg-teal-600/10' : 'hidden',
         titleColor: 'text-[#065f46] dark:text-emerald-200',
         primaryBtn: 'bg-[#046c4e] hover:bg-[#03543d] active:bg-[#023e2d] text-white shadow-md border border-[#03543d]/30 transition-all',
         cardOption: isDark ? 'hover:border-emerald-500/40 hover:bg-emerald-900/20 hover:shadow-emerald-500/20' : 'hover:border-emerald-300 hover:bg-emerald-50/70',
@@ -32,12 +32,12 @@ function getMindmapThemeTokens(accentColor: AccentColor = 'blue', isDark: boolea
         icon: 'text-[#7a5720] dark:text-[#dfbf83]',
         badge: isDark ? 'bg-[#5e431a]/40 text-[#edd8ae] border border-[#8a6328]/40' : 'bg-[#f5ecdc] text-[#5e431a] border border-[#e2d2ba]',
         iconBox: isDark ? 'bg-[#261b0c] border-[#8a6328]/50 text-[#dfbf83]' : 'bg-[#f5ede0] border-[#decbb0] text-[#7a5720]',
-        cardBorder: isDark ? 'border-[#5e431a]/40' : 'border-[#e6d8c3]',
+        cardBorder: isDark ? 'border-[#5e431a]/40' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
         cardBg: isDark
           ? 'bg-[#18120a] text-stone-100 shadow-[0_12px_40px_rgba(0,0,0,0.5)]'
-          : 'bg-[#fcfaf6] border-[#e6d8c3] text-stone-900 shadow-xl',
-        glowPrimary: 'bg-[#c99a4e]/10',
-        glowSecondary: 'bg-[#8a6328]/10',
+          : 'bg-[#fcfaf6] border-[#e6d8c3] text-stone-900',
+        glowPrimary: isDark ? 'bg-[#c99a4e]/10' : 'hidden',
+        glowSecondary: isDark ? 'bg-[#8a6328]/10' : 'hidden',
         titleColor: 'text-[#5c4118] dark:text-[#edd8ae]',
         primaryBtn: 'bg-[#7a5720] hover:bg-[#684918] active:bg-[#593d12] text-white shadow-md border border-[#684918]/30 transition-all',
         cardOption: isDark ? 'hover:border-[#8a6328]/50 hover:bg-[#261b0c]/40 hover:shadow-stone-900/30' : 'hover:border-[#b88d46] hover:bg-[#f6ede0]',
@@ -51,12 +51,12 @@ function getMindmapThemeTokens(accentColor: AccentColor = 'blue', isDark: boolea
         icon: 'text-[#581c87] dark:text-purple-300',
         badge: isDark ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'bg-purple-100 text-purple-800 border border-purple-200',
         iconBox: isDark ? 'bg-[#240a3d] border-purple-500/40 text-purple-300' : 'bg-purple-50 border-purple-200 text-[#581c87]',
-        cardBorder: isDark ? 'border-purple-500/25' : 'border-purple-200/80',
+        cardBorder: isDark ? 'border-purple-500/25' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
         cardBg: isDark
           ? 'bg-[#140624] text-white shadow-[0_12px_40px_rgba(0,0,0,0.5)]'
-          : 'bg-[#faf7fd] border-purple-100 text-slate-900 shadow-xl',
-        glowPrimary: 'bg-purple-500/10',
-        glowSecondary: 'bg-fuchsia-600/10',
+          : 'bg-[#faf7fd] border-purple-100 text-slate-900',
+        glowPrimary: isDark ? 'bg-purple-500/10' : 'hidden',
+        glowSecondary: isDark ? 'bg-fuchsia-600/10' : 'hidden',
         titleColor: 'text-[#4a1572] dark:text-purple-200',
         primaryBtn: 'bg-[#581c87] hover:bg-[#4a1572] active:bg-[#3b0f5c] text-white shadow-md border border-[#4a1572]/30 transition-all',
         cardOption: isDark ? 'hover:border-purple-500/40 hover:bg-purple-900/20 hover:shadow-purple-500/20' : 'hover:border-purple-300 hover:bg-purple-50/70',
@@ -71,12 +71,12 @@ function getMindmapThemeTokens(accentColor: AccentColor = 'blue', isDark: boolea
         icon: 'text-[#154696] dark:text-sky-300',
         badge: isDark ? 'bg-sky-500/20 text-sky-300 border border-sky-500/30' : 'bg-sky-100 text-sky-800 border border-sky-200',
         iconBox: isDark ? 'bg-[#0d223f] border-sky-500/40 text-sky-300' : 'bg-sky-50 border-sky-200 text-[#154696]',
-        cardBorder: isDark ? 'border-sky-500/25' : 'border-sky-200/80',
+        cardBorder: isDark ? 'border-sky-500/25' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
         cardBg: isDark
           ? 'bg-[#0b1626] text-white shadow-[0_12px_40px_rgba(0,0,0,0.5)]'
-          : 'bg-[#fafcff] border-sky-100 text-slate-900 shadow-xl',
-        glowPrimary: 'bg-sky-500/10',
-        glowSecondary: 'bg-blue-600/10',
+          : 'bg-[#fafcff] border-sky-100 text-slate-900',
+        glowPrimary: isDark ? 'bg-sky-500/10' : 'hidden',
+        glowSecondary: isDark ? 'bg-blue-600/10' : 'hidden',
         titleColor: 'text-[#12396e] dark:text-sky-200',
         primaryBtn: 'bg-[#154696] hover:bg-[#103878] active:bg-[#0c2b5d] text-white shadow-md border border-[#103878]/30 transition-all',
         cardOption: isDark ? 'hover:border-sky-500/40 hover:bg-sky-900/20 hover:shadow-sky-500/20' : 'hover:border-sky-300 hover:bg-sky-50/70',
@@ -111,7 +111,7 @@ export function StudyMindmapPanel({
 }) {
   const { accentColor } = useTheme()
   const mindmapTheme = getMindmapThemeTokens(accentColor, isDark)
-  const { setMindmapData } = useStudyContext()
+  const { setMindmapData, chunkText, chunkTitle, headerSubtitle, chunkMeta } = useStudyContext()
   const [mindmapViewMode, setMindmapViewMode] = useState<'list' | 'visual'>('visual')
   const [viewMode, setViewMode] = useState<'menu' | 'my_mindmaps' | 'community_mindmaps' | 'visual'>(() => {
     return (mindmapData && Array.isArray(mindmapData) && mindmapData.length > 0) ? 'visual' : 'menu'
@@ -126,7 +126,7 @@ export function StudyMindmapPanel({
 
   // Sync activeMindmap ONLY when parent passes new mindmapData (e.g., after fresh AI generation)
   useEffect(() => {
-    if (mindmapData && mindmapData !== prevMindmapRef.current) {
+    if (mindmapData && Array.isArray(mindmapData) && mindmapData.length > 0) {
       prevMindmapRef.current = mindmapData
       setActiveMindmap(mindmapData)
       setViewMode('visual')
@@ -135,42 +135,45 @@ export function StudyMindmapPanel({
   }, [mindmapData])
 
   // Load saved mindmaps from API and localStorage whenever currentChunkId changes or panel mounts
-  const loadMindmaps = async () => {
-    setLoadingLists(true)
+  const loadMindmaps = () => {
+    // 1. Immediately read local saved mindmaps (Zero delay)
+    let localSaved: StudyMindmapDto[] = []
     try {
-      const [userRes, commRes] = await Promise.all([
-        studyApi.getMindmapsByChunk(currentChunkId || '').catch(() => []),
-        studyApi.getCommunityMindmapsByChunk(currentChunkId || '').catch(() => [])
-      ])
-
-      let myFiltered = Array.isArray(userRes) ? userRes : []
-      let commFiltered = Array.isArray(commRes) ? commRes : []
-
-      // Also merge locally saved mindmaps from localStorage
-      try {
-        const rawLocal = localStorage.getItem('zad_saved_mindmaps')
-        if (rawLocal) {
-          const localMindmaps = JSON.parse(rawLocal)
-          if (Array.isArray(localMindmaps)) {
-            myFiltered = [...localMindmaps, ...myFiltered]
-          }
-        }
-      } catch (err) {
-        console.warn('Error reading local saved mindmaps:', err)
+      const rawLocal = localStorage.getItem('zad_saved_mindmaps')
+      if (rawLocal) {
+        const parsed = JSON.parse(rawLocal)
+        if (Array.isArray(parsed)) localSaved = parsed
       }
+    } catch (err) {
+      console.warn('Error reading local saved mindmaps:', err)
+    }
 
-      // Merge community mindmaps from localStorage
-      try {
-        const rawComm = localStorage.getItem('zad_community_mindmaps')
-        if (rawComm) {
-          const localComm = JSON.parse(rawComm)
-          if (Array.isArray(localComm)) {
-            commFiltered = [...localComm, ...commFiltered]
-          }
-        }
-      } catch (err) {
-        console.warn('Error reading local community mindmaps:', err)
+    // 2. Immediately read local community mindmaps
+    let localComm: StudyMindmapDto[] = []
+    try {
+      const rawComm = localStorage.getItem('zad_community_mindmaps')
+      if (rawComm) {
+        const parsed = JSON.parse(rawComm)
+        if (Array.isArray(parsed)) localComm = parsed
       }
+    } catch (err) {
+      console.warn('Error reading local community mindmaps:', err)
+    }
+
+    // ALSO: Merge any items from localSaved that have isShared: true
+    for (const s of localSaved) {
+      if (s && (s as any).isShared && !localComm.some(c => c.id === s.id)) {
+        localComm.unshift({
+          ...s,
+          authorName: s.authorName?.includes('(أنت)') ? s.authorName : 'طالب في زاد (أنت)'
+        })
+      }
+    }
+
+    // Helper to process, deduplicate, and set state
+    const syncMindmapsState = (rawMy: StudyMindmapDto[], rawComm: StudyMindmapDto[]) => {
+      let myFiltered = [...rawMy]
+      let commFiltered = [...rawComm]
 
       // If activeMindmap exists in current context, ensure it's represented
       if (activeMindmap && activeMindmap.length > 0 && currentChunkId) {
@@ -181,41 +184,57 @@ export function StudyMindmapPanel({
             chunkId: currentChunkId,
             title: 'خريطة الدرس الحالية',
             treeData: activeMindmap,
-            authorName: 'طالب زاد',
+            authorName: 'طالب في زاد (أنت)',
             createdAt: new Date().toISOString()
           })
         }
       }
 
       // Deduplicate user mindmaps strictly by ID
-      const seenIds = new Set<number>()
+      const seenIds = new Set<string | number>()
       const uniqueMy: StudyMindmapDto[] = []
       for (const m of myFiltered) {
-        if (m && m.id && !seenIds.has(m.id)) {
-          seenIds.add(m.id)
-          uniqueMy.push(m)
-        } else if (m && !m.id) {
+        if (!m) continue
+        const id = m.id || `${m.chunkId || ''}_${m.title || ''}`
+        if (!seenIds.has(id)) {
+          seenIds.add(id)
           uniqueMy.push(m)
         }
       }
 
-      // Deduplicate community mindmaps by ID
-      const seenCommIds = new Set<number>()
+      // Deduplicate community mindmaps by ID.
+      // All items in commFiltered (from community storage or backend API) are published community mindmaps!
+      // User's published mindmap MUST also be visible here with a distinct badge.
+      const seenCommIds = new Set<string | number>()
       const uniqueComm: StudyMindmapDto[] = []
       for (const m of commFiltered) {
-        if (m && m.id && !seenCommIds.has(m.id)) {
-          seenCommIds.add(m.id)
+        if (!m) continue
+        const id = m.id || `${m.chunkId || ''}_${m.title || ''}`
+        if (!seenCommIds.has(id)) {
+          seenCommIds.add(id)
           uniqueComm.push(m)
         }
       }
 
       setMyMindmaps(uniqueMy)
       setCommunityMindmaps(uniqueComm)
-    } catch (err) {
-      console.warn('Failed to load mindmaps from backend API:', err)
-    } finally {
-      setLoadingLists(false)
     }
+
+    // Immediately update UI with local cached data
+    syncMindmapsState(localSaved, localComm)
+    setLoadingLists(false)
+
+    // Fetch from API and prioritize real DB records over temporary local ones
+    Promise.all([
+      studyApi.getMindmapsByChunk(currentChunkId || '').catch(() => []),
+      studyApi.getCommunityMindmapsByChunk(currentChunkId || '').catch(() => [])
+    ]).then(([userRes, commRes]) => {
+      const uRes = Array.isArray(userRes) ? userRes : []
+      const cRes = Array.isArray(commRes) ? commRes : []
+      syncMindmapsState([...uRes, ...localSaved], [...cRes, ...localComm])
+    }).catch(err => {
+      console.warn('Failed background load of mindmaps:', err)
+    })
   }
 
   useEffect(() => {
@@ -225,44 +244,48 @@ export function StudyMindmapPanel({
     return () => window.removeEventListener('zad_mindmaps_updated', handleUpdate)
   }, [currentChunkId])
 
-  const handleToggleShareMindmap = (e: React.MouseEvent, item: StudyMindmapDto) => {
+  const handleToggleShareMindmap = async (e: React.MouseEvent, item: StudyMindmapDto) => {
     e.stopPropagation()
-    const willShare = !(item as any).isShared
+    let targetId = Number(item.id)
+    const newShared = !item.isSharedInCommunity
 
-    // 1. Update in local storage zad_saved_mindmaps
+    // 1. Optimistic state update
+    setMyMindmaps(prev =>
+      prev.map(m => m.id === item.id ? { ...m, isSharedInCommunity: newShared } : m)
+    )
+
     try {
-      const rawLocal = localStorage.getItem('zad_saved_mindmaps')
-      let localList: any[] = rawLocal ? JSON.parse(rawLocal) : []
-      if (Array.isArray(localList)) {
-        localList = localList.map(m => m.id === item.id ? { ...m, isShared: willShare } : m)
-        localStorage.setItem('zad_saved_mindmaps', JSON.stringify(localList))
-      }
-    } catch { }
-
-    // 2. Update in zad_community_mindmaps
-    try {
-      const rawComm = localStorage.getItem('zad_community_mindmaps')
-      let commList: any[] = rawComm ? JSON.parse(rawComm) : []
-      if (!Array.isArray(commList)) commList = []
-
-      if (willShare) {
-        const exists = commList.some(c => c.id === item.id)
-        if (!exists) {
-          commList.unshift({
-            ...item,
-            isShared: true,
-            authorName: 'طالب في زاد (أنت)',
-            createdAt: new Date().toISOString()
-          })
+      // 2. If item was local-only or has temporary timestamp ID (> 1 billion), save to DB first!
+      if (!targetId || targetId > 1000000000) {
+        const savedDto = await studyApi.saveMindmap(
+          item.chunkId || currentChunkId || '',
+          item.title || chunkTitle || 'خريطة مفاهيم الدرس',
+          item.treeData,
+          item.bookTitle || (chunkMeta as any)?.book_title || headerSubtitle || 'درس شرعي',
+          item.sectionTitle || chunkTitle || 'عنوان الدرس'
+        )
+        if (savedDto && savedDto.id) {
+          targetId = savedDto.id
+          setMyMindmaps(prev =>
+            prev.map(m => m.id === item.id ? { ...savedDto, isSharedInCommunity: newShared } : m)
+          )
         }
-      } else {
-        commList = commList.filter(c => c.id !== item.id)
       }
-      localStorage.setItem('zad_community_mindmaps', JSON.stringify(commList))
-    } catch { }
 
-    // 3. Trigger reload
-    window.dispatchEvent(new CustomEvent('zad_mindmaps_updated'))
+      // 3. Call backend to toggle share
+      const res = await studyApi.toggleShareMindmap(targetId)
+      if (res && typeof res.isShared === 'boolean') {
+        setMyMindmaps(prev =>
+          prev.map(m => (m.id === targetId || m.id === item.id) ? { ...m, isSharedInCommunity: res.isShared } : m)
+        )
+      }
+    } catch (err) {
+      console.warn('Backend toggle share failed:', err)
+      // Revert on error
+      setMyMindmaps(prev =>
+        prev.map(m => (m.id === targetId || m.id === item.id) ? { ...m, isSharedInCommunity: !newShared } : m)
+      )
+    }
   }
 
   const isChunkMatch = (m: StudyMindmapDto) => {
@@ -416,27 +439,42 @@ export function StudyMindmapPanel({
                           type="button"
                           onClick={(e) => handleToggleShareMindmap(e, item)}
                           className={`py-2 px-3 text-xs font-bold rounded-xl border transition-all flex items-center justify-center gap-1.5 cursor-pointer flex-shrink-0 ${
-                            (item as any).isShared
-                              ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30'
+                            item.isSharedInCommunity
+                              ? isDark
+                                ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30'
+                                : 'bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100'
                               : isDark
                                 ? 'bg-white/5 hover:bg-white/10 text-white/80 border-white/10'
                                 : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200'
                           }`}
-                          title={(item as any).isShared ? 'منشورة للزملاء (انقر لإلغاء النشر)' : 'مشاركة مع الزملاء'}
+                          title={item.isSharedInCommunity ? 'إلغاء النشر من المجتمع العام' : 'نشر هذا التشجير في مجتمع زاد'}
                         >
-                          <Globe size={13} className={(item as any).isShared ? 'text-emerald-400' : 'opacity-70'} />
-                          <span>{(item as any).isShared ? 'منشور 🌐' : 'مشاركة'}</span>
+                          <Globe size={13} className={item.isSharedInCommunity ? 'text-amber-400' : 'opacity-70'} />
+                          <span>{item.isSharedInCommunity ? 'منشور بالمجتمع' : 'نشر بالمجتمع'}</span>
                         </button>
                       )}
                     </div>
 
                     {/* Metadata Row */}
                     <div className="flex items-center gap-2 text-[11px] font-medium pt-2 border-t border-white/5 flex-wrap">
+                      {/* Book Title Pill */}
+                      {(item.bookTitle || (chunkMeta as any)?.book_title || (headerSubtitle && headerSubtitle !== 'يرجى اختيار درس للبدء')) && (
+                        <span className={`flex items-center gap-1 px-2 py-0.5 rounded-md border text-[10px] font-bold ${
+                          isDark ? 'bg-amber-500/15 border-amber-500/30 text-amber-300' : 'bg-amber-50 border-amber-300 text-amber-900'
+                        }`}>
+                          <span>📖 {item.bookTitle || (chunkMeta as any)?.book_title || headerSubtitle}</span>
+                        </span>
+                      )}
+
                       {/* Author Name for Community Mindmaps */}
                       {viewMode === 'community_mindmaps' && (
-                        <span className={`flex items-center gap-1 px-2 py-0.5 rounded-md border ${isDark ? 'bg-purple-500/15 border-purple-500/30 text-purple-300' : 'bg-purple-50 border-purple-200 text-purple-700'}`}>
-                          <User size={12} className="text-purple-400" />
-                          <span>{item.authorName || 'زميل في زاد'}</span>
+                        <span className={`flex items-center gap-1 px-2 py-0.5 rounded-md border ${
+                          item.authorName?.includes('(أنت)')
+                            ? (isDark ? 'bg-amber-500/20 border-amber-500/40 text-amber-300' : 'bg-amber-50 border-amber-300 text-amber-800')
+                            : (isDark ? 'bg-purple-500/15 border-purple-500/30 text-purple-300' : 'bg-purple-50 border-purple-200 text-purple-700')
+                        }`}>
+                          <User size={12} className={item.authorName?.includes('(أنت)') ? 'text-amber-400' : 'text-purple-400'} />
+                          <span>{item.authorName?.includes('(أنت)') ? 'طالب في زاد (منشورة بواسطتك 🌐)' : (item.authorName || 'زميل في زاد')}</span>
                         </span>
                       )}
 
@@ -587,7 +625,7 @@ export function StudyMindmapPanel({
               className={`p-6 sm:p-8 rounded-2xl border max-w-md w-full relative overflow-hidden text-center flex flex-col items-center gap-4 transition-all duration-500 ${
                 isDark
                   ? `${mindmapTheme.cardBg} ${mindmapTheme.cardBorder} text-white backdrop-blur-md`
-                  : `${mindmapTheme.cardBg} ${mindmapTheme.cardBorder} text-slate-900 shadow-xl backdrop-blur-md`
+                  : `${mindmapTheme.cardBg} ${mindmapTheme.cardBorder} text-slate-900 backdrop-blur-md`
               }`}
               dir="rtl"
             >
@@ -659,20 +697,28 @@ export function StudyMindmapPanel({
               <button
                 disabled={!currentChunkId || loading || chunkLoading}
                 onClick={() => {
-                  if (!currentChunkId || loading || chunkLoading) {
-                    if (!currentChunkId) alert('الرجاء اختيار درس من الفهرس الجانبي أولاً لإنشاء خريطة ذهنية جديدة حوله.')
-                    return
-                  }
+                  if (!currentChunkId || loading || chunkLoading) return
                   if (handleGenerateMindmap) handleGenerateMindmap()
                 }}
-                className={`w-full mt-1 py-3.5 px-5 rounded-2xl font-black text-xs sm:text-sm transition-all duration-200 shadow-xl flex items-center justify-center gap-2 ${
+                className={`w-full mt-1 py-3.5 px-5 rounded-2xl font-bold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 ${
                   (!currentChunkId || loading || chunkLoading)
-                    ? 'opacity-50 cursor-not-allowed bg-slate-500/20 text-white/50 border border-white/10 shadow-none'
-                    : `${mindmapTheme.primaryBtn} hover:scale-[1.02] active:scale-[0.98] border`
+                    ? isDark
+                      ? 'cursor-not-allowed bg-white/[0.04] text-white/45 border border-dashed border-white/15 shadow-none select-none'
+                      : 'cursor-not-allowed bg-stone-100 text-stone-500 border border-dashed border-stone-300 shadow-none select-none'
+                    : `${mindmapTheme.primaryBtn} hover:scale-[1.02] active:scale-[0.98] border shadow-xl cursor-pointer`
                 }`}
               >
-                <Sparkles size={18} className="stroke-[2.5]" />
-                <span>إنشاء خريطة ذهنية جديدة</span>
+                {!currentChunkId || loading || chunkLoading ? (
+                  <>
+                    <Lock size={15} className="opacity-70" />
+                    <span>اختر درساً من الفهرس لإنشاء خريطة ذهنية</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles size={18} className="stroke-[2.5]" />
+                    <span>إنشاء خريطة ذهنية جديدة</span>
+                  </>
+                )}
               </button>
             </motion.div>
           )}

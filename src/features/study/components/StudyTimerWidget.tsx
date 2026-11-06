@@ -8,13 +8,15 @@ interface StudyTimerWidgetProps {
   isFullWidth?: boolean
   initialOpen?: boolean
   hideTriggerHeader?: boolean
+  onRequestExpand?: () => void
 }
 
 export function StudyTimerWidget({
   isDark = true,
   isFullWidth = false,
   initialOpen = false,
-  hideTriggerHeader = false
+  hideTriggerHeader = false,
+  onRequestExpand
 }: StudyTimerWidgetProps) {
   const { accentColor } = useTheme()
   const [mode, setMode] = useState<'stopwatch' | 'pomodoro'>('stopwatch')
@@ -31,8 +33,28 @@ export function StudyTimerWidget({
   const [isSoundEnabled, setIsSoundEnabled] = useState<boolean>(true)
   const [isOpen, setIsOpen] = useState<boolean>(initialOpen)
   const popoverRef = useRef<HTMLDivElement>(null)
+  const prevIsFullWidthRef = useRef(isFullWidth)
 
-  // Close popover when clicking outside (only in collapsed sidebar mode)
+  // When sidebar collapses, automatically close the timer menu so it doesn't float or remain open
+  useEffect(() => {
+    if (prevIsFullWidthRef.current && !isFullWidth) {
+      setIsOpen(false)
+    }
+    prevIsFullWidthRef.current = isFullWidth
+  }, [isFullWidth])
+
+  // Handler to expand sidebar and open the timer menu when clicked in collapsed mode
+  const handleOpenFromCollapsed = () => {
+    if (onRequestExpand) {
+      onRequestExpand()
+    }
+    setIsOpen(true)
+    setTimeout(() => {
+      popoverRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    }, 150)
+  }
+
+  // Close popover when clicking outside (only in collapsed sidebar mode if floating)
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (!isFullWidth && popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
@@ -517,51 +539,45 @@ export function StudyTimerWidget({
           !hasStarted ? (
             <button
               type="button"
-              onClick={() => setIsOpen(!isOpen)}
+              onClick={handleOpenFromCollapsed}
               aria-label="مؤقت الدراسة والتركيز"
-              className="w-full flex items-center justify-center h-9 w-9 mx-auto rounded-lg border border-transparent hover:bg-slate-100/70 dark:hover:bg-white/5 text-slate-700 dark:text-white/70 transition-all cursor-pointer"
+              className="w-full flex items-center justify-center h-10 w-10 mx-auto rounded-lg border border-transparent hover:bg-slate-100/70 dark:hover:bg-white/5 text-slate-700 dark:text-white/70 transition-all cursor-pointer"
               title="مؤقت الدراسة والتركيز"
             >
               <Timer size={20} className="text-slate-500 dark:text-white/50" />
             </button>
           ) : (
-            <div className={`flex items-center gap-1 p-1 rounded-full border transition-all duration-300 shadow-md ${getActiveBadgeClass()}`}>
+            /* Vertical compact layout: Counter on top + Play/Pause button underneath */
+            <div className={`w-12 mx-auto flex flex-col items-center justify-center gap-1.5 py-1.5 px-1 rounded-xl border transition-all duration-200 select-none ${
+              isDark
+                ? 'bg-white/[0.04] border-white/10 text-white shadow-sm'
+                : 'bg-white border-slate-200 text-slate-800 shadow-2xs'
+            }`}>
+              {/* Digital Time Counter */}
               <button
                 type="button"
-                onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-black transition-all hover:bg-black/5 dark:hover:bg-white/10"
-                title="مؤقت الدراسة والتركيز"
+                onClick={handleOpenFromCollapsed}
+                className="w-full flex items-center justify-center font-mono text-[11px] font-bold tracking-tight dir-ltr hover:opacity-80 transition-opacity cursor-pointer"
+                title="خيارات المؤقت"
               >
-                <div className="flex items-center justify-center">
-                  {mode === 'pomodoro' && isBreakPhase ? (
-                    <Coffee size={16} className="text-amber-500 dark:text-amber-300" />
-                  ) : (
-                    <Timer size={16} className={isDark ? 'text-purple-100' : 'text-purple-700'} />
-                  )}
-                </div>
-
-                <span className={`font-mono text-xs sm:text-sm tracking-wider font-black dir-ltr ${isDark ? 'text-purple-200' : 'text-purple-900'}`}>
-                  {displayTimeStr}
-                </span>
-
-                <ChevronDown size={13} className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+                {displayTimeStr}
               </button>
 
               {/* Quick Play/Pause Button */}
               <button
                 type="button"
                 onClick={togglePlayPause}
-                className={`w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-90 ${
+                className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all cursor-pointer active:scale-90 ${
                   isRunning 
-                    ? 'bg-amber-500/20 text-amber-500 hover:bg-amber-500/30' 
-                    : 'bg-emerald-500/20 text-emerald-500 hover:bg-emerald-500/30'
+                    ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 hover:bg-amber-500/25' 
+                    : 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/25'
                 }`}
-                title={isRunning ? 'إيقاف مؤقت' : 'استئناف التركيز'}
+                title={isRunning ? 'إيقاف مؤقت' : 'استئناف'}
               >
                 {isRunning ? (
-                  <Pause size={14} fill="currentColor" />
+                  <Pause size={12} fill="currentColor" />
                 ) : (
-                  <Play size={14} fill="currentColor" className="ml-0.5" />
+                  <Play size={12} fill="currentColor" className="ml-0.5" />
                 )}
               </button>
             </div>
@@ -592,8 +608,8 @@ export function StudyTimerWidget({
         </AnimatePresence>
       )}
 
-      {/* 4. FLOATING POPOVER ONLY WHEN SIDEBAR IS COLLAPSED */}
-      {!isFullWidth && (
+      {/* 4. FLOATING POPOVER ONLY WHEN SIDEBAR IS COLLAPSED (FALLBACK WHEN onRequestExpand IS NOT PROVIDED) */}
+      {!isFullWidth && !onRequestExpand && (
         <AnimatePresence>
           {isOpen && (
             <motion.div
@@ -601,7 +617,7 @@ export function StudyTimerWidget({
               animate={{ opacity: 1, scale: 1, x: 0 }}
               exit={{ opacity: 0, scale: 0.95, x: 8 }}
               transition={{ duration: 0.18 }}
-              className={`absolute right-full top-0 mr-2 w-72 p-3.5 rounded-xl border shadow-2xl backdrop-blur-2xl z-50 flex flex-col gap-3 ${
+              className={`absolute right-full bottom-0 mr-2 w-72 p-3.5 rounded-xl border shadow-2xl backdrop-blur-2xl z-50 flex flex-col gap-3 ${
                 isDark 
                   ? 'bg-[#150524]/98 border-white/15 text-white shadow-[0_15px_50px_rgba(0,0,0,0.6)]' 
                   : 'bg-white/98 border-slate-200 text-slate-900 shadow-2xl'

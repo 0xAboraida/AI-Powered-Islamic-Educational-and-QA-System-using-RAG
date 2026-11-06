@@ -457,32 +457,28 @@ export default function LibrarySidebar({
     }
   ];
 
-  const studySubItems = [
+  interface StudyNavSubItem {
+    id: string;
+    label: string;
+    icon: React.ReactNode;
+    badge?: number | string;
+  }
+
+  const studySubItems: StudyNavSubItem[] = [
     {
-      id: 'index',
-      label: 'فهرس المحتوى',
-      icon: <Folder className="w-4 h-4" />,
-      badge: counts.books !== undefined && counts.books > 0 ? counts.books : 51
+      id: 'hero',
+      label: 'الرئيسية (واجهة المدارسة)',
+      icon: <Sparkles className="w-4 h-4 text-amber-500" />
     },
     {
-      id: 'document',
-      label: 'نص الدرس',
-      icon: <BookOpen className="w-4 h-4" />
+      id: 'workspace',
+      label: 'مساحة المدارسة',
+      icon: <BookOpenCheck className="w-4 h-4 text-emerald-500" />
     },
     {
-      id: 'chat',
-      label: 'مساعد الدراسة',
-      icon: <MessageCircle className="w-4 h-4" />
-    },
-    {
-      id: 'mindmap',
-      label: 'الخريطة الذهنية',
-      icon: <Brain className="w-4 h-4" />
-    },
-    {
-      id: 'quiz',
-      label: 'اختبار وتقييم',
-      icon: <ClipboardList className="w-4 h-4" />
+      id: 'community',
+      label: 'مجتمع زاد التفاعلي',
+      icon: <Users className="w-4 h-4 text-sky-500" />
     }
   ];
 
@@ -774,7 +770,16 @@ export default function LibrarySidebar({
                       {studySubItems.map((item) => {
                         const isSubActive = isStudyActive && (
                           item.id === activeStudyTab ||
-                          (item.id === 'index' && (activeStudyTab === 'sidebar' || activeStudyTab === 'index'))
+                          (item.id === 'workspace' && (
+                            activeStudyTab === 'workspace' ||
+                            activeStudyTab === 'index' ||
+                            activeStudyTab === 'sidebar' ||
+                            activeStudyTab === 'document' ||
+                            activeStudyTab === 'chat' ||
+                            activeStudyTab === 'mindmap' ||
+                            activeStudyTab === 'quiz'
+                          )) ||
+                          (item.id === 'hero' && (activeStudyTab === 'hero' || !activeStudyTab))
                         );
 
                         return (

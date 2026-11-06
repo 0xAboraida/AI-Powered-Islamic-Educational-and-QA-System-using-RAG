@@ -606,6 +606,40 @@ export function sliceChapterPages(
         }
       }
 
+      // Helper to verify that a candidate heading is genuinely the NEXT chapter and NOT the current chapter
+      const cleanCurrent = chapterTitle ? normalizeArabicHeading(chapterTitle) : ''
+      const isGenuineNextHeading = (candidateHeading: string, cleanTargetNext: string) => {
+        if (!candidateHeading || !cleanTargetNext) return false
+        // 1. Must NOT match the current chapter's own title!
+        if (cleanCurrent) {
+          if (candidateHeading === cleanCurrent || candidateHeading.startsWith(cleanCurrent) || cleanCurrent.startsWith(candidateHeading)) {
+            return false
+          }
+        }
+        // 2. Full exact match
+        if (candidateHeading === cleanTargetNext) return true
+
+        // 3. Substantial prefix match ONLY if the distinguishing part is captured
+        if (candidateHeading.length >= 6 && cleanTargetNext.length >= 6) {
+          const boilerplate = ['ومن السورة التي يذكر فيها', 'ومن السوره التي يذكر فيها', 'ومن سورة', 'ومن سوره', 'سورة', 'سوره', 'باب', 'فصل في', 'كتاب']
+          let trimmedCand = candidateHeading
+          let trimmedNext = cleanTargetNext
+          for (const bp of boilerplate) {
+            const cleanBp = normalizeArabicHeading(bp)
+            if (trimmedCand.startsWith(cleanBp) && trimmedNext.startsWith(cleanBp)) {
+              trimmedCand = trimmedCand.slice(cleanBp.length).trim()
+              trimmedNext = trimmedNext.slice(cleanBp.length).trim()
+              break
+            }
+          }
+          if (trimmedCand && trimmedNext) {
+            return trimmedCand === trimmedNext ||
+              (trimmedCand.length >= 4 && trimmedNext.length >= 4 && (trimmedCand.startsWith(trimmedNext) || trimmedNext.startsWith(trimmedCand)))
+          }
+        }
+        return false
+      }
+
       // Strategy B: Fallback match by next chapter title inside a title span
       if (endMatchIdx === -1 && nextChapterTitle) {
         const cleanNext = normalizeArabicHeading(nextChapterTitle)
@@ -614,13 +648,7 @@ export function sliceChapterPages(
           let sm: RegExpExecArray | null
           while ((sm = spanRegex.exec(body)) !== null) {
             const spanText = normalizeArabicHeading(sm[1].replace(/<[^>]+>/g, ''))
-            const targetSample = cleanNext.slice(0, Math.min(25, cleanNext.length))
-            if (spanText && (
-              spanText === cleanNext ||
-              spanText.startsWith(targetSample) ||
-              cleanNext.startsWith(spanText.slice(0, Math.min(25, spanText.length))) ||
-              (targetSample.length >= 10 && spanText.includes(targetSample))
-            )) {
+            if (isGenuineNextHeading(spanText, cleanNext)) {
               const beforeMatch = body.slice(0, sm.index)
               const lastNl = beforeMatch.lastIndexOf('\n')
               const lineTextBeforeMatch = beforeMatch.slice(lastNl === -1 ? 0 : lastNl + 1)
@@ -645,13 +673,7 @@ export function sliceChapterPages(
           for (let li = 0; li < lines.length; li++) {
             const rawLine = lines[li]
             const cleanLine = normalizeArabicHeading(rawLine.replace(/<[^>]+>/g, ''))
-            const targetSample = cleanNextHeading.slice(0, Math.min(25, cleanNextHeading.length))
-            if (cleanLine && (
-              cleanLine === cleanNextHeading ||
-              cleanLine.startsWith(targetSample) ||
-              cleanNextHeading.startsWith(cleanLine.slice(0, Math.min(25, cleanLine.length))) ||
-              (targetSample.length >= 10 && cleanLine.includes(targetSample))
-            )) {
+            if (isGenuineNextHeading(cleanLine, cleanNextHeading)) {
               endMatchIdx = charCount
               chapterEnded = true
               break

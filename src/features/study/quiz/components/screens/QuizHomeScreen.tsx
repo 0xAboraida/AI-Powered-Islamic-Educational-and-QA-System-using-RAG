@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import {
   ClipboardList, Plus, History, Users, RefreshCw, PlayCircle, ChevronLeft, Trash2,
   Sparkles, HelpCircle, BarChart2, Target, Calendar, BookOpen, Database, Brain, User, Trophy,
-  ChevronDown, SlidersHorizontal, Clock, CheckCircle2, ListFilter, Layers, Globe
+  ChevronDown, SlidersHorizontal, Clock, CheckCircle2, ListFilter, Layers, Globe, Lock
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { studyApi, type QuizDto } from '../../../../../api/studyApi'
@@ -12,12 +12,12 @@ function getQuizHomeThemeTokens(accentColor: AccentColor = 'emerald', isDark: bo
   switch (accentColor) {
     case 'blue':
       return {
-        cardBorder: isDark ? 'border-sky-500/25' : 'border-sky-200/80',
+        cardBorder: isDark ? 'border-sky-500/25' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
         cardBg: isDark
           ? 'bg-[#0b1626] text-white shadow-[0_12px_40px_rgba(0,0,0,0.5)]'
-          : 'bg-[#fafcff] border-sky-100 text-slate-900 shadow-xl',
-        glowPrimary: 'bg-sky-500/10',
-        glowSecondary: 'bg-blue-600/10',
+          : 'bg-[#fafcff] border-sky-100 text-slate-900',
+        glowPrimary: isDark ? 'bg-sky-500/10' : 'hidden',
+        glowSecondary: isDark ? 'bg-blue-600/10' : 'hidden',
         iconBox: isDark ? 'bg-[#0d223f] border-sky-500/40 text-sky-300' : 'bg-sky-50 border-sky-200 text-sky-800',
         titleColor: 'text-[#12396e] dark:text-sky-200',
         primaryBtn: 'bg-[#154696] hover:bg-[#103878] active:bg-[#0c2b5d] text-white shadow-md border border-[#103878]/30 transition-all',
@@ -31,12 +31,12 @@ function getQuizHomeThemeTokens(accentColor: AccentColor = 'emerald', isDark: bo
       }
     case 'amber':
       return {
-        cardBorder: isDark ? 'border-[#5e431a]/40' : 'border-[#e6d8c3]',
+        cardBorder: isDark ? 'border-[#5e431a]/40' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
         cardBg: isDark
           ? 'bg-[#18120a] text-stone-100 shadow-[0_12px_40px_rgba(0,0,0,0.5)]'
-          : 'bg-[#fcfaf6] border-[#e6d8c3] text-stone-900 shadow-xl',
-        glowPrimary: 'bg-[#c99a4e]/10',
-        glowSecondary: 'bg-[#8a6328]/10',
+          : 'bg-[#fcfaf6] border-[#e6d8c3] text-stone-900',
+        glowPrimary: isDark ? 'bg-[#c99a4e]/10' : 'hidden',
+        glowSecondary: isDark ? 'bg-[#8a6328]/10' : 'hidden',
         iconBox: isDark ? 'bg-[#261b0c] border-[#8a6328]/50 text-[#dfbf83]' : 'bg-[#f5ede0] border-[#decbb0] text-[#7a5720]',
         titleColor: 'text-[#5c4118] dark:text-[#edd8ae]',
         primaryBtn: 'bg-[#7a5720] hover:bg-[#684918] active:bg-[#593d12] text-white shadow-md border border-[#684918]/30 transition-all',
@@ -50,12 +50,12 @@ function getQuizHomeThemeTokens(accentColor: AccentColor = 'emerald', isDark: bo
       }
     case 'purple':
       return {
-        cardBorder: isDark ? 'border-purple-500/25' : 'border-purple-200/80',
+        cardBorder: isDark ? 'border-purple-500/25' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
         cardBg: isDark
           ? 'bg-[#140624] text-white shadow-[0_12px_40px_rgba(0,0,0,0.5)]'
-          : 'bg-[#faf7fd] border-purple-100 text-slate-900 shadow-xl',
-        glowPrimary: 'bg-purple-500/10',
-        glowSecondary: 'bg-fuchsia-600/10',
+          : 'bg-[#faf7fd] border-purple-100 text-slate-900',
+        glowPrimary: isDark ? 'bg-purple-500/10' : 'hidden',
+        glowSecondary: isDark ? 'bg-fuchsia-600/10' : 'hidden',
         iconBox: isDark ? 'bg-[#240a3d] border-purple-500/40 text-purple-300' : 'bg-purple-50 border-purple-200 text-purple-800',
         titleColor: 'text-[#4a1572] dark:text-purple-200',
         primaryBtn: 'bg-[#581c87] hover:bg-[#4a1572] active:bg-[#3b0f5c] text-white shadow-md border border-[#4a1572]/30 transition-all',
@@ -70,12 +70,12 @@ function getQuizHomeThemeTokens(accentColor: AccentColor = 'emerald', isDark: bo
     case 'emerald':
     default:
       return {
-        cardBorder: isDark ? 'border-emerald-500/25' : 'border-emerald-200/80',
+        cardBorder: isDark ? 'border-emerald-500/25' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
         cardBg: isDark
           ? 'bg-[#051c14] text-white shadow-[0_12px_40px_rgba(0,0,0,0.5)]'
-          : 'bg-[#f7fcf9] border-emerald-100 text-slate-900 shadow-xl',
-        glowPrimary: 'bg-emerald-500/10',
-        glowSecondary: 'bg-teal-600/10',
+          : 'bg-[#f7fcf9] border-emerald-100 text-slate-900',
+        glowPrimary: isDark ? 'bg-emerald-500/10' : 'hidden',
+        glowSecondary: isDark ? 'bg-teal-600/10' : 'hidden',
         iconBox: isDark ? 'bg-[#092b1f] border-emerald-500/40 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
         titleColor: 'text-[#065f46] dark:text-emerald-200',
         primaryBtn: 'bg-[#046c4e] hover:bg-[#03543d] active:bg-[#023e2d] text-white shadow-md border border-[#03543d]/30 transition-all',
@@ -96,11 +96,13 @@ interface QuizHomeScreenProps {
   onStartSetup: () => void
   onLoadQuiz?: (quizDto: any) => void
   chunkLoading?: boolean
+  hasActiveQuiz?: boolean
+  onResumeActiveQuiz?: () => void
 }
 
 type ViewMode = 'menu' | 'my_quizzes' | 'community_quizzes'
 
-export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQuiz, chunkLoading }: QuizHomeScreenProps) {
+export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQuiz, chunkLoading, hasActiveQuiz, onResumeActiveQuiz }: QuizHomeScreenProps) {
   const { accentColor } = useTheme()
   const theme = getQuizHomeThemeTokens(accentColor, isDark)
   const [viewMode, setViewMode] = useState<ViewMode>('menu')
@@ -115,105 +117,72 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
   const isQuizMatchingChunk = (quiz: any, targetChunkId: string | null) => {
     if (!targetChunkId) return true
     const qChunk = quiz?.chunkId || quiz?.chunk_id || quiz?.chunk
-    if (!qChunk) return true
+    if (!qChunk) return false
     const cleanQ = decodeURIComponent(String(qChunk)).trim()
     const cleanT = decodeURIComponent(String(targetChunkId)).trim()
     return cleanQ === cleanT || String(qChunk).trim() === String(targetChunkId).trim()
   }
 
-  const loadQuizzes = async () => {
-    setLoading(true)
+  const loadQuizzes = () => {
+    // 1. Immediately read local saved quizzes (Zero delay)
+    let localSaved: QuizDto[] = []
     try {
-      // Send 2 parallel requests directly to Backend API:
-      const [myResult, communityResult] = await Promise.all([
-        studyApi.getUserQuizzes().catch(() => [] as QuizDto[]),
-        currentChunkId
-          ? studyApi.getCommunityQuizzesByChunk(currentChunkId).catch(() => [] as QuizDto[])
-          : studyApi.getCommunityQuizzesByChunk('').catch(() => [] as QuizDto[])
-      ])
-
-      let fetchedMy: any[] = []
-      if (Array.isArray(myResult)) {
-        fetchedMy = myResult
-      } else if (myResult && typeof myResult === 'object') {
-        const resObj = myResult as any
-        if (Array.isArray(resObj.quizzes)) fetchedMy = resObj.quizzes
-        else if (Array.isArray(resObj.data)) fetchedMy = resObj.data
-        else if (Array.isArray(resObj.items)) fetchedMy = resObj.items
+      const rawLocal = localStorage.getItem('zad_saved_quizzes')
+      if (rawLocal) {
+        const parsed = JSON.parse(rawLocal)
+        if (Array.isArray(parsed)) localSaved = parsed
       }
+    } catch (err) {
+      console.warn('Error reading local saved quizzes:', err)
+    }
 
-      // Also merge locally cached quizzes from localStorage
-      try {
-        const rawLocal = localStorage.getItem('zad_saved_quizzes')
-        if (rawLocal) {
-          const localQuizzes = JSON.parse(rawLocal)
-          if (Array.isArray(localQuizzes)) {
-            fetchedMy = [...localQuizzes, ...fetchedMy]
-          }
-        }
-      } catch (err) {
-        console.warn('Error reading local saved quizzes:', err)
+    // 2. Immediately read local community quizzes
+    let localComm: QuizDto[] = []
+    try {
+      const rawComm = localStorage.getItem('zad_community_quizzes')
+      if (rawComm) {
+        const parsed = JSON.parse(rawComm)
+        if (Array.isArray(parsed)) localComm = parsed
       }
+    } catch (err) {
+      console.warn('Error reading local community quizzes:', err)
+    }
 
-      // Also merge locally cached community quizzes
-      try {
-        const rawComm = localStorage.getItem('zad_community_quizzes')
-        if (rawComm) {
-          const localComm = JSON.parse(rawComm)
-          if (Array.isArray(localComm)) {
-            fetchedCommunity = [...localComm, ...fetchedCommunity]
-          }
-        }
-      } catch (err) {
-        console.warn('Error reading local community quizzes:', err)
+    // Merge any shared items from localSaved into localComm
+    for (const s of localSaved) {
+      if (s && (s as any).isShared && !localComm.some(c => c.id === s.id)) {
+        localComm.unshift({
+          ...s,
+          authorName: s.authorName?.includes('(أنت)') ? s.authorName : 'طالب في زاد (أنت)'
+        })
       }
+    }
 
-      let fetchedCommunity: any[] = []
-      if (Array.isArray(communityResult)) {
-        fetchedCommunity = communityResult
-      } else if (communityResult && typeof communityResult === 'object') {
-        const resObj = communityResult as any
-        if (Array.isArray(resObj.quizzes)) fetchedCommunity = resObj.quizzes
-        else if (Array.isArray(resObj.data)) fetchedCommunity = resObj.data
-        else if (Array.isArray(resObj.items)) fetchedCommunity = resObj.items
-      }
-
-      // Also merge local community quizzes
-      try {
-        const rawComm = localStorage.getItem('zad_community_quizzes')
-        if (rawComm) {
-          const localComm = JSON.parse(rawComm)
-          if (Array.isArray(localComm)) {
-            fetchedCommunity = [...localComm, ...fetchedCommunity]
-          }
-        }
-      } catch { }
-
+    const syncQuizzesState = (rawMy: QuizDto[], rawCommunity: QuizDto[]) => {
       // Deduplicate user quizzes strictly by ID
-      const seenMyIds = new Set<number>()
+      const seenMyIds = new Set<string | number>()
       const uniqueMy: QuizDto[] = []
-      for (const q of fetchedMy) {
-        if (q && q.id && !seenMyIds.has(q.id)) {
-          seenMyIds.add(q.id)
-          uniqueMy.push(q)
-        } else if (q && !q.id) {
+      for (const q of rawMy) {
+        if (!q) continue
+        const id = q.id || `${q.chunkId || ''}_${q.title || ''}`
+        if (!seenMyIds.has(id)) {
+          seenMyIds.add(id)
           uniqueMy.push(q)
         }
       }
       uniqueMy.sort((a, b) => new Date(b?.createdAt || 0).getTime() - new Date(a?.createdAt || 0).getTime())
 
-      // Deduplicate community quizzes and filter out user's own quizzes
-      const seenCommIds = new Set<number>()
+      // Deduplicate community quizzes by ID (keep user's shared quizzes as well)
+      const seenCommIds = new Set<string | number>()
       const uniqueCommunity: QuizDto[] = []
-      for (const q of fetchedCommunity) {
-        if (q && q.id && !seenCommIds.has(q.id) && !seenMyIds.has(q.id)) {
-          seenCommIds.add(q.id)
-          uniqueCommunity.push(q)
-        } else if (q && !q.id) {
+      for (const q of rawCommunity) {
+        if (!q) continue
+        const id = q.id || `${q.chunkId || ''}_${q.title || ''}`
+        if (!seenCommIds.has(id)) {
+          seenCommIds.add(id)
           uniqueCommunity.push(q)
         }
       }
-
       uniqueCommunity.sort((a, b) => new Date(b?.createdAt || 0).getTime() - new Date(a?.createdAt || 0).getTime())
 
       setMyQuizzes(uniqueMy)
@@ -226,14 +195,37 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
         myCount: currentChunkId ? myMatching.length : uniqueMy.length,
         communityCount: currentChunkId ? commMatching.length : uniqueCommunity.length,
       })
-    } catch (err) {
-      console.warn('Error loading quizzes from API:', err)
-      setMyQuizzes([])
-      setCommunityQuizzes([])
-      setStats({ myCount: 0, communityCount: 0 })
-    } finally {
-      setLoading(false)
     }
+
+    // Immediately display cached local data
+    syncQuizzesState(localSaved, localComm)
+    setLoading(false)
+
+    // Non-blocking background fetch from API
+    Promise.all([
+      studyApi.getUserQuizzes().catch(() => [] as QuizDto[]),
+      currentChunkId
+        ? studyApi.getCommunityQuizzesByChunk(currentChunkId).catch(() => [] as QuizDto[])
+        : studyApi.getCommunityQuizzesByChunk('').catch(() => [] as QuizDto[])
+    ]).then(([myResult, communityResult]) => {
+      let fetchedMy: any[] = []
+      if (Array.isArray(myResult)) fetchedMy = myResult
+      else if (myResult && typeof myResult === 'object') {
+        const resObj = myResult as any
+        fetchedMy = resObj.quizzes || resObj.data || resObj.items || []
+      }
+
+      let fetchedCommunity: any[] = []
+      if (Array.isArray(communityResult)) fetchedCommunity = communityResult
+      else if (communityResult && typeof communityResult === 'object') {
+        const resObj = communityResult as any
+        fetchedCommunity = resObj.quizzes || resObj.data || resObj.items || []
+      }
+
+      syncQuizzesState([...localSaved, ...fetchedMy], [...localComm, ...fetchedCommunity])
+    }).catch(err => {
+      console.warn('Error loading quizzes from API in background:', err)
+    })
   }
 
   useEffect(() => {
@@ -243,44 +235,70 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
     return () => window.removeEventListener('zad_quizzes_updated', handleQuizzesUpdated)
   }, [currentChunkId, viewMode])
 
-  const handleToggleShareQuiz = (e: React.MouseEvent, quiz: QuizDto) => {
+  const handleToggleShareQuiz = async (e: React.MouseEvent, quiz: QuizDto) => {
     e.stopPropagation()
-    const willShare = !(quiz as any).isShared
+    let targetId = Number(quiz.id)
+    const newShared = !quiz.isSharedInCommunity
 
-    // 1. Update in local storage zad_saved_quizzes
-    try {
-      const rawLocal = localStorage.getItem('zad_saved_quizzes')
-      let localList: any[] = rawLocal ? JSON.parse(rawLocal) : []
-      if (Array.isArray(localList)) {
-        localList = localList.map(q => q.id === quiz.id ? { ...q, isShared: willShare } : q)
-        localStorage.setItem('zad_saved_quizzes', JSON.stringify(localList))
-      }
-    } catch { }
+    // 1. Optimistic state update
+    setMyQuizzes(prev =>
+      prev.map(q => (q.id === targetId || q.id === quiz.id) ? { ...q, isSharedInCommunity: newShared } : q)
+    )
 
-    // 2. Update in zad_community_quizzes
-    try {
-      const rawComm = localStorage.getItem('zad_community_quizzes')
-      let commList: any[] = rawComm ? JSON.parse(rawComm) : []
-      if (!Array.isArray(commList)) commList = []
-
-      if (willShare) {
-        const exists = commList.some(c => c.id === quiz.id)
-        if (!exists) {
-          commList.unshift({
-            ...quiz,
-            isShared: true,
-            authorName: 'طالب في زاد (أنت)',
-            createdAt: new Date().toISOString()
-          })
+    // 2. If quiz was local-only or has temporary timestamp ID (> 1 billion), save to DB first!
+    if (!targetId || targetId > 1000000000) {
+      try {
+        const savedDto = await studyApi.saveQuiz(
+          quiz.chunkId || currentChunkId || '',
+          quiz.title || `اختبار: ${quiz.sectionTitle || 'درس دراسي'}`,
+          quiz.sectionTitle || 'درس دراسي',
+          quiz.mode || 'comprehensive',
+          quiz.difficulty || 'medium',
+          quiz.questionsData,
+          quiz.bookTitle || 'درس شرعي'
+        )
+        if (savedDto && savedDto.id) {
+          targetId = savedDto.id
+          setMyQuizzes(prev =>
+            prev.map(q => q.id === quiz.id ? { ...savedDto, isSharedInCommunity: newShared } : q)
+          )
+          try {
+            const raw = localStorage.getItem('zad_saved_quizzes')
+            if (raw) {
+              const list = JSON.parse(raw)
+              const updated = list.map((q: any) => q.id === quiz.id ? { ...savedDto, isSharedInCommunity: newShared } : q)
+              localStorage.setItem('zad_saved_quizzes', JSON.stringify(updated))
+            }
+          } catch {}
         }
-      } else {
-        commList = commList.filter(c => c.id !== quiz.id)
+      } catch (saveErr) {
+        console.warn('Failed saving local quiz to DB before sharing:', saveErr)
       }
-      localStorage.setItem('zad_community_quizzes', JSON.stringify(commList))
-    } catch { }
+    }
 
-    // 3. Trigger reload
-    window.dispatchEvent(new CustomEvent('zad_quizzes_updated'))
+    // 3. Call backend API to toggle share
+    try {
+      const res = await studyApi.toggleShareQuiz(targetId)
+      if (res && typeof res.isShared === 'boolean') {
+        setMyQuizzes(prev =>
+          prev.map(q => q.id === targetId ? { ...q, isSharedInCommunity: res.isShared } : q)
+        )
+        try {
+          const raw = localStorage.getItem('zad_saved_quizzes')
+          if (raw) {
+            const list = JSON.parse(raw)
+            const updated = list.map((q: any) => q.id === targetId ? { ...q, isSharedInCommunity: res.isShared } : q)
+            localStorage.setItem('zad_saved_quizzes', JSON.stringify(updated))
+          }
+        } catch {}
+      }
+    } catch (err) {
+      console.warn('Backend toggle share quiz failed:', err)
+      // Revert on error
+      setMyQuizzes(prev =>
+        prev.map(q => q.id === targetId ? { ...q, isSharedInCommunity: !newShared } : q)
+      )
+    }
   }
 
   const handleDeleteLocalQuiz = (e: React.MouseEvent, quizId: number) => {
@@ -300,9 +318,11 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
   }
 
   const renderQuizList = (quizzes: QuizDto[], title: string) => {
-    // Strictly isolate to the current lesson only
+    // Isolate to current lesson if selected, or show all if in global browse
     const safeQuizzes = Array.isArray(quizzes) ? quizzes : []
-    const filteredQuizzes = safeQuizzes.filter(q => q && isQuizMatchingChunk(q, currentChunkId))
+    const filteredQuizzes = currentChunkId
+      ? safeQuizzes.filter(q => q && isQuizMatchingChunk(q, currentChunkId))
+      : safeQuizzes
 
     return (
       <motion.div
@@ -558,21 +578,46 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
                         type="button"
                         onClick={(e) => handleToggleShareQuiz(e, quiz)}
                         className={`px-3 py-1.5 text-xs font-bold rounded-xl border transition-all flex items-center gap-1.5 cursor-pointer ${
-                          (quiz as any).isShared
-                            ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30'
+                          quiz.isSharedInCommunity
+                            ? isDark
+                              ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30'
+                              : 'bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100'
                             : isDark
                               ? 'bg-white/5 hover:bg-white/10 text-white/70 border-white/10'
                               : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200'
                         }`}
-                        title={(quiz as any).isShared ? 'منشور في مجتمع الزملاء (انقر لإلغاء النشر)' : 'مشاركة مع الزملاء'}
+                        title={quiz.isSharedInCommunity ? 'إلغاء النشر من المجتمع العام' : 'نشر هذا الاختبار في مجتمع زاد'}
                       >
-                        <Globe size={14} className={(quiz as any).isShared ? 'text-emerald-400' : 'opacity-70'} />
-                        <span>{(quiz as any).isShared ? 'منشور للزملاء 🌐' : 'مشاركة مع الزملاء'}</span>
+                        <Globe size={14} className={quiz.isSharedInCommunity ? 'text-amber-400' : 'opacity-70'} />
+                        <span>{quiz.isSharedInCommunity ? 'منشور بالمجتمع' : 'نشر بالمجتمع'}</span>
                       </button>
                     ) : (
-                      <div className="flex items-center gap-1.5 text-xs opacity-75">
-                        <User size={14} className="text-emerald-400" />
-                        <span>إعداد: {quiz.authorName || 'زميل في زاد'}</span>
+                      <div className="flex items-center gap-2">
+                        <div className={`flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-lg border ${
+                          quiz.authorName?.includes('(أنت)')
+                            ? (isDark ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' : 'bg-amber-50 text-amber-800 border-amber-200')
+                            : 'opacity-75 border-transparent'
+                        }`}>
+                          <User size={14} className={quiz.authorName?.includes('(أنت)') ? 'text-amber-400' : 'text-emerald-400'} />
+                          <span className="font-bold">
+                            {quiz.authorName?.includes('(أنت)') ? 'إعداد: طالب في زاد (منشور بواسطتك 🌐)' : `إعداد: ${quiz.authorName || 'زميل في زاد'}`}
+                          </span>
+                        </div>
+                        {quiz.authorName?.includes('(أنت)') && (
+                          <button
+                            type="button"
+                            onClick={(e) => handleToggleShareQuiz(e, quiz)}
+                            className={`px-2.5 py-1 text-xs font-bold rounded-lg border transition-all flex items-center gap-1 cursor-pointer ${
+                              isDark
+                                ? 'bg-red-500/15 text-red-400 border-red-500/30 hover:bg-red-500/25'
+                                : 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100'
+                            }`}
+                            title="إلغاء المشاركة"
+                          >
+                            <Globe size={12} className={isDark ? 'text-red-400' : 'text-red-500'} />
+                            <span>إلغاء المشاركة</span>
+                          </button>
+                        )}
                       </div>
                     )}
 
@@ -604,7 +649,7 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
             className={`p-8 rounded-3xl border max-w-md w-full relative overflow-hidden text-center flex flex-col items-center gap-4 transition-all duration-500 ${
               isDark
                 ? `${theme.cardBg} ${theme.cardBorder} text-white backdrop-blur-md`
-                : `${theme.cardBg} ${theme.cardBorder} text-slate-900 shadow-xl backdrop-blur-md`
+                : `${theme.cardBg} ${theme.cardBorder} text-slate-900 backdrop-blur-md`
             }`}
             dir="rtl"
           >
@@ -632,9 +677,14 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-2 transition-transform duration-300 ${theme.iconPill}`}>
                   <History size={20} />
                 </div>
-                <span className={`font-extrabold text-xs sm:text-sm mb-0.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>اختباراتي للدرس</span>
+                <span className={`font-extrabold text-xs sm:text-sm mb-0.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                  {currentChunkId ? 'اختباراتي للدرس' : 'كل اختباراتي'}
+                </span>
                 <span className={`text-[11px] font-medium ${isDark ? 'text-white/60' : 'text-slate-500'}`}>
-                  {myQuizzes.filter(q => isQuizMatchingChunk(q, currentChunkId)).length} اختبار متوفر
+                  {currentChunkId
+                    ? `${myQuizzes.filter(q => isQuizMatchingChunk(q, currentChunkId)).length} اختبار متوفر`
+                    : `${myQuizzes.length} اختبار متوفر`
+                  }
                 </span>
               </button>
 
@@ -650,30 +700,59 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-2 transition-transform duration-300 ${theme.iconPill}`}>
                   <Users size={20} />
                 </div>
-                <span className={`font-extrabold text-xs sm:text-sm mb-0.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>اختبارات الزملاء</span>
+                <span className={`font-extrabold text-xs sm:text-sm mb-0.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                  {currentChunkId ? 'اختبارات الزملاء' : 'كل اختبارات الزملاء'}
+                </span>
                 <span className={`text-[11px] font-medium ${isDark ? 'text-white/60' : 'text-slate-500'}`}>
-                  {communityQuizzes.filter(q => isQuizMatchingChunk(q, currentChunkId)).length} اختبار متوفر
+                  {currentChunkId
+                    ? `${communityQuizzes.filter(q => isQuizMatchingChunk(q, currentChunkId)).length} اختبار متوفر`
+                    : `${communityQuizzes.length} اختبار متوفر`
+                  }
                 </span>
               </button>
             </div>
 
+            {/* If active quiz exists, offer button to resume it directly */}
+            {hasActiveQuiz && onResumeActiveQuiz && (
+              <button
+                type="button"
+                onClick={onResumeActiveQuiz}
+                className={`w-full mt-1 py-3 px-5 rounded-2xl font-black text-xs sm:text-sm transition-all duration-200 border flex items-center justify-center gap-2 shadow-md hover:scale-[1.02] active:scale-[0.98] cursor-pointer ${
+                  isDark
+                    ? 'bg-emerald-500/20 hover:bg-emerald-500/30 border-emerald-400/50 text-emerald-200 shadow-emerald-950/40'
+                    : 'bg-emerald-50 hover:bg-emerald-100 border-emerald-300 text-emerald-900 shadow-sm'
+                }`}
+              >
+                <ClipboardList size={18} className="stroke-[2.5]" />
+                <span>متابعة الاختبار الحالي النشط لهذا الدرس</span>
+              </button>
+            )}
+
             <button
               disabled={!currentChunkId || chunkLoading}
               onClick={() => {
-                if (!currentChunkId || chunkLoading) {
-                  if (!currentChunkId) alert('الرجاء اختيار درس من الفهرس الجانبي أولاً لإنشاء وتخصيص اختبار جديد حوله.')
-                  return
-                }
+                if (!currentChunkId || chunkLoading) return
                 onStartSetup()
               }}
-              className={`w-full mt-1 py-3.5 px-5 rounded-2xl font-black text-xs sm:text-sm transition-all duration-200 shadow-xl flex items-center justify-center gap-2 ${
+              className={`w-full mt-1 py-3.5 px-5 rounded-2xl font-bold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 ${
                 (!currentChunkId || chunkLoading)
-                  ? 'opacity-50 cursor-not-allowed bg-slate-500/20 text-white/50 border border-white/10 shadow-none'
-                  : `${theme.primaryBtn} hover:scale-[1.02] active:scale-[0.98] border`
+                  ? isDark
+                    ? 'cursor-not-allowed bg-white/[0.04] text-white/45 border border-dashed border-white/15 shadow-none select-none'
+                    : 'cursor-not-allowed bg-stone-100 text-stone-500 border border-dashed border-stone-300 shadow-none select-none'
+                  : `${theme.primaryBtn} hover:scale-[1.02] active:scale-[0.98] border shadow-xl cursor-pointer`
               }`}
             >
-              <Plus size={18} className="stroke-[2.5]" />
-              <span>إنشاء وتخصيص اختبار جديد</span>
+              {!currentChunkId || chunkLoading ? (
+                <>
+                  <Lock size={15} className="opacity-70" />
+                  <span>اختر درساً من الفهرس لإنشاء اختبار</span>
+                </>
+              ) : (
+                <>
+                  <Plus size={18} className="stroke-[2.5]" />
+                  <span>إنشاء وتخصيص اختبار جديد</span>
+                </>
+              )}
             </button>
           </motion.div>
         )}

@@ -972,7 +972,7 @@ export function StudySidebar({
   startResizingSidebar,
   isDark = true,
   onLoadBookTree,
-  librarySource = 'mongo'
+  librarySource = 'turath'
 }: {
   isSidebarOpen: boolean
   sidebarWidth?: number

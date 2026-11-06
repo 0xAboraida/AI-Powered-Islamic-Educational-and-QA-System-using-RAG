@@ -28,6 +28,10 @@ export interface StudyMindmapDto {
   treeData: any
   authorName: string
   createdAt: string
+  isSharedInCommunity?: boolean
+  bookTitle?: string
+  sectionTitle?: string
+  likesCount?: number
 }
 
 export interface QuizDto {
@@ -40,6 +44,9 @@ export interface QuizDto {
   questionsData: any
   authorName: string
   createdAt: string
+  isSharedInCommunity?: boolean
+  bookTitle?: string
+  likesCount?: number
 }
 
 export interface QuizAttemptDto {
@@ -117,6 +124,19 @@ export const studyApi = {
     })
   },
 
+  saveMindmap: async (chunkId: string, title: string, treeData: any, bookTitle?: string, sectionTitle?: string) => {
+    return apiClient<StudyMindmapDto>('/api/study/mindmaps/save', {
+      method: 'POST',
+      body: JSON.stringify({ chunkId, title, treeData, bookTitle, sectionTitle })
+    })
+  },
+
+  toggleShareMindmap: async (id: number) => {
+    return apiClient<{ success: boolean; isShared: boolean }>(`/api/study/mindmaps/${id}/toggle-share`, {
+      method: 'PATCH'
+    })
+  },
+
   getMindmapsByChunk: async (chunkId: string) => {
     return apiClient<StudyMindmapDto[]>(`/api/study/mindmaps/by-chunk?chunkId=${encodeURIComponent(chunkId)}`)
   },
@@ -126,10 +146,23 @@ export const studyApi = {
   },
 
   // 5. Quizzes & Attempts
-  generateQuiz: async (chunkId: string, numQuestions = 5, mode = 'comprehensive', difficulty = 'medium', sectionTitle?: string) => {
+  generateQuiz: async (chunkId: string, numQuestions = 5, mode = 'comprehensive', difficulty = 'medium', sectionTitle?: string, text?: string, bookTitle?: string) => {
     return apiClient<QuizDto>('/api/study/quizzes/generate', {
       method: 'POST',
-      body: JSON.stringify({ chunkId, numQuestions, mode, difficulty, sectionTitle })
+      body: JSON.stringify({ chunkId, numQuestions, mode, difficulty, sectionTitle, text, bookTitle })
+    })
+  },
+
+  saveQuiz: async (chunkId: string, title: string, sectionTitle: string, mode: string, difficulty: string, questionsData: any, bookTitle?: string) => {
+    return apiClient<QuizDto>('/api/study/quizzes/save', {
+      method: 'POST',
+      body: JSON.stringify({ chunkId, title, sectionTitle, mode, difficulty, questionsData, bookTitle })
+    })
+  },
+
+  toggleShareQuiz: async (id: number) => {
+    return apiClient<{ success: boolean; isShared: boolean }>(`/api/study/quizzes/${id}/toggle-share`, {
+      method: 'PATCH'
     })
   },
 
@@ -193,5 +226,30 @@ export const studyApi = {
       method: 'POST',
       body: JSON.stringify(progressData)
     })
+  },
+
+  // 7. Global Library Source Setting (Turath vs Mongo)
+  getGlobalLibrarySource: async (): Promise<'turath' | 'mongo'> => {
+    try {
+      const res = await apiClient<{ source: 'turath' | 'mongo' }>('/api/study/settings/library-source', { requireAuth: false })
+      if (res && (res.source === 'turath' || res.source === 'mongo')) {
+        return res.source
+      }
+      return (localStorage.getItem('zad_study_library_source') as 'turath' | 'mongo') || 'turath'
+    } catch {
+      return (localStorage.getItem('zad_study_library_source') as 'turath' | 'mongo') || 'turath'
+    }
+  },
+
+  setGlobalLibrarySource: async (source: 'turath' | 'mongo'): Promise<void> => {
+    try {
+      await apiClient('/api/study/settings/library-source', {
+        method: 'POST',
+        requireAuth: false,
+        body: JSON.stringify({ source })
+      })
+    } catch (err) {
+      console.warn('Failed to update global library source on server:', err)
+    }
   }
 }

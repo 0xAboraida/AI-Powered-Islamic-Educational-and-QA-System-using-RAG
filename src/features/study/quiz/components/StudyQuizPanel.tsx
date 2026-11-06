@@ -537,6 +537,8 @@ export function StudyQuizPanel({
                   onStartSetup={() => set({ hasExited: false, isHomeScreen: false, isSetupMode: true })}
                   onLoadQuiz={onLoadQuiz}
                   chunkLoading={chunkLoading}
+                  hasActiveQuiz={Boolean(localQuestions && localQuestions.length > 0)}
+                  onResumeActiveQuiz={() => set({ hasExited: false, isHomeScreen: false, isSetupMode: false, isReadyScreen: false, isQuizStarted: true })}
                 />
               </motion.div>
             )}

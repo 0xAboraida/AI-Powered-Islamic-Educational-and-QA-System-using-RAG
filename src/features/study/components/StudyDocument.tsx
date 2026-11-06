@@ -223,8 +223,15 @@ export function StudyDocument({
     setActivePageIndex(0)
   }, [currentChunkId, chunkText])
 
+  const isTurathBook: boolean = Boolean(
+    currentChunkId?.startsWith('turath_') ||
+    chunkText?.includes('TURATH_PAGE_START') ||
+    chunkText?.includes('data-type="title"') ||
+    chunkText?.includes('data-type=title')
+  )
+
   const turathResult = useMemo(() => {
-    if (!currentChunkId?.startsWith('turath_')) return null
+    if (!isTurathBook) return null
     return formatTurathLiveText(chunkText, isDark, chunkMeta?.page_id, accentColor)
   }, [chunkText, isDark, chunkMeta?.page_id, currentChunkId, accentColor])
 
@@ -301,7 +308,7 @@ export function StudyDocument({
       if (activeTag === 'input' || activeTag === 'textarea' || (document.activeElement as HTMLElement)?.isContentEditable) {
         return
       }
-      if (!isDocumentOpen || !currentChunkId?.startsWith('turath_') || viewMode !== 'paged') return
+      if (!isDocumentOpen || !isTurathBook || viewMode !== 'paged') return
 
       if (e.key === 'ArrowLeft') {
         handleNextPage()
@@ -347,7 +354,7 @@ export function StudyDocument({
               </div>
 
               {/* View Mode Toggle: Paged (Single Page) vs Continuous */}
-              {currentChunkId?.startsWith('turath_') && totalPages > 1 && (
+              {isTurathBook && totalPages > 1 && (
                 <div className={`flex items-center p-0.5 rounded-lg border text-xs font-semibold ${isDark ? 'bg-white/5 border-white/10' : 'bg-slate-100 border-slate-200'}`}>
                   <button
                     type="button"
@@ -515,7 +522,7 @@ export function StudyDocument({
                     data-selectable="true"
                     data-library-content="true"
                     className={
-                      currentChunkId?.startsWith('turath_')
+                      isTurathBook
                         ? `text-[17px] sm:text-[18px] leading-[1.8] font-amiri tracking-wide relative transition-all animate-[fadeInUp_0.8s_ease-out_forwards] ${isDark ? 'text-white/90' : 'text-slate-900'
                         }`
                         : `rounded-xl border p-3.5 sm:p-6 md:p-8 text-[17px] sm:text-[18px] leading-[1.8] sm:leading-[1.9] font-amiri tracking-wide relative overflow-hidden backdrop-blur-md transition-all animate-[fadeInUp_0.8s_ease-out_forwards] ${isDark
@@ -524,7 +531,7 @@ export function StudyDocument({
                         }`
                     }
                     dangerouslySetInnerHTML={
-                      currentChunkId?.startsWith('turath_')
+                      isTurathBook
                         ? viewMode === 'paged' && currentPageItem
                           ? { __html: currentPageItem.html + (isLastPage ? (turathResult?.continuationNotice || '') : '') }
                           : { __html: turathResult?.__html || '' }
@@ -533,7 +540,7 @@ export function StudyDocument({
                   />
 
                   {/* Turath Book Authentic Page Navigator (Floating on bottom edges) */}
-                  {currentChunkId?.startsWith('turath_') && viewMode === 'paged' && onPageChange && !chunkText?.includes('turath-empty-parent-notice') && (
+                  {isTurathBook && viewMode === 'paged' && onPageChange && !chunkText?.includes('turath-empty-parent-notice') && (
                     <div className="absolute -bottom-[15px] left-0 right-0 flex items-center justify-between px-2 sm:px-5 md:px-8 pointer-events-none z-20">
                       <button
                         type="button"

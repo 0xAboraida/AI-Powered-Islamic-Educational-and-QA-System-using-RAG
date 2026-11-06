@@ -2,7 +2,17 @@
 export function formatMarkdown(text: string, isTurathText: boolean = true, isDark: boolean = true) {
   if (!text) return { __html: '' }
 
-  let html = text
+  // Clean raw Turath page markers, continuation notices, and span tags before any processing
+  let cleanInput = text
+    .replace(/<!?--[\s\S]*?--!?>/gi, '')
+    .replace(/<!--\s*"?TURATH_PAGE_[A-Z]+[^>]*--!?>/gi, '')
+    .replace(/<span[^>]*data-type=["']?title["']?[^>]*>([\s\S]*?)<\/span>/gi, '$1')
+    .replace(/<span[^>]*data-type=["']?title["']?[^>]*>/gi, '')
+    .replace(/<\/span>/gi, '')
+    .replace(/<div\s+class=["']?turath-continuation-notice["']?[\s\S]*?<\/div>/gi, '')
+    .trim()
+
+  let html = cleanInput
     // Escape HTML to prevent basic XSS
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
@@ -375,9 +385,12 @@ export function formatTurathLiveText(
 
   // Fallback: If no explicit page markers exist (single page or legacy cache)
   if (pageBlocks.length === 0) {
+    const sanitizedFallback = cleanText
+      .replace(/<!--[\s\S]*?-->/gi, '')
+      .trim()
     pageBlocks.push({
       pgNum: defaultPage ? String(defaultPage) : '',
-      content: cleanText.trim()
+      content: sanitizedFallback
     })
   }
 
@@ -476,7 +489,7 @@ export function formatTurathLiveText(
     // absorbs leading numbering/bullet prefixes (e.g. ٤-, [١]-, -), and absorbs trailing citations/punctuation directly into the title heading.
     const pageTitles: string[] = []
     let contentWithoutTitles = rawContent.replace(
-      /((?:^|\n)[ \t]*(?:(?:(?:ترجمة|رقم|فائدة|مسألة|فرع|قاعدة)\s+)?(?:[-–—•\*]\s*)*(?:[\(\[]?[١٢٣٤٥٦٧٨٩٠\d]+[\)\]]?\s*[-–—.:،\)]\s*|[-–—•\*]\s*)+))?<span\s+data-type=["']title["'][^>]*>([\s\S]*?)<\/span>([^\n\r]*)/gi,
+      /((?:^|\n)[ \t]*(?:(?:(?:ترجمة|رقم|فائدة|مسألة|فرع|قاعدة)\s+)?(?:[-–—•\*]\s*)*(?:[\(\[]?[١٢٣٤٥٦٧٨٩٠\d]+[\)\]]?\s*[-–—.:،\)]\s*|[-–—•\*]\s*)+))?<span\s+data-type=["']?title["']?[^>]*>([\s\S]*?)<\/span>([^\n\r]*)/gi,
       (_m, prefix, titleContent, restOfLine, offset, fullStr) => {
         let strayPrefix = ''
         let cleanTitleContent = titleContent

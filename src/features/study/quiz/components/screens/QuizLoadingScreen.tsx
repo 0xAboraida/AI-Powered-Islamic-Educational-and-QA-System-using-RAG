@@ -10,10 +10,10 @@ function getQuizLoadingThemeTokens(accentColor: AccentColor = 'emerald', isDark:
   switch (accentColor) {
     case 'blue':
       return {
-        cardBorder: isDark ? 'border-sky-500/25 shadow-sky-950/20' : 'border-sky-100 shadow-xl',
+        cardBorder: isDark ? 'border-sky-500/25 shadow-sky-950/20' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
         cardBg: isDark ? 'bg-[#0b1626] text-white' : 'bg-[#fafcff] text-slate-900',
-        glowPrimary: 'bg-sky-500/10',
-        glowSecondary: 'bg-blue-600/10',
+        glowPrimary: isDark ? 'bg-sky-500/10' : 'hidden',
+        glowSecondary: isDark ? 'bg-blue-600/10' : 'hidden',
         iconBox: isDark ? 'bg-[#0d223f] border-sky-500/40 text-sky-300' : 'bg-sky-50 border-sky-200 text-[#154696]',
         spinner: 'text-sky-500/40',
         titleColor: 'text-[#12396e] dark:text-sky-200',
@@ -22,10 +22,10 @@ function getQuizLoadingThemeTokens(accentColor: AccentColor = 'emerald', isDark:
       }
     case 'amber':
       return {
-        cardBorder: isDark ? 'border-[#5e431a]/40 shadow-stone-950/40' : 'border-[#e6d8c3] shadow-xl',
+        cardBorder: isDark ? 'border-[#5e431a]/40 shadow-stone-950/40' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
         cardBg: isDark ? 'bg-[#18120a] text-stone-100' : 'bg-[#fcfaf6] text-stone-900',
-        glowPrimary: 'bg-[#c99a4e]/10',
-        glowSecondary: 'bg-[#8a6328]/10',
+        glowPrimary: isDark ? 'bg-[#c99a4e]/10' : 'hidden',
+        glowSecondary: isDark ? 'bg-[#8a6328]/10' : 'hidden',
         iconBox: isDark ? 'bg-[#261b0c] border-[#8a6328]/50 text-[#dfbf83]' : 'bg-[#f5ede0] border-[#decbb0] text-[#7a5720]',
         spinner: 'text-[#8a6328]/40',
         titleColor: 'text-[#5c4118] dark:text-[#edd8ae]',
@@ -34,10 +34,10 @@ function getQuizLoadingThemeTokens(accentColor: AccentColor = 'emerald', isDark:
       }
     case 'purple':
       return {
-        cardBorder: isDark ? 'border-purple-500/25 shadow-purple-950/20' : 'border-purple-100 shadow-xl',
+        cardBorder: isDark ? 'border-purple-500/25 shadow-purple-950/20' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
         cardBg: isDark ? 'bg-[#140624] text-white' : 'bg-[#faf7fd] text-slate-900',
-        glowPrimary: 'bg-purple-500/10',
-        glowSecondary: 'bg-fuchsia-600/10',
+        glowPrimary: isDark ? 'bg-purple-500/10' : 'hidden',
+        glowSecondary: isDark ? 'bg-fuchsia-600/10' : 'hidden',
         iconBox: isDark ? 'bg-[#240a3d] border-purple-500/40 text-purple-300' : 'bg-purple-50 border-purple-200 text-[#581c87]',
         spinner: 'text-purple-500/40',
         titleColor: 'text-[#4a1572] dark:text-purple-200',
@@ -47,10 +47,10 @@ function getQuizLoadingThemeTokens(accentColor: AccentColor = 'emerald', isDark:
     case 'emerald':
     default:
       return {
-        cardBorder: isDark ? 'border-emerald-500/25 shadow-emerald-950/20' : 'border-emerald-100 shadow-xl',
+        cardBorder: isDark ? 'border-emerald-500/25 shadow-emerald-950/20' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
         cardBg: isDark ? 'bg-[#051c14] text-white' : 'bg-[#f7fcf9] text-slate-900',
-        glowPrimary: 'bg-emerald-500/10',
-        glowSecondary: 'bg-teal-600/10',
+        glowPrimary: isDark ? 'bg-emerald-500/10' : 'hidden',
+        glowSecondary: isDark ? 'bg-teal-600/10' : 'hidden',
         iconBox: isDark ? 'bg-[#092b1f] border-emerald-500/40 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-[#046c4e]',
         spinner: 'text-emerald-500/40',
         titleColor: 'text-[#065f46] dark:text-emerald-200',
@@ -70,7 +70,7 @@ export function QuizLoadingScreen({ isDark }: QuizLoadingScreenProps) {
         initial={{ opacity: 0, scale: 0.92, y: 15 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.92, y: -15 }}
-        className={`flex flex-col items-center justify-center text-center p-8 rounded-3xl border shadow-2xl backdrop-blur-xl max-w-sm w-full relative overflow-hidden transition-all duration-300 ${theme.cardBg} ${theme.cardBorder}`}
+        className={`flex flex-col items-center justify-center text-center p-8 rounded-3xl border backdrop-blur-xl max-w-sm w-full relative overflow-hidden transition-all duration-300 ${theme.cardBg} ${theme.cardBorder}`}
         dir="rtl"
       >
         <div className={`absolute -top-12 -left-12 w-36 h-36 ${theme.glowPrimary} rounded-full blur-3xl animate-pulse`}></div>

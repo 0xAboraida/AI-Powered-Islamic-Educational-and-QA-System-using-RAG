@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Brain, HelpCircle, Users, Sparkles, BookOpen, Clock,
-  ArrowLeft, Search, Filter, Share2, Award, CheckCircle2, ChevronRight
+  ArrowLeft, Search, Filter, RotateCw, Share2, Award, CheckCircle2, ChevronRight
 } from 'lucide-react'
+import { studyApi } from '../../../api/studyApi'
+import { CommunityMindmapModal } from '../mindmap/components/CommunityMindmapModal'
 
 export interface CommunityMindmapItem {
   id: string | number
@@ -49,64 +51,173 @@ export function StudyHeroCommunity({
   const [searchQuery, setSearchQuery] = useState('')
   const [communityMindmaps, setCommunityMindmaps] = useState<CommunityMindmapItem[]>([])
   const [communityQuizzes, setCommunityQuizzes] = useState<CommunityQuizItem[]>([])
+  const [isRefreshing, setIsRefreshing] = useState(false)
+  const [selectedPreviewMindmap, setSelectedPreviewMindmap] = useState<CommunityMindmapItem | null>(null)
 
-  // Load actual published items from LocalStorage
-  const loadCommunityData = () => {
+  // Load published items instantly from LocalStorage and merge background API results
+  const loadCommunityData = async (forceRefresh = false) => {
+    if (forceRefresh) setIsRefreshing(true)
+    // 1. Immediately read local community mindmaps
+    let localMindmaps: any[] = []
     try {
       const rawMindmaps = localStorage.getItem('zad_community_mindmaps')
-      let userMindmaps: any[] = rawMindmaps ? JSON.parse(rawMindmaps) : []
-      if (!Array.isArray(userMindmaps)) userMindmaps = []
+      if (rawMindmaps) {
+        const parsed = JSON.parse(rawMindmaps)
+        if (Array.isArray(parsed)) localMindmaps = parsed
+      }
+    } catch { }
 
-      // Normalize user mindmaps
-      const mappedUserMindmaps: CommunityMindmapItem[] = userMindmaps.map(m => ({
-        id: m.id || `user-mm-${Math.random()}`,
-        title: m.title || 'تشجير منشور جديد',
-        treeData: m.treeData || [],
-        chunkId: m.chunkId,
-        authorName: m.authorName || 'طالب زاد (أنت)',
-        bookTitle: m.bookTitle || 'درس تراثي',
-        lessonTitle: m.lessonTitle || (m.chunkId ? `درس ${m.chunkId}` : 'موضوع فقهي'),
-        createdAt: m.createdAt || new Date().toISOString(),
-        nodesCount: Array.isArray(m.treeData) ? m.treeData.length : 10,
-        isShared: true
-      }))
+    // Merge any shared mindmaps from zad_saved_mindmaps
+    try {
+      const rawSaved = localStorage.getItem('zad_saved_mindmaps')
+      if (rawSaved) {
+        const parsedSaved = JSON.parse(rawSaved)
+        if (Array.isArray(parsedSaved)) {
+          for (const s of parsedSaved) {
+            if (s && s.isShared && !localMindmaps.some(m => m.id === s.id)) {
+              localMindmaps.unshift({
+                ...s,
+                authorName: s.authorName?.includes('(أنت)') ? s.authorName : 'طالب في زاد (أنت)'
+              })
+            }
+          }
+        }
+      }
+    } catch { }
 
-      setCommunityMindmaps(mappedUserMindmaps)
-    } catch (e) {
-      console.warn('Error reading community mindmaps:', e)
-      setCommunityMindmaps([])
-    }
-
+    // 2. Immediately read local community quizzes
+    let localQuizzes: any[] = []
     try {
       const rawQuizzes = localStorage.getItem('zad_community_quizzes')
-      let userQuizzes: any[] = rawQuizzes ? JSON.parse(rawQuizzes) : []
-      if (!Array.isArray(userQuizzes)) userQuizzes = []
+      if (rawQuizzes) {
+        const parsed = JSON.parse(rawQuizzes)
+        if (Array.isArray(parsed)) localQuizzes = parsed
+      }
+    } catch { }
 
-      const mappedUserQuizzes: CommunityQuizItem[] = userQuizzes.map(q => {
+    // Merge any shared quizzes from zad_saved_quizzes
+    try {
+      const rawSavedQ = localStorage.getItem('zad_saved_quizzes')
+      if (rawSavedQ) {
+        const parsedSavedQ = JSON.parse(rawSavedQ)
+        if (Array.isArray(parsedSavedQ)) {
+          for (const s of parsedSavedQ) {
+            if (s && s.isShared && !localQuizzes.some(q => q.id === s.id)) {
+              localQuizzes.unshift({
+                ...s,
+                authorName: s.authorName?.includes('(أنت)') ? s.authorName : 'طالب في زاد (أنت)'
+              })
+            }
+          }
+        }
+      }
+    } catch { }
+
+    const formatMindmaps = (allMindmaps: any[]) => {
+      const seenMmIds = new Set<string | number>()
+      const mapped: CommunityMindmapItem[] = []
+      for (const m of allMindmaps) {
+        if (!m) continue
+        const id = m.id || `user-mm-${Math.random()}`
+        if (seenMmIds.has(id)) continue
+        seenMmIds.add(id)
+
+        let nodes: any[] = []
+        if (Array.isArray(m.treeData)) nodes = m.treeData
+        else if (m.treeData && typeof m.treeData === 'object') nodes = [m.treeData]
+
+        const rawAuthor = typeof m.authorName === 'string' ? m.authorName.trim() : ''
+        const authorDisplay = rawAuthor && rawAuthor !== '' ? rawAuthor : 'زميل في زاد'
+
+        let bTitle = m.bookTitle
+        if (!bTitle || bTitle === 'درس شرعي') {
+          if (m.chunkId?.startsWith('turath_')) bTitle = 'كتاب تراثي'
+          else if (m.chunkId?.startsWith('parent_')) bTitle = 'منهج الفقه الإسلامي'
+          else bTitle = 'درس تدارسي'
+        }
+
+        const nodesCount = nodes.length > 0 ? (nodes[0]?.children?.length ? nodes[0].children.length + 1 : nodes.length) : 8
+
+        mapped.push({
+          id,
+          title: m.title || 'تشجير منشور جديد',
+          treeData: nodes,
+          chunkId: m.chunkId,
+          authorName: authorDisplay,
+          bookTitle: bTitle,
+          lessonTitle: m.lessonTitle || m.title?.replace(/^خريطة:\s*/, '') || (m.chunkId ? `درس ${m.chunkId}` : 'موضوع فقهي'),
+          createdAt: m.createdAt || new Date().toISOString(),
+          nodesCount,
+          isShared: true
+        })
+      }
+      return mapped
+    }
+
+    const formatQuizzes = (allQuizzes: any[]) => {
+      const seenQzIds = new Set<string | number>()
+      const mapped: CommunityQuizItem[] = []
+      for (const q of allQuizzes) {
+        if (!q) continue
+        const id = q.id || `user-qz-${Math.random()}`
+        if (seenQzIds.has(id)) continue
+        seenQzIds.add(id)
         let qData = q.questionsData
         if (typeof qData === 'string') {
           try { qData = JSON.parse(qData) } catch { }
         }
         const qCount = Array.isArray(qData) ? qData.length : Array.isArray(qData?.questions) ? qData.questions.length : 5
-        return {
-          id: q.id || `user-qz-${Math.random()}`,
+        const rawAuthor = typeof q.authorName === 'string' ? q.authorName.trim() : ''
+        const authorDisplay = rawAuthor && rawAuthor !== '' ? rawAuthor : 'زميل في زاد'
+
+        let bTitle = q.bookTitle
+        if (!bTitle || bTitle === 'درس شرعي') {
+          if (q.chunkId?.startsWith('turath_')) bTitle = 'كتاب تراثي'
+          else if (q.chunkId?.startsWith('parent_')) bTitle = 'منهج الفقه الإسلامي'
+          else bTitle = 'درس تدارسي'
+        }
+
+        mapped.push({
+          id,
           title: q.title || 'اختبار تقييمي منشور',
           questionsData: qData,
           chunkId: q.chunkId,
-          authorName: q.authorName || 'طالب زاد (أنت)',
-          bookTitle: q.bookTitle || 'درس تراثي',
+          authorName: authorDisplay,
+          bookTitle: bTitle,
           lessonTitle: q.lessonTitle || (q.chunkId ? `درس ${q.chunkId}` : 'موضوع تقييمي'),
           createdAt: q.createdAt || new Date().toISOString(),
           questionsCount: qCount,
           difficulty: q.difficulty || 'متوسط',
           isShared: true
-        }
-      })
+        })
+      }
+      return mapped
+    }
 
-      setCommunityQuizzes(mappedUserQuizzes)
-    } catch (e) {
-      console.warn('Error reading community quizzes:', e)
-      setCommunityQuizzes([])
+    // Instantly set local data with zero latency
+    setCommunityMindmaps(formatMindmaps(localMindmaps))
+    setCommunityQuizzes(formatQuizzes(localQuizzes))
+
+    // Fetch latest published records from backend API
+    try {
+      const [backendMindmaps, backendQuizzes] = await Promise.all([
+        studyApi.getCommunityMindmapsByChunk('').catch(() => []),
+        studyApi.getCommunityQuizzesByChunk('').catch(() => [])
+      ])
+      const bMindmaps = Array.isArray(backendMindmaps) ? backendMindmaps : []
+      const bQuizzes = Array.isArray(backendQuizzes) ? backendQuizzes : []
+
+      // Prioritize live database records from backend over stale local cache
+      if (Array.isArray(backendMindmaps)) {
+        setCommunityMindmaps(formatMindmaps(bMindmaps))
+      }
+      if (Array.isArray(backendQuizzes)) {
+        setCommunityQuizzes(formatQuizzes(bQuizzes))
+      }
+    } catch (err) {
+      console.warn('Failed to load community data:', err)
+    } finally {
+      if (forceRefresh) setIsRefreshing(false)
     }
   }
 
@@ -173,7 +284,7 @@ export function StudyHeroCommunity({
   }
 
   return (
-    <div className="w-full mt-10 pt-8 border-t border-white/10 relative z-20 text-right" dir="rtl">
+    <div id="study-hero-community" className="w-full mt-10 pt-8 border-t border-white/10 relative z-20 text-right scroll-mt-24" dir="rtl">
       {/* Section Header */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
         <div>
@@ -229,20 +340,37 @@ export function StudyHeroCommunity({
         </div>
       </div>
 
-      {/* Search Bar */}
-      <div className="relative mb-6 max-w-md">
-        <Search size={16} className={`absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none ${isDark ? 'text-white/40' : 'text-slate-400'}`} />
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder={activeTab === 'mindmaps' ? 'ابحث في تشجيرات المجتمع المنشورة...' : 'ابحث في اختبارات المجتمع المنشورة...'}
-          className={`w-full pr-10 pl-4 py-2.5 rounded-xl text-xs sm:text-sm border backdrop-blur-xl transition-all outline-none ${
+      {/* Search Bar and Refresh Button */}
+      <div className="flex items-center gap-3 mb-6 max-w-xl">
+        <div className="relative flex-1">
+          <Search size={16} className={`absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none ${isDark ? 'text-white/40' : 'text-slate-400'}`} />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={activeTab === 'mindmaps' ? 'ابحث في تشجيرات المجتمع المنشورة...' : 'ابحث في اختبارات المجتمع المنشورة...'}
+            className={`w-full pr-10 pl-4 py-2.5 rounded-xl text-xs sm:text-sm border backdrop-blur-xl transition-all outline-none ${
+              isDark
+                ? 'bg-black/30 border-white/15 text-white placeholder-white/40 focus:border-white/30'
+                : 'bg-white/80 border-slate-200 text-slate-800 placeholder-slate-400 focus:border-slate-400'
+            }`}
+          />
+        </div>
+
+        <button
+          type="button"
+          onClick={() => loadCommunityData(true)}
+          disabled={isRefreshing}
+          className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold border backdrop-blur-xl transition-all duration-200 cursor-pointer flex-shrink-0 select-none active:scale-95 ${
             isDark
-              ? 'bg-black/30 border-white/15 text-white placeholder-white/40 focus:border-white/30'
-              : 'bg-white/80 border-slate-200 text-slate-800 placeholder-slate-400 focus:border-slate-400'
-          }`}
-        />
+              ? 'bg-black/30 hover:bg-white/10 border-white/15 text-white/80 hover:text-white'
+              : 'bg-white/80 hover:bg-white border-slate-200 text-slate-700 hover:text-slate-900 shadow-xs'
+          } ${isRefreshing ? 'opacity-60 cursor-not-allowed' : ''}`}
+          title="تحديث محتوى المجتمع من السيرفر مباشرة"
+        >
+          <RotateCw size={15} className={`transition-transform duration-500 ${isRefreshing ? 'animate-spin text-amber-500' : ''}`} />
+          <span>تحديث</span>
+        </button>
       </div>
 
       {/* Mindmaps Tab View */}
@@ -264,7 +392,7 @@ export function StudyHeroCommunity({
             filteredMindmaps.map((mm) => (
               <div
                 key={mm.id}
-                onClick={() => onSelectMindmap(mm)}
+                onClick={() => setSelectedPreviewMindmap(mm)}
                 className={`rounded-2xl border p-4.5 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between group ${getCardBorder()}`}
               >
                 <div>
@@ -306,7 +434,7 @@ export function StudyHeroCommunity({
                     }}
                     className="inline-flex items-center gap-1.5 font-bold text-amber-500 hover:text-amber-400 transition-transform group-hover:-translate-x-1"
                   >
-                    <span>استعراض وتشجير في المدارسة</span>
+                    <span>استعراض الخريطة التفاعلية</span>
                     <ArrowLeft size={14} />
                   </button>
                 </div>
@@ -386,6 +514,18 @@ export function StudyHeroCommunity({
           )}
         </motion.div>
       )}
+
+      {/* Community Mindmap Interactive Preview Modal */}
+      <CommunityMindmapModal
+        isOpen={!!selectedPreviewMindmap}
+        mindmap={selectedPreviewMindmap}
+        isDark={isDark}
+        onClose={() => setSelectedPreviewMindmap(null)}
+        onStartStudyLesson={(mm) => {
+          setSelectedPreviewMindmap(null)
+          onSelectMindmap(mm)
+        }}
+      />
     </div>
   )
 }
