@@ -212,7 +212,7 @@ export default function Hero({
           </div>
 
           <h1
-            className={`font-display text-3xl sm:text-4xl md:text-6xl lg:text-7xl leading-[1.25] md:leading-[1.15] ${dark ? 'text-white' : 'text-brand-deep'
+            className={`font-amiri font-bold text-3xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.3] md:leading-[1.2] tracking-wide ${dark ? 'text-white' : 'text-brand-deep'
               }`}
             style={{
               textShadow: dark

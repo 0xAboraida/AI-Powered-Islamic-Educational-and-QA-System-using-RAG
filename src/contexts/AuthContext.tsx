@@ -86,6 +86,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null)
     localStorage.removeItem('zad_token')
     localStorage.removeItem('zad_user')
+
+    // Clean up study-related local caches on logout
+    try {
+      const keysToRemove: string[] = []
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i)
+        if (
+          k &&
+          (k.startsWith('zad_saved_quizzes') ||
+            k.startsWith('zad_saved_mindmaps') ||
+            k.startsWith('zad_study_plan_progress') ||
+            k === 'zad_saved_quizzes' ||
+            k === 'zad_saved_mindmaps' ||
+            k === 'zad_study_plan_progress')
+        ) {
+          keysToRemove.push(k)
+        }
+      }
+      keysToRemove.forEach((k) => localStorage.removeItem(k))
+    } catch {}
   }
 
   return (

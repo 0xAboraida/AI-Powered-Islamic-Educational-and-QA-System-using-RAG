@@ -96,8 +96,8 @@ export const studyApi = {
     })
   },
 
-  getSessions: async () => {
-    return apiClient<StudySessionDto[]>('/api/study/sessions')
+  getSessions: async (forceRefresh = false) => {
+    return apiClient<StudySessionDto[]>('/api/study/sessions', { bypassCache: forceRefresh })
   },
 
   getSessionDetails: async (sessionId: number) => {
@@ -137,12 +137,12 @@ export const studyApi = {
     })
   },
 
-  getMindmapsByChunk: async (chunkId: string) => {
-    return apiClient<StudyMindmapDto[]>(`/api/study/mindmaps/by-chunk?chunkId=${encodeURIComponent(chunkId)}`)
+  getMindmapsByChunk: async (chunkId: string, forceRefresh = false) => {
+    return apiClient<StudyMindmapDto[]>(`/api/study/mindmaps/by-chunk?chunkId=${encodeURIComponent(chunkId)}`, { bypassCache: forceRefresh })
   },
 
-  getCommunityMindmapsByChunk: async (chunkId: string) => {
-    return apiClient<StudyMindmapDto[]>(`/api/study/mindmaps/community?chunkId=${encodeURIComponent(chunkId)}`)
+  getCommunityMindmapsByChunk: async (chunkId: string, forceRefresh = false) => {
+    return apiClient<StudyMindmapDto[]>(`/api/study/mindmaps/community?chunkId=${encodeURIComponent(chunkId)}`, { bypassCache: forceRefresh })
   },
 
   // 5. Quizzes & Attempts
@@ -166,16 +166,16 @@ export const studyApi = {
     })
   },
 
-  getUserQuizzes: async () => {
-    return apiClient<QuizDto[]>('/api/study/quizzes')
+  getUserQuizzes: async (forceRefresh = false) => {
+    return apiClient<QuizDto[]>('/api/study/quizzes', { bypassCache: forceRefresh })
   },
 
-  getQuizzesByChunk: async (chunkId: string) => {
-    return apiClient<QuizDto[]>(`/api/study/quizzes/by-chunk?chunkId=${encodeURIComponent(chunkId)}`)
+  getQuizzesByChunk: async (chunkId: string, forceRefresh = false) => {
+    return apiClient<QuizDto[]>(`/api/study/quizzes/by-chunk?chunkId=${encodeURIComponent(chunkId)}`, { bypassCache: forceRefresh })
   },
 
-  getCommunityQuizzesByChunk: async (chunkId: string) => {
-    return apiClient<QuizDto[]>(`/api/study/quizzes/community?chunkId=${encodeURIComponent(chunkId)}`)
+  getCommunityQuizzesByChunk: async (chunkId: string, forceRefresh = false) => {
+    return apiClient<QuizDto[]>(`/api/study/quizzes/community?chunkId=${encodeURIComponent(chunkId)}`, { bypassCache: forceRefresh })
   },
 
   submitQuizAttempt: async (

@@ -28,13 +28,19 @@ export function FillBlankRenderer({
         if (isSelected) {
           if (showFeedback) {
             optStyle = optIdx === q.correct_answer_index
-              ? "bg-emerald-500/20 text-emerald-300 border-2 border-emerald-400 font-black shadow-md"
-              : "bg-rose-500/20 text-rose-300 border-2 border-rose-400 font-black shadow-md"
+              ? isDark
+                ? "bg-emerald-500/20 text-emerald-100 border-2 border-emerald-400 font-black shadow-md"
+                : "bg-emerald-50 text-emerald-950 border-2 border-emerald-600 font-black shadow-md"
+              : isDark
+                ? "bg-rose-500/20 text-rose-100 border-2 border-rose-400 font-black shadow-md"
+                : "bg-rose-50 text-rose-950 border-2 border-rose-600 font-black shadow-md"
           } else {
             optStyle = theme.fillBlankSelected
           }
         } else if (showFeedback && isAnswered && optIdx === q.correct_answer_index) {
-          optStyle = "bg-emerald-500/10 text-emerald-400 border-emerald-500/50 font-bold border-dashed"
+          optStyle = isDark
+            ? "bg-emerald-500/15 text-emerald-200 border-emerald-400/50 font-bold border-dashed"
+            : "bg-emerald-50/90 text-emerald-950 border-emerald-600 font-bold border-dashed"
         }
 
         return (

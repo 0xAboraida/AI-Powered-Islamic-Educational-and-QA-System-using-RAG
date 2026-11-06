@@ -17,10 +17,10 @@ function getQuizReadyThemeTokens(accentColor: AccentColor = 'emerald', isDark: b
   switch (accentColor) {
     case 'blue':
       return {
-        cardBorder: isDark ? 'border-sky-500/25 shadow-sky-950/20' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
-        cardBg: isDark ? 'bg-[#0b1626] text-white' : 'bg-[#fafcff] text-slate-900',
-        glowPrimary: isDark ? 'bg-sky-500/10' : 'hidden',
-        glowSecondary: isDark ? 'bg-blue-600/10' : 'hidden',
+        cardBorder: isDark ? 'border-white/10' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
+        cardBg: isDark ? 'bg-[#090b10] text-white shadow-2xl shadow-black/50' : 'bg-white text-slate-900',
+        glowPrimary: 'hidden',
+        glowSecondary: 'hidden',
         iconBox: isDark ? 'bg-[#0d223f] border-sky-500/40 text-sky-300' : 'bg-sky-50 border-sky-200 text-[#154696]',
         titleColor: 'text-[#12396e] dark:text-sky-200',
         statNum: 'text-[#154696] dark:text-sky-300',
@@ -29,10 +29,10 @@ function getQuizReadyThemeTokens(accentColor: AccentColor = 'emerald', isDark: b
       }
     case 'amber':
       return {
-        cardBorder: isDark ? 'border-[#5e431a]/40 shadow-stone-950/40' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
-        cardBg: isDark ? 'bg-[#18120a] text-stone-100' : 'bg-[#fcfaf6] text-stone-900',
-        glowPrimary: isDark ? 'bg-[#c99a4e]/10' : 'hidden',
-        glowSecondary: isDark ? 'bg-[#8a6328]/10' : 'hidden',
+        cardBorder: isDark ? 'border-white/10' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
+        cardBg: isDark ? 'bg-[#090b10] text-white shadow-2xl shadow-black/50' : 'bg-white text-stone-900',
+        glowPrimary: 'hidden',
+        glowSecondary: 'hidden',
         iconBox: isDark ? 'bg-[#261b0c] border-[#8a6328]/50 text-[#dfbf83]' : 'bg-[#f5ede0] border-[#decbb0] text-[#7a5720]',
         titleColor: 'text-[#5c4118] dark:text-[#edd8ae]',
         statNum: 'text-[#7a5720] dark:text-[#edd8ae]',
@@ -41,10 +41,10 @@ function getQuizReadyThemeTokens(accentColor: AccentColor = 'emerald', isDark: b
       }
     case 'purple':
       return {
-        cardBorder: isDark ? 'border-purple-500/25 shadow-purple-950/20' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
-        cardBg: isDark ? 'bg-[#140624] text-white' : 'bg-[#faf7fd] text-slate-900',
-        glowPrimary: isDark ? 'bg-purple-500/10' : 'hidden',
-        glowSecondary: isDark ? 'bg-fuchsia-600/10' : 'hidden',
+        cardBorder: isDark ? 'border-white/10' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
+        cardBg: isDark ? 'bg-[#090b10] text-white shadow-2xl shadow-black/50' : 'bg-white text-slate-900',
+        glowPrimary: 'hidden',
+        glowSecondary: 'hidden',
         iconBox: isDark ? 'bg-[#240a3d] border-purple-500/40 text-purple-300' : 'bg-purple-50 border-purple-200 text-[#581c87]',
         titleColor: 'text-[#4a1572] dark:text-purple-200',
         statNum: 'text-[#581c87] dark:text-purple-300',
@@ -54,10 +54,10 @@ function getQuizReadyThemeTokens(accentColor: AccentColor = 'emerald', isDark: b
     case 'emerald':
     default:
       return {
-        cardBorder: isDark ? 'border-emerald-500/25 shadow-emerald-950/20' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
-        cardBg: isDark ? 'bg-[#051c14] text-white' : 'bg-[#f7fcf9] text-slate-900',
-        glowPrimary: isDark ? 'bg-emerald-500/10' : 'hidden',
-        glowSecondary: isDark ? 'bg-teal-600/10' : 'hidden',
+        cardBorder: isDark ? 'border-white/10' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
+        cardBg: isDark ? 'bg-[#090b10] text-white shadow-2xl shadow-black/50' : 'bg-white text-slate-900',
+        glowPrimary: 'hidden',
+        glowSecondary: 'hidden',
         iconBox: isDark ? 'bg-[#092b1f] border-emerald-500/40 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-[#046c4e]',
         titleColor: 'text-[#065f46] dark:text-emerald-200',
         statNum: 'text-[#046c4e] dark:text-emerald-300',

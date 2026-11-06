@@ -10,7 +10,7 @@ function getQuizSetupThemeTokens(accentColor: AccentColor = 'emerald', isDark: b
   switch (accentColor) {
     case 'blue':
       return {
-        cardBorder: isDark ? 'border-sky-500/25 shadow-sky-950/20' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
+        cardBorder: isDark ? 'border-white/10' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
         glowPrimary: isDark ? 'bg-sky-500/10' : 'hidden',
         glowSecondary: isDark ? 'bg-blue-600/10' : 'hidden',
         glowLine: isDark ? 'via-sky-500/30' : 'via-slate-200/50',
@@ -32,7 +32,7 @@ function getQuizSetupThemeTokens(accentColor: AccentColor = 'emerald', isDark: b
       }
     case 'amber':
       return {
-        cardBorder: isDark ? 'border-[#5e431a]/40 shadow-stone-950/40' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
+        cardBorder: isDark ? 'border-white/10' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
         glowPrimary: isDark ? 'bg-[#c99a4e]/10' : 'hidden',
         glowSecondary: isDark ? 'bg-[#8a6328]/10' : 'hidden',
         glowLine: isDark ? 'via-[#8a6328]/30' : 'via-slate-200/50',
@@ -54,7 +54,7 @@ function getQuizSetupThemeTokens(accentColor: AccentColor = 'emerald', isDark: b
       }
     case 'purple':
       return {
-        cardBorder: isDark ? 'border-purple-500/25 shadow-purple-950/20' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
+        cardBorder: isDark ? 'border-white/10' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
         glowPrimary: isDark ? 'bg-purple-500/10' : 'hidden',
         glowSecondary: isDark ? 'bg-fuchsia-600/10' : 'hidden',
         glowLine: isDark ? 'via-purple-500/30' : 'via-slate-200/50',
@@ -77,7 +77,7 @@ function getQuizSetupThemeTokens(accentColor: AccentColor = 'emerald', isDark: b
     case 'emerald':
     default:
       return {
-        cardBorder: isDark ? 'border-emerald-500/25 shadow-emerald-950/20' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
+        cardBorder: isDark ? 'border-white/10' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
         glowPrimary: isDark ? 'bg-emerald-500/10' : 'hidden',
         glowSecondary: isDark ? 'bg-teal-600/10' : 'hidden',
         glowLine: isDark ? 'via-emerald-500/30' : 'via-slate-200/50',
@@ -169,7 +169,7 @@ export function QuizSetupScreen({
         exit={{ opacity: 0, scale: 0.97, y: -8 }}
         className={`p-3 sm:p-5 rounded-xl sm:rounded-2xl border max-w-lg w-full relative overflow-hidden text-right backdrop-blur-xl ${
           isDark
-            ? `bg-[#12041f]/95 ${theme.cardBorder} text-white`
+            ? `bg-[#090b10] ${theme.cardBorder} text-white`
             : `bg-white ${theme.cardBorder} text-slate-900`
         }`}
         dir="rtl"

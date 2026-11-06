@@ -45,7 +45,7 @@
   --color-foreground: #f6f1fb;
   --color-card: #1a0730;
   --color-card-foreground: #f6f1fb;
-  --color-primary: #8a17c9;
+  --color-primary: #4d004d;
   --color-primary-foreground: #ffffff;
   --color-secondary: #2b1b3d;
   --color-secondary-foreground: #e9d5ff;
@@ -490,8 +490,58 @@ body {
 }
 
 ::selection {
-  background: color-mix(in srgb, var(--color-accent) 28%, transparent);
-  color: var(--color-brand-deep);
+  background: color-mix(in srgb, var(--color-accent, #950bc4) 24%, rgba(0, 0, 0, 0.05));
+  color: #0f172a;
+}
+
+::-moz-selection {
+  background: color-mix(in srgb, var(--color-accent, #950bc4) 24%, rgba(0, 0, 0, 0.05));
+  color: #0f172a;
+}
+
+.dark ::selection,
+html.dark ::selection,
+[data-theme="dark"] ::selection {
+  background: color-mix(in srgb, var(--color-accent, #b51ee7) 42%, rgba(255, 255, 255, 0.12));
+  color: #ffffff !important;
+  text-shadow: none;
+}
+
+.dark ::-moz-selection,
+html.dark ::-moz-selection,
+[data-theme="dark"] ::-moz-selection {
+  background: color-mix(in srgb, var(--color-accent, #b51ee7) 42%, rgba(255, 255, 255, 0.12));
+  color: #ffffff !important;
+  text-shadow: none;
+}
+
+/* Theme-specific high-contrast selection highlights in dark mode */
+.dark[data-accent="purple"] ::selection,
+[data-accent="purple"] .dark ::selection,
+.dark[data-accent="purple"] ::-moz-selection {
+  background: rgba(181, 30, 231, 0.42) !important;
+  color: #ffffff !important;
+}
+
+.dark[data-accent="emerald"] ::selection,
+[data-accent="emerald"] .dark ::selection,
+.dark[data-accent="emerald"] ::-moz-selection {
+  background: rgba(20, 184, 166, 0.42) !important;
+  color: #ffffff !important;
+}
+
+.dark[data-accent="amber"] ::selection,
+[data-accent="amber"] .dark ::selection,
+.dark[data-accent="amber"] ::-moz-selection {
+  background: rgba(223, 191, 131, 0.42) !important;
+  color: #ffffff !important;
+}
+
+.dark[data-accent="blue"] ::selection,
+[data-accent="blue"] .dark ::selection,
+.dark[data-accent="blue"] ::-moz-selection {
+  background: rgba(59, 130, 246, 0.45) !important;
+  color: #ffffff !important;
 }
 
 .font-display {
@@ -536,7 +586,7 @@ body {
 }
 
 .brand-gradient {
-  background-image: linear-gradient(225deg, #4a044e 0%, #581c87 50%, #6b21a8 100%);
+  background-image: linear-gradient(135deg, #3d003d 0%, #4d004d 50%, #5d005d 100%);
 }
 
 .brand-gradient-blue {

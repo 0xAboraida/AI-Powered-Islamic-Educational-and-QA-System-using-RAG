@@ -2370,12 +2370,12 @@ export default function TurathReader({
         : 'focus:border-purple-500';
 
   const selectionClass = accentColor === 'amber'
-    ? 'selection:bg-amber-400/30 selection:text-stone-950 dark:selection:text-amber-100'
+    ? 'selection:bg-amber-400/35 selection:text-stone-950 dark:selection:text-white'
     : accentColor === 'emerald'
-      ? 'selection:bg-teal-400/30 selection:text-teal-950 dark:selection:text-teal-100'
+      ? 'selection:bg-teal-400/35 selection:text-teal-950 dark:selection:text-white'
       : accentColor === 'blue'
-        ? 'selection:bg-blue-400/30 selection:text-blue-950 dark:selection:text-blue-100'
-        : 'selection:bg-brand-magenta/30 selection:text-brand-deep dark:selection:text-white';
+        ? 'selection:bg-blue-400/35 selection:text-blue-950 dark:selection:text-white'
+        : 'selection:bg-brand-magenta/35 selection:text-slate-900 dark:selection:text-white';
 
   const getHighlightHeaderIconClass = () => {
     switch (accentColor) {

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useLayoutEffect, useMemo, useCallback } from 'react'
-import { Network, CheckCircle2, XCircle, ArrowLeftRight, Sparkles } from 'lucide-react'
+import { Network, Check, X, ArrowLeftRight, Sparkles } from 'lucide-react'
 import { motion } from 'framer-motion'
 import type { QuestionCardContentProps } from '../../types'
 import { useTheme } from '../../../../../contexts/ThemeContext'
@@ -42,10 +42,10 @@ export function MatchingRenderer({
       hex: isDark ? '#38bdf8' : '#0284c7',
     },
     {
-      border: isDark ? 'border-purple-400' : 'border-purple-500',
-      bg: isDark ? 'bg-purple-500/15' : 'bg-purple-50/90',
-      badge: 'bg-purple-600 text-white shadow-sm shadow-purple-600/30',
-      hex: isDark ? '#c084fc' : '#7c3aed',
+      border: isDark ? 'border-[#800080]' : 'border-[#800080]',
+      bg: isDark ? 'bg-[#800080]/25' : 'bg-purple-50/90',
+      badge: 'bg-[#800080] text-white shadow-sm shadow-[#800080]/30',
+      hex: isDark ? '#d884d8' : '#800080',
     },
     {
       border: isDark ? 'border-emerald-400' : 'border-emerald-600',
@@ -137,10 +137,10 @@ export function MatchingRenderer({
     })
 
     setConnectionLines(prev => {
-      if (prev.length === lines.length && prev.every((l, i) => 
-        l.leftIdx === lines[i].leftIdx && 
-        l.rightIdx === lines[i].rightIdx && 
-        Math.abs(l.x1 - lines[i].x1) < 1 && 
+      if (prev.length === lines.length && prev.every((l, i) =>
+        l.leftIdx === lines[i].leftIdx &&
+        l.rightIdx === lines[i].rightIdx &&
+        Math.abs(l.x1 - lines[i].x1) < 1 &&
         Math.abs(l.y1 - lines[i].y1) < 1 &&
         Math.abs(l.x2 - lines[i].x2) < 1 &&
         Math.abs(l.y2 - lines[i].y2) < 1
@@ -217,28 +217,11 @@ export function MatchingRenderer({
       )}
 
       {/* Main Grid Container with SVG Overlay */}
-      <div ref={containerRef} className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-14 relative p-1">
-        {/* SVG Arrow Lines Canvas Overlay */}
-        <svg className="absolute inset-0 pointer-events-none w-full h-full z-10 overflow-visible hidden md:block">
-          <defs>
-            {pairColors.map((c, i) => (
-              <marker
-                key={i}
-                id={`arrow-${i}`}
-                viewBox="0 0 10 10"
-                refX="7"
-                refY="5"
-                markerWidth="6"
-                markerHeight="6"
-                orient="auto"
-              >
-                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill={c.hex} />
-              </marker>
-            ))}
-          </defs>
-
+      <div ref={containerRef} className="grid grid-cols-2 gap-2.5 sm:gap-6 md:gap-12 relative p-1">
+        {/* SVG Cable Lines Canvas Overlay */}
+        <svg className="absolute inset-0 pointer-events-none w-full h-full z-10 overflow-visible block">
           {connectionLines.map((line) => {
-            const controlPointOffset = Math.abs(line.x1 - line.x2) / 2
+            const controlPointOffset = Math.max(Math.abs(line.x1 - line.x2) / 2, 8)
             const dPath = `M ${line.x1} ${line.y1} C ${line.x1 - controlPointOffset} ${line.y1}, ${line.x2 + controlPointOffset} ${line.y2}, ${line.x2} ${line.y2}`
 
             return (
@@ -251,14 +234,13 @@ export function MatchingRenderer({
                   strokeWidth="6"
                   strokeOpacity="0.2"
                 />
-                {/* Main Arrow Line */}
+                {/* Main Cable Line without Arrowhead */}
                 <path
                   d={dPath}
                   fill="none"
                   stroke={line.colorHex}
                   strokeWidth="2.5"
                   strokeDasharray="6 3"
-                  markerEnd={`url(#arrow-${line.pairIndex})`}
                 />
               </g>
             )
@@ -266,7 +248,7 @@ export function MatchingRenderer({
         </svg>
 
         {/* Right Column: Terms (المصطلحات) */}
-        <div className="space-y-3 z-20">
+        <div className="space-y-2.5 sm:space-y-3 z-20">
           {pairs.map((pair, leftIdx) => {
             const selectedRIdx = safeSelections[leftIdx]
             const hasSelection = selectedRIdx !== undefined
@@ -319,29 +301,37 @@ export function MatchingRenderer({
                 whileTap={!(isReadOnly || (showFeedback && isAnswered)) ? { scale: 0.98 } : undefined}
                 onClick={() => handleLeftClick(leftIdx)}
                 disabled={isReadOnly || (showFeedback && isAnswered)}
-                className={`w-full text-right p-3 rounded-xl border text-xs sm:text-sm transition-all duration-200 flex items-center justify-between gap-3 cursor-pointer relative opacity-0 animate-[fadeInUp_0.4s_ease-out_forwards] ${termStyle}`}
+                className={`w-full text-right p-2.5 sm:p-3 rounded-xl border text-xs sm:text-sm transition-all duration-200 flex items-center gap-2 cursor-pointer relative opacity-0 animate-[fadeInUp_0.4s_ease-out_forwards] ${termStyle}`}
                 style={{ animationDelay: `${0.2 + leftIdx * 0.08}s` }}
               >
                 <div className="flex items-center gap-2.5 flex-1 min-w-0">
-                  <span className={`w-6 h-6 sm:w-7 sm:h-7 rounded-lg text-xs font-black flex items-center justify-center shrink-0 transition-all duration-200 ${termBadgeStyle}`}>
-                    {leftIdx + 1}
-                  </span>
-                  <span className="font-extrabold truncate text-xs md:text-sm">{formatIslamicQuizText(pair.left)}</span>
-                </div>
+                  <div className="relative shrink-0">
+                    <span className={`w-6 h-6 sm:w-7 sm:h-7 rounded-lg text-xs font-black flex items-center justify-center transition-all duration-200 ${termBadgeStyle}`}>
+                      {leftIdx + 1}
+                    </span>
 
-                {/* Status / Feedback */}
-                {hasSelection && showFeedback && (
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    {isPairCorrect ? <CheckCircle2 size={16} className="text-emerald-400" /> : <XCircle size={16} className="text-rose-400" />}
+                    {/* Status indicator badge attached to the number badge */}
+                    {hasSelection && showFeedback && (
+                      isPairCorrect ? (
+                        <span className="absolute -top-1.5 -left-1.5 w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-md border-2 border-white dark:border-slate-900 animate-in zoom-in-75 duration-200 z-10">
+                          <Check size={10} className="stroke-[3]" />
+                        </span>
+                      ) : (
+                        <span className="absolute -top-1.5 -left-1.5 w-4 h-4 rounded-full bg-rose-600 text-white flex items-center justify-center shadow-md border-2 border-white dark:border-slate-900 animate-in zoom-in-75 duration-200 z-10">
+                          <X size={10} className="stroke-[3]" />
+                        </span>
+                      )
+                    )}
                   </div>
-                )}
+                  <span className="font-extrabold text-xs sm:text-sm leading-snug break-words flex-1">{formatIslamicQuizText(pair.left)}</span>
+                </div>
               </motion.button>
             )
           })}
         </div>
 
         {/* Left Column: Definitions (التعريفات) */}
-        <div className="space-y-3 z-20">
+        <div className="space-y-2.5 sm:space-y-3 z-20">
           {rightOptions.map((rightLabel, rightIdx) => {
             const rBadge = RIGHT_BADGES[rightIdx] || `${rightIdx + 1}`
 
@@ -352,13 +342,13 @@ export function MatchingRenderer({
             const isLinked = linkedLeftIdx !== null
             const linkedColorTheme = isLinked ? pairColors[linkedLeftIdx % pairColors.length] : null
 
+            const isCorrect = isLinked && showFeedback && rightLabel === correctRightForLeft(linkedLeftIdx!)
+
             let defStyle = isDark
               ? "bg-white/5 border-white/10 text-white/90 hover:bg-white/10"
               : "bg-white border-slate-200 text-slate-800 hover:bg-slate-50 shadow-sm"
 
             if (isLinked && showFeedback) {
-              const correctRight = correctRightForLeft(linkedLeftIdx!)
-              const isCorrect = rightLabel === correctRight
               defStyle = isCorrect
                 ? (isDark ? "bg-emerald-500/20 border-2 border-emerald-400 text-emerald-200 font-extrabold" : "bg-emerald-50 border-2 border-emerald-500 text-emerald-950 font-extrabold shadow-sm")
                 : (isDark ? "bg-rose-500/20 border-rose-400 text-rose-200 font-extrabold" : "bg-rose-50 border-2 border-rose-500 text-rose-950 font-extrabold shadow-sm")
@@ -378,8 +368,6 @@ export function MatchingRenderer({
 
             let defBadgeStyle = "bg-purple-600 text-white shadow-md shadow-purple-500/20"
             if (isLinked && showFeedback) {
-              const correctRight = correctRightForLeft(linkedLeftIdx!)
-              const isCorrect = rightLabel === correctRight
               defBadgeStyle = isCorrect
                 ? "bg-emerald-600 text-white shadow-md shadow-emerald-500/30"
                 : "bg-rose-600 text-white shadow-md shadow-rose-500/30"
@@ -398,14 +386,29 @@ export function MatchingRenderer({
                 whileTap={!(isReadOnly || (showFeedback && isAnswered)) ? { scale: 0.98 } : undefined}
                 onClick={() => handleRightClick(rightIdx)}
                 disabled={isReadOnly || (showFeedback && isAnswered)}
-                className={`w-full text-right p-3 rounded-xl border text-xs sm:text-sm transition-all duration-200 flex items-center justify-between gap-3 cursor-pointer relative opacity-0 animate-[fadeInUp_0.4s_ease-out_forwards] ${defStyle}`}
+                className={`w-full text-right p-2.5 sm:p-3 rounded-xl border text-xs sm:text-sm transition-all duration-200 flex items-center gap-2 cursor-pointer relative opacity-0 animate-[fadeInUp_0.4s_ease-out_forwards] ${defStyle}`}
                 style={{ animationDelay: `${0.2 + rightIdx * 0.08}s` }}
               >
                 <div className="flex items-center gap-2.5 flex-1 min-w-0">
-                  <span className={`w-6 h-6 sm:w-7 sm:h-7 rounded-lg text-xs font-black flex items-center justify-center shrink-0 transition-all duration-200 ${defBadgeStyle}`}>
-                    {rBadge}
-                  </span>
-                  <span className="font-bold leading-relaxed text-xs md:text-sm">{formatIslamicQuizText(rightLabel)}</span>
+                  <div className="relative shrink-0">
+                    <span className={`w-6 h-6 sm:w-7 sm:h-7 rounded-lg text-xs font-black flex items-center justify-center transition-all duration-200 ${defBadgeStyle}`}>
+                      {rBadge}
+                    </span>
+
+                    {/* Status indicator badge attached to the letter badge */}
+                    {isLinked && showFeedback && (
+                      isCorrect ? (
+                        <span className="absolute -top-1.5 -left-1.5 w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-md border-2 border-white dark:border-slate-900 animate-in zoom-in-75 duration-200 z-10">
+                          <Check size={10} className="stroke-[3]" />
+                        </span>
+                      ) : (
+                        <span className="absolute -top-1.5 -left-1.5 w-4 h-4 rounded-full bg-rose-600 text-white flex items-center justify-center shadow-md border-2 border-white dark:border-slate-900 animate-in zoom-in-75 duration-200 z-10">
+                          <X size={10} className="stroke-[3]" />
+                        </span>
+                      )
+                    )}
+                  </div>
+                  <span className="font-bold leading-relaxed text-xs sm:text-sm break-words flex-1">{formatIslamicQuizText(rightLabel)}</span>
                 </div>
               </motion.button>
             )
@@ -415,17 +418,7 @@ export function MatchingRenderer({
 
 
 
-      {/* Feedback Summary */}
-      {showFeedback && isFullyAnswered && (
-        <div className={`px-4 py-3 rounded-2xl border text-xs font-extrabold flex items-center gap-2.5 ${
-          allCorrect
-            ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400'
-            : 'bg-rose-500/15 border-rose-500/30 text-rose-400'
-        }`}>
-          {allCorrect ? <CheckCircle2 size={18} /> : <XCircle size={18} />}
-          <span>{allCorrect ? 'أحسنت! جميع الربط صحيح' : 'بعض الروابط خاطئة — تم تمييز الإجابات أعلاه'}</span>
-        </div>
-      )}
+
     </div>
   )
 }

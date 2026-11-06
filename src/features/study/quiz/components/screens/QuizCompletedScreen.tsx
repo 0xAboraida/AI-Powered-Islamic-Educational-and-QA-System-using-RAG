@@ -173,13 +173,13 @@ export function QuizCompletedScreen({
             onClick={onShowDetailedReview}
             className={`group w-full p-3 sm:p-3.5 rounded-xl border flex items-center justify-between transition-all duration-200 hover:scale-[1.01] active:scale-[0.98] cursor-pointer text-right shadow-sm hover:shadow-md ${
               isDark
-                ? 'bg-white/[0.04] border-white/10 hover:border-white/25 text-white'
-                : 'bg-white border-slate-200/90 hover:border-slate-300 text-slate-900'
+                ? `bg-white/[0.04] border-white/10 ${theme.discussHoverBorder} text-white`
+                : 'bg-white border-slate-200/90 hover:border-slate-300 hover:bg-slate-50/80 text-slate-900'
             }`}
           >
             <div className="flex items-center gap-2.5 sm:gap-3">
-              <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-lg ${theme.reviewIconBg} border ${theme.reviewIconBorder} flex items-center justify-center ${theme.reviewIcon} shrink-0 shadow-xs group-hover:scale-105 transition-transform`}>
-                <List size={20} />
+              <div className={`w-10 h-10 rounded-xl ${theme.reviewIconBg} border ${theme.reviewIconBorder} flex items-center justify-center text-white shrink-0 shadow-sm group-hover:scale-105 transition-transform`}>
+                <List size={20} className="stroke-[2.2]" />
               </div>
               <div>
                 <h4 className="text-xs sm:text-sm font-black text-slate-950 dark:text-white leading-tight">عرض تفاصيل الإجابات</h4>
@@ -189,27 +189,27 @@ export function QuizCompletedScreen({
             <ChevronLeft size={18} className="text-slate-400 dark:text-slate-500 group-hover:-translate-x-1 transition-all duration-200" />
           </button>
 
-          {/* Button 2: Zad Bot Discussion Card (AI Purple/Indigo Identity) */}
+          {/* Button 2: Zad Bot Discussion Card (Theme Responsive) */}
           <button
             onClick={onDiscussWrong}
             className={`group w-full p-3 sm:p-3.5 rounded-xl border flex items-center justify-between transition-all duration-200 hover:scale-[1.01] active:scale-[0.98] cursor-pointer text-right shadow-sm hover:shadow-md ${
               isDark
-                ? 'bg-white/[0.04] border-white/10 hover:border-purple-500/30 text-white'
-                : 'bg-white border-slate-200/90 hover:border-purple-300 text-slate-900'
+                ? `bg-white/[0.04] border-white/10 ${theme.discussHoverBorder} text-white`
+                : `bg-white border-slate-200/90 ${theme.discussHoverBorder} text-slate-900`
             }`}
           >
             <div className="flex items-center gap-2.5 sm:gap-3">
-              <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-purple-500/15 dark:bg-purple-500/20 border border-purple-500/30 dark:border-purple-400/40 flex items-center justify-center text-purple-600 dark:text-purple-300 shrink-0 shadow-xs group-hover:scale-105 transition-transform ${
-                incorrectCount > 0 ? 'ring-2 ring-purple-400/30 animate-pulse' : ''
+              <div className={`w-10 h-10 rounded-xl ${theme.discussIconBg} border ${theme.discussIconBorder} flex items-center justify-center text-white shrink-0 shadow-sm group-hover:scale-105 transition-transform ${
+                incorrectCount > 0 ? `ring-2 ${theme.discussPulseRing} animate-pulse` : ''
               }`}>
-                <Bot size={20} />
+                <Bot size={20} className="stroke-[2.2] text-white" />
               </div>
               <div>
-                <h4 className="text-xs sm:text-sm font-black text-slate-950 dark:text-white leading-tight">ناقش أخطاءك مع زاد</h4>
-                <p className="text-[11px] text-slate-600 dark:text-slate-300 mt-0.5 font-medium">يحللك الأخطاء ويساعدك على الفهم بشكل أفضل</p>
+                <h4 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight">ناقش أخطاءك مع زاد</h4>
+                <p className="text-[11px] text-slate-500 dark:text-slate-300 mt-0.5 font-medium">يحللك الأخطاء ويساعدك على الفهم بشكل أفضل</p>
               </div>
             </div>
-            <ChevronLeft size={18} className="text-slate-400 dark:text-slate-500 group-hover:text-purple-500 group-hover:-translate-x-1 transition-all duration-200" />
+            <ChevronLeft size={18} className={`text-slate-400 dark:text-slate-500 ${theme.discussArrow} group-hover:-translate-x-1 transition-all duration-200`} />
           </button>
 
           {/* Row 3: Bottom 2 Buttons */}
@@ -219,12 +219,12 @@ export function QuizCompletedScreen({
               onClick={onNewQuiz}
               className={`group p-2.5 sm:p-3 rounded-xl border flex items-center gap-2.5 sm:gap-3 transition-all duration-200 hover:scale-[1.01] active:scale-[0.98] cursor-pointer text-right shadow-sm hover:shadow-md ${
                 isDark
-                  ? 'bg-white/[0.04] border-white/10 hover:border-white/25 text-white'
-                  : 'bg-white border-slate-200/90 hover:border-slate-300 text-slate-900'
+                  ? `bg-white/[0.04] border-white/10 ${theme.newQuizHoverBorder || 'hover:border-purple-400/50'} text-white`
+                  : 'bg-white border-slate-200/90 hover:border-slate-300 hover:bg-slate-50/80 text-slate-900'
               }`}
             >
-              <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-lg ${theme.newQuizIconBg} ${theme.newQuizIcon} flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform`}>
-                <Plus size={17} className="group-hover:rotate-90 transition-transform duration-300" />
+              <div className={`w-9 h-9 rounded-xl ${theme.newQuizIconBg} ${theme.newQuizIcon} flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform`}>
+                <Plus size={18} className="stroke-[2.5] group-hover:rotate-90 transition-transform duration-300" />
               </div>
               <div>
                 <h5 className="text-xs sm:text-sm font-black text-slate-950 dark:text-white leading-tight">تخصيص اختبار</h5>
@@ -237,12 +237,12 @@ export function QuizCompletedScreen({
               onClick={onRetry}
               className={`group p-2.5 sm:p-3 rounded-xl border flex items-center gap-2.5 sm:gap-3 transition-all duration-200 hover:scale-[1.01] active:scale-[0.98] cursor-pointer text-right shadow-sm hover:shadow-md ${
                 isDark
-                  ? 'bg-white/[0.04] border-white/10 hover:border-white/25 text-white'
-                  : 'bg-white border-slate-200/90 hover:border-slate-300 text-slate-900'
+                  ? 'bg-white/[0.04] border-white/10 hover:border-amber-500/40 text-white'
+                  : 'bg-white border-slate-200/90 hover:border-amber-400/60 hover:bg-amber-50/40 text-slate-900'
               }`}
             >
-              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                <RotateCcw size={16} className="group-hover:-rotate-180 transition-transform duration-500" />
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 border border-amber-600/60 text-white flex items-center justify-center shrink-0 shadow-sm shadow-amber-500/25 group-hover:scale-105 transition-transform">
+                <RotateCcw size={17} className="stroke-[2.2] group-hover:-rotate-180 transition-transform duration-500" />
               </div>
               <div>
                 <h5 className="text-xs sm:text-sm font-black text-slate-950 dark:text-white leading-tight">إعادة الاختبار</h5>

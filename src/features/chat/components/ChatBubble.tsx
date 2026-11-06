@@ -26,7 +26,7 @@ function AvatarLogo({ dark }: { dark: boolean }) {
         return 'conic-gradient(from 0deg, transparent 0%, rgba(96,165,250,0.8) 40%, rgba(37,99,235,0.9) 60%, transparent 100%)';
       case 'purple':
       default:
-        return 'conic-gradient(from 0deg, transparent 0%, rgba(192,32,240,0.8) 40%, rgba(168,85,247,0.9) 60%, transparent 100%)';
+        return 'conic-gradient(from 0deg, transparent 0%, rgba(77,0,77,0.8) 40%, rgba(100,0,100,0.9) 60%, transparent 100%)';
     }
   };
 
@@ -36,7 +36,7 @@ function AvatarLogo({ dark }: { dark: boolean }) {
       case 'emerald': return '0 0 12px rgba(45,212,191, 0.55)';
       case 'blue': return '0 0 12px rgba(96,165,250, 0.55)';
       case 'purple':
-      default: return '0 0 12px rgba(168,85,247, 0.55)';
+      default: return '0 0 12px rgba(77,0,77, 0.55)';
     }
   };
 
@@ -57,7 +57,7 @@ function AvatarLogo({ dark }: { dark: boolean }) {
       case 'emerald': return dark ? '#2dd4bf' : '#0d9488';
       case 'blue': return dark ? '#60a5fa' : '#2563eb';
       case 'purple':
-      default: return dark ? '#c084fc' : '#950bc4';
+      default: return dark ? '#b51ee7' : '#800080';
     }
   };
 
@@ -71,7 +71,7 @@ function AvatarLogo({ dark }: { dark: boolean }) {
       />
       <div
         className={`relative flex h-full w-full items-center justify-center rounded-full z-10 transition-all duration-300 ${
-          dark ? 'bg-[#0f041c]/80 backdrop-blur-xl border border-white/20' : `bg-white border ${getBorderClass()}`
+          dark ? 'bg-[#090b10] backdrop-blur-xl border border-white/20' : `bg-white border ${getBorderClass()}`
         }`}
         style={{ boxShadow: getShadowStyle() }}
       >
@@ -395,38 +395,38 @@ function getChatBubbleThemeClasses(accentColor: AccentColor, dark: boolean) {
   switch (accentColor) {
     case 'amber':
       return {
-        h2Box: dark ? 'bg-amber-500/[0.07] border-amber-400/20' : 'bg-amber-50/80 border-amber-200/70',
-        h2Bar: dark ? 'bg-amber-400' : 'bg-amber-600',
-        h2Text: dark ? 'text-amber-300/90' : 'text-amber-900/85',
-        h3Text: dark ? 'text-amber-300/90' : 'text-amber-800/85',
+        h2Box: dark ? 'bg-[#dfbf83]/10 border-[#dfbf83]/30' : 'bg-[#fbf8f0] border-[#ebd9b5]',
+        h2Bar: dark ? 'bg-[#dfbf83]' : 'bg-[#b88d46]',
+        h2Text: dark ? 'text-[#dfbf83]' : 'text-[#8a652a]',
+        h3Text: dark ? 'text-[#dfbf83]' : 'text-[#8a652a]',
         h4Banner: dark
-          ? 'from-amber-500/10 via-amber-500/[0.04] to-transparent border-b border-amber-500/20'
+          ? 'from-[#dfbf83]/15 via-[#dfbf83]/[0.05] to-transparent border-b border-[#dfbf83]/25'
           : 'from-amber-100/80 via-amber-50/40 to-transparent border-b border-amber-200/80',
-        h4Text: dark ? 'text-amber-200/90' : 'text-amber-900/85',
-        marker: dark ? 'marker:text-amber-400/80' : 'marker:text-amber-700/80',
-        strong: dark ? 'text-amber-300/90 drop-shadow-[0_0_4px_rgba(245,158,11,0.2)]' : 'text-amber-900/85',
-        strongTitle: dark ? 'text-amber-300/90 decoration-amber-400/40' : 'text-amber-900/85 decoration-amber-500/40',
-        strongBadge: dark ? 'bg-amber-500/10 border-amber-500/30 text-amber-300/90' : 'bg-amber-50 border-amber-300 text-amber-800/90',
-        strongFrame: dark ? 'bg-gradient-to-l from-amber-500/10 to-transparent border-amber-500/20 text-amber-300/90' : 'bg-gradient-to-l from-amber-50 to-transparent border-amber-200 text-amber-900/85',
-        del: dark ? 'bg-amber-500/10 border-amber-400/30 text-amber-300/90 shadow-[0_0_12px_rgba(245,158,11,0.06)]' : 'bg-amber-50 border-amber-300/70 text-amber-800/90 shadow-sm',
-        link: dark ? 'text-amber-400 hover:text-amber-300 font-medium transition-colors underline underline-offset-4' : 'text-amber-600 hover:text-amber-800 font-medium transition-colors underline underline-offset-4',
-        code: dark ? 'bg-amber-950/50 text-amber-200' : 'bg-amber-100/60 text-amber-950 border border-amber-200/60',
-        quoteGeneric: dark ? 'border-amber-500/50 bg-amber-500/[0.08] text-amber-50' : 'border-amber-600 bg-[#FFFDF7] text-[#78350F] shadow-sm ring-1 ring-amber-100/70',
+        h4Text: dark ? 'text-[#dfbf83]' : 'text-[#8a652a]',
+        marker: dark ? 'marker:text-[#dfbf83]' : 'marker:text-[#b88d46]',
+        strong: dark ? 'text-[#dfbf83] font-bold drop-shadow-[0_0_4px_rgba(223,191,131,0.25)]' : 'text-[#8a652a]',
+        strongTitle: dark ? 'text-[#dfbf83] decoration-[#dfbf83]/40' : 'text-[#8a652a] decoration-[#dfbf83]/40',
+        strongBadge: dark ? 'bg-[#dfbf83]/15 border border-[#dfbf83]/30 text-[#dfbf83]' : 'bg-[#fbf8f0] border-[#ebd9b5] text-[#8a652a]',
+        strongFrame: dark ? 'bg-[#dfbf83]/15 border border-[#dfbf83]/30 text-[#dfbf83]' : 'bg-[#fbf8f0] border-[#ebd9b5] text-[#8a652a]',
+        del: dark ? 'bg-[#dfbf83]/15 border-[#dfbf83]/30 text-[#dfbf83] shadow-[0_0_12px_rgba(223,191,131,0.08)]' : 'bg-[#fbf8f0] border-[#ebd9b5] text-[#8a652a] shadow-sm',
+        link: dark ? 'text-[#dfbf83] hover:text-[#eed8ad] font-medium transition-colors underline underline-offset-4' : 'text-[#8a652a] hover:text-[#6e4e1b] font-medium transition-colors underline underline-offset-4',
+        code: dark ? 'bg-[#181107] text-[#eed8ad] border border-[#dfbf83]/20' : 'bg-[#fbf8f0] text-[#78350f] border border-[#ebd9b5]',
+        quoteGeneric: dark ? 'border-[#dfbf83]/50 bg-[#dfbf83]/[0.08] text-[#eed8ad]' : 'border-[#b88d46] bg-[#FFFDF7] text-[#78350F] shadow-sm ring-1 ring-amber-100/70',
         mainFrameBorder: dark ? 'border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.15)]' : 'border-amber-200/60 shadow-[0_2px_12px_rgba(217,119,6,0.04)]',
-        childBox: dark
-          ? 'bg-gradient-to-br from-[#1a1205]/90 via-[#231807]/80 to-[#100a02]/95 border-amber-500/40 shadow-[0_4px_20px_rgba(245,158,11,0.12)]'
-          : 'bg-gradient-to-br from-amber-50/90 via-white to-amber-50/40 border-amber-300/90 shadow-[0_2px_15px_rgba(217,119,6,0.08)]',
+        childBox: dark ? 'bg-[#090b10]/90 border-[#dfbf83]/40 shadow-md'
+          : 'bg-gradient-to-br from-[#fbf8f0] via-white to-[#f5ebd7] border-[#dfbf83]/40 shadow-[0_2px_15px_rgba(217,119,6,0.08)]',
         citationBtn: dark
-          ? 'bg-amber-500/15 text-amber-300 border-amber-500/30 hover:bg-amber-500/30 hover:border-amber-400 shadow-amber-950/40'
-          : 'bg-amber-100/80 text-amber-950 border-amber-300/80 hover:bg-amber-200 hover:border-amber-400 shadow-amber-100/50',
-        citationIcon: 'text-amber-400',
-        citationBadge: dark ? 'bg-amber-400/20 text-amber-200' : 'bg-amber-200 text-amber-900',
-        popoverBox: dark ? 'bg-[#140d04]/95 border-amber-500/30 text-white shadow-black/80' : 'bg-white/95 border-amber-200 text-slate-900 shadow-amber-900/15',
-        itemBox: dark ? 'bg-white/[0.03] border-white/10' : 'bg-amber-50/50 border-amber-100',
-        bookTitle: 'text-amber-400',
-        sourceBtn: dark ? 'bg-amber-500/20 text-amber-300 border-amber-500/30 hover:bg-amber-500/30' : 'bg-amber-600 text-white border-amber-600 hover:bg-amber-700 shadow-sm',
-        hierarchyTag: dark ? 'bg-amber-950/60 text-amber-300 border border-amber-500/30 hover:bg-amber-900/90 hover:border-amber-400/80 hover:shadow-[0_0_15px_rgba(245,158,11,0.4)]' : 'bg-amber-100/90 text-amber-900 border border-amber-300/70 hover:bg-amber-200/90 hover:border-amber-400 hover:shadow-[0_0_12px_rgba(245,158,11,0.3)]',
-        userBubbleGradient: 'linear-gradient(225deg, #78350f 0%, #854d0e 50%, #92400e 100%)',
+          ? 'bg-white/[0.04] text-stone-300 border-white/10 hover:bg-[#dfbf83]/15 hover:border-[#dfbf83]/40 hover:text-[#dfbf83]'
+          : 'bg-stone-500/[0.04] text-stone-600 border-stone-300/70 hover:bg-[#fbf8f0] hover:text-[#8a652a] hover:border-[#dfbf83]',
+        citationIcon: dark ? 'text-white/50 group-hover:text-[#dfbf83]' : 'text-stone-400 group-hover:text-[#b88d46]',
+        citationBadge: dark ? 'bg-white/10 text-stone-300' : 'bg-stone-200/80 text-stone-700',
+        popoverBox: dark ? 'bg-[#090b10] border-[#dfbf83]/30 text-white shadow-black/80' : 'bg-white/95 border-[#ebd9b5] text-slate-900 shadow-amber-900/15',
+        itemBox: dark ? 'bg-white/[0.03] border-white/10' : 'bg-[#fbf8f0] border-[#ebd9b5]',
+        bookTitle: 'text-[#dfbf83] font-bold',
+        sourceBtn: dark ? 'bg-[#dfbf83]/20 text-[#dfbf83] border-[#dfbf83]/35 hover:bg-[#dfbf83]/30' : 'bg-[#b88d46] text-stone-950 border-[#b88d46] hover:bg-[#a67c38] shadow-sm',
+        hierarchyTag: dark ? 'bg-[#dfbf83]/15 text-[#dfbf83] border border-[#dfbf83]/30 hover:bg-[#dfbf83]/25' : 'bg-[#fbf8f0] text-[#78350f] border border-[#ebd9b5] hover:bg-[#f5ebd7]',
+        userBubbleClass: dark ? 'bg-[#2a1c09] border border-[#dfbf83]/40 text-white/95 shadow-md' : 'bg-[#5c3a0e] text-white border border-[#482d0a] shadow-sm',
+        userAvatarClass: dark ? 'bg-[#2a1c09] border border-[#dfbf83]/40 text-white shadow-sm' : 'bg-[#5c3a0e] text-white border border-[#482d0a] shadow-sm',
       };
     case 'emerald':
       return {
@@ -448,20 +448,20 @@ function getChatBubbleThemeClasses(accentColor: AccentColor, dark: boolean) {
         code: dark ? 'bg-emerald-950/50 text-emerald-200' : 'bg-emerald-100/60 text-emerald-900 border border-emerald-200/60',
         quoteGeneric: dark ? 'border-emerald-500/50 bg-emerald-500/[0.08] text-emerald-50' : 'border-emerald-600 bg-[#F7FDFB] text-[#064E3B] shadow-sm ring-1 ring-emerald-100/70',
         mainFrameBorder: dark ? 'border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.15)]' : 'border-emerald-200/60 shadow-[0_2px_12px_rgba(16,185,129,0.04)]',
-        childBox: dark
-          ? 'bg-gradient-to-br from-[#041413]/90 via-[#06201e]/80 to-[#020b0a]/95 border-emerald-500/40 shadow-[0_4px_20px_rgba(16,185,129,0.12)]'
+        childBox: dark ? 'bg-[#090b10]/90 border-emerald-500/40 shadow-md'
           : 'bg-gradient-to-br from-emerald-50/90 via-white to-emerald-50/40 border-emerald-300/90 shadow-[0_2px_15px_rgba(16,185,129,0.08)]',
         citationBtn: dark
-          ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/30 hover:border-emerald-400 shadow-emerald-950/40'
-          : 'bg-emerald-100/80 text-emerald-900 border-emerald-300/80 hover:bg-emerald-200 hover:border-emerald-400 shadow-emerald-100/50',
-        citationIcon: 'text-emerald-400',
-        citationBadge: dark ? 'bg-emerald-400/20 text-emerald-200' : 'bg-emerald-200 text-emerald-800',
-        popoverBox: dark ? 'bg-[#041413]/95 border-emerald-500/30 text-white shadow-black/80' : 'bg-white/95 border-emerald-200 text-slate-900 shadow-emerald-900/15',
+          ? 'bg-white/[0.04] text-stone-300 border-white/10 hover:bg-emerald-500/15 hover:border-emerald-400/40 hover:text-emerald-300'
+          : 'bg-stone-500/[0.04] text-stone-600 border-stone-300/70 hover:bg-emerald-50 hover:text-emerald-800 hover:border-emerald-300',
+        citationIcon: dark ? 'text-white/50 group-hover:text-emerald-400' : 'text-stone-400 group-hover:text-teal-600',
+        citationBadge: dark ? 'bg-white/10 text-stone-300' : 'bg-stone-200/80 text-stone-700',
+        popoverBox: dark ? 'bg-[#090b10] border-emerald-500/30 text-white shadow-black/80' : 'bg-white/95 border-emerald-200 text-slate-900 shadow-emerald-900/15',
         itemBox: dark ? 'bg-white/[0.03] border-white/10' : 'bg-emerald-50/50 border-emerald-100',
         bookTitle: 'text-emerald-400',
         sourceBtn: dark ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/30' : 'bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700 shadow-sm',
         hierarchyTag: dark ? 'bg-emerald-950/60 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-900/90 hover:border-emerald-400/80 hover:shadow-[0_0_15px_rgba(16,185,129,0.4)]' : 'bg-emerald-100/90 text-emerald-900 border border-emerald-300/70 hover:bg-emerald-200/90 hover:border-emerald-400 hover:shadow-[0_0_12px_rgba(16,185,129,0.3)]',
-        userBubbleGradient: 'linear-gradient(225deg, #064e3b 0%, #065f46 50%, #0f766e 100%)',
+        userBubbleClass: dark ? 'bg-[#0a2924] border border-teal-500/40 text-white/95 shadow-md' : 'bg-[#0f4f47] text-white border border-[#0a3832] shadow-sm',
+        userAvatarClass: dark ? 'bg-[#0a2924] border border-teal-500/40 text-white shadow-sm' : 'bg-[#0f4f47] text-white border border-[#0a3832] shadow-sm',
       };
     case 'blue':
       return {
@@ -483,56 +483,57 @@ function getChatBubbleThemeClasses(accentColor: AccentColor, dark: boolean) {
         code: dark ? 'bg-blue-950/50 text-blue-200' : 'bg-blue-100/60 text-blue-950 border border-blue-200/60',
         quoteGeneric: dark ? 'border-blue-500/50 bg-blue-500/[0.08] text-blue-50' : 'border-blue-600 bg-[#F8FAFC] text-[#1E3A8A] shadow-sm ring-1 ring-blue-100/70',
         mainFrameBorder: dark ? 'border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.15)]' : 'border-blue-200/60 shadow-[0_2px_12px_rgba(37,99,235,0.04)]',
-        childBox: dark
-          ? 'bg-gradient-to-br from-[#061226]/90 via-[#0a1b38]/80 to-[#030914]/95 border-blue-500/40 shadow-[0_4px_20px_rgba(59,130,246,0.12)]'
+        childBox: dark ? 'bg-[#090b10]/90 border-blue-500/40 shadow-md'
           : 'bg-gradient-to-br from-blue-50/90 via-white to-blue-50/40 border-blue-300/90 shadow-[0_2px_15px_rgba(37,99,235,0.08)]',
         citationBtn: dark
-          ? 'bg-blue-500/15 text-blue-300 border-blue-500/30 hover:bg-blue-500/30 hover:border-blue-400 shadow-blue-950/40'
-          : 'bg-blue-100/80 text-blue-950 border-blue-300/80 hover:bg-blue-200 hover:border-blue-400 shadow-blue-100/50',
-        citationIcon: 'text-blue-400',
-        citationBadge: dark ? 'bg-blue-400/20 text-blue-200' : 'bg-blue-200 text-blue-900',
-        popoverBox: dark ? 'bg-[#040e1c]/95 border-blue-500/30 text-white shadow-black/80' : 'bg-white/95 border-blue-200 text-slate-900 shadow-blue-900/15',
+          ? 'bg-white/[0.04] text-stone-300 border-white/10 hover:bg-blue-500/15 hover:border-blue-400/40 hover:text-blue-300'
+          : 'bg-stone-500/[0.04] text-stone-600 border-stone-300/70 hover:bg-blue-50 hover:text-blue-800 hover:border-blue-300',
+        citationIcon: dark ? 'text-white/50 group-hover:text-blue-400' : 'text-stone-400 group-hover:text-blue-600',
+        citationBadge: dark ? 'bg-white/10 text-stone-300' : 'bg-stone-200/80 text-stone-700',
+        popoverBox: dark ? 'bg-[#090b10] border-blue-500/30 text-white shadow-black/80' : 'bg-white/95 border-blue-200 text-slate-900 shadow-blue-900/15',
         itemBox: dark ? 'bg-white/[0.03] border-white/10' : 'bg-blue-50/50 border-blue-100',
         bookTitle: 'text-blue-400',
         sourceBtn: dark ? 'bg-blue-500/20 text-blue-300 border-blue-500/30 hover:bg-blue-500/30' : 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700 shadow-sm',
         hierarchyTag: dark ? 'bg-blue-950/60 text-blue-300 border border-blue-500/30 hover:bg-blue-900/90 hover:border-blue-400/80 hover:shadow-[0_0_15px_rgba(59,130,246,0.4)]' : 'bg-blue-100/90 text-blue-900 border border-blue-300/70 hover:bg-blue-200/90 hover:border-blue-400 hover:shadow-[0_0_12px_rgba(59,130,246,0.3)]',
-        userBubbleGradient: 'linear-gradient(225deg, #172554 0%, #1e3a8a 50%, #1d4ed8 100%)',
+        userBubbleClass: dark ? 'bg-[#0e2147] border border-blue-500/40 text-white/95 shadow-md' : 'bg-[#1e3a8a] text-white border border-[#172554] shadow-sm',
+        userAvatarClass: dark ? 'bg-[#0e2147] border border-blue-500/40 text-white shadow-sm' : 'bg-[#1e3a8a] text-white border border-[#172554] shadow-sm',
       };
     case 'purple':
     default:
       return {
-        h2Box: dark ? 'bg-purple-500/[0.07] border-purple-400/20' : 'bg-purple-50/80 border-purple-200/70',
-        h2Bar: dark ? 'bg-purple-400' : 'bg-purple-600',
-        h2Text: dark ? 'text-purple-300/90' : 'text-purple-800/85',
-        h3Text: dark ? 'text-purple-300/90' : 'text-purple-800/85',
+        h2Box: dark ? 'bg-[#b51ee7]/20 border-[#b51ee7]/30' : 'bg-purple-50/80 border-purple-200/70',
+        h2Bar: dark ? 'bg-[#b51ee7]' : 'bg-[#800080]',
+        h2Text: dark ? 'text-white' : 'text-[#800080]',
+        h3Text: dark ? 'text-[#b51ee7]' : 'text-[#800080]',
         h4Banner: dark
-          ? 'from-purple-500/10 via-purple-500/[0.04] to-transparent border-b border-purple-500/20'
+          ? 'from-[#b51ee7]/25 via-[#b51ee7]/[0.08] to-transparent border-b border-[#b51ee7]/30'
           : 'from-purple-100/80 via-purple-50/40 to-transparent border-b border-purple-200/80',
-        h4Text: dark ? 'text-purple-200/90' : 'text-purple-900/85',
-        marker: dark ? 'marker:text-purple-400/80' : 'marker:text-purple-700/80',
-        strong: dark ? 'text-purple-300/90 drop-shadow-[0_0_4px_rgba(168,85,247,0.2)]' : 'text-purple-800/85',
-        strongTitle: dark ? 'text-purple-300/90 decoration-purple-400/40' : 'text-purple-800/85 decoration-purple-500/40',
-        strongBadge: dark ? 'bg-purple-500/10 border-purple-500/30 text-purple-300/90' : 'bg-purple-50 border-purple-300 text-purple-700/90',
-        strongFrame: dark ? 'bg-gradient-to-l from-purple-500/10 to-transparent border-purple-500/20 text-purple-300/90' : 'bg-gradient-to-l from-purple-50 to-transparent border-purple-200 text-purple-800/85',
-        del: dark ? 'bg-purple-500/10 border-purple-400/30 text-purple-300/90 shadow-[0_0_12px_rgba(168,85,247,0.06)]' : 'bg-purple-50 border-purple-300/70 text-purple-700/90 shadow-sm',
-        link: dark ? 'text-purple-400 hover:text-purple-300 font-medium transition-colors underline underline-offset-4' : 'text-purple-600 hover:text-purple-800 font-medium transition-colors underline underline-offset-4',
+        h4Text: dark ? 'text-[#b51ee7]' : 'text-[#800080]',
+        marker: dark ? 'marker:text-[#b51ee7]' : 'marker:text-[#800080]',
+        strong: dark ? 'text-[#b51ee7] font-bold drop-shadow-[0_0_4px_rgba(181,30,231,0.3)]' : 'text-[#800080]',
+        strongTitle: dark ? 'text-[#b51ee7] decoration-[#b51ee7]' : 'text-[#800080] decoration-[#800080]/40',
+        strongBadge: dark ? 'bg-[#b51ee7]/20 border border-[#b51ee7]/40 text-[#b51ee7] shadow-xs' : 'bg-[#800080] text-white border border-[#800080]',
+        strongFrame: dark ? 'bg-[#b51ee7]/20 border border-[#b51ee7]/40 text-[#b51ee7] shadow-xs' : 'bg-[#800080] text-white border border-[#800080]',
+        del: dark ? 'bg-[#b51ee7]/30 border-[#b51ee7]/50 text-white shadow-[0_0_12px_rgba(181,30,231,0.15)]' : 'bg-[#800080]/15 border-[#800080]/30 text-[#800080] shadow-sm',
+        link: dark ? 'text-[#b51ee7] hover:text-[#d946ef] font-medium transition-colors underline underline-offset-4' : 'text-[#800080] hover:text-[#600060] font-medium transition-colors underline underline-offset-4',
         code: dark ? 'bg-purple-950/50 text-purple-200' : 'bg-purple-100/60 text-purple-900 border border-purple-200/60',
-        quoteGeneric: dark ? 'border-purple-500/50 bg-purple-500/[0.08] text-purple-50' : 'border-purple-600 bg-[#FDFBF7] text-[#1E1B4B] shadow-sm ring-1 ring-purple-100/70',
+        quoteGeneric: dark ? 'border-[#b51ee7] bg-[#b51ee7]/15 text-purple-50' : 'border-[#800080] bg-[#FDFBF7] text-[#800080] shadow-sm ring-1 ring-[#800080]/20',
         mainFrameBorder: dark ? 'border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.15)]' : 'border-purple-200/50 shadow-[0_2px_12px_rgba(124,58,237,0.03)]',
         childBox: dark
-          ? 'bg-gradient-to-br from-[#16062b]/80 via-[#100321]/80 to-[#0a0216]/90 border-purple-500/40 shadow-[0_4px_20px_rgba(168,85,247,0.12)]'
+          ? 'bg-gradient-to-br from-[#180018]/90 via-[#100010]/80 to-[#080008]/90 border-[#b51ee7]/40 shadow-[0_4px_20px_rgba(77,0,77,0.25)]'
           : 'bg-gradient-to-br from-purple-50/90 via-white to-purple-50/40 border-purple-300/90 shadow-[0_2px_15px_rgba(124,58,237,0.08)]',
         citationBtn: dark
-          ? 'bg-purple-500/15 text-purple-300 border-purple-500/30 hover:bg-purple-500/30 hover:border-purple-400 shadow-purple-950/40'
-          : 'bg-purple-100/80 text-purple-900 border-purple-300/80 hover:bg-purple-200 hover:border-purple-400 shadow-purple-100/50',
-        citationIcon: 'text-purple-400',
-        citationBadge: dark ? 'bg-purple-400/20 text-purple-200' : 'bg-purple-200 text-purple-800',
-        popoverBox: dark ? 'bg-[#0f041c]/95 border-purple-500/30 text-white shadow-black/80' : 'bg-white/95 border-purple-200 text-slate-900 shadow-purple-900/15',
+          ? 'bg-white/[0.04] text-stone-300 border-white/10 hover:bg-[#b51ee7]/15 hover:border-[#b51ee7]/40 hover:text-purple-300'
+          : 'bg-stone-500/[0.04] text-stone-600 border-stone-300/70 hover:bg-purple-50 hover:text-purple-800 hover:border-purple-300',
+        citationIcon: dark ? 'text-white/50 group-hover:text-[#b51ee7]' : 'text-stone-400 group-hover:text-purple-600',
+        citationBadge: dark ? 'bg-white/10 text-stone-300' : 'bg-stone-200/80 text-stone-700',
+        popoverBox: dark ? 'bg-[#090b10] border-[#b51ee7]/60 text-white shadow-black/80' : 'bg-white/95 border-[#800080]/40 text-slate-900 shadow-purple-900/15',
         itemBox: dark ? 'bg-white/[0.03] border-white/10' : 'bg-purple-50/50 border-purple-100',
-        bookTitle: 'text-purple-400',
-        sourceBtn: dark ? 'bg-purple-500/20 text-purple-300 border-purple-500/30 hover:bg-purple-500/30' : 'bg-purple-600 text-white border-purple-600 hover:bg-purple-700 shadow-sm',
-        hierarchyTag: dark ? 'bg-purple-950/60 text-purple-300 border border-purple-500/30 hover:bg-purple-900/90 hover:border-purple-400/80 hover:shadow-[0_0_15px_rgba(168,85,247,0.4)]' : 'bg-purple-100/90 text-purple-900 border border-purple-300/70 hover:bg-purple-200/90 hover:border-purple-400 hover:shadow-[0_0_12px_rgba(168,85,247,0.3)]',
-        userBubbleGradient: 'linear-gradient(225deg, #4a044e 0%, #581c87 50%, #6b21a8 100%)',
+        bookTitle: 'text-white font-bold',
+        sourceBtn: dark ? 'bg-[#b51ee7] text-white border border-[#b51ee7] hover:bg-[#9d17ca]' : 'bg-[#800080] text-white border-[#800080] hover:bg-[#3d003d] shadow-sm',
+        hierarchyTag: dark ? 'bg-[#b51ee7]/25 text-[#b51ee7] border border-[#b51ee7]/40 hover:bg-[#b51ee7]/40' : 'bg-purple-100/90 text-[#800080] border border-purple-300/70',
+        userBubbleClass: dark ? 'bg-[#260528] border border-purple-500/40 text-white/95 shadow-md' : 'bg-[#4a044e] text-white border border-[#3b0764] shadow-sm',
+        userAvatarClass: dark ? 'bg-[#260528] border border-purple-500/40 text-white shadow-sm' : 'bg-[#4a044e] text-white border border-[#3b0764] shadow-sm',
       };
   }
 }
@@ -665,10 +666,7 @@ export function Bubble({
       ),
       h3: ({ node, ...props }: any) => (
         <div
-          className={`flex items-center gap-2 mb-3.5 px-3 sm:px-4 py-2 sm:py-2.5 -mx-3 sm:-mx-4 -mt-3 sm:-mt-4 bg-gradient-to-l ${dark
-            ? 'from-white/[0.06] to-transparent border-b border-white/10'
-            : 'from-primary/[0.05] to-transparent border-b border-primary/10'
-            }`}
+          className={`flex items-center gap-2 mb-3.5 px-3 sm:px-4 py-2 sm:py-2.5 -mx-2.5 sm:-mx-4 -mt-2.5 sm:-mt-4 rounded-t-xl sm:rounded-t-2xl overflow-hidden bg-gradient-to-l ${theme.h4Banner}`}
         >
           <h3
             className={`text-[14.5px] sm:text-[15.5px] md:text-[16px] font-bold leading-snug ${theme.h3Text}`}
@@ -678,7 +676,7 @@ export function Bubble({
       ),
       h4: ({ node, ...props }: any) => (
         <div
-          className={`flex items-center gap-2 mb-2.5 px-3 sm:px-4 py-1.5 sm:py-2 -mx-3 sm:-mx-4 -mt-3 sm:-mt-4 bg-gradient-to-l ${theme.h4Banner}`}
+          className={`flex items-center gap-2 mb-2.5 px-3 sm:px-4 py-1.5 sm:py-2 -mx-2.5 sm:-mx-4 -mt-2.5 sm:-mt-4 rounded-t-xl sm:rounded-t-2xl overflow-hidden bg-gradient-to-l ${theme.h4Banner}`}
         >
           <h4
             className={`text-[13.5px] sm:text-[14.5px] font-bold leading-snug ${theme.h4Text}`}
@@ -898,8 +896,7 @@ export function Bubble({
       <div className={`flex min-w-0 gap-1.5 sm:gap-3 w-full flex-col ${isUser ? 'items-start' : 'items-end'}`}>
         {isUser ? (
           <div
-            className="flex h-9 w-9 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full text-white shadow-lg shadow-primary/30"
-            style={{ background: theme.userBubbleGradient }}
+            className={`flex h-9 w-9 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full ${theme.userAvatarClass}`}
           >
             <User size={18} className="sm:hidden" strokeWidth={2.5} />
             <User size={22} className="hidden sm:block" strokeWidth={2.5} />
@@ -911,8 +908,7 @@ export function Bubble({
         )}
         {isUser ? (
           <div
-            className="rounded-[18px] sm:rounded-[22px] px-3 sm:px-4.5 py-2 sm:py-3 text-sm sm:text-[15px] leading-relaxed shadow-sm rounded-tr-none text-white whitespace-pre-line break-words"
-            style={{ background: theme.userBubbleGradient }}
+            className={`rounded-[18px] sm:rounded-[22px] px-3.5 sm:px-5 py-2.5 sm:py-3.5 text-sm sm:text-[15px] leading-relaxed rounded-tr-none whitespace-pre-line break-words border ${theme.userBubbleClass}`}
           >
             {message.text}
           </div>
@@ -922,7 +918,7 @@ export function Bubble({
               ref={messageContentRef}
               data-selectable="true"
               className={`relative px-2 sm:px-4 py-2.5 sm:py-4 border rounded-[18px] sm:rounded-[22px] rounded-tl-none flex flex-col gap-2.5 sm:gap-4 ${dark
-                ? 'bg-black/60 backdrop-blur-2xl border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.15)]'
+                ? 'bg-[#090b10] backdrop-blur-2xl border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.15)]'
                 : 'bg-[#FAF9FC] border-primary/15 shadow-[0_4px_20px_rgba(124,58,237,0.04)]'
                 }`}
             >
@@ -1043,18 +1039,49 @@ export function Bubble({
   )
 }
 
-export function TypingBubble({ dark, avatarRef }: { dark: boolean; avatarRef?: React.RefObject<HTMLSpanElement | null> }) {
+export function TypingBubble({
+  dark,
+  avatarRef,
+  accentColor: propAccent,
+}: {
+  dark: boolean
+  avatarRef?: React.RefObject<HTMLSpanElement | null>
+  accentColor?: AccentColor
+}) {
+  const { accentColor: ctxAccent } = useTheme()
+  const activeAccent = propAccent || ctxAccent
+
+  const getDotsColorClass = () => {
+    switch (activeAccent) {
+      case 'amber':
+        return 'bg-[#dfbf83]'
+      case 'emerald':
+        return 'bg-teal-400'
+      case 'blue':
+        return 'bg-blue-400'
+      case 'purple':
+      default:
+        return 'bg-purple-400'
+    }
+  }
+
   return (
     <div className="flex justify-end animate-in fade-in duration-500">
       <div className="flex gap-1.5 sm:gap-3 flex-col items-end w-full sm:w-auto">
         <span ref={avatarRef}>
           <AvatarLogo dark={dark} />
         </span>
-        <div className={`flex items-center gap-1.5 rounded-[20px] rounded-tl-none border px-5 py-4 shadow-sm ${dark ? 'bg-[#1a0730]/80 border-white/10' : 'bg-white border-primary/10'}`}>
+        <div
+          className={`flex items-center gap-1.5 rounded-[20px] rounded-tl-none border px-5 py-4 shadow-sm backdrop-blur-2xl transition-colors duration-300 ${
+            dark
+              ? 'bg-[#090b10] border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.15)]'
+              : 'bg-[#FAF9FC] border-slate-200/80 shadow-[0_4px_20px_rgba(0,0,0,0.04)]'
+          }`}
+        >
           {[0, 1, 2].map((i) => (
             <span
               key={i}
-              className="h-2 w-2 animate-bounce rounded-full bg-primary/60"
+              className={`h-2 w-2 animate-bounce rounded-full ${getDotsColorClass()}`}
               style={{ animationDelay: `${i * 0.15}s` }}
             />
           ))}
@@ -1227,12 +1254,12 @@ function CitationPill({ ids, citations, dark }: { ids: number[]; citations?: Cit
           e.stopPropagation();
           setIsOpen(prev => !prev);
         }}
-        className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg border text-[12px] font-semibold transition-all duration-200 ease-out cursor-pointer shadow-sm hover:scale-[1.02] active:scale-[0.98] ${theme.citationBtn}`}
+        className={`group inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md border text-[11px] font-medium transition-all duration-200 ease-out cursor-pointer hover:scale-[1.02] active:scale-[0.98] ${theme.citationBtn}`}
       >
-        <BookOpen size={12} className={`shrink-0 ${theme.citationIcon}`} strokeWidth={2.5} />
-        <span className="font-sans font-bold">{truncatedTitle}</span>
+        <BookOpen size={11} className={`shrink-0 transition-colors ${theme.citationIcon}`} strokeWidth={2} />
+        <span className="font-sans font-medium">{truncatedTitle}</span>
         {extraCount > 0 && (
-          <span className={`px-1.5 py-0.2 rounded text-[10.5px] font-extrabold ${theme.citationBadge}`}>
+          <span className={`px-1 py-0.2 rounded text-[10px] font-bold ${theme.citationBadge}`}>
             +{extraCount}
           </span>
         )}

@@ -31,7 +31,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   const THEME_COLORS: Record<Theme, Record<AccentColor, string>> = {
     dark: {
-      purple: '#12041f',
+      purple: '#5b0e9c',
       emerald: '#041413',
       amber: '#120d06',
       blue: '#050d1a',

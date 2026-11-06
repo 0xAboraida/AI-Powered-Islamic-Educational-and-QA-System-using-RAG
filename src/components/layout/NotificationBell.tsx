@@ -338,9 +338,56 @@ export default function NotificationBell({ variant = 'default', className = '' }
     return () => clearInterval(interval)
   }, [])
 
+  const panelRef = useRef<HTMLDivElement>(null)
+  const [panelPos, setPanelPos] = useState<{ top: number; left: number; isMobile: boolean }>({
+    top: 72,
+    left: 12,
+    isMobile: true,
+  })
+
+  const updatePosition = () => {
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 640
+    if (isMobile) {
+      setPanelPos({ top: 72, left: 12, isMobile: true })
+      return
+    }
+    if (dropdownRef.current) {
+      const rect = dropdownRef.current.getBoundingClientRect()
+      const panelWidth = 410
+      let left = rect.left
+      if (left + panelWidth > window.innerWidth - 16) {
+        left = window.innerWidth - panelWidth - 16
+      }
+      if (left < 16) left = 16
+      setPanelPos({
+        top: rect.bottom + 8,
+        left,
+        isMobile: false,
+      })
+    }
+  }
+
+  useEffect(() => {
+    if (isOpen) {
+      updatePosition()
+      window.addEventListener('resize', updatePosition)
+      window.addEventListener('scroll', updatePosition, true)
+      return () => {
+        window.removeEventListener('resize', updatePosition)
+        window.removeEventListener('scroll', updatePosition, true)
+      }
+    }
+  }, [isOpen])
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent | TouchEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      const target = event.target as Node
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(target) &&
+        panelRef.current &&
+        !panelRef.current.contains(target)
+      ) {
         setIsOpen(false)
       }
     }
@@ -584,42 +631,44 @@ export default function NotificationBell({ variant = 'default', className = '' }
         )}
       </button>
 
-      {/* Notifications Glass Dropdown Panel & Glassy Blurred Backdrop */}
-      {isOpen && (
-        <>
-          {/* Glassy Backdrop Overlay rendered into document.body to cover the full viewport and avoid containing-block trap */}
-          {typeof document !== 'undefined' && createPortal(
+      {/* Notifications Glass Dropdown Panel & Glassy Blurred Backdrop rendered via Portal */}
+      {isOpen &&
+        typeof document !== 'undefined' &&
+        createPortal(
+          <div className="fixed inset-0 z-[99999] pointer-events-auto">
+            {/* Glassy Backdrop Overlay */}
             <div
               onClick={(e) => {
                 e.stopPropagation()
                 setIsOpen(false)
               }}
-              className="fixed inset-0 w-screen h-screen bg-slate-950/40 dark:bg-black/60 backdrop-blur-md z-40 transition-all duration-300 animate-in fade-in cursor-pointer"
+              className="fixed inset-0 w-screen h-screen bg-slate-950/40 dark:bg-black/60 backdrop-blur-md z-10 transition-all duration-300 animate-in fade-in cursor-pointer"
               aria-hidden="true"
               title="انقر للإغلاق"
-            />,
-            document.body
-          )}
+            />
 
-          <div
-            dir="rtl"
-            className={`fixed inset-x-3 top-18 sm:absolute sm:inset-x-auto sm:left-0 sm:top-full sm:mt-2.5 sm:w-[410px] max-w-[calc(100vw-1.5rem)] rounded-3xl border backdrop-blur-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 origin-top-left duration-200 max-h-[calc(100dvh-6rem)] flex flex-col ${getThemeGlassPanelClass()}`}
-          >
+            {/* Notifications Glass Dropdown Panel */}
+            <div
+              ref={panelRef}
+              dir="rtl"
+              onClick={(e) => e.stopPropagation()}
+              style={
+                panelPos.isMobile
+                  ? { top: '72px', left: '12px', right: '12px', width: 'auto' }
+                  : { top: `${panelPos.top}px`, left: `${panelPos.left}px`, width: '410px' }
+              }
+              className={`fixed z-20 rounded-3xl border backdrop-blur-2xl overflow-hidden animate-in fade-in zoom-in-95 origin-top-left duration-200 max-h-[calc(100dvh-6rem)] flex flex-col shadow-2xl ${getThemeGlassPanelClass()}`}
+            >
           {/* Top Header */}
           <div className={`shrink-0 border-b px-4 sm:px-5 py-3.5 sm:py-4 transition-colors ${getThemeHeaderClass()}`}>
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className={`flex h-8 w-8 items-center justify-center rounded-xl border shadow-inner ${getThemeIconBoxClass()}`}>
-                  <Sparkles className="h-4 w-4" />
-                </div>
-                <div>
-                  <h3 className={`font-bold text-sm sm:text-base leading-snug ${isDark ? 'text-white' : 'text-stone-900'}`}>
-                    الإشعارات والتحديثات
-                  </h3>
-                  <p className={`text-[10.5px] sm:text-[11px] font-normal ${isDark ? 'text-white/50' : 'text-stone-500'}`}>
-                    آخر التطورات والكتب المضافة للمكتبة
-                  </p>
-                </div>
+              <div>
+                <h3 className={`font-bold text-sm sm:text-base leading-snug ${isDark ? 'text-white' : 'text-stone-900'}`}>
+                  الإشعارات والتحديثات
+                </h3>
+                <p className={`text-[10.5px] sm:text-[11px] font-normal ${isDark ? 'text-white/50' : 'text-stone-500'}`}>
+                  آخر التطورات والكتب المضافة للمكتبة
+                </p>
               </div>
 
               {/* Actions: Mark all as read, Refresh, Close on Mobile */}
@@ -708,8 +757,9 @@ export default function NotificationBell({ variant = 'default', className = '' }
             {renderNotificationContent()}
           </div>
         </div>
-        </>
-      )}
+      </div>,
+      document.body
+    )}
     </div>
   )
 }

@@ -1,5 +1,6 @@
+import { getSavedMindmapsStorageKey } from '../../utils/studyStorage'
 import React, { useState, useEffect, useRef } from 'react'
-import { Brain, X, Loader2, Sparkles, History, Users, ChevronLeft, Calendar, User, ArrowRight, Database, Globe, Lock } from 'lucide-react'
+import { Brain, X, Loader2, Sparkles, History, Users, ChevronLeft, Calendar, User, ArrowRight, Database, Globe, Lock, RefreshCw } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useStudyContext, type MindmapNode } from '../../../../contexts/StudyContext'
 import { VisualMindmap } from './VisualMindmap'
@@ -12,15 +13,13 @@ function getMindmapThemeTokens(accentColor: AccentColor = 'blue', isDark: boolea
       return {
         icon: 'text-[#046c4e] dark:text-emerald-300',
         badge: isDark ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-emerald-100 text-emerald-800 border border-emerald-200',
-        iconBox: isDark ? 'bg-[#092b1f] border-emerald-500/40 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-[#046c4e]',
-        cardBorder: isDark ? 'border-emerald-500/25' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
-        cardBg: isDark
-          ? 'bg-[#051c14] text-white shadow-[0_12px_40px_rgba(0,0,0,0.5)]'
-          : 'bg-[#f7fcf9] border-emerald-100 text-slate-900',
-        glowPrimary: isDark ? 'bg-emerald-500/10' : 'hidden',
-        glowSecondary: isDark ? 'bg-teal-600/10' : 'hidden',
-        titleColor: 'text-[#065f46] dark:text-emerald-200',
-        primaryBtn: 'bg-[#046c4e] hover:bg-[#03543d] active:bg-[#023e2d] text-white shadow-md border border-[#03543d]/30 transition-all',
+        iconBox: isDark ? 'bg-teal-500/10 border-teal-500/25 text-teal-300' : 'bg-emerald-50 border-emerald-200 text-[#046c4e]',
+        cardBorder: isDark ? 'border-white/10' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
+        cardBg: isDark ? 'bg-[#090b10] text-white shadow-2xl shadow-black/50' : 'bg-[#f7fcf9] border-emerald-100 text-slate-900',
+        glowPrimary: 'hidden',
+        glowSecondary: 'hidden',
+        titleColor: 'text-[#065f46] dark:text-white',
+        primaryBtn: 'bg-gradient-to-r from-teal-600 to-emerald-500 text-white font-bold shadow-md shadow-teal-500/20 border border-teal-400/30 transition-all',
         cardOption: isDark ? 'hover:border-emerald-500/40 hover:bg-emerald-900/20 hover:shadow-emerald-500/20' : 'hover:border-emerald-300 hover:bg-emerald-50/70',
         iconPill: isDark ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-emerald-100 text-emerald-800',
         progressBar: 'bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500',
@@ -31,15 +30,13 @@ function getMindmapThemeTokens(accentColor: AccentColor = 'blue', isDark: boolea
       return {
         icon: 'text-[#7a5720] dark:text-[#dfbf83]',
         badge: isDark ? 'bg-[#5e431a]/40 text-[#edd8ae] border border-[#8a6328]/40' : 'bg-[#f5ecdc] text-[#5e431a] border border-[#e2d2ba]',
-        iconBox: isDark ? 'bg-[#261b0c] border-[#8a6328]/50 text-[#dfbf83]' : 'bg-[#f5ede0] border-[#decbb0] text-[#7a5720]',
-        cardBorder: isDark ? 'border-[#5e431a]/40' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
-        cardBg: isDark
-          ? 'bg-[#18120a] text-stone-100 shadow-[0_12px_40px_rgba(0,0,0,0.5)]'
-          : 'bg-[#fcfaf6] border-[#e6d8c3] text-stone-900',
-        glowPrimary: isDark ? 'bg-[#c99a4e]/10' : 'hidden',
-        glowSecondary: isDark ? 'bg-[#8a6328]/10' : 'hidden',
-        titleColor: 'text-[#5c4118] dark:text-[#edd8ae]',
-        primaryBtn: 'bg-[#7a5720] hover:bg-[#684918] active:bg-[#593d12] text-white shadow-md border border-[#684918]/30 transition-all',
+        iconBox: isDark ? 'bg-[#dfbf83]/10 border-[#dfbf83]/25 text-[#dfbf83]' : 'bg-[#f5ede0] border-[#decbb0] text-[#7a5720]',
+        cardBorder: isDark ? 'border-white/10' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
+        cardBg: isDark ? 'bg-[#090b10] text-white shadow-2xl shadow-black/50' : 'bg-[#fcfaf6] border-[#e6d8c3] text-stone-900',
+        glowPrimary: 'hidden',
+        glowSecondary: 'hidden',
+        titleColor: 'text-[#5c4118] dark:text-white',
+        primaryBtn: 'bg-gradient-to-r from-[#b88d46] to-[#dfbf83] text-stone-950 font-bold shadow-md shadow-amber-900/20 border border-[#dfbf83]/30 transition-all',
         cardOption: isDark ? 'hover:border-[#8a6328]/50 hover:bg-[#261b0c]/40 hover:shadow-stone-900/30' : 'hover:border-[#b88d46] hover:bg-[#f6ede0]',
         iconPill: isDark ? 'bg-[#3b2a12] text-[#dfbf83] border border-[#8a6328]/40' : 'bg-[#f5ede0] text-[#7a5720]',
         progressBar: 'bg-gradient-to-r from-[#8a6328] via-[#dfbf83] to-[#8a6328]',
@@ -48,17 +45,15 @@ function getMindmapThemeTokens(accentColor: AccentColor = 'blue', isDark: boolea
       }
     case 'purple':
       return {
-        icon: 'text-[#581c87] dark:text-purple-300',
+        icon: isDark ? 'text-[#b51ee7]' : 'text-[#800080]',
         badge: isDark ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'bg-purple-100 text-purple-800 border border-purple-200',
-        iconBox: isDark ? 'bg-[#240a3d] border-purple-500/40 text-purple-300' : 'bg-purple-50 border-purple-200 text-[#581c87]',
-        cardBorder: isDark ? 'border-purple-500/25' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
-        cardBg: isDark
-          ? 'bg-[#140624] text-white shadow-[0_12px_40px_rgba(0,0,0,0.5)]'
-          : 'bg-[#faf7fd] border-purple-100 text-slate-900',
-        glowPrimary: isDark ? 'bg-purple-500/10' : 'hidden',
-        glowSecondary: isDark ? 'bg-fuchsia-600/10' : 'hidden',
-        titleColor: 'text-[#4a1572] dark:text-purple-200',
-        primaryBtn: 'bg-[#581c87] hover:bg-[#4a1572] active:bg-[#3b0f5c] text-white shadow-md border border-[#4a1572]/30 transition-all',
+        iconBox: isDark ? 'bg-purple-500/10 border-purple-500/25 text-purple-300' : 'bg-purple-50 border-purple-200 text-[#581c87]',
+        cardBorder: isDark ? 'border-white/10' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
+        cardBg: isDark ? 'bg-[#090b10] text-white shadow-2xl shadow-black/50' : 'bg-[#faf7fd] border-purple-100 text-slate-900',
+        glowPrimary: 'hidden',
+        glowSecondary: 'hidden',
+        titleColor: 'text-[#4a1572] dark:text-white',
+        primaryBtn: 'bg-gradient-to-r from-[#800080] to-purple-600 text-white font-bold shadow-md shadow-purple-900/20 border border-purple-400/30 transition-all',
         cardOption: isDark ? 'hover:border-purple-500/40 hover:bg-purple-900/20 hover:shadow-purple-500/20' : 'hover:border-purple-300 hover:bg-purple-50/70',
         iconPill: isDark ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'bg-purple-100 text-purple-800',
         progressBar: 'bg-gradient-to-r from-purple-600 via-fuchsia-400 to-purple-600',
@@ -70,15 +65,13 @@ function getMindmapThemeTokens(accentColor: AccentColor = 'blue', isDark: boolea
       return {
         icon: 'text-[#154696] dark:text-sky-300',
         badge: isDark ? 'bg-sky-500/20 text-sky-300 border border-sky-500/30' : 'bg-sky-100 text-sky-800 border border-sky-200',
-        iconBox: isDark ? 'bg-[#0d223f] border-sky-500/40 text-sky-300' : 'bg-sky-50 border-sky-200 text-[#154696]',
-        cardBorder: isDark ? 'border-sky-500/25' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
-        cardBg: isDark
-          ? 'bg-[#0b1626] text-white shadow-[0_12px_40px_rgba(0,0,0,0.5)]'
-          : 'bg-[#fafcff] border-sky-100 text-slate-900',
-        glowPrimary: isDark ? 'bg-sky-500/10' : 'hidden',
-        glowSecondary: isDark ? 'bg-blue-600/10' : 'hidden',
-        titleColor: 'text-[#12396e] dark:text-sky-200',
-        primaryBtn: 'bg-[#154696] hover:bg-[#103878] active:bg-[#0c2b5d] text-white shadow-md border border-[#103878]/30 transition-all',
+        iconBox: isDark ? 'bg-blue-500/10 border-blue-500/25 text-sky-300' : 'bg-sky-50 border-sky-200 text-[#154696]',
+        cardBorder: isDark ? 'border-white/10' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
+        cardBg: isDark ? 'bg-[#090b10] text-white shadow-2xl shadow-black/50' : 'bg-[#fafcff] border-sky-100 text-slate-900',
+        glowPrimary: 'hidden',
+        glowSecondary: 'hidden',
+        titleColor: 'text-[#12396e] dark:text-white',
+        primaryBtn: 'bg-gradient-to-r from-blue-600 to-sky-500 text-white font-bold shadow-md shadow-blue-500/20 border border-blue-400/30 transition-all',
         cardOption: isDark ? 'hover:border-sky-500/40 hover:bg-sky-900/20 hover:shadow-sky-500/20' : 'hover:border-sky-300 hover:bg-sky-50/70',
         iconPill: isDark ? 'bg-sky-500/20 text-sky-300 border border-sky-500/30' : 'bg-sky-100 text-sky-800',
         progressBar: 'bg-gradient-to-r from-[#154696] via-sky-400 to-[#154696]',
@@ -94,7 +87,7 @@ export function StudyMindmapPanel({
   currentChunkId,
   handleGenerateMindmap,
   onClose,
-  panelWidth = 550,
+  panelWidth = 750,
   startResizing,
   isDark = true,
   chunkLoading
@@ -121,6 +114,7 @@ export function StudyMindmapPanel({
   const [myMindmaps, setMyMindmaps] = useState<StudyMindmapDto[]>([])
   const [communityMindmaps, setCommunityMindmaps] = useState<StudyMindmapDto[]>([])
   const [loadingLists, setLoadingLists] = useState<boolean>(false)
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false)
   const [activeMindmap, setActiveMindmap] = useState<MindmapNode[] | null>(mindmapData)
   const prevMindmapRef = useRef<MindmapNode[] | null>(mindmapData)
 
@@ -135,11 +129,15 @@ export function StudyMindmapPanel({
   }, [mindmapData])
 
   // Load saved mindmaps from API and localStorage whenever currentChunkId changes or panel mounts
-  const loadMindmaps = () => {
+  const loadMindmaps = (forceRefresh = false) => {
+    if (forceRefresh) {
+      setIsRefreshing(true)
+    }
+
     // 1. Immediately read local saved mindmaps (Zero delay)
     let localSaved: StudyMindmapDto[] = []
     try {
-      const rawLocal = localStorage.getItem('zad_saved_mindmaps')
+      const rawLocal = localStorage.getItem(getSavedMindmapsStorageKey())
       if (rawLocal) {
         const parsed = JSON.parse(rawLocal)
         if (Array.isArray(parsed)) localSaved = parsed
@@ -190,34 +188,77 @@ export function StudyMindmapPanel({
         }
       }
 
-      // Deduplicate user mindmaps strictly by ID
+      // Deduplicate user mindmaps: prioritize real DB records over temporary local copies
       const seenIds = new Set<string | number>()
+      const seenSignatures = new Set<string>()
       const uniqueMy: StudyMindmapDto[] = []
+
       for (const m of myFiltered) {
         if (!m) continue
-        const id = m.id || `${m.chunkId || ''}_${m.title || ''}`
-        if (!seenIds.has(id)) {
-          seenIds.add(id)
-          uniqueMy.push(m)
+        const id = m.id
+        const chunk = (m.chunkId || '').trim()
+        const title = (m.title || '').trim()
+        const sig = `${chunk}___${title}`
+
+        if (seenIds.has(id) || (sig !== '___' && seenSignatures.has(sig))) {
+          continue
         }
+
+        seenIds.add(id)
+        if (sig !== '___') {
+          seenSignatures.add(sig)
+        }
+        uniqueMy.push(m)
       }
 
-      // Deduplicate community mindmaps by ID.
-      // All items in commFiltered (from community storage or backend API) are published community mindmaps!
-      // User's published mindmap MUST also be visible here with a distinct badge.
+      // Deduplicate community mindmaps by ID and signature
       const seenCommIds = new Set<string | number>()
+      const seenCommSignatures = new Set<string>()
       const uniqueComm: StudyMindmapDto[] = []
+
       for (const m of commFiltered) {
         if (!m) continue
-        const id = m.id || `${m.chunkId || ''}_${m.title || ''}`
-        if (!seenCommIds.has(id)) {
-          seenCommIds.add(id)
-          uniqueComm.push(m)
+        const id = m.id
+        const chunk = (m.chunkId || '').trim()
+        const title = (m.title || '').trim()
+        const author = (m.authorName || '').trim()
+        const sig = `${chunk}___${title}___${author}`
+
+        if (seenCommIds.has(id) || (sig !== '______' && seenCommSignatures.has(sig))) {
+          continue
         }
+
+        seenCommIds.add(id)
+        if (sig !== '______') {
+          seenCommSignatures.add(sig)
+        }
+        uniqueComm.push(m)
       }
 
       setMyMindmaps(uniqueMy)
       setCommunityMindmaps(uniqueComm)
+
+      // Prune lingering duplicate entries from localStorage so browser state stays clean
+      try {
+        const rawLocal = localStorage.getItem(getSavedMindmapsStorageKey())
+        if (rawLocal) {
+          const list = JSON.parse(rawLocal)
+          if (Array.isArray(list)) {
+            const cleanSaved = []
+            const localSigs = new Set()
+            for (const item of list) {
+              const sig = `${(item.chunkId || '').trim()}___${(item.title || '').trim()}`
+              if (!localSigs.has(sig)) {
+                localSigs.add(sig)
+                cleanSaved.push(item)
+              }
+            }
+            if (cleanSaved.length !== list.length) {
+              localStorage.setItem(getSavedMindmapsStorageKey(), JSON.stringify(cleanSaved))
+            }
+          }
+        }
+      } catch {}
     }
 
     // Immediately update UI with local cached data
@@ -226,14 +267,18 @@ export function StudyMindmapPanel({
 
     // Fetch from API and prioritize real DB records over temporary local ones
     Promise.all([
-      studyApi.getMindmapsByChunk(currentChunkId || '').catch(() => []),
-      studyApi.getCommunityMindmapsByChunk(currentChunkId || '').catch(() => [])
+      studyApi.getMindmapsByChunk(currentChunkId || '', forceRefresh).catch(() => []),
+      studyApi.getCommunityMindmapsByChunk(currentChunkId || '', forceRefresh).catch(() => [])
     ]).then(([userRes, commRes]) => {
       const uRes = Array.isArray(userRes) ? userRes : []
       const cRes = Array.isArray(commRes) ? commRes : []
       syncMindmapsState([...uRes, ...localSaved], [...cRes, ...localComm])
     }).catch(err => {
       console.warn('Failed background load of mindmaps:', err)
+    }).finally(() => {
+      if (forceRefresh) {
+        setIsRefreshing(false)
+      }
     })
   }
 
@@ -367,13 +412,30 @@ export function StudyMindmapPanel({
             </div>
           </div>
 
-          <button
-            onClick={() => setViewMode('menu')}
-            className={`px-3 py-1.5 text-xs font-extrabold rounded-xl transition-all duration-200 flex items-center gap-1 hover:scale-105 active:scale-95 shadow-md flex-shrink-0 cursor-pointer ${isDark ? 'bg-white/10 hover:bg-white/20 text-white border border-white/10' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <button
+              type="button"
+              onClick={() => loadMindmaps(true)}
+              disabled={isRefreshing}
+              className={`p-2 rounded-xl transition-all duration-200 flex items-center justify-center hover:scale-105 active:scale-95 shadow-xs cursor-pointer ${
+                isDark
+                  ? 'bg-white/10 hover:bg-white/20 text-white border border-white/10'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200'
               }`}
-          >
-            <ChevronLeft size={15} /> العودة
-          </button>
+              title="تحديث القائمة من السيرفر"
+              aria-label="تحديث القائمة"
+            >
+              <RefreshCw size={15} className={isRefreshing ? 'animate-spin text-purple-400' : ''} />
+            </button>
+
+            <button
+              onClick={() => setViewMode('menu')}
+              className={`px-3 py-1.5 text-xs font-extrabold rounded-xl transition-all duration-200 flex items-center gap-1 hover:scale-105 active:scale-95 shadow-md flex-shrink-0 cursor-pointer ${isDark ? 'bg-white/10 hover:bg-white/20 text-white border border-white/10' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                }`}
+            >
+              <ChevronLeft size={15} /> العودة
+            </button>
+          </div>
         </div>
 
         {/* Content List */}
@@ -404,15 +466,14 @@ export function StudyMindmapPanel({
                 return (
                   <div
                     key={item.id}
-                    className={`w-full group p-3.5 sm:p-4 rounded-xl border-l border-t border-b border-r-4 transition-all duration-300 flex flex-col gap-2.5 relative overflow-hidden ${isDark
+                    className={`w-full group p-4 sm:p-5 rounded-2xl border-l border-t border-b border-r-4 transition-all duration-300 flex flex-col gap-3 relative overflow-hidden ${isDark
                       ? `bg-white/5 border-white/10 ${mindmapTheme.borderAccent} hover:bg-white/10 shadow-md backdrop-blur-xl`
                       : `bg-white border-slate-200 ${mindmapTheme.borderAccent} hover:shadow-xl`
                       }`}
                   >
                     {/* Top Row: Sequential Index Badge + Full Width Title */}
-                    <div className="flex items-start gap-2.5 w-full">
-                      {/* Sequential Index Badge (#1, #2...) */}
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-extrabold text-xs sm:text-sm flex-shrink-0 mt-0.5 transition-all duration-300 ${mindmapTheme.itemBadge} group-hover:scale-105`}>
+                    <div className="flex items-center gap-2.5 w-full">
+                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-extrabold text-sm sm:text-base flex-shrink-0 transition-all duration-300 ${mindmapTheme.itemBadge} group-hover:scale-105`}>
                         {index + 1}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -422,79 +483,34 @@ export function StudyMindmapPanel({
                       </div>
                     </div>
 
-                    {/* Middle Row: Action Buttons Under the Title */}
-                    <div className="flex items-center gap-2 w-full pt-1">
-                      <button
-                        type="button"
-                        onClick={() => handleSelectMindmapDto(item)}
-                        className={`flex-1 py-2 px-3 text-xs font-black rounded-xl ${mindmapTheme.primaryBtn} hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 shadow-sm cursor-pointer`}
-                      >
-                        <span>عرض الخريطة</span>
-                        <ArrowRight size={14} className="rotate-180" />
-                      </button>
-
-                      {/* Share to Community button for user's own mindmaps */}
-                      {viewMode === 'my_mindmaps' && (
-                        <button
-                          type="button"
-                          onClick={(e) => handleToggleShareMindmap(e, item)}
-                          className={`py-2 px-3 text-xs font-bold rounded-xl border transition-all flex items-center justify-center gap-1.5 cursor-pointer flex-shrink-0 ${
-                            item.isSharedInCommunity
-                              ? isDark
-                                ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30'
-                                : 'bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100'
-                              : isDark
-                                ? 'bg-white/5 hover:bg-white/10 text-white/80 border-white/10'
-                                : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200'
-                          }`}
-                          title={item.isSharedInCommunity ? 'إلغاء النشر من المجتمع العام' : 'نشر هذا التشجير في مجتمع زاد'}
-                        >
-                          <Globe size={13} className={item.isSharedInCommunity ? 'text-amber-400' : 'opacity-70'} />
-                          <span>{item.isSharedInCommunity ? 'منشور بالمجتمع' : 'نشر بالمجتمع'}</span>
-                        </button>
-                      )}
-                    </div>
-
-                    {/* Metadata Row */}
-                    <div className="flex items-center gap-2 text-[11px] font-medium pt-2 border-t border-white/5 flex-wrap">
+                    {/* Middle Row: Metadata Chips */}
+                    <div className="flex items-center gap-2 text-[11px] font-medium pt-0.5 flex-wrap">
                       {/* Book Title Pill */}
                       {(item.bookTitle || (chunkMeta as any)?.book_title || (headerSubtitle && headerSubtitle !== 'يرجى اختيار درس للبدء')) && (
-                        <span className={`flex items-center gap-1 px-2 py-0.5 rounded-md border text-[10px] font-bold ${
+                        <span className={`flex items-center gap-1 px-2.5 py-1 rounded-xl border text-[11px] font-bold ${
                           isDark ? 'bg-amber-500/15 border-amber-500/30 text-amber-300' : 'bg-amber-50 border-amber-300 text-amber-900'
                         }`}>
                           <span>📖 {item.bookTitle || (chunkMeta as any)?.book_title || headerSubtitle}</span>
                         </span>
                       )}
 
-                      {/* Author Name for Community Mindmaps */}
-                      {viewMode === 'community_mindmaps' && (
-                        <span className={`flex items-center gap-1 px-2 py-0.5 rounded-md border ${
-                          item.authorName?.includes('(أنت)')
-                            ? (isDark ? 'bg-amber-500/20 border-amber-500/40 text-amber-300' : 'bg-amber-50 border-amber-300 text-amber-800')
-                            : (isDark ? 'bg-purple-500/15 border-purple-500/30 text-purple-300' : 'bg-purple-50 border-purple-200 text-purple-700')
-                        }`}>
-                          <User size={12} className={item.authorName?.includes('(أنت)') ? 'text-amber-400' : 'text-purple-400'} />
-                          <span>{item.authorName?.includes('(أنت)') ? 'طالب في زاد (منشورة بواسطتك 🌐)' : (item.authorName || 'زميل في زاد')}</span>
-                        </span>
-                      )}
-
                       {/* 1. Branch Count */}
-                      <span className={`flex items-center gap-1 px-2 py-0.5 rounded-md border ${isDark ? 'bg-cyan-500/15 border-cyan-500/30 text-cyan-300' : 'bg-cyan-50 border-cyan-200 text-cyan-700'
+                      <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-[11px] font-bold ${isDark ? 'bg-cyan-500/15 border-cyan-500/30 text-cyan-300' : 'bg-cyan-50 border-cyan-200 text-cyan-700'
                         }`}>
-                        <Brain size={12} className="text-cyan-400" />
+                        <Brain size={13} className="text-cyan-400" />
                         <span>{nodeCount} فروع مفاهيمية</span>
                       </span>
 
                       {/* 2. Created Date */}
-                      <span className={`flex items-center gap-1 px-2 py-0.5 rounded-md border ${isDark ? 'bg-white/5 border-white/10 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-600'
+                      <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-[11px] font-bold ${isDark ? 'bg-white/5 border-white/10 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-600'
                         }`}>
-                        <Calendar size={12} className="text-sky-400" />
+                        <Calendar size={13} className="text-sky-400" />
                         <span>{createdDate}</span>
                       </span>
 
                       {/* Lesson Scope Tag if viewing all lessons */}
                       {filterScope === 'all' && (
-                        <span className={`flex items-center gap-1 px-2 py-0.5 rounded-md border text-[10px] ${
+                        <span className={`flex items-center gap-1 px-2.5 py-1 rounded-xl border text-[10px] font-bold ${
                           isChunkMatch(item)
                             ? (isDark ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800')
                             : (isDark ? 'bg-white/5 border-white/10 text-white/50' : 'bg-slate-100 border-slate-200 text-slate-500')
@@ -502,6 +518,40 @@ export function StudyMindmapPanel({
                           <span>{isChunkMatch(item) ? '📌 هذا الدرس' : 'درس آخر'}</span>
                         </span>
                       )}
+                    </div>
+
+                    {/* Bottom Row: Action Bar with compact 'عرض الخريطة' button */}
+                    <div className="flex items-center justify-between pt-2 border-t border-white/10 gap-2 flex-wrap">
+                      <div>
+                        {viewMode === 'my_mindmaps' && (
+                          <button
+                            type="button"
+                            onClick={(e) => handleToggleShareMindmap(e, item)}
+                            className={`px-3 py-1.5 text-xs font-bold rounded-xl border transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                              item.isSharedInCommunity
+                                ? isDark
+                                  ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30'
+                                  : 'bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100'
+                                : isDark
+                                  ? 'bg-white/5 hover:bg-white/10 text-white/80 border-white/10'
+                                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200'
+                            }`}
+                            title={item.isSharedInCommunity ? 'إلغاء النشر من المجتمع العام' : 'نشر هذا التشجير في مجتمع زاد'}
+                          >
+                            <Globe size={13} className={item.isSharedInCommunity ? 'text-amber-400' : 'opacity-70'} />
+                            <span>{item.isSharedInCommunity ? 'منشور بالمجتمع' : 'نشر بالمجتمع'}</span>
+                          </button>
+                        )}
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => handleSelectMindmapDto(item)}
+                        className={`w-full sm:w-auto flex items-center justify-center gap-1.5 px-5 py-2 rounded-xl font-bold text-xs ${mindmapTheme.primaryBtn} hover:scale-105 active:scale-95 transition-all cursor-pointer`}
+                      >
+                        <span>عرض الخريطة</span>
+                        <ArrowRight size={14} className="rotate-180" />
+                      </button>
                     </div>
                   </div>
                 )
@@ -524,7 +574,7 @@ export function StudyMindmapPanel({
         }`}
     >
       {/* Header */}
-      <div className={`hidden md:flex items-center justify-between px-4 py-3 border-b backdrop-blur-md ${isDark ? 'border-white/10 bg-[#12041f]/70 text-white' : 'border-slate-200 bg-slate-50/90 text-slate-800'
+      <div className={`hidden md:flex items-center justify-between px-4 py-3 border-b backdrop-blur-md ${isDark ? 'border-white/10 bg-[#090b10] text-white' : 'border-slate-200 bg-slate-50/90 text-slate-800'
         }`}>
         <div className="flex items-center gap-2 text-sm font-bold">
           <Brain size={18} className={mindmapTheme.icon} />
@@ -646,7 +696,7 @@ export function StudyMindmapPanel({
                   onClick={() => setViewMode('my_mindmaps')}
                   className={`flex flex-col items-center p-4 rounded-2xl border transition-all duration-300 hover:-translate-y-1 active:scale-95 cursor-pointer text-center ${
                     isDark
-                      ? `bg-[#12041f]/70 border-white/10 ${mindmapTheme.cardOption} shadow-md`
+                      ? `bg-white/[0.04] border-white/10 ${mindmapTheme.cardOption} shadow-md`
                       : `bg-white/90 border-slate-200 ${mindmapTheme.cardOption} shadow-sm`
                   }`}
                 >
@@ -664,7 +714,7 @@ export function StudyMindmapPanel({
                   onClick={() => setViewMode('community_mindmaps')}
                   className={`flex flex-col items-center p-4 rounded-2xl border transition-all duration-300 hover:-translate-y-1 active:scale-95 cursor-pointer text-center ${
                     isDark
-                      ? `bg-[#12041f]/70 border-white/10 ${mindmapTheme.cardOption} shadow-md`
+                      ? `bg-white/[0.04] border-white/10 ${mindmapTheme.cardOption} shadow-md`
                       : `bg-white/90 border-slate-200 ${mindmapTheme.cardOption} shadow-sm`
                   }`}
                 >

@@ -116,7 +116,7 @@ function FitViewButton({ themeColors }: { themeColors?: any }) {
     <button
       onClick={() => fitView({ duration: 400, padding: 0.2 })}
       className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold shadow-xl border backdrop-blur-md hover:bg-current/10 transition-all active:scale-95 shrink-0 ${
-        themeColors?.panelBg || 'bg-white/90 dark:bg-[#1a0730]/90 text-slate-800 dark:text-white border-purple-200/80 dark:border-white/20'
+        themeColors?.panelBg || 'bg-white/90 dark:bg-[#090b10]/90 text-slate-800 dark:text-white border-purple-200/80 dark:border-white/20'
       }`}
       title="توسيع ومحاذاة الخريطة داخل الإطار"
     >
@@ -358,7 +358,7 @@ function VisualMindmapContent({ data, mindmapViewMode = 'visual', setMindmapView
         switch (accentColor) {
           case 'emerald': return '#2dd4bf';
           case 'amber': return '#dfbf83';
-          case 'purple': return '#c084fc';
+          case 'purple': return '#800080';
           case 'blue':
           default:
             return '#38bdf8';
@@ -370,7 +370,7 @@ function VisualMindmapContent({ data, mindmapViewMode = 'visual', setMindmapView
           case 'blue': return '#0284c7';
           case 'purple':
           default:
-            return '#8a17c9';
+            return '#800080';
         }
       }
     };
@@ -425,10 +425,10 @@ function VisualMindmapContent({ data, mindmapViewMode = 'visual', setMindmapView
             border: 'border-slate-200',
             text: 'text-slate-900',
             panelBg: 'bg-white/95 backdrop-blur-xl border-slate-200 text-slate-800 shadow-sm',
-            activeBtn: 'bg-purple-600 text-white shadow-md shadow-purple-500/25',
-            activeRing: 'border-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.4)]',
-            textAccent: 'text-purple-600',
-            badgeBg: 'bg-purple-500/20 border-purple-500/40 text-purple-700',
+            activeBtn: 'bg-[#800080] text-white shadow-md shadow-[#800080]/25',
+            activeRing: 'border-[#800080] shadow-[0_0_20px_rgba(77,0,77,0.4)]',
+            textAccent: 'text-[#800080]',
+            badgeBg: 'bg-[#800080] text-white',
           };
       }
     }
@@ -483,10 +483,10 @@ function VisualMindmapContent({ data, mindmapViewMode = 'visual', setMindmapView
           border: 'border-slate-800',
           text: 'text-white',
           panelBg: 'bg-slate-900/95 border-slate-800 text-white shadow-sm',
-          activeBtn: 'bg-purple-600 text-white shadow-md shadow-purple-500/30',
-          activeRing: 'border-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.4)]',
-          textAccent: 'text-purple-400',
-          badgeBg: 'bg-purple-500/20 border-purple-500/40 text-purple-300',
+          activeBtn: 'bg-[#800080] text-white shadow-md shadow-[#800080]/40',
+          activeRing: 'border-[#800080] shadow-[0_0_20px_rgba(77,0,77,0.4)]',
+          textAccent: 'text-white font-bold',
+          badgeBg: 'bg-[#800080] border border-[#660066] text-white',
         };
     }
   }, [isDark, accentColor]);

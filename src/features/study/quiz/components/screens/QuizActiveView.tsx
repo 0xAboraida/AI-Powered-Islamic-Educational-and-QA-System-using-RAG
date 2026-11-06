@@ -1,10 +1,10 @@
 import {
   ChevronLeft, ChevronRight, Award, MessageCircle,
-  CheckCircle2, XCircle, BookOpen, LogOut
+  CheckCircle2, XCircle, BookOpen, LogOut, RotateCcw
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Question } from '../../../../../contexts/StudyContext'
-import { isMatchingFullyAnswered, isMatchingCorrect, formatIslamicQuizText } from '../../utils/quizEvaluator'
+import { isMatchingFullyAnswered, isMatchingCorrect, formatIslamicQuizText, getNormalizedMatchingPairs } from '../../utils/quizEvaluator'
 import { QuestionCardContent } from '../QuestionCardContent'
 import { useTheme } from '../../../../../contexts/ThemeContext'
 import { getQuizActiveThemeTokens } from '../../utils/quizThemeTokens'
@@ -28,6 +28,7 @@ interface QuizActiveViewProps {
   onDiscuss: (q: Question, wrongOptText: string) => void
   onSubmit: () => void
   onExit?: () => void
+  onRetry?: () => void
 }
 
 export function QuizActiveView({
@@ -38,7 +39,7 @@ export function QuizActiveView({
   shuffledMatchingOptions,
   feedbackMode, timerMode, isQuizCompleted,
   answeredCount, totalQuestions,
-  isDark, onDiscuss, onSubmit, onExit,
+  isDark, onDiscuss, onSubmit, onExit, onRetry,
 }: QuizActiveViewProps) {
   const { accentColor } = useTheme()
   const theme = getQuizActiveThemeTokens(accentColor, isDark)
@@ -73,57 +74,124 @@ export function QuizActiveView({
   ) => {
     if (!isAnswered || !showFeedback) return null
     return (
-      <div className="mt-4 space-y-3 animate-in fade-in duration-300">
-        {/* Status Pill */}
-        <div className={`px-4 py-2 rounded-xl border text-xs font-bold flex items-center justify-between ${
+      <div className="mt-5 animate-in fade-in duration-300">
+        {/* Unified Evaluation & Explanation Card */}
+        <div className={`rounded-2xl border-l border-t border-b border-r-4 overflow-hidden shadow-sm transition-all ${
           isCorrect
-            ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'
-            : 'bg-rose-500/15 border-rose-500/30 text-rose-300'
+            ? isDark
+              ? 'border-r-emerald-400 border-white/10 bg-[#061e14]/60'
+              : 'border-r-emerald-600 border-emerald-200/90 bg-emerald-50/40'
+            : isDark
+              ? 'border-r-rose-400 border-white/10 bg-[#240a12]/60'
+              : 'border-r-rose-600 border-rose-200/90 bg-rose-50/40'
         }`}>
-          <span className="flex items-center gap-1.5">
-            {isCorrect ? (
-              <><CheckCircle2 size={15} className="text-emerald-400" /><span>إجابة صحيحة! أحسنت 👏</span></>
-            ) : (
-              <><XCircle size={15} className="text-rose-400" /><span>إجابة خاطئة</span></>
-            )}
-          </span>
-          {!isCorrect && (
-            <button
-              onClick={() => onDiscuss(
-                q,
-                selectedOpt !== undefined
-                  ? q.options[selectedOpt]
-                  : (q.type === 'matching' ? 'إجابات التوصيل والربط الخاصة بي' : 'لم يتم الإجابة')
+          {/* Card Header: Evaluation Banner */}
+          <div className={`px-4 py-2.5 flex items-center justify-between border-b ${
+            isCorrect
+              ? isDark
+                ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-200'
+                : 'bg-emerald-100/90 border-emerald-200 text-emerald-950 font-black'
+              : isDark
+                ? 'bg-rose-500/20 border-rose-500/30 text-rose-200'
+                : 'bg-rose-100/90 border-rose-200 text-rose-950 font-black'
+          }`}>
+            <div className="flex items-center gap-2 font-black text-xs sm:text-sm">
+              {isCorrect ? (
+                <>
+                  <CheckCircle2 size={17} className={isDark ? "text-emerald-400" : "text-emerald-700"} />
+                  <span>إجابة صحيحة، أحسنت! 👏</span>
+                </>
+              ) : (
+                <>
+                  <XCircle size={17} className={isDark ? "text-rose-400" : "text-rose-700"} />
+                  <span>إجابة غير صحيحة</span>
+                </>
               )}
-              className="text-xs font-bold text-[#38bdf8] hover:underline flex items-center gap-1.5 bg-[#38bdf8]/10 px-2.5 py-1 rounded-lg border border-[#38bdf8]/20 cursor-pointer"
-            >
-              <MessageCircle size={13} />
-              <span>تناقش مع زاد</span>
-            </button>
-          )}
-        </div>
+            </div>
 
-        {/* Scholarly Explanation Callout */}
-        {q.explanation && (
-          <div className="pt-2">
-            <div className="w-full border-t border-amber-500/25 my-2" />
-            <div className={`p-4 rounded-l-2xl border-r-4 border-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.12)] transition-all ${
-              isDark
-                ? 'bg-gradient-to-l from-amber-500/30 via-amber-500/15 to-amber-500/5 text-amber-100/95'
-                : 'bg-gradient-to-l from-amber-200/80 via-amber-100/50 to-amber-50/30 text-slate-900 border-amber-500 shadow-sm'
-            }`}>
-              <div className="flex items-center gap-2 mb-2">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-xs font-black bg-amber-400/25 text-amber-300 border border-amber-400/40 shadow-sm">
-                  <BookOpen size={13} className="text-amber-400" />
-                  <span>التوضيح والتفسير الشرعي</span>
+            {!isCorrect && (
+              <button
+                type="button"
+                onClick={() => onDiscuss(
+                  q,
+                  selectedOpt !== undefined
+                    ? q.options[selectedOpt]
+                    : (q.type === 'matching' ? 'إجابات التوصيل والربط الخاصة بي' : 'لم يتم الإجابة')
+                )}
+                className={`text-xs font-bold flex items-center gap-1.5 px-3 py-1 rounded-lg border transition-all cursor-pointer ${
+                  isDark
+                    ? 'bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 border-sky-500/30'
+                    : 'bg-white hover:bg-sky-50 text-sky-800 border-sky-200 shadow-xs'
+                }`}
+              >
+                <MessageCircle size={13} className={isDark ? "text-sky-300" : "text-sky-700"} />
+                <span>تناقش مع زاد</span>
+              </button>
+            )}
+          </div>
+
+          {/* If matching question and incorrect, show the correct connections explicitly */}
+          {q.type === 'matching' && !isCorrect && (
+            <div className="mx-4 mt-3 text-right space-y-2">
+              <div className="flex items-center text-xs font-black text-emerald-700 dark:text-emerald-400 pr-0.5">
+                <span>التوصيل الصحيح</span>
+              </div>
+              <div className="space-y-2 text-xs">
+                {getNormalizedMatchingPairs(q).map((pair, pIdx) => (
+                  <div
+                    key={pIdx}
+                    className={`p-2.5 rounded-xl border text-xs flex flex-col gap-1.5 transition-all ${
+                      isDark ? 'bg-white/5 border-white/10' : 'bg-white border-slate-200 shadow-2xs'
+                    }`}
+                  >
+                    {/* المصطلح ورقم ترتيبه */}
+                    <div className="flex items-center gap-2 font-black text-slate-900 dark:text-stone-100">
+                      <span className="w-5 h-5 rounded-md bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 flex items-center justify-center text-[11px] font-black shrink-0">
+                        {pIdx + 1}
+                      </span>
+                      <span className="text-xs sm:text-sm font-black text-slate-800 dark:text-stone-100">
+                        {formatIslamicQuizText(pair.left)}
+                      </span>
+                    </div>
+
+                    {/* التعريف المرتبط بعرض كامل لمنع انضغاط الكلمات عمودياً */}
+                    <div className={`flex items-start gap-2 p-2 rounded-lg border ${
+                      isDark 
+                        ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300' 
+                        : 'bg-emerald-50/80 border-emerald-200 text-emerald-950'
+                    }`}>
+                      <span className="text-emerald-600 dark:text-emerald-400 font-black shrink-0 mt-0.5">⟵</span>
+                      <span className="text-xs sm:text-sm font-bold leading-relaxed flex-1">
+                        {formatIslamicQuizText(pair.right)}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Card Body: Scholarly Explanation */}
+          {q.explanation && (
+            <div className="p-4 space-y-2 text-right">
+              <div className="flex items-center gap-1.5">
+                <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-xs font-black border ${
+                  isDark
+                    ? 'bg-amber-500/20 text-amber-300 border-amber-500/30'
+                    : 'bg-amber-100 text-amber-900 border-amber-200'
+                }`}>
+                  <BookOpen size={13} className={isDark ? "text-amber-400" : "text-amber-700"} />
+                  <span>{isCorrect ? 'التوضيح والتفسير الشرعي' : 'بيان وتأصيل الإجابة الصحيحة'}</span>
                 </span>
               </div>
-              <p className="text-xs md:text-sm leading-relaxed opacity-95 pr-1">
+              <p className={`text-xs sm:text-sm leading-relaxed pr-0.5 font-medium ${
+                isDark ? 'text-stone-200' : 'text-slate-800'
+              }`}>
                 {formatIslamicQuizText(q.explanation)}
               </p>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     )
   }
@@ -155,54 +223,89 @@ export function QuizActiveView({
 
             return (
               <div className="w-full max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-center gap-3 sm:gap-4" dir="rtl">
-                {/* Floating Question Number Navigator Pills (Right Side - Centered) */}
-                <div className="flex flex-row md:flex-col items-center justify-center gap-1.5 sm:gap-2 shrink-0 self-center my-auto w-full md:w-auto" dir="rtl">
-                  {visibleIndices[0] > 0 && (
-                    <button
-                      onClick={() => setCurrentQuestionIndex(visibleIndices[0] - 1)}
-                      className={`p-1.5 sm:p-2 rounded-lg sm:rounded-xl text-xs opacity-60 hover:opacity-100 transition-all cursor-pointer ${theme.stepperArrow}`}
-                      title="الأسئلة السابقة"
-                    >
-                      <ChevronRight size={16} className="rotate-90 md:rotate-0" />
-                    </button>
-                  )}
-
-                  {visibleIndices.map((dotIdx) => {
-                    const dq = localQuestions[dotIdx]
-                    if (!dq) return null
-                    const isAns = dq.type === 'matching'
-                      ? isMatchingFullyAnswered(dotIdx, dq, matchingAnswers)
-                      : selectedAnswers[dotIdx] !== undefined
-                    const isCurr = currentQuestionIndex === dotIdx
-                    return (
+                {/* Floating Question Number Navigator Pills & Mobile Action Buttons */}
+                <div className="w-full md:w-auto flex flex-row md:flex-col items-center justify-center gap-2 sm:gap-2.5 shrink-0 self-center my-auto" dir="rtl">
+                  {/* Mobile-Only Action Icons: Exit & Retry */}
+                  <div className="flex md:hidden items-center gap-1.5 shrink-0">
+                    {onExit && (
                       <button
-                        key={dotIdx}
-                        onClick={() => setCurrentQuestionIndex(dotIdx)}
-                        className={`w-8 h-8 md:w-9 md:h-9 rounded-xl text-xs font-black transition-all duration-200 cursor-pointer flex items-center justify-center border shadow-xs ${
-                          isCurr
-                            ? `${theme.stepperPillActive}`
-                            : isAns
-                            ? `${theme.stepperPillDone} hover:scale-105`
-                            : isDark
-                            ? 'bg-white/5 text-white/40 border-white/10 hover:bg-white/10 hover:text-white hover:scale-105'
-                            : 'bg-slate-100 text-slate-500 border-slate-200 hover:bg-slate-200 hover:scale-105'
+                        onClick={onExit}
+                        className={`w-8 h-8 rounded-xl border flex items-center justify-center transition-all active:scale-90 shadow-2xs cursor-pointer ${
+                          isDark
+                            ? 'bg-rose-500/10 hover:bg-rose-500/20 border-rose-500/30 text-rose-400'
+                            : 'bg-rose-50 hover:bg-rose-100 border-rose-200 text-rose-600'
                         }`}
-                        title={`سؤال ${dotIdx + 1}`}
+                        title="خروج من الاختبار"
+                        aria-label="خروج من الاختبار"
                       >
-                        {dotIdx + 1}
+                        <LogOut size={15} />
                       </button>
-                    )
-                  })}
+                    )}
+                    {onRetry && (
+                      <button
+                        onClick={onRetry}
+                        className={`w-8 h-8 rounded-xl border flex items-center justify-center transition-all active:scale-90 shadow-2xs cursor-pointer ${
+                          isDark
+                            ? 'bg-white/5 hover:bg-white/10 border-white/10 text-white/80'
+                            : 'bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-700'
+                        }`}
+                        title="إعادة الاختبار"
+                        aria-label="إعادة الاختبار"
+                      >
+                        <RotateCcw size={15} />
+                      </button>
+                    )}
+                  </div>
 
-                  {visibleIndices[visibleIndices.length - 1] < totalQuestions - 1 && (
-                    <button
-                      onClick={() => setCurrentQuestionIndex(visibleIndices[visibleIndices.length - 1] + 1)}
-                      className={`p-1.5 sm:p-2 rounded-lg sm:rounded-xl text-xs opacity-60 hover:opacity-100 transition-all cursor-pointer ${theme.stepperArrow}`}
-                      title="الأسئلة التالية"
-                    >
-                      <ChevronLeft size={16} className="rotate-90 md:rotate-0" />
-                    </button>
-                  )}
+                  {/* Pills Container */}
+                  <div className="flex flex-row md:flex-col items-center justify-center gap-1.5 sm:gap-2 shrink-0">
+                    {visibleIndices[0] > 0 && (
+                      <button
+                        onClick={() => setCurrentQuestionIndex(visibleIndices[0] - 1)}
+                        className={`p-1.5 sm:p-2 rounded-lg sm:rounded-xl text-xs opacity-60 hover:opacity-100 transition-all cursor-pointer ${theme.stepperArrow}`}
+                        title="الأسئلة السابقة"
+                      >
+                        <ChevronRight size={16} className="rotate-90 md:rotate-0" />
+                      </button>
+                    )}
+
+                    {visibleIndices.map((dotIdx) => {
+                      const dq = localQuestions[dotIdx]
+                      if (!dq) return null
+                      const isAns = dq.type === 'matching'
+                        ? isMatchingFullyAnswered(dotIdx, dq, matchingAnswers)
+                        : selectedAnswers[dotIdx] !== undefined
+                      const isCurr = currentQuestionIndex === dotIdx
+                      return (
+                        <button
+                          key={dotIdx}
+                          onClick={() => setCurrentQuestionIndex(dotIdx)}
+                          className={`w-8 h-8 md:w-9 md:h-9 rounded-xl text-xs font-black transition-all duration-200 cursor-pointer flex items-center justify-center border shadow-xs ${
+                            isCurr
+                              ? `${theme.stepperPillActive}`
+                              : isAns
+                              ? `${theme.stepperPillDone} hover:scale-105`
+                              : isDark
+                              ? 'bg-white/5 text-white/40 border-white/10 hover:bg-white/10 hover:text-white hover:scale-105'
+                              : 'bg-slate-100 text-slate-500 border-slate-200 hover:bg-slate-200 hover:scale-105'
+                          }`}
+                          title={`سؤال ${dotIdx + 1}`}
+                        >
+                          {dotIdx + 1}
+                        </button>
+                      )
+                    })}
+
+                    {visibleIndices[visibleIndices.length - 1] < totalQuestions - 1 && (
+                      <button
+                        onClick={() => setCurrentQuestionIndex(visibleIndices[visibleIndices.length - 1] + 1)}
+                        className={`p-1.5 sm:p-2 rounded-lg sm:rounded-xl text-xs opacity-60 hover:opacity-100 transition-all cursor-pointer ${theme.stepperArrow}`}
+                        title="الأسئلة التالية"
+                      >
+                        <ChevronLeft size={16} className="rotate-90 md:rotate-0" />
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 <AnimatePresence mode="wait">
@@ -212,7 +315,7 @@ export function QuizActiveView({
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -16, scale: 0.98 }}
                     transition={{ duration: 0.25, ease: 'easeOut' }}
-                    className={`p-3.5 sm:p-5 md:p-8 rounded-2xl border shadow-xl flex-1 max-w-2xl w-full relative overflow-hidden text-right transition-all duration-300 ${theme.cardBg} ${theme.cardBorder}`}
+                    className={`p-3.5 sm:p-5 md:p-8 rounded-2xl border shadow-xl flex-1 max-w-3xl w-full relative overflow-hidden text-right transition-all duration-300 ${theme.cardBg} ${theme.cardBorder}`}
                     dir="rtl"
                   >
 
@@ -288,7 +391,40 @@ export function QuizActiveView({
         </div>
       ) : (
         // ─── LIST VIEW ───
-        <div className="space-y-10 w-full max-w-3xl mx-auto pb-8 flex flex-col items-center">
+        <div className="space-y-6 w-full max-w-3xl mx-auto pb-8 flex flex-col items-center">
+          {/* Mobile Top Actions for List View */}
+          <div className="w-full max-w-2xl px-3 flex md:hidden items-center justify-end" dir="rtl">
+            <div className="flex items-center gap-1.5 shrink-0">
+              {onExit && (
+                <button
+                  onClick={onExit}
+                  className={`w-8 h-8 rounded-xl border flex items-center justify-center transition-all active:scale-90 shadow-2xs cursor-pointer ${
+                    isDark
+                      ? 'bg-rose-500/10 hover:bg-rose-500/20 border-rose-500/30 text-rose-400'
+                      : 'bg-rose-50 hover:bg-rose-100 border-rose-200 text-rose-600'
+                  }`}
+                  title="خروج من الاختبار"
+                  aria-label="خروج من الاختبار"
+                >
+                  <LogOut size={15} />
+                </button>
+              )}
+              {onRetry && (
+                <button
+                  onClick={onRetry}
+                  className={`w-8 h-8 rounded-xl border flex items-center justify-center transition-all active:scale-90 shadow-2xs cursor-pointer ${
+                    isDark
+                      ? 'bg-white/5 hover:bg-white/10 border-white/10 text-white/80'
+                      : 'bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-700'
+                  }`}
+                  title="إعادة الاختبار"
+                  aria-label="إعادة الاختبار"
+                >
+                  <RotateCcw size={15} />
+                </button>
+              )}
+            </div>
+          </div>
 
           {localQuestions.map((q, idx) => {
             const selectedOpt = selectedAnswers[idx]

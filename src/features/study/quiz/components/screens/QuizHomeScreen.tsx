@@ -1,3 +1,4 @@
+import { getSavedQuizzesStorageKey } from '../../../utils/studyStorage'
 import { useEffect, useState } from 'react'
 import {
   ClipboardList, Plus, History, Users, RefreshCw, PlayCircle, ChevronLeft, Trash2,
@@ -12,78 +13,78 @@ function getQuizHomeThemeTokens(accentColor: AccentColor = 'emerald', isDark: bo
   switch (accentColor) {
     case 'blue':
       return {
-        cardBorder: isDark ? 'border-sky-500/25' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
-        cardBg: isDark
-          ? 'bg-[#0b1626] text-white shadow-[0_12px_40px_rgba(0,0,0,0.5)]'
-          : 'bg-[#fafcff] border-sky-100 text-slate-900',
-        glowPrimary: isDark ? 'bg-sky-500/10' : 'hidden',
-        glowSecondary: isDark ? 'bg-blue-600/10' : 'hidden',
-        iconBox: isDark ? 'bg-[#0d223f] border-sky-500/40 text-sky-300' : 'bg-sky-50 border-sky-200 text-sky-800',
-        titleColor: 'text-[#12396e] dark:text-sky-200',
-        primaryBtn: 'bg-[#154696] hover:bg-[#103878] active:bg-[#0c2b5d] text-white shadow-md border border-[#103878]/30 transition-all',
+        cardBorder: isDark ? 'border-white/10' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
+        cardBg: isDark ? 'bg-[#090b10] text-white shadow-2xl shadow-black/50' : 'bg-[#fafcff] border-sky-100 text-slate-900',
+        glowPrimary: 'hidden',
+        glowSecondary: 'hidden',
+        iconBox: isDark ? 'bg-blue-500/10 border-blue-500/25 text-sky-300' : 'bg-sky-50 border-sky-200 text-sky-800',
+        titleColor: 'text-[#12396e] dark:text-white',
+        primaryBtn: 'bg-gradient-to-r from-blue-600 to-sky-500 text-white font-bold shadow-md shadow-blue-500/20 border border-blue-400/30 transition-all',
         cardOption: isDark ? 'hover:border-sky-500/40 hover:bg-sky-900/20 hover:shadow-sky-500/20' : 'hover:border-sky-300 hover:bg-sky-50/70',
         badge: isDark ? 'bg-sky-500/20 text-sky-300 border border-sky-500/30' : 'bg-sky-100 text-sky-800 border border-sky-200',
         iconPill: isDark ? 'bg-sky-500/15 text-sky-300 border border-sky-500/30' : 'bg-sky-100 text-sky-800',
         textAccent: 'text-[#154696] dark:text-sky-300',
         borderAccent: isDark ? 'border-sky-500/30' : 'border-sky-200',
+        cardBorderAccent: isDark ? 'border-r-sky-400' : 'border-r-[#154696]',
+        itemBadge: isDark ? 'bg-sky-500/20 text-sky-300 border-sky-500/40' : 'bg-sky-100 text-[#154696] border-sky-200',
         chipBg: isDark ? 'bg-sky-500/10 border-sky-500/20' : 'bg-sky-50/80 border-sky-200',
         chipText: isDark ? 'text-sky-300' : 'text-sky-800',
       }
     case 'amber':
       return {
-        cardBorder: isDark ? 'border-[#5e431a]/40' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
-        cardBg: isDark
-          ? 'bg-[#18120a] text-stone-100 shadow-[0_12px_40px_rgba(0,0,0,0.5)]'
-          : 'bg-[#fcfaf6] border-[#e6d8c3] text-stone-900',
-        glowPrimary: isDark ? 'bg-[#c99a4e]/10' : 'hidden',
-        glowSecondary: isDark ? 'bg-[#8a6328]/10' : 'hidden',
-        iconBox: isDark ? 'bg-[#261b0c] border-[#8a6328]/50 text-[#dfbf83]' : 'bg-[#f5ede0] border-[#decbb0] text-[#7a5720]',
-        titleColor: 'text-[#5c4118] dark:text-[#edd8ae]',
-        primaryBtn: 'bg-[#7a5720] hover:bg-[#684918] active:bg-[#593d12] text-white shadow-md border border-[#684918]/30 transition-all',
+        cardBorder: isDark ? 'border-white/10' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
+        cardBg: isDark ? 'bg-[#090b10] text-white shadow-2xl shadow-black/50' : 'bg-[#fcfaf6] border-[#e6d8c3] text-stone-900',
+        glowPrimary: 'hidden',
+        glowSecondary: 'hidden',
+        iconBox: isDark ? 'bg-[#dfbf83]/10 border-[#dfbf83]/25 text-[#dfbf83]' : 'bg-[#f5ede0] border-[#decbb0] text-[#7a5720]',
+        titleColor: 'text-[#5c4118] dark:text-white',
+        primaryBtn: 'bg-gradient-to-r from-[#b88d46] to-[#dfbf83] text-stone-950 font-bold shadow-md shadow-amber-900/20 border border-[#dfbf83]/30 transition-all',
         cardOption: isDark ? 'hover:border-[#8a6328]/50 hover:bg-[#261b0c]/40 hover:shadow-stone-900/30' : 'hover:border-[#b88d46] hover:bg-[#f6ede0]',
         badge: isDark ? 'bg-[#5e431a]/40 text-[#edd8ae] border border-[#8a6328]/40' : 'bg-[#f5ecdc] text-[#5e431a] border border-[#e2d2ba]',
         iconPill: isDark ? 'bg-[#3b2a12] text-[#dfbf83] border border-[#8a6328]/40' : 'bg-[#f5ede0] text-[#7a5720]',
-        textAccent: 'text-[#6e4e1b] dark:text-[#edd8ae]',
+        textAccent: 'text-[#6e4e1b] dark:text-white',
         borderAccent: isDark ? 'border-[#5e431a]/40' : 'border-[#e2d2ba]',
+        cardBorderAccent: isDark ? 'border-r-[#dfbf83]' : 'border-r-[#7a5720]',
+        itemBadge: isDark ? 'bg-[#3b2a12] text-[#dfbf83] border-[#8a6328]/40' : 'bg-[#f5ede0] text-[#7a5720] border-[#decbb0]',
         chipBg: isDark ? 'bg-[#5e431a]/20 border-[#8c672b]/30' : 'bg-[#f5ecdc]/80 border-[#e2d2ba]',
         chipText: isDark ? 'text-[#edd8ae]' : 'text-[#5e431a]',
       }
     case 'purple':
       return {
-        cardBorder: isDark ? 'border-purple-500/25' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
-        cardBg: isDark
-          ? 'bg-[#140624] text-white shadow-[0_12px_40px_rgba(0,0,0,0.5)]'
-          : 'bg-[#faf7fd] border-purple-100 text-slate-900',
-        glowPrimary: isDark ? 'bg-purple-500/10' : 'hidden',
-        glowSecondary: isDark ? 'bg-fuchsia-600/10' : 'hidden',
-        iconBox: isDark ? 'bg-[#240a3d] border-purple-500/40 text-purple-300' : 'bg-purple-50 border-purple-200 text-purple-800',
-        titleColor: 'text-[#4a1572] dark:text-purple-200',
-        primaryBtn: 'bg-[#581c87] hover:bg-[#4a1572] active:bg-[#3b0f5c] text-white shadow-md border border-[#4a1572]/30 transition-all',
+        cardBorder: isDark ? 'border-white/10' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
+        cardBg: isDark ? 'bg-[#090b10] text-white shadow-2xl shadow-black/50' : 'bg-[#faf7fd] border-purple-100 text-slate-900',
+        glowPrimary: 'hidden',
+        glowSecondary: 'hidden',
+        iconBox: isDark ? 'bg-purple-500/10 border-purple-500/25 text-purple-300' : 'bg-purple-50 border-purple-200 text-purple-800',
+        titleColor: 'text-[#4a1572] dark:text-white',
+        primaryBtn: 'bg-gradient-to-r from-[#800080] to-purple-600 text-white font-bold shadow-md shadow-purple-900/20 border border-purple-400/30 transition-all',
         cardOption: isDark ? 'hover:border-purple-500/40 hover:bg-purple-900/20 hover:shadow-purple-500/20' : 'hover:border-purple-300 hover:bg-purple-50/70',
         badge: isDark ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'bg-purple-100 text-purple-800 border border-purple-200',
         iconPill: isDark ? 'bg-purple-500/15 text-purple-300 border border-purple-500/30' : 'bg-purple-100 text-purple-800',
         textAccent: 'text-[#581c87] dark:text-purple-300',
         borderAccent: isDark ? 'border-purple-500/30' : 'border-purple-200',
+        cardBorderAccent: isDark ? 'border-r-purple-400' : 'border-r-[#581c87]',
+        itemBadge: isDark ? 'bg-purple-500/20 text-purple-300 border-purple-500/40' : 'bg-purple-100 text-[#581c87] border-purple-200',
         chipBg: isDark ? 'bg-purple-500/10 border-purple-500/20' : 'bg-purple-50/80 border-purple-200',
         chipText: isDark ? 'text-purple-300' : 'text-purple-800',
       }
     case 'emerald':
     default:
       return {
-        cardBorder: isDark ? 'border-emerald-500/25' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
-        cardBg: isDark
-          ? 'bg-[#051c14] text-white shadow-[0_12px_40px_rgba(0,0,0,0.5)]'
-          : 'bg-[#f7fcf9] border-emerald-100 text-slate-900',
-        glowPrimary: isDark ? 'bg-emerald-500/10' : 'hidden',
-        glowSecondary: isDark ? 'bg-teal-600/10' : 'hidden',
-        iconBox: isDark ? 'bg-[#092b1f] border-emerald-500/40 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
-        titleColor: 'text-[#065f46] dark:text-emerald-200',
-        primaryBtn: 'bg-[#046c4e] hover:bg-[#03543d] active:bg-[#023e2d] text-white shadow-md border border-[#03543d]/30 transition-all',
+        cardBorder: isDark ? 'border-white/10' : 'border-slate-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.06)]',
+        cardBg: isDark ? 'bg-[#090b10] text-white shadow-2xl shadow-black/50' : 'bg-[#f7fcf9] border-emerald-100 text-slate-900',
+        glowPrimary: 'hidden',
+        glowSecondary: 'hidden',
+        iconBox: isDark ? 'bg-teal-500/10 border-teal-500/25 text-teal-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
+        titleColor: 'text-[#065f46] dark:text-white',
+        primaryBtn: 'bg-gradient-to-r from-teal-600 to-emerald-500 text-white font-bold shadow-md shadow-teal-500/20 border border-teal-400/30 transition-all',
         cardOption: isDark ? 'hover:border-emerald-500/40 hover:bg-emerald-900/20 hover:shadow-emerald-500/20' : 'hover:border-emerald-300 hover:bg-emerald-50/70',
         badge: isDark ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-emerald-100 text-emerald-800 border border-emerald-200',
         iconPill: isDark ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30' : 'bg-emerald-100 text-emerald-800',
         textAccent: 'text-[#046c4e] dark:text-emerald-300',
         borderAccent: isDark ? 'border-emerald-500/30' : 'border-emerald-200',
+        cardBorderAccent: isDark ? 'border-r-emerald-400' : 'border-r-[#046c4e]',
+        itemBadge: isDark ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' : 'bg-emerald-100 text-[#046c4e] border-emerald-200',
         chipBg: isDark ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-emerald-50/80 border-emerald-200',
         chipText: isDark ? 'text-emerald-300' : 'text-emerald-800',
       }
@@ -111,6 +112,7 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
   const [myQuizzes, setMyQuizzes] = useState<QuizDto[]>([])
   const [communityQuizzes, setCommunityQuizzes] = useState<QuizDto[]>([])
   const [loading, setLoading] = useState(false)
+  const [isRefreshing, setIsRefreshing] = useState(false)
   const [stats, setStats] = useState({ myCount: 0, communityCount: 0 })
   const [expandedQuizId, setExpandedQuizId] = useState<number | null>(null)
 
@@ -123,11 +125,15 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
     return cleanQ === cleanT || String(qChunk).trim() === String(targetChunkId).trim()
   }
 
-  const loadQuizzes = () => {
+  const loadQuizzes = (forceRefresh = false) => {
+    if (forceRefresh) {
+      setIsRefreshing(true)
+    }
+
     // 1. Immediately read local saved quizzes (Zero delay)
     let localSaved: QuizDto[] = []
     try {
-      const rawLocal = localStorage.getItem('zad_saved_quizzes')
+      const rawLocal = localStorage.getItem(getSavedQuizzesStorageKey())
       if (rawLocal) {
         const parsed = JSON.parse(rawLocal)
         if (Array.isArray(parsed)) localSaved = parsed
@@ -150,7 +156,7 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
 
     // Merge any shared items from localSaved into localComm
     for (const s of localSaved) {
-      if (s && (s as any).isShared && !localComm.some(c => c.id === s.id)) {
+      if (s && ((s as any).isShared || s.isSharedInCommunity) && !localComm.some(c => c.id === s.id)) {
         localComm.unshift({
           ...s,
           authorName: s.authorName?.includes('(أنت)') ? s.authorName : 'طالب في زاد (أنت)'
@@ -159,29 +165,41 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
     }
 
     const syncQuizzesState = (rawMy: QuizDto[], rawCommunity: QuizDto[]) => {
-      // Deduplicate user quizzes strictly by ID
+      // Deduplicate user quizzes: prioritize real DB records over temporary local copies
       const seenMyIds = new Set<string | number>()
+      const seenMySigs = new Set<string>()
       const uniqueMy: QuizDto[] = []
+
       for (const q of rawMy) {
         if (!q) continue
-        const id = q.id || `${q.chunkId || ''}_${q.title || ''}`
-        if (!seenMyIds.has(id)) {
-          seenMyIds.add(id)
-          uniqueMy.push(q)
+        const id = q.id
+        const chunk = (q.chunkId || '').trim()
+        const title = (q.title || '').trim()
+        const sig = `${chunk}___${title}`
+
+        if (seenMyIds.has(id) || (sig !== '___' && seenMySigs.has(sig))) {
+          continue
         }
+
+        seenMyIds.add(id)
+        if (sig !== '___') seenMySigs.add(sig)
+        uniqueMy.push(q)
       }
       uniqueMy.sort((a, b) => new Date(b?.createdAt || 0).getTime() - new Date(a?.createdAt || 0).getTime())
 
-      // Deduplicate community quizzes by ID (keep user's shared quizzes as well)
+      // Deduplicate community quizzes by ID
       const seenCommIds = new Set<string | number>()
       const uniqueCommunity: QuizDto[] = []
+
       for (const q of rawCommunity) {
         if (!q) continue
-        const id = q.id || `${q.chunkId || ''}_${q.title || ''}`
-        if (!seenCommIds.has(id)) {
-          seenCommIds.add(id)
-          uniqueCommunity.push(q)
+        const id = q.id
+        if (id && seenCommIds.has(id)) {
+          continue
         }
+
+        if (id) seenCommIds.add(id)
+        uniqueCommunity.push(q)
       }
       uniqueCommunity.sort((a, b) => new Date(b?.createdAt || 0).getTime() - new Date(a?.createdAt || 0).getTime())
 
@@ -195,6 +213,28 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
         myCount: currentChunkId ? myMatching.length : uniqueMy.length,
         communityCount: currentChunkId ? commMatching.length : uniqueCommunity.length,
       })
+
+      // Prune lingering duplicate entries from localStorage so browser state stays clean
+      try {
+        const rawLocal = localStorage.getItem(getSavedQuizzesStorageKey())
+        if (rawLocal) {
+          const list = JSON.parse(rawLocal)
+          if (Array.isArray(list)) {
+            const cleanSaved = []
+            const localSigs = new Set()
+            for (const item of list) {
+              const sig = `${(item.chunkId || '').trim()}___${(item.title || '').trim()}`
+              if (!localSigs.has(sig)) {
+                localSigs.add(sig)
+                cleanSaved.push(item)
+              }
+            }
+            if (cleanSaved.length !== list.length) {
+              localStorage.setItem(getSavedQuizzesStorageKey(), JSON.stringify(cleanSaved))
+            }
+          }
+        }
+      } catch {}
     }
 
     // Immediately display cached local data
@@ -203,10 +243,12 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
 
     // Non-blocking background fetch from API
     Promise.all([
-      studyApi.getUserQuizzes().catch(() => [] as QuizDto[]),
       currentChunkId
-        ? studyApi.getCommunityQuizzesByChunk(currentChunkId).catch(() => [] as QuizDto[])
-        : studyApi.getCommunityQuizzesByChunk('').catch(() => [] as QuizDto[])
+        ? studyApi.getQuizzesByChunk(currentChunkId, forceRefresh).catch(() => [] as QuizDto[])
+        : studyApi.getUserQuizzes(forceRefresh).catch(() => [] as QuizDto[]),
+      currentChunkId
+        ? studyApi.getCommunityQuizzesByChunk(currentChunkId, forceRefresh).catch(() => [] as QuizDto[])
+        : studyApi.getCommunityQuizzesByChunk('', forceRefresh).catch(() => [] as QuizDto[])
     ]).then(([myResult, communityResult]) => {
       let fetchedMy: any[] = []
       if (Array.isArray(myResult)) fetchedMy = myResult
@@ -222,9 +264,13 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
         fetchedCommunity = resObj.quizzes || resObj.data || resObj.items || []
       }
 
-      syncQuizzesState([...localSaved, ...fetchedMy], [...localComm, ...fetchedCommunity])
+      syncQuizzesState([...fetchedMy, ...localSaved], [...fetchedCommunity, ...localComm])
     }).catch(err => {
       console.warn('Error loading quizzes from API in background:', err)
+    }).finally(() => {
+      if (forceRefresh) {
+        setIsRefreshing(false)
+      }
     })
   }
 
@@ -263,11 +309,11 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
             prev.map(q => q.id === quiz.id ? { ...savedDto, isSharedInCommunity: newShared } : q)
           )
           try {
-            const raw = localStorage.getItem('zad_saved_quizzes')
+            const raw = localStorage.getItem(getSavedQuizzesStorageKey())
             if (raw) {
               const list = JSON.parse(raw)
               const updated = list.map((q: any) => q.id === quiz.id ? { ...savedDto, isSharedInCommunity: newShared } : q)
-              localStorage.setItem('zad_saved_quizzes', JSON.stringify(updated))
+              localStorage.setItem(getSavedQuizzesStorageKey(), JSON.stringify(updated))
             }
           } catch {}
         }
@@ -284,11 +330,11 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
           prev.map(q => q.id === targetId ? { ...q, isSharedInCommunity: res.isShared } : q)
         )
         try {
-          const raw = localStorage.getItem('zad_saved_quizzes')
+          const raw = localStorage.getItem(getSavedQuizzesStorageKey())
           if (raw) {
             const list = JSON.parse(raw)
             const updated = list.map((q: any) => q.id === targetId ? { ...q, isSharedInCommunity: res.isShared } : q)
-            localStorage.setItem('zad_saved_quizzes', JSON.stringify(updated))
+            localStorage.setItem(getSavedQuizzesStorageKey(), JSON.stringify(updated))
           }
         } catch {}
       }
@@ -306,12 +352,12 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
     setMyQuizzes(prev => (Array.isArray(prev) ? prev.filter(q => q && q.id !== quizId) : []))
     setStats(s => ({ ...s, myCount: Math.max(0, s.myCount - 1) }))
     try {
-      const rawLocal = localStorage.getItem('zad_saved_quizzes')
+      const rawLocal = localStorage.getItem(getSavedQuizzesStorageKey())
       if (rawLocal) {
         const localQuizzes = JSON.parse(rawLocal)
         if (Array.isArray(localQuizzes)) {
           const filtered = localQuizzes.filter((q: any) => q.id !== quizId)
-          localStorage.setItem('zad_saved_quizzes', JSON.stringify(filtered))
+          localStorage.setItem(getSavedQuizzesStorageKey(), JSON.stringify(filtered))
         }
       }
     } catch { }
@@ -358,13 +404,30 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
             </div>
           </div>
 
-          <button
-            onClick={() => setViewMode('menu')}
-            className={`px-3 py-1.5 text-xs font-extrabold rounded-xl transition-all duration-200 flex items-center gap-1 hover:scale-105 active:scale-95 shadow-md flex-shrink-0 cursor-pointer ${isDark ? 'bg-white/10 hover:bg-white/20 text-white border border-white/10' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <button
+              type="button"
+              onClick={() => loadQuizzes(true)}
+              disabled={isRefreshing}
+              className={`p-2 rounded-xl transition-all duration-200 flex items-center justify-center hover:scale-105 active:scale-95 shadow-xs cursor-pointer ${
+                isDark
+                  ? 'bg-white/10 hover:bg-white/20 text-white border border-white/10'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200'
               }`}
-          >
-            <ChevronLeft size={15} /> العودة
-          </button>
+              title="تحديث القائمة من السيرفر"
+              aria-label="تحديث القائمة"
+            >
+              <RefreshCw size={15} className={isRefreshing ? 'animate-spin text-emerald-400' : ''} />
+            </button>
+
+            <button
+              onClick={() => setViewMode('menu')}
+              className={`px-3 py-1.5 text-xs font-extrabold rounded-xl transition-all duration-200 flex items-center gap-1 hover:scale-105 active:scale-95 shadow-md flex-shrink-0 cursor-pointer ${isDark ? 'bg-white/10 hover:bg-white/20 text-white border border-white/10' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                }`}
+            >
+              <ChevronLeft size={15} /> العودة
+            </button>
+          </div>
         </div>
 
 
@@ -409,8 +472,8 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
                   onClick={() => onLoadQuiz?.(quiz)}
                   className={`w-full group p-4 sm:p-5 rounded-2xl border-l border-t border-b border-r-4 transition-all duration-300 cursor-pointer flex flex-col gap-3 relative overflow-hidden ${
                     isDark
-                      ? 'bg-[#150727]/90 border-white/10 border-r-emerald-400 hover:border-emerald-500/60 hover:border-r-emerald-300 hover:bg-[#1a0932] shadow-md hover:shadow-[0_8px_30px_rgba(16,185,129,0.25)] backdrop-blur-xl'
-                      : 'bg-white border-slate-200 border-r-emerald-500 hover:border-emerald-400 hover:shadow-xl'
+                      ? `bg-white/5 border-white/10 ${theme.cardBorderAccent} hover:bg-white/10 shadow-md backdrop-blur-xl`
+                      : `bg-white border-slate-200 ${theme.cardBorderAccent} hover:shadow-xl`
                   }`}
                 >
 
@@ -418,16 +481,12 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
                   <div className="flex items-center justify-between gap-2.5 w-full">
                     <div className="flex items-center gap-2.5 flex-1 min-w-0">
                       {/* Sequential Index Badge (#1, #2, #3...) */}
-                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-extrabold text-sm sm:text-base flex-shrink-0 transition-all duration-300 ${
-                        isDark 
-                          ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 group-hover:scale-110 group-hover:bg-emerald-500/30 group-hover:shadow-[0_0_12px_rgba(16,185,129,0.5)]' 
-                          : 'bg-emerald-100 text-emerald-700 border border-emerald-300 group-hover:scale-110'
-                      }`}>
+                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-extrabold text-sm sm:text-base flex-shrink-0 transition-all duration-300 ${theme.itemBadge} group-hover:scale-105`}>
                         {index + 1}
                       </div>
                       <div className="flex flex-col justify-center min-w-0 flex-1">
                         <span className={`font-black text-sm sm:text-base leading-snug break-words transition-colors ${
-                          isDark ? 'text-white group-hover:text-emerald-300' : 'text-slate-900 group-hover:text-emerald-700'
+                          isDark ? 'text-white' : 'text-slate-900'
                         }`}>
                           {quiz.title || 'اختبار تقييم زاد'}
                         </span>
@@ -458,13 +517,13 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
                         }}
                         className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-300 ${
                           expandedQuizId === quiz.id
-                            ? 'bg-emerald-500/25 text-emerald-300 border border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.3)] ring-1 ring-emerald-500/40'
+                            ? `${theme.badge} ring-1 ring-current/30`
                             : isDark
-                              ? 'bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 hover:border-emerald-500/50'
-                              : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200'
+                              ? 'bg-white/5 hover:bg-white/10 text-white/80 border border-white/10'
+                              : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200'
                         }`}
                       >
-                        <SlidersHorizontal size={14} className="text-emerald-400" />
+                        <SlidersHorizontal size={14} className={theme.textAccent} />
                         <span>خيارات الاختبار</span>
                         <motion.div
                           animate={{ rotate: expandedQuizId === quiz.id ? 180 : 0 }}
@@ -484,7 +543,7 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
                             : 'bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-600'
                         }`}
                       >
-                        <Calendar size={13} className="text-emerald-400 animate-pulse" />
+                        <Calendar size={13} className={theme.textAccent} />
                         <span>{formattedDate}</span>
                       </motion.div>
                     </div>
@@ -501,71 +560,71 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
                         onClick={(e) => e.stopPropagation()}
                         className={`w-full p-3 rounded-2xl border text-[11px] flex flex-wrap items-center gap-2 mt-1 ${
                           isDark 
-                            ? 'bg-gradient-to-b from-[#190831]/95 to-[#120524]/95 border-emerald-500/30 text-slate-200 shadow-[0_10px_25px_rgba(0,0,0,0.4)] backdrop-blur-xl' 
+                            ? 'bg-white/5 border-white/10 text-slate-200 shadow-[0_10px_25px_rgba(0,0,0,0.4)] backdrop-blur-xl' 
                             : 'bg-slate-50 border-slate-200 text-slate-700 shadow-inner'
                         }`}
                       >
                         {/* 1. عدد الأسئلة المطلوب */}
                         <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-all ${
-                          isDark ? 'bg-emerald-500/10 border-emerald-500/20 hover:bg-emerald-500/20' : 'bg-slate-100 border-slate-200'
+                          isDark ? `${theme.chipBg} hover:opacity-90` : 'bg-slate-100 border-slate-200'
                         }`}>
-                          <HelpCircle size={13} className="text-emerald-400 flex-shrink-0" />
+                          <HelpCircle size={13} className={`${theme.textAccent} flex-shrink-0`} />
                           <span className={isDark ? 'text-slate-300 font-medium' : 'text-slate-600 font-medium'}>عدد الأسئلة:</span>
-                          <span className="font-bold text-emerald-300">{numQuestions} أسئلة</span>
+                          <span className={`font-bold ${theme.chipText}`}>{numQuestions} أسئلة</span>
                         </div>
 
                         {/* 2. مستوى الصعوبة */}
                         <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-all ${
-                          isDark ? 'bg-emerald-500/10 border-emerald-500/20 hover:bg-emerald-500/20' : 'bg-slate-100 border-slate-200'
+                          isDark ? `${theme.chipBg} hover:opacity-90` : 'bg-slate-100 border-slate-200'
                         }`}>
-                          <BarChart2 size={13} className="text-emerald-400 flex-shrink-0" />
+                          <BarChart2 size={13} className={`${theme.textAccent} flex-shrink-0`} />
                           <span className={isDark ? 'text-slate-300 font-medium' : 'text-slate-600 font-medium'}>الصعوبة:</span>
-                          <span className="font-bold text-emerald-300">{diffLabel}</span>
+                          <span className={`font-bold ${theme.chipText}`}>{diffLabel}</span>
                         </div>
 
                         {/* 3. نمط التوليد بالذكاء الاصطناعي */}
                         <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-all ${
-                          isDark ? 'bg-emerald-500/10 border-emerald-500/20 hover:bg-emerald-500/20' : 'bg-slate-100 border-slate-200'
+                          isDark ? `${theme.chipBg} hover:opacity-90` : 'bg-slate-100 border-slate-200'
                         }`}>
-                          <Target size={13} className="text-emerald-400 flex-shrink-0" />
+                          <Target size={13} className={`${theme.textAccent} flex-shrink-0`} />
                           <span className={isDark ? 'text-slate-300 font-medium' : 'text-slate-600 font-medium'}>نمط التوليد:</span>
-                          <span className="font-bold text-emerald-300">{modeLabel}</span>
+                          <span className={`font-bold ${theme.chipText}`}>{modeLabel}</span>
                         </div>
 
                         {/* 4. نظام وقت الاختبار */}
                         <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-all ${
-                          isDark ? 'bg-emerald-500/10 border-emerald-500/20 hover:bg-emerald-500/20' : 'bg-slate-100 border-slate-200'
+                          isDark ? `${theme.chipBg} hover:opacity-90` : 'bg-slate-100 border-slate-200'
                         }`}>
-                          <Clock size={13} className="text-emerald-400 flex-shrink-0" />
+                          <Clock size={13} className={`${theme.textAccent} flex-shrink-0`} />
                           <span className={isDark ? 'text-slate-300 font-medium' : 'text-slate-600 font-medium'}>الوقت:</span>
-                          <span className="font-bold text-emerald-300">غير محدد (مرن)</span>
+                          <span className={`font-bold ${theme.chipText}`}>غير محدد (مرن)</span>
                         </div>
 
                         {/* 5. طريقة ظهور التصحيح والتوضيح */}
                         <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-all ${
-                          isDark ? 'bg-emerald-500/10 border-emerald-500/20 hover:bg-emerald-500/20' : 'bg-slate-100 border-slate-200'
+                          isDark ? `${theme.chipBg} hover:opacity-90` : 'bg-slate-100 border-slate-200'
                         }`}>
-                          <CheckCircle2 size={13} className="text-emerald-400 flex-shrink-0" />
+                          <CheckCircle2 size={13} className={`${theme.textAccent} flex-shrink-0`} />
                           <span className={isDark ? 'text-slate-300 font-medium' : 'text-slate-600 font-medium'}>التصحيح والتوضيح:</span>
-                          <span className="font-bold text-emerald-300">فوري بعد الإجابة</span>
+                          <span className={`font-bold ${theme.chipText}`}>فوري بعد الإجابة</span>
                         </div>
 
                         {/* 6. أنواع الأسئلة المسموح بها */}
                         <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-all ${
-                          isDark ? 'bg-emerald-500/10 border-emerald-500/20 hover:bg-emerald-500/20' : 'bg-slate-100 border-slate-200'
+                          isDark ? `${theme.chipBg} hover:opacity-90` : 'bg-slate-100 border-slate-200'
                         }`}>
-                          <ListFilter size={13} className="text-emerald-400 flex-shrink-0" />
+                          <ListFilter size={13} className={`${theme.textAccent} flex-shrink-0`} />
                           <span className={isDark ? 'text-slate-300 font-medium' : 'text-slate-600 font-medium'}>أنواع الأسئلة:</span>
-                          <span className="font-bold text-emerald-300">خيارات متعددة</span>
+                          <span className={`font-bold ${theme.chipText}`}>خيارات متعددة</span>
                         </div>
 
                         {/* 7. نمط عرض الأسئلة */}
                         <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-all ${
-                          isDark ? 'bg-emerald-500/10 border-emerald-500/20 hover:bg-emerald-500/20' : 'bg-slate-100 border-slate-200'
+                          isDark ? `${theme.chipBg} hover:opacity-90` : 'bg-slate-100 border-slate-200'
                         }`}>
-                          <Layers size={13} className="text-emerald-400 flex-shrink-0" />
+                          <Layers size={13} className={`${theme.textAccent} flex-shrink-0`} />
                           <span className={isDark ? 'text-slate-300 font-medium' : 'text-slate-600 font-medium'}>عرض الأسئلة:</span>
-                          <span className="font-bold text-emerald-300">سؤال تلو الآخر</span>
+                          <span className={`font-bold ${theme.chipText}`}>سؤال تلو الآخر</span>
                         </div>
                       </motion.div>
                     )}
@@ -593,16 +652,14 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
                       </button>
                     ) : (
                       <div className="flex items-center gap-2">
-                        <div className={`flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-lg border ${
-                          quiz.authorName?.includes('(أنت)')
-                            ? (isDark ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' : 'bg-amber-50 text-amber-800 border-amber-200')
-                            : 'opacity-75 border-transparent'
-                        }`}>
-                          <User size={14} className={quiz.authorName?.includes('(أنت)') ? 'text-amber-400' : 'text-emerald-400'} />
-                          <span className="font-bold">
-                            {quiz.authorName?.includes('(أنت)') ? 'إعداد: طالب في زاد (منشور بواسطتك 🌐)' : `إعداد: ${quiz.authorName || 'زميل في زاد'}`}
-                          </span>
-                        </div>
+                        {quiz.authorName?.includes('(أنت)') && (
+                          <div className={`flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-lg border ${
+                            isDark ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' : 'bg-amber-50 text-amber-800 border-amber-200'
+                          }`}>
+                            <User size={14} className="text-amber-400" />
+                            <span className="font-bold">منشور بواسطتك 🌐</span>
+                          </div>
+                        )}
                         {quiz.authorName?.includes('(أنت)') && (
                           <button
                             type="button"
@@ -670,7 +727,7 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
                 onClick={() => setViewMode('my_quizzes')}
                 className={`flex flex-col items-center p-4 rounded-2xl border transition-all duration-300 hover:-translate-y-1 active:scale-95 cursor-pointer text-center ${
                   isDark
-                    ? `bg-[#12041f]/70 border-white/10 ${theme.cardOption} shadow-md`
+                    ? `bg-white/[0.04] border-white/10 ${theme.cardOption} shadow-md`
                     : `bg-white/90 ${theme.cardOption} shadow-sm border-slate-200`
                 }`}
               >
@@ -693,7 +750,7 @@ export function QuizHomeScreen({ currentChunkId, isDark, onStartSetup, onLoadQui
                 onClick={() => setViewMode('community_quizzes')}
                 className={`flex flex-col items-center p-4 rounded-2xl border transition-all duration-300 hover:-translate-y-1 active:scale-95 cursor-pointer text-center ${
                   isDark
-                    ? `bg-[#12041f]/70 border-white/10 ${theme.cardOption} shadow-md`
+                    ? `bg-white/[0.04] border-white/10 ${theme.cardOption} shadow-md`
                     : `bg-white/90 ${theme.cardOption} shadow-sm border-slate-200`
                 }`}
               >

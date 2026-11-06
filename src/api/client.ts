@@ -10,16 +10,25 @@ export function getAvatarUrl(url?: string | null): string | undefined {
 
 interface FetchOptions extends RequestInit {
   requireAuth?: boolean
+  bypassCache?: boolean
 }
 
 const requestCache = new Map<string, Promise<any>>()
 
+export function clearApiSessionCache() {
+  requestCache.clear()
+}
+
 export async function apiClient<T>(endpoint: string, options: FetchOptions = {}): Promise<T> {
-  const { requireAuth = true, headers: customHeaders, ...customOptions } = options
+  const { requireAuth = true, bypassCache = false, headers: customHeaders, ...customOptions } = options
   const method = customOptions.method || 'GET'
   
+  if (bypassCache) {
+    requestCache.clear()
+  }
+
   // Only cache GET requests for sessions (chat & study) to prevent waiting
-  const isCacheable = method === 'GET' && (endpoint.includes('/api/Chat/sessions') || endpoint.includes('/api/study/sessions'))
+  const isCacheable = !bypassCache && method === 'GET' && (endpoint.includes('/api/Chat/sessions') || endpoint.includes('/api/study/sessions'))
   const cacheKey = endpoint
 
   if (isCacheable && requestCache.has(cacheKey)) {

@@ -1,1 +1,1 @@
-export { CustomMindmapNode } from '../mindmap'
+export { CustomMindmapNode } from "../mindmap"

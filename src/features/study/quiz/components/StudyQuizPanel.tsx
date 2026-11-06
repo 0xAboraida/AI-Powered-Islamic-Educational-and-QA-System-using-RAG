@@ -7,7 +7,7 @@ import { isMatchingFullyAnswered, isMatchingCorrect, formatTimer } from '../util
 import { studyApi } from '../../../../api/studyApi'
 import { useTheme, type AccentColor } from '../../../../contexts/ThemeContext'
 
-function getQuizThemeTokens(accentColor: AccentColor = 'emerald') {
+function getQuizThemeTokens(accentColor: AccentColor = 'emerald', isDark: boolean = true) {
   switch (accentColor) {
     case 'amber':
       return {
@@ -23,8 +23,8 @@ function getQuizThemeTokens(accentColor: AccentColor = 'emerald') {
       }
     case 'purple':
       return {
-        icon: 'text-purple-400',
-        progressBar: 'bg-gradient-to-r from-[#581c87] via-purple-500 to-fuchsia-400 shadow-[0_0_12px_rgba(192,132,252,0.6)]',
+        icon: isDark ? 'text-[#b51ee7]' : 'text-[#800080]',
+        progressBar: 'bg-gradient-to-r from-[#330033] via-[#800080] to-[#660066] shadow-[0_0_12px_rgba(77,0,77,0.6)]',
         progressTip: 'shadow-[0_0_6px_#e879f9]',
       }
     case 'emerald':
@@ -57,7 +57,7 @@ export function StudyQuizPanel({
   handleGenerateQuiz,
   onResetQuiz,
   onClose,
-  panelWidth = 450,
+  panelWidth = 750,
   isDark = true,
   flowState,
   setFlowState,
@@ -67,7 +67,7 @@ export function StudyQuizPanel({
   chunkLoading,
 }: StudyQuizPanelProps) {
   const { accentColor } = useTheme()
-  const quizTheme = getQuizThemeTokens(accentColor)
+  const quizTheme = getQuizThemeTokens(accentColor, isDark)
   const [hasSubmittedAttempt, setHasSubmittedAttempt] = useState(false)
 
   // Shorthand updater
@@ -359,12 +359,12 @@ export function StudyQuizPanel({
       <div
         style={{ width: panelWidth || '100%' }}
         className={`flex-1 w-full min-w-[280px] flex flex-col relative h-full overflow-hidden transition-colors bg-transparent border-l ${isDark
-            ? 'border-white/10 text-white'
-            : 'border-slate-200 text-slate-900'
+          ? 'border-white/10 text-white'
+          : 'border-slate-200 text-slate-900'
           }`}
       >
         {/* ── Header ── */}
-        <div className={`hidden md:flex items-center justify-between px-4 py-3 border-b backdrop-blur-md shrink-0 gap-2 ${isDark ? 'border-white/10 bg-[#12041f]/70 text-white' : 'border-slate-200 bg-slate-50/90 text-slate-800'
+        <div className={`hidden md:flex items-center justify-between px-4 py-3 border-b backdrop-blur-md shrink-0 gap-2 ${isDark ? 'border-white/10 bg-[#090b10] text-white' : 'border-slate-200 bg-slate-50/90 text-slate-800'
           }`} dir="rtl">
           <div className="flex items-center gap-2 text-sm font-bold shrink-0">
             <ClipboardList size={18} className={quizTheme.icon} />
@@ -374,8 +374,8 @@ export function StudyQuizPanel({
           <div className="flex items-center gap-2 shrink-0">
             {flowState.timerMode === 'timed' && isTestStarted && !isQuizCompleted && (
               <div className={`flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-mono font-bold border transition-all shadow-sm ${flowState.isTimerStarted && flowState.timeLeft <= 20
-                  ? 'bg-rose-500/20 border-rose-500/40 text-rose-400 animate-pulse'
-                  : 'bg-amber-500/20 border-amber-500/40 text-amber-400'
+                ? 'bg-rose-500/20 border-rose-500/40 text-rose-400 animate-pulse'
+                : 'bg-amber-500/20 border-amber-500/40 text-amber-400'
                 }`}>
                 <Timer size={14} />
                 <span>{formatTimer(flowState.isTimerStarted ? flowState.timeLeft : totalQuestions * flowState.secondsPerQuestion)}</span>
@@ -397,8 +397,8 @@ export function StudyQuizPanel({
                 <button
                   onClick={() => (flowState.isSetupMode || loading) ? handleExitQuizToHome() : set({ confirmModal: 'exit' })}
                   className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold border backdrop-blur-md transition-all active:scale-95 ${isDark
-                      ? 'bg-rose-500/10 hover:bg-rose-500/20 border-rose-500/30 text-rose-400'
-                      : 'bg-rose-50 hover:bg-rose-100 border-rose-200 text-rose-600'
+                    ? 'bg-rose-500/10 hover:bg-rose-500/20 border-rose-500/30 text-rose-400'
+                    : 'bg-rose-50 hover:bg-rose-100 border-rose-200 text-rose-600'
                     }`}
                   title="خروج"
                 >
@@ -526,6 +526,7 @@ export function StudyQuizPanel({
                   onDiscuss={handleDiscussQuestion}
                   onSubmit={() => set({ isSubmitted: true })}
                   onExit={() => set({ confirmModal: 'exit' })}
+                  onRetry={() => set({ confirmModal: 'retry' })}
                 />
               </motion.div>
 

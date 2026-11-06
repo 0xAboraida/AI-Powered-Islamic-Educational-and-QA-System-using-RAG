@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { MessageCircle, X, Send } from 'lucide-react'
-import { useTheme } from '../../../../contexts/ThemeContext'
-import type { Message } from '../../../../contexts/StudyContext'
-import whiteLogo from '@/assets/images/WhiteLogo.png'
-import { Bubble, TypingBubble } from '../../../chat/components/ChatBubble'
-import { StickyStudyPlanHeader } from '../../components/StickyStudyPlanHeader'
-import { StudyWelcomeActionCards } from './StudyWelcomeActionCards'
-import { PlanApprovalCard } from './PlanApprovalCard'
+import React, { useState, useEffect, useRef } from "react"
+import { MessageCircle, X, Send } from "lucide-react"
+import { useTheme } from "../../../../contexts/ThemeContext"
+import type { Message } from "../../../../contexts/StudyContext"
+import whiteLogo from "@/assets/images/WhiteLogo.png"
+import { Bubble, TypingBubble } from "../../../chat/components/ChatBubble"
+import { StickyStudyPlanHeader } from "../../components/StickyStudyPlanHeader"
+import { StudyWelcomeActionCards } from "./StudyWelcomeActionCards"
+import { PlanApprovalCard } from "./PlanApprovalCard"
 
 export function StudyChatPanel({
   messages,
@@ -24,7 +24,7 @@ export function StudyChatPanel({
   onApprovePlan,
   onStepComplete,
   panelWidth = 750,
-  isDark = true
+  isDark = true,
 }: {
   messages: Message[]
   loading: boolean
@@ -36,7 +36,7 @@ export function StudyChatPanel({
   sessionId?: number | string | null
   chunkTitle?: string
   onClose?: () => void
-  onSelectStartOption?: (optionKey: 'plan' | 'summary' | 'chat') => void
+  onSelectStartOption?: (optionKey: "plan" | "summary" | "chat") => void
   pendingPlanSteps?: string[]
   onApprovePlan?: (firstStepTitle: string) => void
   onStepComplete?: (stepId: number) => void
@@ -52,12 +52,13 @@ export function StudyChatPanel({
     <>
       <div
         style={{
-          width: panelWidth ? panelWidth : '100%',
+          width: panelWidth ? panelWidth : "100%",
         }}
-        className={`flex-1 w-full min-w-[280px] flex flex-col relative h-full overflow-hidden transition-colors bg-transparent border-l ${isDark
-            ? 'border-white/10 text-white'
-            : 'border-slate-200 text-slate-900'
-          }`}
+        className={`flex-1 w-full min-w-[280px] flex flex-col relative h-full overflow-hidden transition-colors bg-transparent border-l ${
+          isDark
+            ? "border-white/10 text-white"
+            : "border-slate-200 text-slate-900"
+        }`}
       >
         {/* Unified Single-Row Merged Header (Title + Progress + Action + Close) */}
         <StickyStudyPlanHeader
@@ -69,29 +70,50 @@ export function StudyChatPanel({
         />
 
         {/* Messages & Welcome Options Scroll Area */}
-        <div 
+        <div
           className="flex-1 overflow-y-auto p-2 sm:p-4 md:p-6 space-y-4 sm:space-y-5 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
           style={{
-            maskImage: 'linear-gradient(to bottom, black calc(100% - 80px), transparent 100%)',
-            WebkitMaskImage: 'linear-gradient(to bottom, black calc(100% - 80px), transparent 100%)'
+            maskImage:
+              "linear-gradient(to bottom, black calc(100% - 80px), transparent 100%)",
+            WebkitMaskImage:
+              "linear-gradient(to bottom, black calc(100% - 80px), transparent 100%)",
           }}
         >
           {/* Initial Welcome 3 Interactive Action Cards */}
-          {currentChunkId && onSelectStartOption && messages.length === 0 && !loading && (
-            <StudyWelcomeActionCards
-              chunkTitle={chunkTitle}
-              isDark={isDark}
-              onSelectOption={onSelectStartOption}
-            />
-          )}
+          {currentChunkId &&
+            onSelectStartOption &&
+            messages.length === 0 &&
+            !loading && (
+              <StudyWelcomeActionCards
+                chunkTitle={chunkTitle}
+                isDark={isDark}
+                onSelectOption={onSelectStartOption}
+              />
+            )}
 
           {messages.length === 0 && !currentChunkId && (
             <div className="flex flex-col items-center justify-center py-10 text-center">
               <span className="brand-gradient flex h-20 w-20 items-center justify-center rounded-3xl shadow-xl shadow-primary/30 p-3">
-                <img src={whiteLogo} alt="Zad Logo" className="w-full h-full object-contain drop-shadow-md" />
+                <img
+                  src={whiteLogo}
+                  alt="Zad Logo"
+                  className="w-full h-full object-contain drop-shadow-md"
+                />
               </span>
-              <h2 className={`mt-6 font-display text-2xl ${isDark ? 'text-white' : 'text-slate-900'}`}>مرحباً بك في زاد</h2>
-              <p className={`mt-2 max-w-md ${isDark ? 'text-white/75' : 'text-slate-600'}`}>اختر درساً من الفهرس الجانبي لبدء الدراسة التفاعلية.</p>
+              <h2
+                className={`mt-6 font-display text-2xl ${
+                  isDark ? "text-white" : "text-slate-900"
+                }`}
+              >
+                مرحباً بك في زاد
+              </h2>
+              <p
+                className={`mt-2 max-w-md ${
+                  isDark ? "text-white/75" : "text-slate-600"
+                }`}
+              >
+                اختر درساً من الفهرس الجانبي لبدء الدراسة التفاعلية.
+              </p>
             </div>
           )}
 
@@ -100,14 +122,17 @@ export function StudyChatPanel({
           ))}
 
           {/* Interactive Plan Approval Button Card */}
-          {activeKeyId && pendingPlanSteps && pendingPlanSteps.length > 0 && onApprovePlan && (
-            <PlanApprovalCard
-              keyId={activeKeyId}
-              extractedSteps={pendingPlanSteps}
-              isDark={isDark}
-              onApprovePlan={onApprovePlan}
-            />
-          )}
+          {activeKeyId &&
+            pendingPlanSteps &&
+            pendingPlanSteps.length > 0 &&
+            onApprovePlan && (
+              <PlanApprovalCard
+                keyId={activeKeyId}
+                extractedSteps={pendingPlanSteps}
+                isDark={isDark}
+                onApprovePlan={onApprovePlan}
+              />
+            )}
 
           {loading && <TypingBubble dark={isDark} />}
           <div ref={chatEndRef} className="h-28 w-full shrink-0" />
@@ -121,36 +146,40 @@ export function StudyChatPanel({
               if (!input.trim() || !currentChunkId || loading) return
               handleSend()
               if (textareaRef.current) {
-                textareaRef.current.style.height = 'auto'
+                textareaRef.current.style.height = "auto"
               }
             }}
             className="flex flex-col w-full max-w-2xl mx-auto gap-2 relative pointer-events-auto"
           >
             <div className="gradient-border min-w-0 flex-1 rounded-[22px] p-[2px] shadow-lg shadow-primary/20 transition-all duration-300">
-              <div className={`flex items-end gap-2 rounded-[20px] py-1.5 pr-4 pl-2 transition-all duration-300 ${
-                isDark ? 'bg-[#0f1422]' : 'bg-white'
-              }`}>
+              <div
+                className={`flex items-end gap-2 rounded-[20px] py-1.5 pr-4 pl-2 transition-all duration-300 ${
+                  isDark ? "bg-[#090b10] border border-white/10" : "bg-white"
+                }`}
+              >
                 <textarea
                   ref={textareaRef}
                   rows={1}
                   className={`font-sans min-w-0 flex-1 resize-none bg-transparent py-2 text-sm outline-none placeholder:opacity-50 [&::-webkit-scrollbar]:hidden ${
-                    isDark ? 'text-white placeholder:text-white/40' : 'text-slate-900 placeholder:text-slate-400'
+                    isDark
+                      ? "text-white placeholder:text-white/40"
+                      : "text-slate-900 placeholder:text-slate-400"
                   }`}
                   value={input}
                   onChange={(e) => {
                     setInput(e.target.value)
                     if (textareaRef.current) {
-                      textareaRef.current.style.height = 'auto'
+                      textareaRef.current.style.height = "auto"
                       textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`
                     }
                   }}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
+                    if (e.key === "Enter" && !e.shiftKey) {
                       e.preventDefault()
                       if (!input.trim() || !currentChunkId || loading) return
                       handleSend()
                       if (textareaRef.current) {
-                        textareaRef.current.style.height = 'auto'
+                        textareaRef.current.style.height = "auto"
                       }
                     }
                   }}

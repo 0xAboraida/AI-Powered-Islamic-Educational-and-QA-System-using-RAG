@@ -71,8 +71,8 @@ export function QuestionCardContent(props: QuestionCardContentProps) {
               selectedWord
                 ? isAnswered && showFeedback
                   ? selectedOpt === q.correct_answer_index
-                    ? 'bg-emerald-500/25 text-emerald-400 border-emerald-400 shadow-sm scale-105'
-                    : 'bg-rose-500/25 text-rose-400 border-rose-400 shadow-sm scale-105'
+                    ? props.isDark ? 'bg-emerald-500/25 text-emerald-200 border-emerald-400 shadow-md scale-105 font-black' : 'bg-emerald-100 text-emerald-950 border-2 border-emerald-600 shadow-md scale-105 font-black'
+                    : props.isDark ? 'bg-rose-500/25 text-rose-200 border-rose-400 shadow-md scale-105 font-black' : 'bg-rose-100 text-rose-950 border-2 border-rose-600 shadow-md scale-105 font-black'
                   : `${theme.fillBlankSelected} shadow-sm`
                 : `${theme.blankPlaceholder} border-dashed animate-pulse`
             }`}>

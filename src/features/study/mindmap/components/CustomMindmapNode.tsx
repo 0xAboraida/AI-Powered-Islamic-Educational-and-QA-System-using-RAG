@@ -56,8 +56,8 @@ export function CustomMindmapNode({
         case 'purple':
         default:
           return isLabel 
-            ? 'brand-gradient border-2 border-[#c020f0]/40 text-white shadow-lg shadow-[#8a17c9]/30 font-bold' 
-            : 'bg-white border-2 border-[#8a17c9]/40 text-slate-900 shadow-md shadow-[#8a17c9]/10 hover:border-[#c020f0] hover:shadow-[#c020f0]/15';
+            ? 'brand-gradient border-2 border-[#800080] text-white shadow-lg shadow-[#800080]/30 font-bold' 
+            : 'bg-white border-2 border-[#800080]/40 text-slate-900 shadow-md shadow-[#800080]/10 hover:border-[#800080] hover:shadow-[#800080]/15';
       }
     }
 
@@ -65,34 +65,27 @@ export function CustomMindmapNode({
     switch (accentColor) {
       case 'blue':
         return isLabel 
-          ? 'bg-[#0a192f] border-2 border-sky-400/70 text-sky-300 shadow-lg shadow-sky-400/20 hover:border-sky-300' 
-          : 'bg-[#0d2137] border-2 border-blue-400/40 text-white shadow-md shadow-blue-500/15 hover:border-blue-400';
+          ? 'bg-[#090b10] border-2 border-sky-400/70 text-white shadow-lg shadow-sky-400/20 hover:border-sky-300' 
+          : 'bg-[#090b10] border-2 border-blue-400/40 text-white shadow-md shadow-blue-500/15 hover:border-blue-400';
       case 'emerald':
         return isLabel 
-          ? 'bg-[#042018] border-2 border-teal-400/70 text-teal-300 shadow-lg shadow-teal-400/20 hover:border-teal-300' 
-          : 'bg-[#072a20] border-2 border-emerald-400/40 text-white shadow-md shadow-emerald-500/15 hover:border-emerald-400';
+          ? 'bg-[#090b10] border-2 border-teal-400/70 text-white shadow-lg shadow-teal-400/20 hover:border-teal-300' 
+          : 'bg-[#090b10] border-2 border-emerald-400/40 text-white shadow-md shadow-emerald-500/15 hover:border-emerald-400';
       case 'amber':
         return isLabel 
-          ? 'bg-[#1c1404] border-2 border-amber-400/70 text-[#dfbf83] shadow-lg shadow-amber-400/20 hover:border-amber-300' 
-          : 'bg-[#261c07] border-2 border-amber-400/40 text-white shadow-md shadow-amber-500/15 hover:border-amber-400';
+          ? 'bg-[#090b10] border-2 border-amber-400/70 text-white shadow-lg shadow-amber-400/20 hover:border-amber-300' 
+          : 'bg-[#090b10] border-2 border-amber-400/40 text-white shadow-md shadow-amber-500/15 hover:border-amber-400';
       case 'purple':
       default:
         return isLabel 
-          ? 'bg-[#12041f] border-2 border-purple-400/70 text-purple-300 shadow-lg shadow-purple-400/20 hover:border-purple-300' 
-          : 'bg-[#1a0730] border-2 border-purple-400/40 text-white shadow-md shadow-purple-500/15 hover:border-purple-400';
+          ? 'bg-[#090b10] border-2 border-[#800080] text-white shadow-lg shadow-[#800080]/40 hover:border-[#a020f0]' 
+          : 'bg-[#090b10] border-2 border-[#800080]/70 text-white shadow-md shadow-black/30 hover:border-[#800080]';
     }
   };
 
   const getLabelTextColor = () => {
     if (!isDark) return isLabel ? 'text-white font-bold' : 'text-slate-900 font-semibold';
-    switch (accentColor) {
-      case 'blue': return isLabel ? 'text-sky-300 font-bold' : 'text-white';
-      case 'emerald': return isLabel ? 'text-teal-300 font-bold' : 'text-white';
-      case 'amber': return isLabel ? 'text-[#dfbf83] font-bold' : 'text-white';
-      case 'purple':
-      default:
-        return isLabel ? 'text-purple-300 font-bold' : 'text-white';
-    }
+    return isLabel ? 'text-white font-bold' : 'text-white';
   };
 
   const getNewlyRevealedClass = () => {
@@ -103,7 +96,7 @@ export function CustomMindmapNode({
       case 'amber': return 'ring-4 ring-amber-400 border-amber-300 shadow-[0_0_35px_rgba(245,158,11,0.85)] animate-pulse';
       case 'purple':
       default:
-        return 'ring-4 ring-purple-500 border-purple-400 shadow-[0_0_35px_rgba(168,85,247,0.85)] animate-pulse';
+        return 'ring-4 ring-[#800080] border-[#660066] shadow-[0_0_35px_rgba(77,0,77,0.85)] animate-pulse';
     }
   };
 
@@ -111,14 +104,14 @@ export function CustomMindmapNode({
     if (isDark) {
       switch (accentColor) {
         case 'blue':
-          return 'bg-[#0a192f] border-2 border-sky-400/70 text-sky-400 shadow-[0_0_10px_rgba(56,189,248,0.3)] hover:bg-sky-500/20';
+          return 'bg-[#090b10] border-2 border-sky-400/70 text-sky-400 shadow-[0_0_10px_rgba(56,189,248,0.3)] hover:bg-sky-500/20';
         case 'emerald':
-          return 'bg-[#042018] border-2 border-teal-400/70 text-teal-400 shadow-[0_0_10px_rgba(45,212,191,0.3)] hover:bg-teal-500/20';
+          return 'bg-[#090b10] border-2 border-teal-400/70 text-teal-400 shadow-[0_0_10px_rgba(45,212,191,0.3)] hover:bg-teal-500/20';
         case 'amber':
-          return 'bg-[#1c1404] border-2 border-amber-400/70 text-[#dfbf83] shadow-[0_0_10px_rgba(223,191,131,0.3)] hover:bg-amber-500/20';
+          return 'bg-[#090b10] border-2 border-amber-400/70 text-[#dfbf83] shadow-[0_0_10px_rgba(223,191,131,0.3)] hover:bg-amber-500/20';
         case 'purple':
         default:
-          return 'bg-[#1a0730] border-2 border-purple-400/70 text-purple-400 shadow-[0_0_10px_rgba(168,85,247,0.3)] hover:bg-purple-500/20';
+          return 'bg-[#090b10] border-2 border-[#800080] text-white shadow-[0_0_10px_rgba(0,0,0,0.4)] hover:bg-[#800080]/30';
       }
     } else {
       switch (accentColor) {
@@ -130,7 +123,7 @@ export function CustomMindmapNode({
           return 'bg-white border-2 border-amber-500 text-amber-700 shadow-amber-500/20 hover:bg-amber-50';
         case 'purple':
         default:
-          return 'bg-white border-2 border-[#8a17c9] text-[#8a17c9] shadow-[#8a17c9]/20 hover:bg-purple-50';
+          return 'bg-white border-2 border-[#800080] text-[#800080] shadow-[#800080]/20 hover:bg-purple-50';
       }
     }
   };

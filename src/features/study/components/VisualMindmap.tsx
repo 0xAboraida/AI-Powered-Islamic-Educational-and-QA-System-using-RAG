@@ -1,1 +1,1 @@
-export { VisualMindmap } from '../mindmap'
+export { VisualMindmap } from "../mindmap"

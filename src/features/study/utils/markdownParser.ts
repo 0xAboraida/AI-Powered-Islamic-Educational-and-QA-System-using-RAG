@@ -97,16 +97,16 @@ export function formatMarkdown(text: string, isTurathText: boolean = true, isDar
     .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold mt-6 mb-4 text-[#38bdf8]">$1</h1>')
 
     // Bold and Italic
-    .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-[#8a17c9]">$1</strong>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-[#800080] dark:text-[#b51ee7]">$1</strong>')
     .replace(/\*(.*?)\*/g, '<em class="italic text-white/80">$1</em>')
 
     // Turath / Quote Special Markers & Double-Quoted Matn phrases
-    .replace(/«([^»]+)»/g, '<span class="inline-flex items-center px-2 py-0.5 mx-0.5 rounded-md bg-amber-500/10 border border-amber-500/30 text-[#fcd34d] font-semibold">«$1»</span>')
-    .replace(/@([^@]+)@/g, '<span class="inline-flex items-center px-2 py-0.5 mx-0.5 rounded-md bg-amber-500/10 border border-amber-500/30 text-[#fcd34d] font-semibold">$1</span>')
+    .replace(/«([^»]+)»/g, '<span class="inline-flex items-center px-2 py-0.5 mx-0.5 rounded-md bg-[#dfbf83]/10 border border-[#dfbf83]/30 text-[#dfbf83] font-semibold">«$1»</span>')
+    .replace(/@([^@]+)@/g, '<span class="inline-flex items-center px-2 py-0.5 mx-0.5 rounded-md bg-[#dfbf83]/10 border border-[#dfbf83]/30 text-[#dfbf83] font-semibold">$1</span>')
     .replace(/%([^%]+)%/g, '<span class="inline-flex items-center px-2 py-0.5 mx-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/30 text-[#34d399] font-semibold">$1</span>')
     .replace(/&amp;([^&]+)&amp;/g, '<span class="inline-flex items-center px-2 py-0.5 mx-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/30 text-[#34d399] font-semibold">$1</span>')
-    .replace(/\$([^\$]+)\$/g, '<span class="inline-flex items-center px-2 py-0.5 mx-0.5 rounded-md bg-purple-500/10 border border-purple-500/30 text-[#c084fc] font-semibold">$1</span>')
-    .replace(/"([^"\n]{2,120})"/g, '"<span class="text-[#fcd34d] font-semibold">$1</span>"')
+    .replace(/\$([^\$]+)\$/g, '<span class="inline-flex items-center px-2 py-0.5 mx-0.5 rounded-md bg-[#800080] text-white font-semibold">$1</span>')
+    .replace(/"([^"\n]{2,120})"/g, '"<span class="text-[#dfbf83] font-semibold">$1</span>"')
 
     // Lists (using div/span to avoid <li> numbering issues without <ul>/<ol>)
     .replace(/^[-*] (.*$)/gim, '<div class="flex gap-2 mr-2 mb-1"><span class="font-bold text-[#38bdf8]">•</span> <span>$1</span></div>')
@@ -119,7 +119,7 @@ export function formatMarkdown(text: string, isTurathText: boolean = true, isDar
     })
 
     // Special formatting for "Text" string
-    .replace(/^النص:\s*/gim, '<div class="flex items-center gap-3 mb-6 mt-2"><div class="h-px flex-1 bg-gradient-to-l from-transparent via-white/20 to-transparent"></div><div class="text-[#fcd34d] text-sm font-bold flex items-center gap-2"><span class="text-[#fcd34d]"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span> المتن الأصلي</div><div class="h-px flex-1 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div></div>')
+    .replace(/^النص:\s*/gim, '<div class="flex items-center gap-3 mb-6 mt-2"><div class="h-px flex-1 bg-gradient-to-l from-transparent via-white/20 to-transparent"></div><div class="text-[#dfbf83] text-sm font-bold flex items-center gap-2"><span class="text-[#dfbf83]"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span> المتن الأصلي</div><div class="h-px flex-1 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div></div>')
 
   html = html
     // Line breaks (only apply <br/> if the line doesn't start with a block tag or isn't already handled by flex div)
@@ -313,15 +313,15 @@ export function getTurathThemeColors(accentColor: string = 'emerald', isDark: bo
       }
     case 'purple':
       return {
-        accent: isDark ? '#c084fc' : '#7e22ce',
+        accent: isDark ? '#b51ee7' : '#7e22ce',
         accentLight: isDark ? 'rgba(192,132,252,0.12)' : 'rgba(126,34,206,0.08)',
         accentBorder: isDark ? 'rgba(192,132,252,0.3)' : 'rgba(126,34,206,0.25)',
         cardBorder: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(168,85,247,0.35)',
         cardShadow: isDark ? '0 20px 25px -5px rgba(0,0,0,0.3)' : '0 10px 30px rgba(168,85,247,0.12)',
-        badgeBg: isDark ? '#1a0730' : '#ffffff',
+        badgeBg: isDark ? '#222328' : '#ffffff',
         badgeBorder: isDark ? 'rgba(192,132,252,0.45)' : 'rgba(126,34,206,0.35)',
         badgeShadow: isDark ? '0 4px 16px rgba(0,0,0,0.5)' : '0 4px 14px rgba(168,85,247,0.2)',
-        titleColor: isDark ? '#c084fc' : '#581c87',
+        titleColor: isDark ? '#b51ee7' : '#581c87',
         headingColor: isDark ? '#ffffff' : '#4c1d95',
       }
     case 'emerald':
@@ -930,7 +930,7 @@ export function formatTurathLiveText(
     // F. Assemble Page Card: Classical Amiri typography, solid luxury background, centered bottom page badge
     return `
       <div class="turath-page-card font-amiri" style="font-family: 'Amiri', 'Traditional Arabic', serif; margin-bottom: 2.5em; border: 1px solid ${isDark ? 'rgba(255,255,255,0.1)' : tc.cardBorder
-      }; border-radius: 14px; background: ${isDark ? '#160D21' : '#ffffff'
+      }; border-radius: 14px; background: ${isDark ? '#090b10' : '#ffffff'
       }; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: ${isDark ? '0 20px 25px -5px rgba(0,0,0,0.3), 0 8px 10px -6px rgba(0,0,0,0.3)' : tc.cardShadow
       }; position: relative; transition: all 0.3s ease; direction: rtl; text-align: right;">
         <div class="turath-page-main">

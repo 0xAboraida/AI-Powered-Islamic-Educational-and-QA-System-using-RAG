@@ -119,15 +119,21 @@ export default function LibrarySidebar({
   const isAdmin = user?.role?.toLowerCase() === 'admin' || user?.email?.toLowerCase().includes('admin');
 
   const isStudyActive = (activeMainTab as string) === 'study';
-  const isLibraryActive = !isStudyActive && (activeMainTab as string) !== 'chat' && (activeMainTab as string) !== 'home';
+  const isChatActive = (activeMainTab as string) === 'chat';
+  const isHomeActive = (activeMainTab as string) === 'home';
+  const isLessonsActive = (activeMainTab as string) === 'lessons';
+  const isLibraryActive = !isStudyActive && !isChatActive && !isHomeActive && !isLessonsActive;
 
   // Library & Study accordion sub-menu expanded states
-  const [isLibraryExpanded, setIsLibraryExpanded] = useState(!isStudyActive);
+  const [isLibraryExpanded, setIsLibraryExpanded] = useState(isLibraryActive);
   const [isStudyExpanded, setIsStudyExpanded] = useState(isStudyActive);
 
   useEffect(() => {
     if ((activeMainTab as string) === 'study') {
       setIsStudyExpanded(true);
+      setIsLibraryExpanded(false);
+    } else if ((activeMainTab as string) === 'chat' || (activeMainTab as string) === 'home' || (activeMainTab as string) === 'lessons') {
+      setIsStudyExpanded(false);
       setIsLibraryExpanded(false);
     } else {
       setIsLibraryExpanded(true);
@@ -150,9 +156,9 @@ export default function LibrarySidebar({
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(() => {});
+      document.documentElement.requestFullscreen().catch(() => { });
     } else {
-      document.exitFullscreen().catch(() => {});
+      document.exitFullscreen().catch(() => { });
     }
   };
 
@@ -164,7 +170,7 @@ export default function LibrarySidebar({
           setRecentStudySession(sessions[0]);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
     return () => {
       isMounted = false;
     };
@@ -215,30 +221,36 @@ export default function LibrarySidebar({
       case 'purple':
       default:
         return isDarkEffective
-          ? 'bg-purple-500/10 border-purple-500/25 text-purple-300'
+          ? 'bg-[#b51ee7]/10 border-[#b51ee7]/25 text-[#b51ee7]'
           : 'bg-purple-50 border-purple-200/80 text-purple-700';
     }
   };
 
   const getActiveNavClass = () => {
-    switch (accentColor) {
-      case 'emerald':
-        return isDarkEffective
-          ? 'border-teal-500/40 bg-teal-950/40 text-teal-200 shadow-sm'
-          : 'border-teal-600/30 bg-teal-50/80 text-teal-950 shadow-sm';
-      case 'amber':
-        return isDarkEffective
-          ? 'border-[#dfbf83]/40 bg-[#251809]/60 text-[#f6eedd] shadow-sm'
-          : 'border-[#b88d46]/30 bg-[#fbf8f0] text-[#5e431a] shadow-sm';
-      case 'blue':
-        return isDarkEffective
-          ? 'border-blue-500/40 bg-blue-950/40 text-blue-200 shadow-sm'
-          : 'border-blue-600/30 bg-blue-50/80 text-blue-950 shadow-sm';
-      case 'purple':
-      default:
-        return isDarkEffective
-          ? 'border-purple-500/40 bg-purple-950/40 text-purple-200 shadow-sm'
-          : 'border-purple-600/30 bg-purple-50/80 text-purple-950 shadow-sm';
+    if (isDarkEffective) {
+      switch (accentColor) {
+        case 'emerald':
+          return 'border-teal-500/35 bg-white/[0.08] text-white shadow-xs';
+        case 'amber':
+          return 'border-[#dfbf83]/35 bg-white/[0.08] text-white shadow-xs';
+        case 'blue':
+          return 'border-blue-500/35 bg-white/[0.08] text-white shadow-xs';
+        case 'purple':
+        default:
+          return 'border-[#b51ee7]/35 bg-white/[0.08] text-white shadow-xs';
+      }
+    } else {
+      switch (accentColor) {
+        case 'emerald':
+          return 'border-teal-600/30 bg-stone-100 text-stone-900 shadow-xs';
+        case 'amber':
+          return 'border-[#b88d46]/30 bg-stone-100 text-stone-900 shadow-xs';
+        case 'blue':
+          return 'border-blue-600/30 bg-stone-100 text-stone-900 shadow-xs';
+        case 'purple':
+        default:
+          return 'border-purple-600/30 bg-stone-100 text-stone-900 shadow-xs';
+      }
     }
   };
 
@@ -323,13 +335,13 @@ export default function LibrarySidebar({
       ? accentColor === 'blue'
         ? 'drop-shadow-[0_3px_12px_rgba(37,99,235,0.45)]'
         : accentColor === 'emerald'
-        ? 'drop-shadow-[0_3px_12px_rgba(20,184,166,0.4)]'
-        : 'drop-shadow-[0_3px_12px_rgba(223,191,131,0.4)]'
+          ? 'drop-shadow-[0_3px_12px_rgba(20,184,166,0.4)]'
+          : 'drop-shadow-[0_3px_12px_rgba(223,191,131,0.4)]'
       : accentColor === 'blue'
-      ? 'drop-shadow-[0_2px_8px_rgba(2,132,199,0.35)]'
-      : accentColor === 'emerald'
-      ? 'drop-shadow-[0_2px_8px_rgba(13,148,136,0.35)]'
-      : 'drop-shadow-[0_2px_8px_rgba(184,141,70,0.35)]';
+        ? 'drop-shadow-[0_2px_8px_rgba(2,132,199,0.35)]'
+        : accentColor === 'emerald'
+          ? 'drop-shadow-[0_2px_8px_rgba(13,148,136,0.35)]'
+          : 'drop-shadow-[0_2px_8px_rgba(184,141,70,0.35)]';
 
     return (
       <div
@@ -420,42 +432,42 @@ export default function LibrarySidebar({
     icon: React.ReactNode;
     badge?: string | number;
   }[] = [
-    {
-      id: 'home',
-      label: 'رئيسية المكتبة',
-      icon: <Library className="w-4 h-4" />
-    },
-    {
-      id: 'categories',
-      label: 'الكتب والأقسام',
-      icon: <Layers className="w-4 h-4" />,
-      badge: counts.domains > 0 ? counts.domains : undefined
-    },
-    {
-      id: 'authors',
-      label: 'المؤلفون والقرون',
-      icon: <Users className="w-4 h-4" />,
-      badge: counts.authors > 0 ? counts.authors : undefined
-    },
-    {
-      id: 'narrators',
-      label: 'الرواة',
-      icon: <ShieldCheck className="w-4 h-4" />,
-      badge: counts.narrators || '18.9K'
-    },
-    {
-      id: 'favorites',
-      label: 'الكتب المفضلة',
-      icon: <Heart className="w-4 h-4" />,
-      badge: counts.favorites > 0 ? counts.favorites : undefined
-    },
-    {
-      id: 'downloads',
-      label: 'الكتب المحمّلة',
-      icon: <HardDriveDownload className="w-4 h-4" />,
-      badge: counts.downloads && counts.downloads > 0 ? counts.downloads : undefined
-    }
-  ];
+      {
+        id: 'home',
+        label: 'رئيسية المكتبة',
+        icon: <Library className="w-4 h-4" />
+      },
+      {
+        id: 'categories',
+        label: 'الكتب والأقسام',
+        icon: <Layers className="w-4 h-4" />,
+        badge: counts.domains > 0 ? counts.domains : undefined
+      },
+      {
+        id: 'authors',
+        label: 'المؤلفون والقرون',
+        icon: <Users className="w-4 h-4" />,
+        badge: counts.authors > 0 ? counts.authors : undefined
+      },
+      {
+        id: 'narrators',
+        label: 'الرواة',
+        icon: <ShieldCheck className="w-4 h-4" />,
+        badge: counts.narrators || '18.9K'
+      },
+      {
+        id: 'favorites',
+        label: 'الكتب المفضلة',
+        icon: <Heart className="w-4 h-4" />,
+        badge: counts.favorites > 0 ? counts.favorites : undefined
+      },
+      {
+        id: 'downloads',
+        label: 'الكتب المحمّلة',
+        icon: <HardDriveDownload className="w-4 h-4" />,
+        badge: counts.downloads && counts.downloads > 0 ? counts.downloads : undefined
+      }
+    ];
 
   interface StudyNavSubItem {
     id: string;
@@ -467,18 +479,18 @@ export default function LibrarySidebar({
   const studySubItems: StudyNavSubItem[] = [
     {
       id: 'hero',
-      label: 'الرئيسية (واجهة المدارسة)',
-      icon: <Sparkles className="w-4 h-4 text-amber-500" />
+      label: 'الرئيسية',
+      icon: <LayoutDashboard className="w-4 h-4" />
     },
     {
       id: 'workspace',
       label: 'مساحة المدارسة',
-      icon: <BookOpenCheck className="w-4 h-4 text-emerald-500" />
+      icon: <BookOpenCheck className="w-4 h-4" />
     },
     {
       id: 'community',
       label: 'مجتمع زاد التفاعلي',
-      icon: <Users className="w-4 h-4 text-sky-500" />
+      icon: <Users className="w-4 h-4" />
     }
   ];
 
@@ -487,11 +499,10 @@ export default function LibrarySidebar({
       <aside
         dir="rtl"
         aria-label="القائمة الجانبية الموحدة"
-        className={`fixed inset-y-0 right-0 z-[75] flex h-[100dvh] w-[86vw] max-w-[340px] flex-col border-l backdrop-blur-2xl transition-all duration-300 ease-out will-change-transform ${
-          isOpen
+        className={`fixed inset-y-0 right-0 z-[75] flex h-[100dvh] w-[86vw] max-w-[340px] flex-col border-l backdrop-blur-2xl transition-all duration-300 ease-out will-change-transform ${isOpen
             ? 'translate-x-0 opacity-100 visible'
             : 'translate-x-full pointer-events-none opacity-0 invisible shadow-none'
-        } ${getDrawerBorderClass()} ${getDrawerBgClass()}`}
+          } ${getDrawerBorderClass()} ${getDrawerBgClass()}`}
       >
         {/* 1. Header: Zad Logo, "زاد", Close button (X) */}
         <div className={`flex items-center justify-between px-5 py-4 border-b shrink-0 ${getDrawerBorderClass()}`}>
@@ -513,12 +524,11 @@ export default function LibrarySidebar({
 
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 space-y-4 text-right pb-8 custom-scrollbar">
-          
+
           {/* Auth Section - Display welcome & login ONLY when NOT authenticated */}
           {!isAuthenticated && (
-            <div className={`rounded-2xl border p-4 text-right shadow-xs ${
-              isDarkEffective ? 'border-white/10 bg-white/[0.03]' : 'border-stone-200/80 bg-white/90 shadow-stone-200/50'
-            }`}>
+            <div className={`rounded-2xl border p-4 text-right shadow-xs ${isDarkEffective ? 'border-white/10 bg-white/[0.03]' : 'border-stone-200/80 bg-white/90 shadow-stone-200/50'
+              }`}>
               <h4 className={`text-sm font-bold ${isDarkEffective ? 'text-white' : 'text-stone-900'}`}>مرحباً بك</h4>
               <p className={`text-xs mt-1 leading-relaxed ${isDarkEffective ? 'text-white/70' : 'text-stone-500'}`}>
                 قم بالتسجيل للاستفادة من خدمات الموقع ومكتبتك الشخصية
@@ -552,15 +562,21 @@ export default function LibrarySidebar({
                 if (onNavigateGlobal) onNavigateGlobal('home');
                 else if (onExit) onExit();
               }}
-              className={`flex w-full items-center justify-between rounded-xl border px-3.5 py-2.5 text-sm font-semibold active:scale-[0.99] transition-all cursor-pointer ${getNavItemCardClass()}`}
+              className={`flex w-full items-center justify-between rounded-xl border px-3.5 py-2.5 text-sm transition-all cursor-pointer active:scale-[0.99] select-none ${isHomeActive ? `font-bold ${getActiveNavClass()}` : `font-semibold ${getNavItemCardClass()}`}`}
             >
               <div className="flex items-center gap-3">
-                <div className={`flex h-8 w-8 items-center justify-center rounded-lg border transition-colors ${getNavIconBoxClass()}`}>
+                <div className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${isHomeActive ? (isDarkEffective ? 'bg-white/10 border border-white/20 text-white shadow-xs' : 'bg-stone-200 border border-stone-300 text-stone-900 shadow-xs') : `border ${getNavIconBoxClass()}`}`}>
                   <Home size={16} />
                 </div>
                 <span>الرئيسية</span>
               </div>
-              <ChevronLeft size={16} className={isDarkEffective ? 'text-white/55' : 'text-stone-400'} />
+              <div className="flex items-center gap-2">
+                {isHomeActive ? (
+                  <span className={`h-2 w-2 rounded-full ${getActiveDotClass()}`} />
+                ) : (
+                  <ChevronLeft size={16} className={isDarkEffective ? 'text-white/55' : 'text-stone-400'} />
+                )}
+              </div>
             </button>
 
             {/* 2. المحادثة النصية */}
@@ -570,15 +586,21 @@ export default function LibrarySidebar({
                 onClose();
                 if (onNavigateGlobal) onNavigateGlobal('chat');
               }}
-              className={`flex w-full items-center justify-between rounded-xl border px-3.5 py-2.5 text-sm font-semibold active:scale-[0.99] transition-all cursor-pointer ${getNavItemCardClass()}`}
+              className={`flex w-full items-center justify-between rounded-xl border px-3.5 py-2.5 text-sm transition-all cursor-pointer active:scale-[0.99] select-none ${isChatActive ? `font-bold ${getActiveNavClass()}` : `font-semibold ${getNavItemCardClass()}`}`}
             >
               <div className="flex items-center gap-3">
-                <div className={`flex h-8 w-8 items-center justify-center rounded-lg border transition-colors ${getNavIconBoxClass()}`}>
+                <div className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${isChatActive ? (isDarkEffective ? 'bg-white/10 border border-white/20 text-white shadow-xs' : 'bg-stone-200 border border-stone-300 text-stone-900 shadow-xs') : `border ${getNavIconBoxClass()}`}`}>
                   <MessageSquare size={16} />
                 </div>
                 <span>المحادثة النصية</span>
               </div>
-              <ChevronLeft size={16} className={isDarkEffective ? 'text-white/55' : 'text-stone-400'} />
+              <div className="flex items-center gap-2">
+                {isChatActive ? (
+                  <span className={`h-2 w-2 rounded-full ${getActiveDotClass()}`} />
+                ) : (
+                  <ChevronLeft size={16} className={isDarkEffective ? 'text-white/55' : 'text-stone-400'} />
+                )}
+              </div>
             </button>
 
             {/* 3. المكتبة (Accordion / تفرع شجري تفاعلي) */}
@@ -590,7 +612,7 @@ export default function LibrarySidebar({
                 title={isLibraryExpanded ? 'طي تفرع المكتبة' : 'توسيع تفرع المكتبة'}
               >
                 <div className="flex items-center gap-3">
-                  <div className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${isLibraryActive ? 'brand-gradient text-white shadow-xs' : `border ${getNavIconBoxClass()}`}`}>
+                  <div className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${isLibraryActive ? (isDarkEffective ? 'bg-white/10 border border-white/20 text-white shadow-xs' : 'bg-stone-200 border border-stone-300 text-stone-900 shadow-xs') : `border ${getNavIconBoxClass()}`}`}>
                     <BookOpen size={16} />
                   </div>
                   <div className="text-right">
@@ -633,39 +655,40 @@ export default function LibrarySidebar({
                               onSelectTab(item.id);
                               onClose();
                             }}
-                            className={`w-full group flex items-center justify-between py-2 px-2.5 rounded-lg text-xs font-semibold transition-all cursor-pointer select-none ${
-                              isActive
+                            className={`w-full group flex items-center justify-between py-2 px-2.5 rounded-lg text-xs font-semibold transition-all cursor-pointer select-none ${isActive
                                 ? isDarkEffective
                                   ? 'bg-white/10 text-white font-bold border border-white/15 shadow-2xs'
                                   : 'bg-stone-100 text-stone-950 font-bold border border-stone-200/90 shadow-2xs'
                                 : isDarkEffective
                                   ? 'text-white/75 hover:bg-white/[0.05] hover:text-white border border-transparent'
                                   : 'text-stone-700 hover:bg-stone-50 hover:text-stone-900 border border-transparent'
-                            }`}
+                              }`}
                           >
                             <div className="flex items-center gap-2.5 min-w-0">
-                              <span className={`shrink-0 transition-colors ${
-                                isActive
+                              <span className={`shrink-0 transition-colors ${isActive
                                   ? isDarkEffective ? 'text-white' : 'text-stone-950'
                                   : isDarkEffective ? 'text-white/60 group-hover:text-white' : 'text-stone-500 group-hover:text-stone-900'
-                              }`}>
+                                }`}>
                                 {item.icon}
                               </span>
                               <span className="truncate">{item.label}</span>
                             </div>
 
-                            {item.badge !== undefined && (
-                              <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono shrink-0 transition-colors ${
-                                isActive
+                            {item.badge !== undefined ? (
+                              <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono shrink-0 transition-colors ${isActive
                                   ? isDarkEffective
                                     ? 'bg-white/20 text-white font-bold'
                                     : 'bg-stone-200 text-stone-900 font-bold'
                                   : isDarkEffective
                                     ? 'bg-white/10 text-white/70'
                                     : 'bg-stone-100 text-stone-600 border border-stone-200/60'
-                              }`}>
+                                }`}>
                                 {item.badge}
                               </span>
+                            ) : isActive ? (
+                              <span className={`h-1.5 w-1.5 rounded-full ${getActiveDotClass()}`} />
+                            ) : (
+                              <ChevronLeft size={13} className="opacity-40" />
                             )}
                           </button>
                         );
@@ -673,11 +696,10 @@ export default function LibrarySidebar({
 
                       {/* Recent Book inside Library Accordion */}
                       {recentBook && (
-                        <div className={`mt-2 p-2.5 rounded-xl border space-y-1.5 shadow-2xs ${
-                          isDarkEffective
+                        <div className={`mt-2 p-2.5 rounded-xl border space-y-1.5 shadow-2xs ${isDarkEffective
                             ? 'bg-white/[0.03] border-white/10 text-white'
                             : 'bg-stone-50/90 border-stone-200 text-stone-900'
-                        }`}>
+                          }`}>
                           <div className="flex items-center gap-1.5 text-[11px] font-bold text-amber-600 dark:text-amber-400">
                             <Bookmark className="w-3.5 h-3.5" />
                             <span>متابعة القراءة الأخيرة</span>
@@ -685,9 +707,8 @@ export default function LibrarySidebar({
                           <h5 className="font-bold text-xs truncate">
                             {recentBook.title}
                           </h5>
-                          <p className={`text-[10.5px] truncate font-medium ${
-                            isDarkEffective ? 'text-white/60' : 'text-stone-500'
-                          }`}>
+                          <p className={`text-[10.5px] truncate font-medium ${isDarkEffective ? 'text-white/60' : 'text-stone-500'
+                            }`}>
                             {recentBook.author}
                           </p>
                           <button
@@ -696,11 +717,10 @@ export default function LibrarySidebar({
                               onReadRecentBook(recentBook);
                               onClose();
                             }}
-                            className={`w-full py-1.5 rounded-lg font-bold text-[11px] transition-all shadow-2xs cursor-pointer ${
-                              isDarkEffective
+                            className={`w-full py-1.5 rounded-lg font-bold text-[11px] transition-all shadow-2xs cursor-pointer ${isDarkEffective
                                 ? 'bg-white text-stone-950 hover:bg-stone-100'
                                 : 'bg-stone-900 text-white hover:bg-stone-800'
-                            }`}
+                              }`}
                           >
                             إكمال القراءة 📖
                           </button>
@@ -726,7 +746,7 @@ export default function LibrarySidebar({
                   }}
                   className="flex-1 flex items-center gap-3 text-right cursor-pointer"
                 >
-                  <div className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${isStudyActive ? 'brand-gradient text-white shadow-xs' : `border ${getNavIconBoxClass()}`}`}>
+                  <div className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${isStudyActive ? (isDarkEffective ? 'bg-white/10 border border-white/20 text-white shadow-xs' : 'bg-stone-200 border border-stone-300 text-stone-900 shadow-xs') : `border ${getNavIconBoxClass()}`}`}>
                     <BookOpenCheck size={16} />
                   </div>
                   <span>المدارسة الذكية</span>
@@ -791,50 +811,50 @@ export default function LibrarySidebar({
                               if (onNavigateGlobal) onNavigateGlobal('study');
                               window.dispatchEvent(new CustomEvent('open_study_panel', { detail: { panel: item.id } }));
                             }}
-                            className={`w-full group flex items-center justify-between py-2 px-2.5 rounded-lg text-xs transition-all cursor-pointer select-none ${
-                              isSubActive
+                            className={`w-full group flex items-center justify-between py-2 px-2.5 rounded-lg text-xs transition-all cursor-pointer select-none ${isSubActive
                                 ? isDarkEffective
                                   ? 'bg-white/15 text-white font-black border border-white/20 shadow-2xs'
                                   : 'bg-stone-200/90 text-stone-950 font-black border border-stone-300 shadow-2xs'
                                 : isDarkEffective
                                   ? 'font-semibold text-white/75 hover:bg-white/[0.05] hover:text-white border border-transparent'
                                   : 'font-semibold text-stone-700 hover:bg-stone-50 hover:text-stone-900 border border-transparent'
-                            }`}
+                              }`}
                           >
                             <div className="flex items-center gap-2.5 min-w-0">
-                              <span className={`shrink-0 transition-colors ${
-                                isSubActive
+                              <span className={`shrink-0 transition-colors ${isSubActive
                                   ? isDarkEffective ? 'text-white' : 'text-stone-950'
                                   : isDarkEffective ? 'text-white/60 group-hover:text-white' : 'text-stone-500 group-hover:text-stone-900'
-                              }`}>
+                                }`}>
                                 {item.icon}
                               </span>
                               <span className="truncate">{item.label}</span>
                             </div>
 
-                            {item.badge !== undefined && (
-                              <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono shrink-0 transition-colors ${
-                                isSubActive
+                            {item.badge !== undefined ? (
+                              <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono shrink-0 transition-colors ${isSubActive
                                   ? isDarkEffective
                                     ? 'bg-white/25 text-white font-bold'
                                     : 'bg-stone-300 text-stone-950 font-bold'
                                   : isDarkEffective
                                     ? 'bg-white/10 text-white/70'
                                     : 'bg-stone-100 text-stone-600 border border-stone-200/60'
-                              }`}>
+                                }`}>
                                 {item.badge}
                               </span>
+                            ) : isSubActive ? (
+                              <span className={`h-1.5 w-1.5 rounded-full ${getActiveDotClass()}`} />
+                            ) : (
+                              <ChevronLeft size={13} className="opacity-40" />
                             )}
                           </button>
                         );
                       })}
 
                       {/* Recent Study Session Card inside Study Accordion */}
-                      <div className={`mt-2 p-2.5 rounded-xl border space-y-1.5 shadow-2xs ${
-                        isDarkEffective
+                      <div className={`mt-2 p-2.5 rounded-xl border space-y-1.5 shadow-2xs ${isDarkEffective
                           ? 'bg-white/[0.03] border-white/10 text-white'
                           : 'bg-stone-50/90 border-stone-200 text-stone-900'
-                      }`}>
+                        }`}>
                         <div className="flex items-center gap-1.5 text-[11px] font-bold text-amber-600 dark:text-amber-400">
                           <GraduationCap className="w-3.5 h-3.5" />
                           <span>متابعة المدارسة الأخيرة</span>
@@ -842,9 +862,8 @@ export default function LibrarySidebar({
                         <h5 className="font-bold text-xs truncate">
                           {recentStudySession?.sectionTitle || recentStudySession?.bookTitle || 'عمدة الفقه • كتاب الطهارة'}
                         </h5>
-                        <p className={`text-[10.5px] truncate font-medium ${
-                          isDarkEffective ? 'text-white/60' : 'text-stone-500'
-                        }`}>
+                        <p className={`text-[10.5px] truncate font-medium ${isDarkEffective ? 'text-white/60' : 'text-stone-500'
+                          }`}>
                           {recentStudySession?.domain || 'فقه حنبلي • مدارسة تفاعلية بالذكاء الاصطناعي'}
                         </p>
                         <button
@@ -854,11 +873,10 @@ export default function LibrarySidebar({
                             if (onNavigateGlobal) onNavigateGlobal('study');
                             window.dispatchEvent(new CustomEvent('open_study_panel', { detail: { panel: 'workspace' } }));
                           }}
-                          className={`w-full py-1.5 rounded-lg font-bold text-[11px] transition-all shadow-2xs cursor-pointer ${
-                            isDarkEffective
+                          className={`w-full py-1.5 rounded-lg font-bold text-[11px] transition-all shadow-2xs cursor-pointer ${isDarkEffective
                               ? 'bg-white text-stone-950 hover:bg-stone-100'
                               : 'bg-stone-900 text-white hover:bg-stone-800'
-                          }`}
+                            }`}
                         >
                           إكمال المدارسة 🎓
                         </button>
@@ -876,15 +894,21 @@ export default function LibrarySidebar({
                 onClose();
                 if (onNavigateGlobal) onNavigateGlobal('lessons');
               }}
-              className={`flex w-full items-center justify-between rounded-xl border px-3.5 py-2.5 text-sm font-semibold active:scale-[0.99] transition-all cursor-pointer ${getNavItemCardClass()}`}
+              className={`flex w-full items-center justify-between rounded-xl border px-3.5 py-2.5 text-sm transition-all cursor-pointer active:scale-[0.99] select-none ${isLessonsActive ? `font-bold ${getActiveNavClass()}` : `font-semibold ${getNavItemCardClass()}`}`}
             >
               <div className="flex items-center gap-3">
-                <div className={`flex h-8 w-8 items-center justify-center rounded-lg border transition-colors ${getNavIconBoxClass()}`}>
+                <div className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${isLessonsActive ? (isDarkEffective ? 'bg-white/10 border border-white/20 text-white shadow-xs' : 'bg-stone-200 border border-stone-300 text-stone-900 shadow-xs') : `border ${getNavIconBoxClass()}`}`}>
                   <Video size={16} />
                 </div>
                 <span>الشروحات والدورات</span>
               </div>
-              <ChevronLeft size={16} className={isDarkEffective ? 'text-white/55' : 'text-stone-400'} />
+              <div className="flex items-center gap-2">
+                {isLessonsActive ? (
+                  <span className={`h-2 w-2 rounded-full ${getActiveDotClass()}`} />
+                ) : (
+                  <ChevronLeft size={16} className={isDarkEffective ? 'text-white/55' : 'text-stone-400'} />
+                )}
+              </div>
             </button>
 
             {/* 6. المحادثة الصوتية */}
@@ -962,9 +986,8 @@ export default function LibrarySidebar({
                 <motion.div
                   layout
                   transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                  className={`z-10 flex h-5 w-5 items-center justify-center rounded-full bg-white shadow-md ${
-                    isDarkEffective ? 'mr-0 ml-auto text-stone-800' : 'ml-0 mr-auto text-amber-600'
-                  }`}
+                  className={`z-10 flex h-5 w-5 items-center justify-center rounded-full bg-white shadow-md ${isDarkEffective ? 'mr-0 ml-auto text-stone-800' : 'ml-0 mr-auto text-amber-600'
+                    }`}
                 >
                   {isDarkEffective ? <Moon size={11} strokeWidth={2.5} /> : <Sun size={11} strokeWidth={2.5} />}
                 </motion.div>
@@ -1025,17 +1048,15 @@ export default function LibrarySidebar({
                       className="group flex flex-col items-center gap-1.5 py-1 px-1 transition-all active:scale-95 cursor-pointer"
                     >
                       <span
-                        className={`h-7 w-7 rounded-full bg-gradient-to-tr ${item.gradient} transition-all duration-300 ${
-                          isSelected
+                        className={`h-7 w-7 rounded-full bg-gradient-to-tr ${item.gradient} transition-all duration-300 ${isSelected
                             ? `ring-2 ${item.ring} ring-offset-2 ${isDarkEffective ? 'ring-offset-[#120324]' : 'ring-offset-white'} scale-115 shadow-lg`
                             : 'scale-90 opacity-70 group-hover:opacity-100 group-hover:scale-95'
-                        }`}
+                          }`}
                       />
-                      <span className={`text-[10px] leading-tight transition-colors ${
-                        isSelected
+                      <span className={`text-[10px] leading-tight transition-colors ${isSelected
                           ? (isDarkEffective ? 'font-bold text-white' : 'font-bold text-stone-900')
                           : (isDarkEffective ? 'font-medium text-white/60' : 'font-medium text-stone-600')
-                      }`}>
+                        }`}>
                         {item.name}
                       </span>
                     </button>
@@ -1134,9 +1155,8 @@ export default function LibrarySidebar({
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
                     transition={{ duration: 0.2 }}
-                    className={`border-t px-2 py-2 space-y-1 ${
-                      isDarkEffective ? 'border-white/10 bg-black/25' : 'border-stone-200/80 bg-stone-50/80'
-                    }`}
+                    className={`border-t px-2 py-2 space-y-1 ${isDarkEffective ? 'border-white/10 bg-black/25' : 'border-stone-200/80 bg-stone-50/80'
+                      }`}
                   >
                     {[
                       { id: 'admin', label: 'إدارة وضع الدراسة', icon: <LayoutDashboard size={13} />, color: isDarkEffective ? 'text-brand-blue' : 'text-blue-700' },
@@ -1155,9 +1175,8 @@ export default function LibrarySidebar({
                           onClose();
                           if (onNavigateGlobal) onNavigateGlobal(tool.id);
                         }}
-                        className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-right text-xs font-semibold transition-colors cursor-pointer ${tool.color} ${
-                          isDarkEffective ? 'hover:bg-white/10' : 'hover:bg-black/5'
-                        }`}
+                        className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-right text-xs font-semibold transition-colors cursor-pointer ${tool.color} ${isDarkEffective ? 'hover:bg-white/10' : 'hover:bg-black/5'
+                          }`}
                       >
                         <div className="flex items-center gap-2">
                           {tool.icon}

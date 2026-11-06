@@ -143,6 +143,20 @@ function AppContent() {
           onOpenVoice={() => navigate('voice')}
           initialQuestion={pendingQuestion}
           onConsumeInitial={() => setPendingQuestion(undefined)}
+          pendingBook={pendingBook}
+          onNavigateHome={() => navigate('home')}
+          onOpenKnowledge={openKnowledge}
+          onOpenStudy={openStudy}
+          onOpenLessons={openLessons}
+          onOpenAdmin={openAdmin}
+          onOpenTurathRag={openTurathRag}
+          onOpenEngineControl={openEngineControl}
+          onOpenDataIngestion={openDataIngestion}
+          onOpenV2PipelineAdmin={openV2PipelineAdmin}
+          onOpenAdminLibrary={openAdminLibrary}
+          onOpenYoutubeImporter={openYoutubeImporter}
+          onOpenSystemObservability={openSystemObservability}
+          onLogin={() => navigate('login')}
         />
       )
     }
@@ -155,6 +169,7 @@ function AppContent() {
           onExit={() => navigate('home')}
           onNavigateHome={() => navigate('home')}
           onTryChat={openChat}
+          onLogin={() => navigate('login')}
           onOpenKnowledge={openKnowledge}
           onOpenVoiceChat={openVoice}
           onOpenLessons={openLessons}
@@ -207,6 +222,7 @@ function AppContent() {
             activeTab="lessons"
             onNavigateHome={() => navigate('home')}
             onTryChat={openChat}
+            onLogin={() => navigate('login')}
             onOpenKnowledge={openKnowledge}
             onOpenStudy={openStudy}
             onOpenAdmin={openAdmin}
@@ -261,6 +277,7 @@ function AppContent() {
             activeTab="home"
             onNavigateHome={() => navigate('home')}
             onTryChat={openChat}
+            onLogin={() => navigate('login')}
             onOpenKnowledge={openKnowledge}
             onOpenStudy={openStudy}
             onOpenAdmin={openAdmin}
@@ -295,6 +312,7 @@ function AppContent() {
                 librarySubTab={libraryTab}
                 onNavigateHome={() => navigate('home')}
                 onTryChat={openChat}
+                onLogin={() => navigate('login')}
                 onOpenKnowledge={openKnowledge}
                 onOpenStudy={openStudy}
                 onOpenAdmin={openAdmin}
