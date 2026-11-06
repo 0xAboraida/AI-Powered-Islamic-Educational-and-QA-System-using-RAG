@@ -9,6 +9,7 @@ import whiteLogo from '@/assets/images/WhiteLogo.png'
 import zadDarkLogo from '@/assets/images/ZadDarkLogo.png'
 import type { Message, CitationDTO } from '../data'
 import { exportMessageToPdf } from '@/utils/pdfExporter'
+import { getChatMessageHighlights, applySavedHighlightToElement } from '@/utils/highlightUtils'
 import { useStudy } from '@/contexts/StudyContext'
 import { useTheme, type AccentColor } from '@/contexts/ThemeContext'
 import { AudioReaderButton } from '@/components/common/AudioReaderButton'
@@ -556,16 +557,18 @@ export function Bubble({
   const theme = getChatBubbleThemeClasses(accentColor, dark)
 
   let activeLessonBreadcrumb: string | undefined = lessonTitle
-  try {
-    const study = useStudy()
-    if (study) {
-      const parts = [study.headerSubtitle, study.chunkTitle].filter(Boolean)
-      if (parts.length > 0) {
-        activeLessonBreadcrumb = parts.join(' ‹ ')
+  if (lessonTitle) {
+    try {
+      const study = useStudy()
+      if (study) {
+        const parts = [study.headerSubtitle, study.chunkTitle].filter(Boolean)
+        if (parts.length > 0) {
+          activeLessonBreadcrumb = parts.join(' ‹ ')
+        }
       }
+    } catch (e) {
+      // Graceful fallback if invoked outside StudyProvider
     }
-  } catch (e) {
-    // Graceful fallback if invoked outside StudyProvider
   }
 
   const [displayedText, setDisplayedText] = useState(() => (message.stream && !isUser) ? '' : message.text)
@@ -632,6 +635,22 @@ export function Bubble({
       clearInterval(interval);
     };
   }, [message.stream, message.text, isStreaming, isUser]);
+
+  // Restore saved highlights for this message
+  useEffect(() => {
+    if (isStreaming || !messageContentRef.current) return
+    const savedHighlights = getChatMessageHighlights(message.id)
+    if (savedHighlights.length === 0) return
+
+    const timer = setTimeout(() => {
+      if (messageContentRef.current) {
+        savedHighlights.forEach(h => {
+          applySavedHighlightToElement(messageContentRef.current!, h)
+        })
+      }
+    }, 60)
+    return () => clearTimeout(timer)
+  }, [message.id, isStreaming, displayedText]);
 
   const markdownComponents = useMemo(() => {
     const extractText = (child: any): string => {
@@ -917,6 +936,7 @@ export function Bubble({
             <div
               ref={messageContentRef}
               data-selectable="true"
+              data-message-id={message.id}
               className={`relative px-2 sm:px-4 py-2.5 sm:py-4 border rounded-[18px] sm:rounded-[22px] rounded-tl-none flex flex-col gap-2.5 sm:gap-4 ${dark
                 ? 'bg-[#090b10] backdrop-blur-2xl border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.15)]'
                 : 'bg-[#FAF9FC] border-primary/15 shadow-[0_4px_20px_rgba(124,58,237,0.04)]'

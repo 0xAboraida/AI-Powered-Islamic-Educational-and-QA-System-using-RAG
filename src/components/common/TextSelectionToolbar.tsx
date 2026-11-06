@@ -17,6 +17,13 @@ import {
   AVAILABLE_VOICES,
   VoiceName
 } from '@/services/geminiTtsService'
+import {
+  highlightRange,
+  removeHighlightsFromRange,
+  removeHighlightById,
+  saveChatMessageHighlight,
+  removeChatMessageHighlight
+} from '@/utils/highlightUtils'
 
 interface TextSelectionToolbarProps {
   dark?: boolean
@@ -156,16 +163,29 @@ export function TextSelectionToolbar({ dark }: TextSelectionToolbarProps) {
       if (highlightSpan) {
         e.stopPropagation()
         const removedText = highlightSpan.textContent || ''
-        const parent = highlightSpan.parentNode
-        if (parent) {
-          while (highlightSpan.firstChild) {
-            parent.insertBefore(highlightSpan.firstChild, highlightSpan)
+        const highlightId = highlightSpan.getAttribute('data-highlight-id')
+        const messageContainer = highlightSpan.closest('[data-message-id]')
+        const messageId = messageContainer?.getAttribute('data-message-id')
+
+        if (highlightId) {
+          removeHighlightById(highlightId)
+        } else {
+          const parent = highlightSpan.parentNode
+          if (parent) {
+            while (highlightSpan.firstChild) {
+              parent.insertBefore(highlightSpan.firstChild, highlightSpan)
+            }
+            parent.removeChild(highlightSpan)
+            parent.normalize()
           }
-          parent.removeChild(highlightSpan)
-          parent.normalize()
         }
+
+        if (messageId && (highlightId || removedText)) {
+          removeChatMessageHighlight(messageId, highlightId || removedText)
+        }
+
         window.dispatchEvent(new CustomEvent('textHighlightRemoved', {
-          detail: { text: removedText }
+          detail: { text: removedText, id: highlightId }
         }))
         window.getSelection()?.removeAllRanges()
         setPosition(null)
@@ -276,9 +296,17 @@ export function TextSelectionToolbar({ dark }: TextSelectionToolbarProps) {
 
       setIsLibrarySelection(isLibrary)
 
-      // Check if selection contains or is inside a highlight
-      const isHighlighted = targetElement?.closest('[data-user-highlight="true"]') !== null ||
-                            targetElement?.querySelector('[data-user-highlight="true"]') !== null
+      // Check if current selection contains or is inside a highlight
+      let isHighlighted = targetElement?.closest('[data-user-highlight="true"]') !== null
+      if (!isHighlighted && targetElement) {
+        const marks = targetElement.querySelectorAll('[data-user-highlight="true"]')
+        for (let i = 0; i < marks.length; i++) {
+          if (range.intersectsNode(marks[i])) {
+            isHighlighted = true
+            break
+          }
+        }
+      }
       setHasHighlightSelected(isHighlighted)
 
       const newPos = computePosition(range)
@@ -362,12 +390,29 @@ export function TextSelectionToolbar({ dark }: TextSelectionToolbarProps) {
       if (containerNode.nodeType === Node.TEXT_NODE) {
         containerNode = containerNode.parentElement
       }
-      const pageEl = (containerNode as HTMLElement | null)?.closest('[data-page]')
+      const targetEl = containerNode as HTMLElement | null
+      const pageEl = targetEl?.closest('[data-page]')
       const pageNum = pageEl?.getAttribute('data-page') ? parseInt(pageEl.getAttribute('data-page')!, 10) : undefined
+
+      const msgBubbleEl = targetEl?.closest('[data-message-id]')
+      const messageId = msgBubbleEl?.getAttribute('data-message-id')
 
       const textHighlighted = selectedText
       const highlightId = `hl_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`
 
+      // 1. Physically apply highlight marks across the DOM selection
+      highlightRange(range, color, highlightId)
+
+      // 2. Persist in localStorage if inside a chat message
+      if (messageId) {
+        saveChatMessageHighlight(messageId, {
+          id: highlightId,
+          text: textHighlighted,
+          color
+        })
+      }
+
+      // 3. Dispatch custom event for readers / listeners (like TurathReader)
       window.dispatchEvent(new CustomEvent('textHighlightCreated', {
         detail: {
           text: textHighlighted,
@@ -396,28 +441,20 @@ export function TextSelectionToolbar({ dark }: TextSelectionToolbarProps) {
       if (containerNode.nodeType === Node.TEXT_NODE) {
         containerNode = containerNode.parentElement
       }
-      const targetElement = containerNode as HTMLElement | null
+      const targetEl = containerNode as HTMLElement | null
+      const msgBubbleEl = targetEl?.closest('[data-message-id]')
+      const messageId = msgBubbleEl?.getAttribute('data-message-id')
 
-      const highlightSpans = targetElement?.querySelectorAll('[data-user-highlight="true"]')
-      const parentHighlight = targetElement?.closest('[data-user-highlight="true"]')
+      const removedTexts = removeHighlightsFromRange(range)
 
-      const spansToRemove = new Set<HTMLElement>()
-      if (parentHighlight) spansToRemove.add(parentHighlight as HTMLElement)
-      if (highlightSpans) highlightSpans.forEach(s => spansToRemove.add(s as HTMLElement))
+      if (messageId && removedTexts.length > 0) {
+        removedTexts.forEach(t => removeChatMessageHighlight(messageId, t))
+      }
 
-      spansToRemove.forEach(span => {
-        const text = span.textContent || ''
+      removedTexts.forEach(text => {
         window.dispatchEvent(new CustomEvent('textHighlightRemoved', {
           detail: { text }
         }))
-        const parent = span.parentNode
-        if (parent) {
-          while (span.firstChild) {
-            parent.insertBefore(span.firstChild, span)
-          }
-          parent.removeChild(span)
-          parent.normalize()
-        }
       })
 
       selection.removeAllRanges()

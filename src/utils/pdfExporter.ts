@@ -171,62 +171,66 @@ export function buildCleanPrintablePdfContainer(
   const dateStr = new Date().toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' })
   const docId = `ZAD-${Math.floor(100000 + Math.random() * 900000)}`
 
-  // Extract or build full tree hierarchy breadcrumb path (e.g. الفقه › المغني › كتاب الصلاة › باب الأذان والإقامة)
-  let activeLessonTitle = lessonTitle
-  if (!activeLessonTitle && citations && citations.length > 0) {
-    for (const c of citations) {
-      if (c.hierarchy) {
-        if (typeof c.hierarchy === 'string' && c.hierarchy.trim().length > 0) {
-          activeLessonTitle = c.hierarchy
-            .split(/[\/>>]+/)
-            .map(s => s.trim())
-            .filter(Boolean)
-            .join(' ‹ ')
-          break
-        } else if (Array.isArray(c.hierarchy) && (c.hierarchy as any[]).length > 0) {
-          activeLessonTitle = (c.hierarchy as string[]).join(' ‹ ')
-          break
-        }
+  // 1. Detect document title from message if no lessonTitle passed
+  let documentTitle = ''
+  if (lessonTitle && lessonTitle.trim().length > 0) {
+    documentTitle = lessonTitle.trim()
+  } else {
+    // Look for first markdown heading (# Title, ## Title, ### Title)
+    const headingMatch = rawText.match(/^#{1,3}\s+(.+)$/m)
+    if (headingMatch && headingMatch[1].trim()) {
+      documentTitle = headingMatch[1].trim().replace(/[*_~`#]/g, '').trim()
+    } else {
+      const boldMatch = rawText.match(/^\s*\*\*([^*\n\r]+)\*\*/m)
+      if (boldMatch && boldMatch[1].trim()) {
+        documentTitle = boldMatch[1].trim().replace(/[:؛]/g, '').trim()
+      } else {
+        documentTitle = 'مستند شرعي موثق'
       }
+    }
+  }
 
-      const bTitle = c.book_title || c.bookTitle
-      const sTitle = (c as any).section_title || (c as any).sectionTitle
-      const parts = [c.madhhab, bTitle, sTitle].filter(Boolean)
-      if (parts.length > 0) {
-        activeLessonTitle = parts.join(' ‹ ')
-        break
+  // 2. Build full breadcrumb pathway
+  let formattedPathwayHtml = ''
+  let activeLessonTitle = lessonTitle
+  if (!activeLessonTitle) {
+    if (citations && citations.length > 0) {
+      for (const c of citations) {
+        if (c.hierarchy) {
+          const hStr = Array.isArray(c.hierarchy) ? (c.hierarchy as string[]).join(' ‹ ') : String(c.hierarchy)
+          if (hStr.trim().length > 0) {
+            activeLessonTitle = hStr.split(/[\/>>]+/).map(s => s.trim()).filter(Boolean).join(' ‹ ')
+            break
+          }
+        }
       }
     }
   }
 
   if (!activeLessonTitle) {
-    activeLessonTitle = 'منصة زاد للعلوم الشرعية — وثيقة تفاعلية'
+    // If regular chat without a specific lesson hierarchy:
+    const domainName = (citations && citations[0]?.madhhab) ? citations[0].madhhab : 'العلوم الشرعية'
+    activeLessonTitle = `المحادثة الذكية ‹ ${domainName} ‹ ${documentTitle}`
   }
 
-  // Process and format breadcrumb pathway cleanly, and extract last title
-  let formattedPathwayHtml = ''
-  let lastTitle = 'ملخص المطلب الشرعي'
-  if (activeLessonTitle) {
-    const parts = activeLessonTitle
-      .split(/[\/>>←\->‹›]+/)
-      .map(s => s.trim())
-      .filter(Boolean)
+  const parts = activeLessonTitle
+    .split(/[\/>>←\->‹›]+/)
+    .map(s => s.trim())
+    .filter(Boolean)
 
-    if (parts.length > 0) {
-      lastTitle = parts[parts.length - 1]
-      formattedPathwayHtml = parts.map((part, index) => {
-        const isLast = index === parts.length - 1
-        if (isLast) {
-          return `<span style="color: #ffffff; font-weight: 900; background: rgba(255,255,255,0.18); padding: 2px 9px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.35); display: inline-block;">${part}</span>`
-        }
-        return `<span style="color: #e9d5ff; font-weight: 800;">${part}</span>`
-      }).join(' <span style="color: #fbbf24; font-weight: 900; font-size: 11px; margin: 0 5px;">◀</span> ')
-    }
+  if (parts.length > 0) {
+    formattedPathwayHtml = parts.map((part, index) => {
+      const isLast = index === parts.length - 1
+      if (isLast) {
+        return `<span style="color: #ffffff; font-weight: 900; background: rgba(255,255,255,0.18); padding: 3px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.35); display: inline-block;">${part}</span>`
+      }
+      return `<span style="color: #e9d5ff; font-weight: 800;">${part}</span>`
+    }).join(' <span style="color: #fbbf24; font-weight: 900; font-size: 11px; margin: 0 5px;">◀</span> ')
+  } else {
+    formattedPathwayHtml = `<span style="color: #ffffff; font-weight: 900;">${documentTitle}</span>`
   }
 
-  if (!formattedPathwayHtml) {
-    formattedPathwayHtml = '<span style="color: #ffffff; font-weight: 800;">منصة زاد للعلوم الشرعية والتربوية</span>'
-  }
+  const lastTitle = documentTitle || (parts.length > 0 ? parts[parts.length - 1] : 'خلاصة المطلب الشرعي')
 
   // Top luxury gradient ribbon, Clean Header, and Dark Hierarchy Banner
   let html = `
@@ -237,36 +241,36 @@ export function buildCleanPrintablePdfContainer(
     <div style="height: 6px; background: linear-gradient(90deg, #f59e0b 0%, #10b981 35%, #7c3aed 70%, #db2777 100%);"></div>
 
     <!-- Main Branding Header Area -->
-    <div style="padding: 20px 36px 16px; background: linear-gradient(180deg, #faf5ff 0%, #ffffff 100%); border-bottom: 1px solid #ede9fe;">
+    <div style="padding: 22px 36px 18px; background: linear-gradient(180deg, #faf5ff 0%, #ffffff 100%); border-bottom: 1px solid #ede9fe;">
       <table style="width: 100%; border-collapse: collapse; margin: 0; padding: 0; table-layout: fixed;">
         <tr>
           <!-- Right Column: Logo & Main Title -->
           <td style="vertical-align: middle; text-align: right;">
             <table style="border-collapse: collapse; display: inline-table;">
               <tr>
-                <td style="vertical-align: middle; padding-left: 12px;">
-                  <img src="${zadDarkLogo}" alt="Zad Logo" style="height: 42px; width: auto; object-fit: contain; display: block;" />
+                <td style="vertical-align: middle; padding-left: 14px;">
+                  <img src="${zadDarkLogo}" alt="Zad Logo" style="height: 46px; width: auto; object-fit: contain; display: block;" />
                 </td>
                 <td style="vertical-align: middle; text-align: right;">
-                  <div style="font-size: 21px; font-weight: 900; color: #0f172a; line-height: 1.3; font-family: Cairo, sans-serif;">منصة زاد للعلوم الشرعية</div>
-                  <div style="font-size: 12.5px; font-weight: 800; color: #7c3aed; margin-top: 2px;">إجابات موثقه من أمهات الكتب الشرعية</div>
+                  <div style="font-size: 21px; font-weight: 900; color: #0f172a; line-height: 1.5; font-family: Cairo, sans-serif; margin-bottom: 4px;">منصة زاد للعلوم الشرعية</div>
+                  <div style="font-size: 12.5px; font-weight: 700; color: #7c3aed; line-height: 1.4;">إجابات موثقة ومستخرجة من أمهات كتب التراث</div>
                 </td>
               </tr>
             </table>
           </td>
 
           <!-- Left Column: Official Metadata Floating Card -->
-          <td style="vertical-align: middle; text-align: left; width: 240px;">
-            <div style="background: #ffffff; border: 1px solid #e9d5ff; border-radius: 12px; padding: 8px 14px; box-shadow: 0 3px 10px rgba(124, 58, 237, 0.05); display: inline-block; text-align: right;">
-              <table style="width: 100%; border-collapse: collapse; font-size: 11.5px;">
+          <td style="vertical-align: middle; text-align: left; width: 220px;">
+            <div style="background: #ffffff; border: 1px solid #e9d5ff; border-radius: 12px; padding: 10px 14px; box-shadow: 0 2px 8px rgba(124, 58, 237, 0.05); display: inline-block; text-align: right; min-width: 190px;">
+              <table style="width: 100%; border-collapse: collapse; font-size: 11.5px; line-height: 1.8;">
                 <tr>
-                  <td style="color: #64748b; font-weight: 700; padding-bottom: 4px; text-align: right; white-space: nowrap;">تاريخ التصدير:</td>
-                  <td style="color: #1e1b4b; font-weight: 800; padding-bottom: 4px; text-align: left; white-space: nowrap; padding-right: 8px;">${dateStr}</td>
+                  <td style="color: #64748b; font-weight: 700; text-align: right; white-space: nowrap;">تاريخ التصدير:</td>
+                  <td style="color: #1e1b4b; font-weight: 800; text-align: left; white-space: nowrap; padding-right: 8px;">${dateStr}</td>
                 </tr>
                 <tr>
                   <td style="color: #64748b; font-weight: 700; text-align: right; white-space: nowrap;">كود المستند:</td>
                   <td style="text-align: left; white-space: nowrap; padding-right: 8px;">
-                    <span style="direction: ltr; display: inline-block; font-family: 'Courier New', monospace; font-weight: 900; color: #7c3aed; background: #f3e8ff; padding: 1px 7px; border-radius: 5px; border: 1px solid #ddd6fe; font-size: 11px;">${docId}</span>
+                    <span style="direction: ltr; display: inline-block; font-family: monospace; font-weight: 900; color: #7c3aed; background: #f3e8ff; padding: 2px 7px; border-radius: 5px; border: 1px solid #ddd6fe; font-size: 11px;">${docId}</span>
                   </td>
                 </tr>
               </table>
@@ -277,13 +281,13 @@ export function buildCleanPrintablePdfContainer(
     </div>
 
     <!-- Active Book & Chapter Hierarchy Banner -->
-    <div style="padding: 10px 36px; background: linear-gradient(90deg, #1e1b4b 0%, #2e1065 50%, #4c1d95 100%); border-bottom: 3px solid #7c3aed;">
+    <div style="padding: 12px 36px; background: linear-gradient(90deg, #1e1b4b 0%, #2e1065 50%, #4c1d95 100%); border-bottom: 3px solid #7c3aed;">
       <table style="width: 100%; border-collapse: collapse; margin: 0; padding: 0; table-layout: fixed;">
         <tr>
           <td style="vertical-align: middle; text-align: right;">
             <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
               <span style="background: rgba(245,158,11,0.22); border: 1px solid #f59e0b; color: #fef08a; font-size: 11px; font-weight: 900; padding: 3px 10px; border-radius: 6px; flex-shrink: 0; display: inline-block; margin-left: 4px;">📚 المسار الشرعي:</span>
-              <div style="font-size: 13px; line-height: 1.5; display: inline-block; vertical-align: middle;">${formattedPathwayHtml}</div>
+              <div style="font-size: 13px; line-height: 1.6; display: inline-block; vertical-align: middle;">${formattedPathwayHtml}</div>
             </div>
           </td>
         </tr>
@@ -292,8 +296,8 @@ export function buildCleanPrintablePdfContainer(
 
     <div style="padding: 32px 40px 40px; background-color: #ffffff;">
       <!-- Prominent Centered Main Section Title -->
-      <div data-pdf-block="true" style="text-align: center; margin-bottom: 32px; padding-bottom: 20px; border-bottom: 2px dashed #ddd6fe; page-break-inside: avoid;">
-        <h1 style="font-size: 26px; font-weight: 900; color: #3b0764; margin: 0; line-height: 1.4; font-family: Cairo, sans-serif;">
+      <div data-pdf-block="true" style="text-align: center; margin-bottom: 28px; padding-bottom: 18px; border-bottom: 2px dashed #ddd6fe; page-break-inside: avoid;">
+        <h1 style="font-size: 24px; font-weight: 900; color: #3b0764; margin: 0; line-height: 1.5; font-family: Cairo, sans-serif;">
           ${lastTitle}
         </h1>
       </div>
@@ -359,8 +363,8 @@ export function buildCleanPrintablePdfContainer(
         // Main Section Card (Shaded Header Strip + Pure White Body)
         closeMainCard()
         html += `
-          <div data-pdf-block="true" style="background-color: #ffffff; border: 1.5px solid #e9d5ff; border-right: 6px solid #7c3aed; border-radius: 16px; margin: 24px 0; box-shadow: 0 4px 14px rgba(124, 58, 237, 0.05); overflow: hidden; page-break-inside: avoid;">
-            <div style="background: linear-gradient(90deg, #f3e8ff 0%, #faf5ff 100%); padding: 14px 22px; border-bottom: 1.5px solid #e9d5ff; font-size: 19px; font-weight: 900; color: #2e1065; line-height: 1.35; font-family: Cairo, sans-serif; display: flex; align-items: center; gap: 8px;">
+          <div style="background-color: #ffffff; border: 1.5px solid #e9d5ff; border-right: 6px solid #7c3aed; border-radius: 16px; margin: 24px 0; box-shadow: 0 4px 14px rgba(124, 58, 237, 0.05); overflow: hidden;">
+            <div data-pdf-block="true" data-pdf-heading="true" style="background: linear-gradient(90deg, #f3e8ff 0%, #faf5ff 100%); padding: 14px 22px; border-bottom: 1.5px solid #e9d5ff; font-size: 19px; font-weight: 900; color: #2e1065; line-height: 1.35; font-family: Cairo, sans-serif; display: flex; align-items: center; gap: 8px;">
               <span style="display: inline-block; width: 8px; height: 18px; background: #7c3aed; border-radius: 4px; flex-shrink: 0;"></span>
               <span>${titleText}</span>
             </div>
@@ -371,8 +375,8 @@ export function buildCleanPrintablePdfContainer(
         // Nested Sub-Section Card (Shaded Sub-Header Strip + Soft White Body)
         closeSubCard()
         html += `
-          <div data-pdf-block="true" style="background-color: #ffffff; border: 1px solid #ddd6fe; border-right: 4px solid #a855f7; border-radius: 12px; margin: 18px 0 14px 0; box-shadow: 0 2px 8px rgba(168, 85, 247, 0.04); overflow: hidden; page-break-inside: avoid;">
-            <div style="background: #f5f3ff; padding: 10px 18px; border-bottom: 1px solid #ede9fe; font-size: 16px; font-weight: 800; color: #581c87; line-height: 1.35; font-family: Cairo, sans-serif; display: flex; align-items: center; gap: 6px;">
+          <div style="background-color: #ffffff; border: 1px solid #ddd6fe; border-right: 4px solid #a855f7; border-radius: 12px; margin: 18px 0 14px 0; box-shadow: 0 2px 8px rgba(168, 85, 247, 0.04); overflow: hidden;">
+            <div data-pdf-block="true" data-pdf-heading="true" style="background: #f5f3ff; padding: 10px 18px; border-bottom: 1px solid #ede9fe; font-size: 16px; font-weight: 800; color: #581c87; line-height: 1.35; font-family: Cairo, sans-serif; display: flex; align-items: center; gap: 6px;">
               <span style="color: #a855f7; font-size: 14px; flex-shrink: 0;">🔹</span>
               <span>${titleText}</span>
             </div>
@@ -468,15 +472,24 @@ export function buildCleanPrintablePdfContainer(
       }
       const rawNum = numMatch[1]
       const cleanBadgeNum = rawNum.replace(/[\.\-:\s]+$/g, '').trim()
-      const restOfLine = line.slice(numMatch[0].length)
-        .replace(/__TITLE__/g, '')
-        .replace(/__BADGE__/g, '')
-        .replace(/\*\*(.*?)\*\*/g, '<strong style="color: #581c87; font-weight: 900;">$1</strong>')
-        .replace(/~~«?(.*?)»?~~/g, '«<strong style="color: #047857; font-weight: 900;">$1</strong>»')
-        .replace(/~~/g, '')
+      const formatInlineContent = (str: string) => {
+        return str
+          .replace(/__TITLE__/g, '')
+          .replace(/__BADGE__/g, '')
+          .replace(/\*\*(.*?)\*\*/g, '<strong style="color: #581c87; font-weight: 900;">$1</strong>')
+          .replace(/~~«?(.*?)»?~~/g, '«<strong style="color: #047857; font-weight: 900;">$1</strong>»')
+          .replace(/~~/g, '')
+          .replace(/(?:\[(\d+)\](?:[\s,،و]*\[(\d+)\])*)/g, (match) => {
+            const nums = (match.match(/\d+/g) || []).map(Number)
+            if (nums.length === 0) return match
+            return nums.map(n => `<span style="color: #7c3aed; font-weight: 800; background: #f3e8ff; border: 1px solid #ddd6fe; border-radius: 4px; padding: 0 4px; font-size: 11.5px; display: inline-block; margin: 0 2px;">[${n}]</span>`).join(' ')
+          })
+      }
+
+      const restOfLine = formatInlineContent(line.slice(numMatch[0].length))
 
       html += `
-        <div data-pdf-block="true" data-pdf-heading="true" style="margin: 16px 0 10px 0; display: flex; align-items: flex-start; gap: 10px; page-break-inside: avoid;">
+        <div data-pdf-block="true" style="margin: 16px 0 10px 0; display: flex; align-items: flex-start; gap: 10px; page-break-inside: avoid;">
           <span style="background: linear-gradient(135deg, #7c3aed, #9333ea); color: #ffffff; padding: 3px 11px; border-radius: 8px; font-weight: 900; font-size: 13.5px; flex-shrink: 0; line-height: 1.5; box-shadow: 0 2px 6px rgba(124,58,237,0.25);">${cleanBadgeNum}</span>
           <div style="font-size: 16px; font-weight: 800; color: #1e1b4b; line-height: 1.85; flex-grow: 1;">${restOfLine}</div>
         </div>
@@ -495,11 +508,18 @@ export function buildCleanPrintablePdfContainer(
       const indentLevel = indentMatch ? Math.floor(indentMatch[1].length / 2) : 0
       const extraPadding = indentLevel > 0 ? `margin-right: ${indentLevel * 20}px;` : ''
 
-      const itemText = line.replace(/^[\*\-]\s+/, '')
+      const rawItem = line.replace(/^[\*\-]\s+/, '')
+      const itemText = rawItem
         .replace(/__TITLE__/g, '')
         .replace(/__BADGE__/g, '')
         .replace(/\*\*(.*?)\*\*/g, '<strong style="color: #6b21a8; font-weight: 900;">$1</strong>')
         .replace(/~~/g, '')
+        .replace(/(?:\[(\d+)\](?:[\s,،و]*\[(\d+)\])*)/g, (match) => {
+          const nums = (match.match(/\d+/g) || []).map(Number)
+          if (nums.length === 0) return match
+          return nums.map(n => `<span style="color: #7c3aed; font-weight: 800; background: #f3e8ff; border: 1px solid #ddd6fe; border-radius: 4px; padding: 0 4px; font-size: 11.5px; display: inline-block; margin: 0 2px;">[${n}]</span>`).join(' ')
+        })
+
       html += `<li data-pdf-block="true" style="margin-bottom: 6px; font-weight: 700; page-break-inside: avoid; ${extraPadding}">${itemText}</li>`
       continue
     }
@@ -515,6 +535,11 @@ export function buildCleanPrintablePdfContainer(
       .replace(/\*\*(.*?)\*\*/g, '<strong style="color: #581c87; font-weight: 900;">$1</strong>')
       .replace(/~~«?(.*?)»?~~/g, '«<strong style="color: #047857; font-weight: 900;">$1</strong>»')
       .replace(/~~/g, '')
+      .replace(/(?:\[(\d+)\](?:[\s,،و]*\[(\d+)\])*)/g, (match) => {
+        const nums = (match.match(/\d+/g) || []).map(Number)
+        if (nums.length === 0) return match
+        return nums.map(n => `<span style="color: #7c3aed; font-weight: 800; background: #f3e8ff; border: 1px solid #ddd6fe; border-radius: 4px; padding: 0 4px; font-size: 11.5px; display: inline-block; margin: 0 2px;">[${n}]</span>`).join(' ')
+      })
 
     html += `<p data-pdf-block="true" style="font-size: 15.5px; font-weight: 700; color: #0f172a; line-height: 1.95; margin: 0 0 14px 0; text-align: justify; page-break-inside: avoid;">${formattedPara}</p>`
   }
@@ -523,14 +548,59 @@ export function buildCleanPrintablePdfContainer(
 
   if (citations && citations.length > 0) {
     html += `
-      <div data-pdf-block="true" style="margin-top: 40px; padding-top: 24px; border-top: 2px dashed #d8b4fe; page-break-inside: avoid;">
-        <h4 style="font-size: 16px; font-weight: 900; color: #581c87; margin: 0 0 14px 0;">📚 المصادر والمراجع المعزوة:</h4>
-        <div style="display: flex; flex-direction: column; gap: 10px;">
-          ${citations.map((c, i) => `
-            <div style="background-color: #faf5ff; border: 1px solid #f3e8ff; border-right: 4px solid #a855f7; padding: 12px 16px; border-radius: 10px; font-size: 13.5px; color: #4c1d95; font-weight: 700;">
-              [${i + 1}] ${c.book_title || 'مرجع غير محدد'} — ${c.section_title || ''}
-            </div>
-          `).join('')}
+      <div style="margin-top: 40px; padding-top: 24px; border-top: 2px dashed #d8b4fe;">
+        <div data-pdf-block="true" data-pdf-heading="true" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+          <h4 style="font-size: 17px; font-weight: 900; color: #3b0764; margin: 0; display: flex; align-items: center; gap: 8px;">
+            <span>📚</span>
+            <span>المصادر والمراجع المعزوة</span>
+            <span style="font-size: 12.5px; font-weight: 800; background: #f3e8ff; color: #7c3aed; padding: 2px 10px; border-radius: 20px; border: 1px solid #ddd6fe;">${citations.length} ${citations.length === 1 ? 'مرجع' : 'مراجع'}</span>
+          </h4>
+          <span style="font-size: 11.5px; color: #64748b; font-weight: 700;">توثيق مباشر من أمهات كتب التراث</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          ${citations.map((c, i) => {
+            const bTitle = c.bookTitle || c.book_title || 'مرجع معتمد في المكتبة الإسلامية'
+            const author = c.author || ''
+            const death = c.authorDeath || c.author_death || ''
+            const section = c.sectionTitle || c.section_title || ''
+            const madhhab = c.madhhab || ''
+            const part = c.part && c.part !== '0' ? `جـ ${c.part}` : ''
+            const page = (c.pageId || c.page_id) ? `ص ${c.pageId || c.page_id}` : ''
+            const rawUrl = c.sourceUrl || c.source_url || (c.pageId || c.page_id ? `https://kitabonline.org/book/${c.pageId || c.page_id}` : 'https://kitabonline.org')
+            const locationStr = [part, page].filter(Boolean).join(' • ')
+
+            return `
+              <div data-pdf-block="true" style="background-color: #ffffff; border: 1.5px solid #e9d5ff; border-right: 5px solid #7c3aed; padding: 14px 18px; border-radius: 12px; box-shadow: 0 2px 8px rgba(124, 58, 237, 0.04); page-break-inside: avoid;">
+                <!-- Top Row: Number, Book Title & Location/Madhhab -->
+                <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 6px;">
+                  <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                    <span style="background: #7c3aed; color: #ffffff; font-weight: 900; font-size: 12px; padding: 2px 8px; border-radius: 6px;">[${i + 1}]</span>
+                    <strong style="font-size: 15px; color: #1e1b4b; font-family: Cairo, sans-serif; font-weight: 900;">${bTitle}</strong>
+                    ${madhhab ? `<span style="background: #fdf4ff; border: 1px solid #f0abfc; color: #a21caf; font-size: 11px; font-weight: 800; padding: 1px 7px; border-radius: 4px;">${madhhab}</span>` : ''}
+                  </div>
+                  ${locationStr ? `<span style="background: #f1f5f9; border: 1px solid #cbd5e1; color: #334155; font-size: 11.5px; font-weight: 800; padding: 2px 8px; border-radius: 6px; white-space: nowrap;">${locationStr}</span>` : ''}
+                </div>
+
+                <!-- Middle Row: Author & Section -->
+                <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap; font-size: 12.5px; color: #475569; margin-bottom: 8px;">
+                  ${author ? `<div>المؤلف: <strong style="color: #0f172a; font-weight: 800;">${author}</strong> ${death && !death.includes('غير معروف') ? `<span style="color: #64748b; font-size: 11px;">(توفي ${death})</span>` : ''}</div>` : ''}
+                  ${section ? `<div style="color: #581c87;"><span style="color: #64748b;">المطلب:</span> <strong>${section}</strong></div>` : ''}
+                </div>
+
+                <!-- Bottom Row: Digital Source Link (Direct Clickable Link) -->
+                <div style="padding-top: 8px; border-top: 1px dashed #ede9fe; display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
+                  <span style="font-size: 11.5px; color: #6b21a8; font-weight: 800;">🔗 رابط المرجع في المكتبة الرقمية:</span>
+                  <a
+                    href="${rawUrl}"
+                    data-pdf-link="${rawUrl}"
+                    style="display: inline-block; direction: ltr; font-family: monospace; font-size: 11.5px; font-weight: 700; color: #1d4ed8; background: #eff6ff; border: 1px solid #bfdbfe; padding: 3px 10px; border-radius: 6px; text-decoration: underline;"
+                  >
+                    ${rawUrl}
+                  </a>
+                </div>
+              </div>
+            `
+          }).join('')}
         </div>
       </div>
     `
@@ -556,13 +626,22 @@ export async function exportMessageToPdf(
   const printContainer = buildCleanPrintablePdfContainer(messageText, citations, lessonTitle)
   document.body.appendChild(printContainer)
 
-  // Wait for images and styling
-  await new Promise(resolve => setTimeout(resolve, 250))
+  // Ensure document fonts and images are fully loaded and rendered
+  try {
+    if (document.fonts) {
+      await document.fonts.ready
+    }
+  } catch (e) {}
+  await new Promise(resolve => setTimeout(resolve, 350))
 
   const targetHeight = Math.max(printContainer.scrollHeight, printContainer.offsetHeight, 400)
 
   try {
-    const scale = 2
+    // Dynamic scale: 2x for standard documents, adjusted safely for very long responses to stay under browser canvas limits (12,000px)
+    const scale = targetHeight > 6000
+      ? Math.min(2, Math.max(1.3, Math.floor((12000 / targetHeight) * 10) / 10))
+      : 2
+
     const containerRect = printContainer.getBoundingClientRect()
 
     // Query top-level blocks marked with data-pdf-block BEFORE removing container from DOM
@@ -579,8 +658,25 @@ export async function exportMessageToPdf(
       }
     })
 
+    // Query interactive hyperlinks for embedding into PDF
+    const linkElements = Array.from(
+      printContainer.querySelectorAll('a[data-pdf-link], [data-pdf-link]')
+    )
+    const linkRects = linkElements.map(el => {
+      const rect = el.getBoundingClientRect()
+      const url = el.getAttribute('data-pdf-link') || ''
+      return {
+        top: Math.floor((rect.top - containerRect.top) * scale),
+        bottom: Math.floor((rect.bottom - containerRect.top) * scale),
+        left: Math.floor((rect.left - containerRect.left) * scale),
+        width: Math.floor(rect.width * scale),
+        height: Math.floor(rect.height * scale),
+        url
+      }
+    }).filter(l => Boolean(l.url))
+
     const canvas = await toCanvas(printContainer, {
-      quality: 0.98,
+      quality: 0.95,
       pixelRatio: scale,
       backgroundColor: '#ffffff',
       width: 794,
@@ -595,48 +691,56 @@ export async function exportMessageToPdf(
       orientation: 'portrait',
       unit: 'mm',
       format: 'a4',
+      compress: true,
     })
 
     const pdfWidth = 190
     const pageHeightMm = 277
     const margin = 10
-    const maxPageHeightPx = Math.floor((canvas.width * pageHeightMm) / pdfWidth)
+    // Absolute maximum slice height in canvas pixels that can physically fit on an A4 page:
+    const maxSliceHeightPx = Math.floor((canvas.width * pageHeightMm) / pdfWidth)
 
     let currentY = 0
     let pageNum = 0
 
     while (currentY < canvas.height) {
-      let targetY = currentY + maxPageHeightPx
+      // 1. Calculate the ideal maximum bottom boundary for this page
+      const maxTargetY = Math.min(currentY + maxSliceHeightPx, canvas.height)
+      let targetY = maxTargetY
 
-      if (targetY < canvas.height) {
-        // 1. Find all blocks (including inner paragraphs/quotes) that intersect targetY and fit within a page
-        const validIntersectingBlocks = blockRects.filter(
-          b => targetY > b.top && targetY < b.bottom && (b.bottom - b.top) <= maxPageHeightPx && b.top > currentY
+      // 2. If not the last page, find the cleanest break point before cutting elements
+      if (maxTargetY < canvas.height) {
+        // Find blocks that straddle maxTargetY (cut in half)
+        const cuttingBlocks = blockRects.filter(b =>
+          b.top < maxTargetY &&
+          b.bottom > maxTargetY &&
+          b.top > currentY + 120 &&
+          (b.bottom - b.top) <= maxSliceHeightPx
         )
 
-        if (validIntersectingBlocks.length > 0) {
-          // Select the block with the highest top position (closest to targetY but above it)
-          const bestBlock = validIntersectingBlocks.reduce((prev, curr) =>
-            curr.top > prev.top ? curr : prev
-          )
-          targetY = bestBlock.top
+        if (cuttingBlocks.length > 0) {
+          // Break before the block closest to the bottom of the page
+          cuttingBlocks.sort((a, b) => b.top - a.top)
+          targetY = cuttingBlocks[0].top
         }
 
-        // 2. Orphan Heading Check: Prevent page ending right on/after a heading without content below it
-        const orphanHeading = blockRects.find(
-          b => b.isHeading && b.top > currentY && (targetY - b.bottom < 110)
+        // Check for orphan headings near the bottom of THIS page
+        const orphanHeadings = blockRects.filter(b =>
+          b.isHeading &&
+          b.top > currentY + 120 &&
+          b.bottom <= targetY &&
+          (targetY - b.bottom) < 100
         )
 
-        if (orphanHeading && orphanHeading.top > currentY) {
-          targetY = orphanHeading.top
+        if (orphanHeadings.length > 0) {
+          orphanHeadings.sort((a, b) => b.top - a.top)
+          targetY = orphanHeadings[0].top
         }
-      } else {
-        targetY = canvas.height
       }
 
-      // Safety check against infinite loops if a single block exceeds page height
+      // Safety guard: ensure targetY always advances forward
       if (targetY <= currentY) {
-        targetY = currentY + maxPageHeightPx
+        targetY = maxTargetY
       }
 
       const sliceHeightPx = targetY - currentY
@@ -663,14 +767,28 @@ export async function exportMessageToPdf(
         )
       }
 
-      const pageDataUrl = pageCanvas.toDataURL('image/png')
+      // High-quality JPEG compression (0.88) reduces file size by 97% (from ~71MB down to ~1.5MB)
+      const pageDataUrl = pageCanvas.toDataURL('image/jpeg', 0.88)
       const sliceHeightMm = (sliceHeightPx * pdfWidth) / canvas.width
 
       if (pageNum > 0) {
         pdf.addPage()
       }
 
-      pdf.addImage(pageDataUrl, 'PNG', margin, margin, pdfWidth, sliceHeightMm)
+      pdf.addImage(pageDataUrl, 'JPEG', margin, margin, pdfWidth, sliceHeightMm, undefined, 'FAST')
+
+      // Inject native clickable hyperlinks on this page
+      const scaleToMm = pdfWidth / canvas.width
+      for (const l of linkRects) {
+        if (l.top >= currentY && l.top < targetY && l.url) {
+          const linkXMm = margin + (l.left * scaleToMm)
+          const linkYMm = margin + ((l.top - currentY) * scaleToMm)
+          const linkWMm = l.width * scaleToMm
+          const linkHMm = l.height * scaleToMm
+          pdf.link(linkXMm, linkYMm, linkWMm, linkHMm, { url: l.url })
+        }
+      }
+
       currentY = targetY
       pageNum++
     }

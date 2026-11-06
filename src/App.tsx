@@ -27,6 +27,63 @@ import { EngineControlPage } from './features/admin/engine-control'
 
 type View = 'home' | 'chat' | 'voice' | 'knowledge' | 'study' | 'admin' | 'turath_rag' | 'engine_control' | 'data_ingestion' | 'v2_pipeline_admin' | 'admin_library' | 'youtube_importer' | 'lessons' | 'scholar_profile' | 'system_observability' | 'login' | 'signup'
 
+const VIEW_TO_PATH: Record<View, string> = {
+  home: '/',
+  chat: '/chat',
+  voice: '/voice',
+  knowledge: '/library',
+  study: '/study',
+  lessons: '/lessons',
+  scholar_profile: '/scholar',
+  login: '/login',
+  signup: '/signup',
+  admin: '/admin',
+  turath_rag: '/turath-rag',
+  engine_control: '/engine-control',
+  data_ingestion: '/data-ingestion',
+  v2_pipeline_admin: '/pipeline-admin',
+  admin_library: '/admin-library',
+  youtube_importer: '/youtube-importer',
+  system_observability: '/observability',
+}
+
+function getInitialView(): View {
+  if (typeof window === 'undefined') return 'home'
+
+  const path = window.location.pathname.toLowerCase().replace(/\/+$/, '')
+  const hash = window.location.hash.toLowerCase().replace(/^#\/?/, '').replace(/\/+$/, '')
+  const target = hash ? `/${hash}` : (path || '/')
+
+  for (const [v, p] of Object.entries(VIEW_TO_PATH)) {
+    if (p !== '/' && (target === p || target.startsWith(p + '/'))) {
+      return v as View
+    }
+  }
+
+  // Common aliases
+  if (target === '/knowledge' || target.startsWith('/knowledge/')) return 'knowledge'
+  if (target === '/turath_rag') return 'turath_rag'
+  if (target === '/engine_control') return 'engine_control'
+  if (target === '/data_ingestion') return 'data_ingestion'
+  if (target === '/v2_pipeline_admin') return 'v2_pipeline_admin'
+  if (target === '/admin_library') return 'admin_library'
+  if (target === '/youtube_importer') return 'youtube_importer'
+  if (target === '/system_observability') return 'system_observability'
+
+  return 'home'
+}
+
+function getInitialLibraryTab(): MainTab {
+  if (typeof window === 'undefined') return 'home'
+  const searchParams = new URLSearchParams(window.location.search)
+  const tabParam = searchParams.get('tab')
+  const validTabs: MainTab[] = ['home', 'categories', 'authors', 'narrators', 'featured', 'media', 'courses', 'favorites', 'downloads']
+  if (tabParam && validTabs.includes(tabParam as MainTab)) {
+    return tabParam as MainTab
+  }
+  return 'home'
+}
+
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean, error: any }> {
   constructor(props: any) {
     super(props);
@@ -52,24 +109,72 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
 }
 
 function AppContent() {
-  const [view, setView] = useState<View>('home')
-  const [hasVisitedKnowledge, setHasVisitedKnowledge] = useState(false)
-  const [libraryTab, setLibraryTab] = useState<MainTab>('home')
-  const [isLibraryScrolled, setIsLibraryScrolled] = useState(false)
-  const [selectedScholar, setSelectedScholar] = useState<string | null>(null)
+  const initialView = getInitialView()
+  const [view, setView] = useState<View>(initialView)
+  const [hasVisitedKnowledge, setHasVisitedKnowledge] = useState(initialView === 'knowledge')
+  const [libraryTab, setLibraryTab] = useState<MainTab>(getInitialLibraryTab)
+  const [isLibraryScrolled, setIsLibraryScrolled] = useState(getInitialLibraryTab() !== 'home')
+  const [selectedScholar, setSelectedScholar] = useState<string | null>(() => {
+    if (typeof window === 'undefined') return null
+    return new URLSearchParams(window.location.search).get('scholar') || null
+  })
   const [pendingQuestion, setPendingQuestion] = useState<string | undefined>()
   const [pendingBook, setPendingBook] = useState<{ id: number | string; title: string; author: string } | null>(null)
   const { isAuthenticated } = useAuth()
   const { isDark } = useTheme()
 
-  const navigate = (newView: View) => {
-    if (view === newView) return
+  const navigate = useCallback((newView: View, replace = false) => {
     if (newView === 'knowledge') {
       setHasVisitedKnowledge(true)
     }
     window.scrollTo({ top: 0, behavior: 'instant' })
     setView(newView)
-  }
+
+    const newPath = VIEW_TO_PATH[newView] || '/'
+    const currentPath = window.location.pathname
+    if (currentPath !== newPath || window.location.search) {
+      if (replace) {
+        window.history.replaceState({ view: newView }, '', newPath)
+      } else {
+        window.history.pushState({ view: newView }, '', newPath)
+      }
+    }
+  }, [])
+
+  // Sync state with browser back/forward buttons
+  useEffect(() => {
+    const handlePopState = (e: PopStateEvent) => {
+      const stateView = e.state?.view as View | undefined
+      if (stateView && VIEW_TO_PATH[stateView]) {
+        setView(stateView)
+        if (stateView === 'knowledge') setHasVisitedKnowledge(true)
+      } else {
+        const detected = getInitialView()
+        setView(detected)
+        if (detected === 'knowledge') setHasVisitedKnowledge(true)
+      }
+
+      if (window.location.pathname.startsWith('/library')) {
+        const tab = getInitialLibraryTab()
+        setLibraryTab(tab)
+      }
+    }
+
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [])
+
+  // Initial URL cleanup/synchronization
+  useEffect(() => {
+    const expectedPath = VIEW_TO_PATH[view] || '/'
+    if (window.location.hash) {
+      window.history.replaceState({ view }, '', expectedPath)
+    } else if (window.location.pathname !== expectedPath && !window.location.search) {
+      window.history.replaceState({ view }, '', expectedPath)
+    } else if (!window.history.state?.view) {
+      window.history.replaceState({ view }, '', window.location.pathname + window.location.search)
+    }
+  }, [])
 
   useEffect(() => {
     document.documentElement.dir = 'rtl'
@@ -96,6 +201,9 @@ function AppContent() {
   
   const handleLibraryTabChange = useCallback((tab: MainTab) => {
     setLibraryTab((prev: any) => (prev === tab ? prev : tab))
+    const search = tab === 'home' ? '' : `?tab=${tab}`
+    const targetUrl = `/library${search}`
+    window.history.replaceState({ view: 'knowledge', tab }, '', targetUrl)
   }, [])
 
   const handleLibraryScrolledChange = useCallback((scrolled: boolean) => {
@@ -114,6 +222,12 @@ function AppContent() {
     }
     window.scrollTo({ top: 0, behavior: 'instant' })
     setView('knowledge')
+
+    const search = resolvedTab === 'home' ? '' : `?tab=${resolvedTab}`
+    const targetUrl = `/library${search}`
+    if (window.location.pathname !== '/library' || window.location.search !== search) {
+      window.history.pushState({ view: 'knowledge', tab: resolvedTab }, '', targetUrl)
+    }
   }, [])
   const openStudy = () => isAuthenticated ? navigate('study') : navigate('login')
   const openAdmin = () => navigate('admin')
@@ -240,7 +354,8 @@ function AppContent() {
             onBack={() => navigate('home')}
             onNavigateToScholar={(id) => {
               setSelectedScholar(id)
-              navigate('scholar_profile')
+              window.history.pushState({ view: 'scholar_profile', scholar: id }, '', `/scholar?scholar=${encodeURIComponent(id)}`)
+              setView('scholar_profile')
             }}
             onNavigateToImporter={() => navigate('youtube_importer')}
             hideHeader={true}

@@ -36,6 +36,7 @@ import whiteLogo from '@/assets/images/WhiteLogo.png'
 import zadDarkLogo from '@/assets/images/ZadDarkLogo.png'
 import IslamicPattern from '../knowledge/components/IslamicPattern'
 import LibrarySidebar from '../knowledge/components/LibrarySidebar'
+import UserProfileModal from '../profile/UserProfileModal'
 
 import { useSpeechRecognition } from './hooks/useSpeechRecognition'
 import { ChatHistoryDrawer } from './components/ChatHistoryDrawer'
@@ -252,6 +253,7 @@ export default function ChatScreen({
 
   // Platform Sidebar state
   const [isPlatformSidebarOpen, setIsPlatformSidebarOpen] = useState(false)
+  const [showProfileModal, setShowProfileModal] = useState(false)
 
   // Chat History Drawer state
   const [isHistoryOpen, setIsHistoryOpen] = useState(false)
@@ -885,9 +887,14 @@ export default function ChatScreen({
           onOpenKnowledge?.(tab)
         }}
         onReadRecentBook={() => {}}
+        onOpenProfile={() => {
+          setIsPlatformSidebarOpen(false)
+          setShowProfileModal(true)
+        }}
         onNavigateGlobal={(view) => {
           setIsPlatformSidebarOpen(false)
-          if (view === 'home') onNavigateHome ? onNavigateHome() : onExit()
+          if (view === 'profile') setShowProfileModal(true)
+          else if (view === 'home') onNavigateHome ? onNavigateHome() : onExit()
           else if (view === 'knowledge') onOpenKnowledge?.()
           else if (view === 'study') onOpenStudy?.()
           else if (view === 'lessons') onOpenLessons?.()
@@ -903,6 +910,13 @@ export default function ChatScreen({
         onExit={onExit}
         onLogin={onLogin}
       />
+
+      {showProfileModal && (
+        <UserProfileModal
+          isOpen={showProfileModal}
+          onClose={() => setShowProfileModal(false)}
+        />
+      )}
     </div>
   )
 }
