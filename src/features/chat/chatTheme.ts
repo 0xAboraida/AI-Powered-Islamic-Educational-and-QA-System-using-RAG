@@ -10,13 +10,13 @@ export const LIGHT_RESPONSIVE_PAGE_BG: Record<string, string> = {
 
 export function getGlassHeaderButtonClass(
   dark: boolean,
-  currentAccent: (typeof ACCENT_STYLES)[string],
+  _currentAccent?: (typeof ACCENT_STYLES)[string],
   isActive = false,
 ): string {
-  return `flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl transition-all duration-200 cursor-pointer backdrop-blur-xl border ${
+  return `flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl transition-all duration-200 cursor-pointer backdrop-blur-xl backdrop-saturate-150 active:scale-95 ${
     dark
-      ? `bg-gradient-to-b from-white/[0.14] to-white/[0.05] border-white/15 text-white shadow-[0_6px_20px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.18)] hover:from-white/[0.2] hover:to-white/[0.08] ${currentAccent.darkBorderHover} ${isActive ? 'from-white/[0.22] to-white/[0.1] ring-2 ring-white/25' : ''}`
-      : `bg-gradient-to-b from-white/75 to-white/40 ${currentAccent.lightBorder} text-stone-800 shadow-[0_6px_20px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] hover:from-white/85 hover:to-white/55 ${currentAccent.lightBorderHover} ${isActive ? 'from-white/90 to-white/65 ring-2 ring-current/20' : ''}`
+      ? `${isActive ? 'bg-white/[0.16] shadow-[0_6px_24px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.22)]' : 'bg-white/[0.08] shadow-[0_6px_20px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.14)] hover:bg-white/[0.14]'} text-white`
+      : `${isActive ? 'bg-white/85 shadow-[0_6px_22px_rgba(15,23,42,0.12),inset_0_1px_0_rgba(255,255,255,1)]' : 'bg-white/60 shadow-[0_4px_18px_rgba(15,23,42,0.08),0_1px_3px_rgba(15,23,42,0.04),inset_0_1px_0_rgba(255,255,255,0.95)] hover:bg-white/80 hover:shadow-[0_6px_22px_rgba(15,23,42,0.11),inset_0_1px_0_rgba(255,255,255,1)]'} text-stone-800`
   }`
 }
 
