@@ -762,163 +762,99 @@ export function StudyDocument({
                     </div>
 
                     {/* Clean Right-Aligned Metadata List without Box Frames */}
-                    <div className="flex flex-col items-start gap-2 w-full pt-1 text-right">
-                      {(() => {
-                        const levels = [
-                          ...(chunkMeta.hierarchy?.kitab
-                            ? [chunkMeta.hierarchy.kitab]
-                            : []),
+                    {(() => {
+                      const metaRowClass = `flex items-start gap-2 w-full text-xs sm:text-[13px] leading-5 ${
+                        isDark ? "text-slate-200" : "text-slate-800"
+                      }`
+                      const metaIconClass = `shrink-0 mt-[3px] ${docTheme.icon}`
+                      const levels = [
+                        ...(chunkMeta.hierarchy?.kitab
+                          ? [chunkMeta.hierarchy.kitab]
+                          : []),
+                        ...(chunkMeta.hierarchy?.sections || []),
+                      ].filter(Boolean)
+                      const metaItems = [
+                        (chunkMeta.domain || (chunkMeta as any).category) && {
+                          Icon: Book,
+                          label: "القسم",
+                          value: chunkMeta.domain || (chunkMeta as any).category,
+                        },
+                        chunkMeta.madhhab && {
+                          Icon: Library,
+                          label: "المذهب",
+                          value: chunkMeta.madhhab,
+                        },
+                        chunkMeta.hijri_century && {
+                          Icon: CalendarDays,
+                          label: "القرن",
+                          value: chunkMeta.hijri_century,
+                        },
+                        ((chunkMeta.part !== undefined &&
+                          chunkMeta.part !== null) ||
+                          (chunkMeta.total_parts !== undefined &&
+                            chunkMeta.total_parts !== null)) && {
+                          Icon: Layers,
+                          label: "الجزء",
+                          value: `${chunkMeta.part || "-"}${chunkMeta.total_parts ? ` / ${chunkMeta.total_parts}` : ""}`,
+                        },
+                        chunkMeta.page_id && {
+                          Icon: Hash,
+                          label: "الصفحة",
+                          value: chunkMeta.page_id,
+                        },
+                      ].filter(Boolean) as {
+                        Icon: React.ElementType
+                        label: string
+                        value: string | number
+                      }[]
 
-                          ...(chunkMeta.hierarchy?.sections || []),
-                        ].filter(Boolean)
-
-                        if (levels.length === 0) return null
-
-                        return (
-                          <div
-                            className={`flex items-center flex-wrap gap-2 text-xs sm:text-[13px] ${
-                              isDark ? "text-slate-200" : "text-slate-800"
-                            }`}
-                          >
-                            <Bookmark
-                              size={14}
-                              className={`shrink-0 ${docTheme.icon}`}
-                            />
-                            <div className="flex flex-wrap items-center gap-1.5">
-                              <span>العنوان:</span>
-                              {levels.map((level, idx) => (
-                                <React.Fragment key={idx}>
-                                  <span className="font-bold">{level}</span>
-                                  {idx < levels.length - 1 && (
-                                    <ChevronLeft
-                                      size={11}
-                                      className="shrink-0 opacity-50"
-                                    />
-                                  )}
-                                </React.Fragment>
-                              ))}
+                      return (
+                        <div className="flex flex-col items-start gap-2 w-full pt-1 text-right">
+                          {levels.length > 0 && (
+                            <div className={metaRowClass}>
+                              <Bookmark size={14} className={metaIconClass} />
+                              <div className="min-w-0 flex-1 flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+                                <span>العنوان:</span>
+                                {levels.map((level, idx) => (
+                                  <React.Fragment key={idx}>
+                                    <span className="font-bold">{level}</span>
+                                    {idx < levels.length - 1 && (
+                                      <ChevronLeft
+                                        size={11}
+                                        className="shrink-0 opacity-50"
+                                      />
+                                    )}
+                                  </React.Fragment>
+                                ))}
+                              </div>
                             </div>
-                          </div>
-                        )
-                      })()}
-                      {chunkMeta.author && (
-                        <div
-                          className={`flex items-center gap-2 text-xs sm:text-[13px] ${
-                            isDark ? "text-slate-200" : "text-slate-800"
-                          }`}
-                        >
-                          <User
-                            size={14}
-                            className={`shrink-0 ${docTheme.icon}`}
-                          />
-                          <span>
-                            المؤلف:{" "}
-                            <span className="font-bold">
-                              {chunkMeta.author}
-                              {chunkMeta.author_death
-                                ? ` (${chunkMeta.author_death})`
-                                : ""}
-                            </span>
-                          </span>
+                          )}
+                          {chunkMeta.author && (
+                            <div className={metaRowClass}>
+                              <User size={14} className={metaIconClass} />
+                              <span className="min-w-0 flex-1">
+                                المؤلف:{" "}
+                                <span className="font-bold">
+                                  {chunkMeta.author}
+                                  {chunkMeta.author_death
+                                    ? ` (${chunkMeta.author_death})`
+                                    : ""}
+                                </span>
+                              </span>
+                            </div>
+                          )}
+                          {metaItems.map(({ Icon, label, value }) => (
+                            <div key={label} className={metaRowClass}>
+                              <Icon size={14} className={metaIconClass} />
+                              <span className="min-w-0 flex-1">
+                                {label}:{" "}
+                                <span className="font-bold">{value}</span>
+                              </span>
+                            </div>
+                          ))}
                         </div>
-                      )}
-                      {(chunkMeta.domain || (chunkMeta as any).category) && (
-                        <div
-                          className={`flex items-center gap-2 text-xs sm:text-[13px] ${
-                            isDark ? "text-slate-200" : "text-slate-800"
-                          }`}
-                        >
-                          <Book
-                            size={14}
-                            className={`shrink-0 ${docTheme.icon}`}
-                          />
-                          <span>
-                            القسم:{" "}
-                            <span className="font-bold">
-                              {chunkMeta.domain || (chunkMeta as any).category}
-                            </span>
-                          </span>
-                        </div>
-                      )}
-                      {chunkMeta.madhhab && (
-                        <div
-                          className={`flex items-center gap-2 text-xs sm:text-[13px] ${
-                            isDark ? "text-slate-200" : "text-slate-800"
-                          }`}
-                        >
-                          <Library
-                            size={14}
-                            className={`shrink-0 ${docTheme.icon}`}
-                          />
-                          <span>
-                            المذهب:{" "}
-                            <span className="font-bold">
-                              {chunkMeta.madhhab}
-                            </span>
-                          </span>
-                        </div>
-                      )}
-                      {chunkMeta.hijri_century && (
-                        <div
-                          className={`flex items-center gap-2 text-xs sm:text-[13px] ${
-                            isDark ? "text-slate-200" : "text-slate-800"
-                          }`}
-                        >
-                          <CalendarDays
-                            size={14}
-                            className={`shrink-0 ${docTheme.icon}`}
-                          />
-                          <span>
-                            القرن:{" "}
-                            <span className="font-bold">
-                              {chunkMeta.hijri_century}
-                            </span>
-                          </span>
-                        </div>
-                      )}
-                      {((chunkMeta.part !== undefined &&
-                        chunkMeta.part !== null) ||
-                        (chunkMeta.total_parts !== undefined &&
-                          chunkMeta.total_parts !== null)) && (
-                        <div
-                          className={`flex items-center gap-2 text-xs sm:text-[13px] ${
-                            isDark ? "text-slate-200" : "text-slate-800"
-                          }`}
-                        >
-                          <Layers
-                            size={14}
-                            className={`shrink-0 ${docTheme.icon}`}
-                          />
-                          <span>
-                            الجزء:{" "}
-                            <span className="font-bold">
-                              {chunkMeta.part || "-"}
-                              {chunkMeta.total_parts
-                                ? ` / ${chunkMeta.total_parts}`
-                                : ""}
-                            </span>
-                          </span>
-                        </div>
-                      )}
-                      {chunkMeta.page_id && (
-                        <div
-                          className={`flex items-center gap-2 text-xs sm:text-[13px] ${
-                            isDark ? "text-slate-200" : "text-slate-800"
-                          }`}
-                        >
-                          <Hash
-                            size={14}
-                            className={`shrink-0 ${docTheme.icon}`}
-                          />
-                          <span>
-                            الصفحة:{" "}
-                            <span className="font-bold">
-                              {chunkMeta.page_id}
-                            </span>
-                          </span>
-                        </div>
-                      )}
-                    </div>
+                      )
+                    })()}
                   </div>
                 )}
 
