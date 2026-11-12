@@ -48,6 +48,7 @@ import { useTheme, AccentColor } from '../../../contexts/ThemeContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import { getAvatarUrl } from '../../../api/client';
 import { studyApi, type StudySessionDto } from '../../../api/studyApi';
+import AddToHomeScreenButton from '../../../components/common/AddToHomeScreenButton';
 import { MainTab } from '../types/bookTypes';
 export type { MainTab };
 
@@ -120,9 +121,10 @@ export default function LibrarySidebar({
 
   const isStudyActive = (activeMainTab as string) === 'study';
   const isChatActive = (activeMainTab as string) === 'chat';
+  const isVoiceActive = (activeMainTab as string) === 'voice';
   const isHomeActive = (activeMainTab as string) === 'home';
   const isLessonsActive = (activeMainTab as string) === 'lessons';
-  const isLibraryActive = !isStudyActive && !isChatActive && !isHomeActive && !isLessonsActive;
+  const isLibraryActive = !isStudyActive && !isChatActive && !isVoiceActive && !isHomeActive && !isLessonsActive;
 
   // Library & Study accordion sub-menu expanded states
   const [isLibraryExpanded, setIsLibraryExpanded] = useState(isLibraryActive);
@@ -132,7 +134,12 @@ export default function LibrarySidebar({
     if ((activeMainTab as string) === 'study') {
       setIsStudyExpanded(true);
       setIsLibraryExpanded(false);
-    } else if ((activeMainTab as string) === 'chat' || (activeMainTab as string) === 'home' || (activeMainTab as string) === 'lessons') {
+    } else if (
+      (activeMainTab as string) === 'chat' ||
+      (activeMainTab as string) === 'voice' ||
+      (activeMainTab as string) === 'home' ||
+      (activeMainTab as string) === 'lessons'
+    ) {
       setIsStudyExpanded(false);
       setIsLibraryExpanded(false);
     } else {
@@ -918,17 +925,22 @@ export default function LibrarySidebar({
                 onClose();
                 if (onNavigateGlobal) onNavigateGlobal('voice');
               }}
-              className={`flex w-full items-center justify-between rounded-xl border px-3.5 py-2.5 text-sm font-semibold active:scale-[0.99] transition-all cursor-pointer ${getNavItemCardClass()}`}
+              className={`flex w-full items-center justify-between rounded-xl border px-3.5 py-2.5 text-sm active:scale-[0.99] transition-all cursor-pointer select-none ${isVoiceActive ? `font-bold ${getActiveNavClass()}` : `font-semibold ${getNavItemCardClass()}`}`}
             >
               <div className="flex items-center gap-3">
-                <div className={`flex h-8 w-8 items-center justify-center rounded-lg border transition-colors ${getNavIconBoxClass()}`}>
+                <div className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${isVoiceActive ? (isDarkEffective ? 'bg-white/10 border border-white/20 text-white shadow-xs' : 'bg-stone-200 border border-stone-300 text-stone-900 shadow-xs') : `border ${getNavIconBoxClass()}`}`}>
                   <Mic size={16} />
                 </div>
                 <span>المحادثة الصوتية</span>
               </div>
-              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${getThemeBadgeClass()}`}>
-                قريباً...
-              </span>
+              <div className="flex items-center gap-2">
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${getThemeBadgeClass()}`}>
+                  قريباً...
+                </span>
+                {isVoiceActive && (
+                  <span className={`h-2 w-2 rounded-full ${getActiveDotClass()}`} />
+                )}
+              </div>
             </button>
           </div>
 
@@ -1071,6 +1083,9 @@ export default function LibrarySidebar({
             <div className={`pr-0.5 pl-2 text-[11px] font-semibold tracking-wider transition-colors ${getDrawerSectionHeadingClass()}`}>
               التطبيق والمشاركة
             </div>
+
+            {/* إضافة زاد إلى شاشة الهاتف */}
+            <AddToHomeScreenButton isDarkOverride={isDarkEffective} onInstalled={onClose} />
 
             {/* تحميل التطبيق */}
             <a

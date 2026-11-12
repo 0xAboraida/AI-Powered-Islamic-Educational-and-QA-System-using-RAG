@@ -31,6 +31,7 @@ import {
   MessageSquare,
   RefreshCw,
   ArrowDown,
+  ArrowUpDown,
   ThumbsUp,
   Image as ImageIcon
 } from 'lucide-react';
@@ -64,11 +65,14 @@ const formatDuration = (duration?: string) => {
 import {
   addScholar,
   getScholars,
+  fetchScholarsFromSupabase,
   addSeriesToStore,
   getSeries,
+  fetchSeriesFromSupabase,
   deleteSeriesFromStore,
   deleteScholarFromStore,
-  mergeScholarsInStore
+  mergeScholarsInStore,
+  saveScholarsOrder
 } from '../../lessons/data/store';
 import { Scholar, ExplanationSeries } from '../../lessons/data/mockData';
 import { PlaylistCard } from './components/PlaylistCard';
@@ -77,6 +81,7 @@ import { AddManualContentModal } from './components/AddManualContentModal';
 import { CurateSeriesModal } from './components/CurateSeriesModal';
 import { AddScholarModal } from './components/AddScholarModal';
 import { MergeScholarModal } from './components/MergeScholarModal';
+import { ReorderScholarsModal } from './components/ReorderScholarsModal';
 import { ScholarAvatar } from '../../../components/common/ScholarAvatar';
 import { TelegramEmbedModal } from '../../../components/common/TelegramEmbedModal';
 
@@ -145,18 +150,73 @@ export const YoutubeImporter: React.FC<YoutubeImporterProps> = ({ onBack }) => {
   const [isCurateModalOpen, setIsCurateModalOpen] = useState(false);
   const [isAddScholarModalOpen, setIsAddScholarModalOpen] = useState(false);
   const [isMergeModalOpen, setIsMergeModalOpen] = useState(false);
+  const [isReorderModalOpen, setIsReorderModalOpen] = useState(false);
   const [notification, setNotification] = useState('');
   const [previewTelegram, setPreviewTelegram] = useState<{ url: string; title: string } | null>(null);
 
-  // Load existing registered scholars and auto-select first one if none selected
+  // Helper to safely load channel playlists for a scholar
+  const fetchScholarPlaylists = async (scholar: Scholar) => {
+    if (!scholar.youtubeUrl) {
+      setPlaylists([]);
+      return;
+    }
+    try {
+      let identifier = scholar.youtubeUrl.trim();
+      let isHandle = false;
+      const extracted = extractHandleFromUrl(identifier);
+      if (extracted) {
+        identifier = extracted;
+        isHandle = true;
+      } else if (identifier.includes('youtube.com/channel/')) {
+        identifier = identifier.split('youtube.com/channel/')[1].split('/')[0].split('?')[0];
+        isHandle = false;
+      } else if (identifier.startsWith('@')) {
+        isHandle = true;
+      }
+      const channel = await getChannelInfo(identifier, isHandle);
+      if (channel?.id) {
+        const channelPlaylists = await getChannelPlaylists(channel.id);
+        setPlaylists(channelPlaylists || []);
+      } else {
+        setPlaylists([]);
+      }
+    } catch {
+      setPlaylists([]);
+    }
+  };
+
+  // Load existing registered scholars and sync with Supabase
   useEffect(() => {
     const list = getScholars();
     setExistingScholars(list);
     if (list.length > 0 && !currentScholar) {
       setCurrentScholar(list[0]);
       refreshScholarSavedSeries(list[0].id);
-      getChannelPlaylists(list[0].id).then(pls => setPlaylists(pls)).catch(() => setPlaylists([]));
+      fetchScholarPlaylists(list[0]);
     }
+
+    // Background fetch from Supabase
+    fetchScholarsFromSupabase().then(freshList => {
+      if (freshList && freshList.length > 0) {
+        setExistingScholars(freshList);
+      }
+    });
+
+    const handleScholarsSync = (e: any) => {
+      if (e.detail) setExistingScholars(e.detail);
+    };
+    const handleSeriesSync = (e: any) => {
+      if (currentScholar?.id) {
+        const all = e.detail || getSeries();
+        setScholarSavedSeries(all.filter((s: any) => s.scholarId === currentScholar.id));
+      }
+    };
+    window.addEventListener('zad_scholars_synced', handleScholarsSync);
+    window.addEventListener('zad_series_synced', handleSeriesSync);
+    return () => {
+      window.removeEventListener('zad_scholars_synced', handleScholarsSync);
+      window.removeEventListener('zad_series_synced', handleSeriesSync);
+    };
   }, []);
 
   const showNotification = (msg: string) => {
@@ -291,7 +351,7 @@ export const YoutubeImporter: React.FC<YoutubeImporterProps> = ({ onBack }) => {
     }
   };
 
-  const refreshScholarSavedSeries = (scholarId?: string) => {
+  const refreshScholarSavedSeries = async (scholarId?: string) => {
     const targetId = scholarId || currentScholar?.id;
     if (!targetId) {
       setScholarSavedSeries([]);
@@ -299,6 +359,13 @@ export const YoutubeImporter: React.FC<YoutubeImporterProps> = ({ onBack }) => {
     }
     const all = getSeries();
     setScholarSavedSeries(all.filter(s => s.scholarId === targetId));
+
+    try {
+      const freshSeries = await fetchSeriesFromSupabase(targetId);
+      setScholarSavedSeries(freshSeries);
+    } catch {
+      // Keep local cache
+    }
   };
 
   // Sync scholar's saved & curated series whenever the selected scholar changes
@@ -317,8 +384,7 @@ export const YoutubeImporter: React.FC<YoutubeImporterProps> = ({ onBack }) => {
     setError('');
     setIsLoading(true);
     try {
-      const channelPlaylists = await getChannelPlaylists(scholar.id);
-      setPlaylists(channelPlaylists);
+      await fetchScholarPlaylists(scholar);
     } catch {
       setPlaylists([]);
     } finally {
@@ -333,6 +399,12 @@ export const YoutubeImporter: React.FC<YoutubeImporterProps> = ({ onBack }) => {
     refreshScholarSavedSeries(updated.id);
     setIsEditModalOpen(false);
     showNotification(`تم تحديث بيانات وصورة الشيخ "${updated.name}" بنجاح.`);
+  };
+
+  const handleSaveScholarsOrder = (ordered: Scholar[]) => {
+    const updated = saveScholarsOrder(ordered);
+    setExistingScholars(updated);
+    showNotification('تم حفظ وتحديث ترتيب المشايخ في صفحة الشروح بنجاح! ↕️');
   };
 
   const handleSaveManualContent = (newSeries: ExplanationSeries) => {
@@ -1191,17 +1263,27 @@ export const YoutubeImporter: React.FC<YoutubeImporterProps> = ({ onBack }) => {
                 </button>
               </div>
 
-              {/* Add Scholar Button at the TOP of the sidebar */}
-              <button
-                type="button"
-                onClick={() => {
-                  setIsAddScholarModalOpen(true);
-                }}
-                className="w-full py-3 px-4 rounded-2xl bg-white hover:bg-neutral-200 text-black font-bold text-xs flex items-center justify-center gap-2 shadow-lg transition-all active:scale-[0.98]"
-              >
-                <Plus size={16} />
-                <span>تسجيل شيخ جديد في المنصة</span>
-              </button>
+              {/* Sidebar Action Buttons */}
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsAddScholarModalOpen(true)}
+                  className="py-2.5 px-3 rounded-2xl bg-white hover:bg-neutral-200 text-black font-bold text-xs flex items-center justify-center gap-1.5 shadow-md transition-all active:scale-[0.98] cursor-pointer"
+                >
+                  <Plus size={14} />
+                  <span>تسجيل شيخ</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setIsReorderModalOpen(true)}
+                  className="py-2.5 px-3 rounded-2xl bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs flex items-center justify-center gap-1.5 shadow-md transition-all active:scale-[0.98] cursor-pointer"
+                  title="التحكم في ترتيب ظهور المشايخ في صفحة الشروح"
+                >
+                  <ArrowUpDown size={14} />
+                  <span>ترتيب المشايخ</span>
+                </button>
+              </div>
 
               {/* Search in sidebar if multiple scholars */}
               {existingScholars.length > 3 && (
@@ -1336,10 +1418,20 @@ export const YoutubeImporter: React.FC<YoutubeImporterProps> = ({ onBack }) => {
                     {/* 3. تعديل البيانات */}
                     <button
                       onClick={() => setIsEditModalOpen(true)}
-                      className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 hover:border-neutral-700 text-neutral-200 text-xs font-bold transition-all shadow-sm"
+                      className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 hover:border-neutral-700 text-neutral-200 text-xs font-bold transition-all shadow-sm cursor-pointer"
                     >
                       <Edit3 size={14} />
                       <span>تعديل البيانات</span>
+                    </button>
+
+                    {/* ترتيب المشايخ */}
+                    <button
+                      onClick={() => setIsReorderModalOpen(true)}
+                      className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-neutral-900 hover:bg-amber-500/10 border border-neutral-800 hover:border-amber-500/30 text-neutral-300 hover:text-amber-300 text-xs font-bold transition-all shadow-sm cursor-pointer"
+                      title="التحكم في ترتيب ظهور المشايخ في صفحة الشروح"
+                    >
+                      <ArrowUpDown size={14} className="text-amber-400" />
+                      <span>ترتيب المشايخ</span>
                     </button>
 
                     {/* 4. دمج (يظهر فقط إذا كان هناك مشايخ مكررين) */}
@@ -1614,11 +1706,52 @@ export const YoutubeImporter: React.FC<YoutubeImporterProps> = ({ onBack }) => {
                             <div>
                               {/* Thumbnail & Badges */}
                               <div className="relative aspect-video bg-neutral-900 overflow-hidden">
-                                <img
-                                  src={s.thumbnail}
-                                  alt={s.title}
-                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                />
+                                {s.thumbnail ? (
+                                  <img
+                                    src={s.thumbnail}
+                                    alt={s.title}
+                                    onError={(e) => {
+                                      (e.target as HTMLElement).style.display = 'none';
+                                      const next = (e.target as HTMLElement).nextElementSibling;
+                                      if (next) (next as HTMLElement).classList.remove('hidden');
+                                    }}
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                  />
+                                ) : null}
+                                <div
+                                  className={`w-full h-full flex flex-col items-center justify-center p-3 text-center select-none ${
+                                    s.thumbnail ? 'hidden' : 'flex'
+                                  } ${
+                                    s.type === 'book' || s.source === 'pdf'
+                                      ? 'bg-gradient-to-br from-[#0c2016] via-[#08150f] to-[#040c08]'
+                                      : s.type === 'audio'
+                                      ? 'bg-gradient-to-br from-[#241a10] via-[#161009] to-[#0c0905]'
+                                      : s.source === 'telegram' || s.url?.includes('t.me')
+                                      ? 'bg-gradient-to-br from-[#0b1928] via-[#07111b] to-[#04090f]'
+                                      : 'bg-gradient-to-br from-[#1a1528] via-[#100d1a] to-[#08060c]'
+                                  }`}
+                                >
+                                  <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-1.5 shadow-inner border border-white/10 bg-white/5 text-amber-300">
+                                    {s.type === 'book' || s.source === 'pdf' ? (
+                                      <BookOpen size={18} />
+                                    ) : s.type === 'audio' ? (
+                                      <Headphones size={18} />
+                                    ) : s.type === 'podcast' ? (
+                                      <Mic size={18} />
+                                    ) : s.type === 'shorts' ? (
+                                      <Smartphone size={18} />
+                                    ) : s.type === 'standalone' ? (
+                                      <Film size={18} />
+                                    ) : s.source === 'telegram' || s.url?.includes('t.me') ? (
+                                      <Send size={18} className="text-sky-400" />
+                                    ) : (
+                                      <Play size={18} fill="currentColor" className="text-red-400" />
+                                    )}
+                                  </div>
+                                  <span className="font-display font-bold text-[11px] text-stone-300 line-clamp-1 px-2">
+                                    {s.title}
+                                  </span>
+                                </div>
                                 <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5 flex-wrap">
                                   {s.isCurated && (
                                     <span className="bg-amber-500/95 text-black px-2 py-0.5 rounded-md text-[10px] font-extrabold flex items-center gap-1 shadow-sm">
@@ -1787,11 +1920,17 @@ export const YoutubeImporter: React.FC<YoutubeImporterProps> = ({ onBack }) => {
 
                           {activeImportSourceChannel && (
                             <div className="flex items-center gap-3 bg-neutral-900 px-3.5 py-2 rounded-2xl border border-neutral-800">
-                              <img
-                                src={activeImportSourceChannel.thumbnail || activeImportSourceChannel.avatar || currentScholar?.avatar}
-                                alt={activeImportSourceChannel.title}
-                                className="w-7 h-7 rounded-full object-cover border border-neutral-700"
-                              />
+                              {activeImportSourceChannel.thumbnail || activeImportSourceChannel.avatar ? (
+                                <img
+                                  src={activeImportSourceChannel.thumbnail || activeImportSourceChannel.avatar}
+                                  alt={activeImportSourceChannel.title}
+                                  className="w-7 h-7 rounded-full object-cover border border-neutral-700"
+                                />
+                              ) : (
+                                <div className="w-7 h-7 rounded-full bg-red-600/20 border border-red-500/30 text-red-500 flex items-center justify-center">
+                                  <Play size={12} fill="currentColor" />
+                                </div>
+                              )}
                               <div className="text-right">
                                 <div className="text-xs font-bold text-white line-clamp-1">{activeImportSourceChannel.title}</div>
                                 <div className="text-[10px] text-neutral-400">المصدر النشط الحالي</div>
@@ -2834,6 +2973,15 @@ export const YoutubeImporter: React.FC<YoutubeImporterProps> = ({ onBack }) => {
           availableScholars={existingScholars}
           onMerge={handleMergeScholar}
           onClose={() => setIsMergeModalOpen(false)}
+        />
+      )}
+
+      {/* Reorder Scholars Modal */}
+      {isReorderModalOpen && (
+        <ReorderScholarsModal
+          scholars={existingScholars}
+          onSave={handleSaveScholarsOrder}
+          onClose={() => setIsReorderModalOpen(false)}
         />
       )}
 

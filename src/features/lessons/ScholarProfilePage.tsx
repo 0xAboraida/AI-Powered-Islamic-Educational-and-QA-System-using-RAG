@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { ExplanationSeries, VideoItem, ChapterItem } from './data/mockData';
-import { getScholars, getSeries, addSeriesToStore } from './data/store';
+import { getScholars, getSeries, addSeriesToStore, fetchSeriesFromSupabase } from './data/store';
 import { getPlaylistItems, getVideosDetails, parseTimestampsFromText } from '../../services/youtube.api';
 import { getCompletedLessons, toggleLessonCompleted } from './data/commentsStore';
 import { SeriesCommentsTab } from './components/SeriesCommentsTab';
+import { useTheme, ACCENT_STYLES } from '../../contexts/ThemeContext';
 import {
   ArrowRight,
   ArrowLeft,
@@ -38,7 +39,8 @@ import { ScholarAvatar } from '../../components/common/ScholarAvatar';
 import { TelegramPlayer } from '../../components/common/TelegramPlayer';
 import { extractVideoIdFromUrl } from '../../services/youtube.api';
 
-type TabType = 'curated' | 'visual' | 'standalone' | 'shorts' | 'podcast' | 'audio' | 'book' | 'course';
+type MainTabType = 'curated' | 'explanations' | 'standalone' | 'shorts' | 'podcast' | 'books' | 'courses';
+type ExplanationSubFilter = 'all' | 'visual' | 'audio';
 type DrawerTabType = 'episodes' | 'comments' | 'about';
 
 // Helper to format ISO 8601 duration (e.g., PT15M33S -> 15:33)
@@ -53,11 +55,34 @@ const formatDuration = (duration?: string) => {
 };
 
 export const ScholarProfilePage = ({ scholarId, onBack }: { scholarId: string, onBack: () => void }) => {
-  const scholar = getScholars().find(s => s.id === scholarId);
-  const series = getSeries().filter(s => s.scholarId === scholarId);
-  const hasCurated = series.some(s => s.type === 'curated' || s.isCurated);
+  const { isDark: dark, accentColor = 'amber' } = useTheme();
+  const currentAccent = ACCENT_STYLES[accentColor] || ACCENT_STYLES.amber;
 
-  const [activeTab, setActiveTab] = useState<TabType>(hasCurated ? 'curated' : 'visual');
+  const scholar = getScholars().find(s => s.id === scholarId);
+  const [allSeries, setAllSeries] = useState<ExplanationSeries[]>(() => getSeries());
+
+  useEffect(() => {
+    fetchSeriesFromSupabase(scholarId).then(() => {
+      setAllSeries(getSeries());
+    });
+
+    const handleSync = (e: any) => {
+      if (e.detail) {
+        setAllSeries(e.detail);
+      } else {
+        setAllSeries(getSeries());
+      }
+    };
+    window.addEventListener('zad_series_synced', handleSync);
+    return () => window.removeEventListener('zad_series_synced', handleSync);
+  }, [scholarId]);
+
+  const series = allSeries.filter(s => s.scholarId === scholarId);
+
+  const [mainTab, setMainTab] = useState<MainTabType>(() => 
+    series.some(s => s.type === 'curated' || s.isCurated) ? 'curated' : 'explanations'
+  );
+  const [explanationSubFilter, setExplanationSubFilter] = useState<ExplanationSubFilter>('all');
   const [selectedSeries, setSelectedSeries] = useState<ExplanationSeries | null>(null);
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
   const [activeTimestampSeconds, setActiveTimestampSeconds] = useState<number | null>(null);
@@ -88,23 +113,42 @@ export const ScholarProfilePage = ({ scholarId, onBack }: { scholarId: string, o
     );
   }
 
-  const activeSeries = series.filter(s => {
-    if (activeTab === 'curated') {
-      return s.type === 'curated' || s.isCurated;
-    }
-    return s.type === activeTab && !s.isCurated;
-  });
+  const curated = series.filter(s => s.type === 'curated' || s.isCurated);
+  const explanations = series.filter(s => (s.type === 'visual' || s.type === 'audio') && !s.isCurated);
+  const standalone = series.filter(s => s.type === 'standalone');
+  const shorts = series.filter(s => s.type === 'shorts');
+  const podcasts = series.filter(s => s.type === 'podcast');
+  const books = series.filter(s => s.type === 'book' || !!s.bookDetails);
+  const courses = series.filter(s => s.type === 'course');
 
-  const tabs = [
-    { id: 'curated', label: 'سلاسل مجمعة ', icon: Layers },
-    { id: 'visual', label: 'شروحات مرئية', icon: Video },
-    { id: 'standalone', label: 'محاضرات ومقاطع عامة', icon: Film },
-    { id: 'shorts', label: 'المقاطع القصيرة', icon: Smartphone },
-    { id: 'podcast', label: 'بودكاست', icon: Mic },
-    { id: 'audio', label: 'شروحات صوتية', icon: Headphones },
-    { id: 'book', label: 'كتب ومصنفات', icon: BookOpen },
-    { id: 'course', label: 'دورات حالية', icon: GraduationCap },
-  ] as const;
+  const MAIN_TABS = [
+    { id: 'curated' as const, label: 'قوائم مجمعة', icon: Layers, count: curated.length },
+    { id: 'explanations' as const, label: 'الشروح', icon: Video, count: explanations.length },
+    { id: 'standalone' as const, label: 'محاضرات عامة', icon: Film, count: standalone.length },
+    { id: 'shorts' as const, label: 'مقاطع قصيرة', icon: Smartphone, count: shorts.length },
+    { id: 'podcast' as const, label: 'بودكاست', icon: Mic, count: podcasts.length },
+    { id: 'books' as const, label: 'كتب ومصنفات', icon: BookOpen, count: books.length },
+    { id: 'courses' as const, label: 'دورات', icon: GraduationCap, count: courses.length },
+  ];
+
+  const activeSeries = (() => {
+    if (mainTab === 'curated') return curated;
+    if (mainTab === 'explanations') {
+      if (explanationSubFilter === 'visual') {
+        return explanations.filter(s => s.type === 'visual');
+      }
+      if (explanationSubFilter === 'audio') {
+        return explanations.filter(s => s.type === 'audio');
+      }
+      return explanations;
+    }
+    if (mainTab === 'standalone') return standalone;
+    if (mainTab === 'shorts') return shorts;
+    if (mainTab === 'podcast') return podcasts;
+    if (mainTab === 'books') return books;
+    if (mainTab === 'courses') return courses;
+    return [];
+  })();
 
   // Open series in left slide-over drawer and fetch videos if missing
   const handleOpenSeries = async (item: ExplanationSeries) => {
@@ -240,22 +284,42 @@ export const ScholarProfilePage = ({ scholarId, onBack }: { scholarId: string, o
   };
 
   return (
-    <div className="min-h-screen bg-black text-white relative overflow-hidden flex flex-col" dir="rtl">
-      {/* Authentic Islamic Geometric Pattern in Subtle White */}
-      <IslamicPattern className="text-white pointer-events-none" opacity={0.06} />
+    <div
+      dir="rtl"
+      className={`min-h-screen relative overflow-hidden flex flex-col transition-colors duration-500 ${dark ? 'text-white bg-[#0c0e14]' : `text-stone-900 ${currentAccent.pageBgLight}`
+        }`}
+    >
+      {/* Authentic Islamic Geometric Pattern matching ChatScreen */}
+      <IslamicPattern
+        isFixed={true}
+        opacity={dark ? 0.07 : 0.12}
+        strokeColor={dark ? currentAccent.strokeDark : currentAccent.strokeLight}
+        className="pointer-events-none transition-colors duration-300"
+      />
 
       {/* Top Navbar / Header with Back Button */}
-      <header className="sticky top-0 z-30 bg-black/80 backdrop-blur-xl border-b border-neutral-800/80 px-6 py-4">
+      <header
+        className={`sticky top-0 z-30 backdrop-blur-xl border-b px-6 py-4 transition-colors duration-300 ${dark ? 'bg-[#0c0e14]/80 border-white/10' : 'bg-white/80 border-stone-200/80'
+          }`}
+      >
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <button
             onClick={onBack}
-            className="flex items-center gap-2.5 px-4 py-2 rounded-xl bg-neutral-900 border border-neutral-800 hover:border-neutral-700 hover:bg-neutral-800 transition-all text-neutral-300 hover:text-white text-sm font-medium"
+            className={`flex items-center gap-2.5 px-4 py-2 rounded-xl border transition-all text-sm font-medium ${dark
+                ? 'bg-[#121622]/90 border-white/10 text-stone-200 hover:text-white hover:bg-[#181d2c]'
+                : `bg-white/95 border ${currentAccent.lightBorder} text-stone-800 ${currentAccent.lightBgHover} ${currentAccent.lightBorderHover}`
+              }`}
           >
             <ArrowRight size={18} />
             <span>العودة لدليل الشيوخ</span>
           </button>
 
-          <span className="text-xs font-semibold text-neutral-400 bg-neutral-900/90 px-3 py-1.5 rounded-full border border-neutral-800">
+          <span
+            className={`text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors ${dark
+                ? 'bg-[#121622]/90 border-white/10 text-stone-300'
+                : `${currentAccent.lightBgBadge} ${currentAccent.lightBorder} ${currentAccent.lightText}`
+              }`}
+          >
             بروفايل الشيخ والشارح
           </span>
         </div>
@@ -274,7 +338,7 @@ export const ScholarProfilePage = ({ scholarId, onBack }: { scholarId: string, o
           {/* Scholar Info */}
           <div className="text-center md:text-right flex-1 min-w-0">
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-2.5 mb-2">
-              <h1 className="font-display text-3xl md:text-5xl font-bold text-white tracking-tight">
+              <h1 className="font-amiri text-3xl md:text-5xl font-bold text-white tracking-normal">
                 {scholar.name}
               </h1>
               {scholar.specialty && (
@@ -331,31 +395,40 @@ export const ScholarProfilePage = ({ scholarId, onBack }: { scholarId: string, o
         </div>
       </div>
 
-      {/* Tabs Section */}
+      {/* Tabs Section (4 Main Sections) */}
       <main className="max-w-6xl w-full mx-auto px-6 mt-8 flex-1">
-        <div className="flex flex-wrap items-center gap-3 border-b border-neutral-800 pb-px">
-          {tabs.map((tab) => {
+        <div className={`flex flex-wrap items-center gap-3 border-b pb-px ${
+          dark ? 'border-white/10' : 'border-stone-200/80'
+        }`}>
+          {MAIN_TABS.map((tab) => {
             const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            const count = tab.id === 'curated'
-              ? series.filter(s => s.type === 'curated' || s.isCurated).length
-              : series.filter(s => s.type === tab.id && !s.isCurated).length;
+            const isActive = mainTab === tab.id;
 
             return (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as TabType)}
-                className={`flex items-center gap-2.5 px-6 py-4 border-b-2 transition-all font-semibold text-sm ${isActive
-                  ? 'border-white text-white bg-white/[0.06] rounded-t-xl'
-                  : 'border-transparent text-neutral-400 hover:text-neutral-200 hover:bg-white/[0.02]'
-                  }`}
+                onClick={() => setMainTab(tab.id)}
+                className={`flex items-center gap-2.5 px-6 py-4 border-b-2 transition-all font-semibold text-sm cursor-pointer ${
+                  isActive
+                    ? dark
+                      ? 'border-[#dfbf83] text-[#dfbf83] bg-white/[0.04] rounded-t-xl'
+                      : `border-amber-600 ${currentAccent.lightText} bg-amber-500/10 rounded-t-xl`
+                    : dark
+                      ? 'border-transparent text-stone-400 hover:text-stone-200 hover:bg-white/[0.02]'
+                      : 'border-transparent text-stone-600 hover:text-stone-900 hover:bg-stone-100/50'
+                }`}
               >
-                <Icon size={17} className={isActive ? 'text-white' : 'text-neutral-400'} />
+                <Icon size={17} className={isActive ? (dark ? 'text-[#dfbf83]' : 'text-amber-700') : 'text-stone-400'} />
                 <span>{tab.label}</span>
-                {count > 0 && (
-                  <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${isActive ? 'bg-white text-black' : 'bg-neutral-900 text-neutral-400'
-                    }`}>
-                    {count}
+                {tab.count > 0 && (
+                  <span
+                    className={`text-[11px] px-2 py-0.5 rounded-full font-mono font-bold ${
+                      isActive
+                        ? dark ? 'bg-[#dfbf83] text-black' : 'bg-amber-600 text-white'
+                        : dark ? 'bg-white/10 text-stone-300' : 'bg-stone-200 text-stone-700'
+                    }`}
+                  >
+                    {tab.count}
                   </span>
                 )}
               </button>
@@ -363,43 +436,111 @@ export const ScholarProfilePage = ({ scholarId, onBack }: { scholarId: string, o
           })}
         </div>
 
-        {/* Playlists & Series Content */}
-        <div className="py-10">
+        {/* Sub-filter bar for Explanations (الكل / مرئية / صوتية) */}
+        {mainTab === 'explanations' && (
+          <div className="flex items-center gap-2 mt-5">
+            <button
+              type="button"
+              onClick={() => setExplanationSubFilter('all')}
+              className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                explanationSubFilter === 'all'
+                  ? dark ? 'bg-[#dfbf83] text-black shadow-md' : 'bg-amber-700 text-white shadow-md'
+                  : dark ? 'bg-white/5 text-stone-300 hover:bg-white/10 border border-white/5' : 'bg-stone-200/80 text-stone-700 hover:bg-stone-300/80'
+              }`}
+            >
+              الكل ({explanations.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setExplanationSubFilter('visual')}
+              className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                explanationSubFilter === 'visual'
+                  ? 'bg-sky-600 text-white shadow-md'
+                  : dark ? 'bg-white/5 text-stone-300 hover:bg-white/10 border border-white/5' : 'bg-stone-200/80 text-stone-700 hover:bg-stone-300/80'
+              }`}
+            >
+              <Video size={13} />
+              <span>مرئية ({explanations.filter(s => s.type === 'visual' || s.type === 'curated' || s.type === 'standalone').length})</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setExplanationSubFilter('audio')}
+              className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                explanationSubFilter === 'audio'
+                  ? 'bg-amber-600 text-white shadow-md'
+                  : dark ? 'bg-white/5 text-stone-300 hover:bg-white/10 border border-white/5' : 'bg-stone-200/80 text-stone-700 hover:bg-stone-300/80'
+              }`}
+            >
+              <Headphones size={13} />
+              <span>صوتية ({explanations.filter(s => s.type === 'audio' || s.type === 'podcast').length})</span>
+            </button>
+          </div>
+        )}
+
+        {/* Content Grid */}
+        <div className="py-8">
           {activeSeries.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {activeSeries.map((item) => {
                 const isSelected = selectedSeries?.id === item.id;
                 const isTelegram = item.source === 'telegram' || item.url?.includes('t.me');
-                const isBook = item.type === 'book' || item.source === 'pdf';
-                const isAudio = item.type === 'audio';
-                const isStandalone = item.type === 'standalone';
+                const isBook = item.type === 'book' || item.source === 'pdf' || !!item.bookDetails;
+                const isAudio = item.type === 'audio' || item.type === 'podcast';
                 const isShorts = item.type === 'shorts';
 
                 return (
                   <div
                     key={item.id}
                     onClick={() => {
-                      if (item.isCurated || (item.videos && item.videos.length > 0)) {
-                        handleOpenSeries(item);
-                      } else if (isTelegram) {
-                        handleOpenSeries(item);
-                      } else if (isBook) {
+                      if (isBook && item.url) {
                         window.open(item.url, '_blank');
                       } else {
                         handleOpenSeries(item);
                       }
                     }}
-                    className={`group flex flex-col rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1.5 cursor-pointer ${isSelected
-                      ? 'bg-neutral-900/90 border-2 border-white shadow-[0_0_30px_rgba(255,255,255,0.15)]'
-                      : 'bg-neutral-950/80 border border-neutral-800/80 hover:bg-neutral-900/80 hover:border-neutral-600 hover:shadow-[0_12px_40px_rgba(0,0,0,0.8)]'
-                      }`}
+                    className={`group flex flex-col rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1.5 cursor-pointer border ${
+                      isSelected
+                        ? 'border-amber-400 shadow-[0_0_25px_rgba(223,191,131,0.25)]'
+                        : dark
+                        ? `border-white/10 ${currentAccent.darkBorderHover} bg-[#121622]/80 hover:bg-[#181d2c]/95 hover:shadow-xl`
+                        : `border ${currentAccent.lightBorder} ${currentAccent.lightBorderHover} bg-white/90 hover:bg-white hover:shadow-xl`
+                    }`}
                   >
+                    {/* Media Thumbnail Container */}
                     <div className="relative aspect-video bg-neutral-900 overflow-hidden">
-                      <img
-                        src={item.thumbnail}
-                        alt={item.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
+                      {item.thumbnail && !item.thumbnail.includes('placeholder') ? (
+                        <img
+                          src={item.thumbnail}
+                          alt={item.title}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      ) : (
+                        <div
+                          className={`w-full h-full flex flex-col items-center justify-center p-4 text-center select-none ${
+                            isBook
+                              ? 'bg-gradient-to-br from-[#0c2016] via-[#08150f] to-[#040c08]'
+                              : isAudio
+                              ? 'bg-gradient-to-br from-[#241a10] via-[#161009] to-[#0c0905]'
+                              : 'bg-gradient-to-br from-[#0e1a2c] via-[#09111c] to-[#060a12]'
+                          }`}
+                        >
+                          <div
+                            className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-2 shadow-inner border ${
+                              isBook
+                                ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400'
+                                : isAudio
+                                ? 'bg-[#dfbf83]/15 border-[#dfbf83]/30 text-[#dfbf83]'
+                                : 'bg-sky-500/15 border-sky-500/30 text-sky-400'
+                            }`}
+                          >
+                            {isBook ? <BookOpen size={22} /> : isAudio ? <Headphones size={22} /> : <Video size={22} />}
+                          </div>
+                          <span className="font-display font-bold text-xs text-stone-200 line-clamp-1 px-3">
+                            {item.title}
+                          </span>
+                        </div>
+                      )}
+
                       <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all flex items-center justify-center">
                         <div className="w-12 h-12 rounded-full bg-white/90 text-black flex items-center justify-center shadow-2xl opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all">
                           {isTelegram ? (
@@ -407,104 +548,92 @@ export const ScholarProfilePage = ({ scholarId, onBack }: { scholarId: string, o
                           ) : isBook ? (
                             <BookOpen size={18} className="text-emerald-700" />
                           ) : (
-                            <Play size={20} fill="currentColor" className="mr-0.5" />
+                            <Play size={20} fill="currentColor" className="mr-0.5 text-black" />
                           )}
                         </div>
                       </div>
 
-                      {/* Source and Curated badges (Omitted for standalone & shorts) */}
-                      <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5 flex-wrap">
-                        {item.isCurated && (
-                          <span className="bg-amber-500/95 text-black px-2 py-0.5 rounded-md text-[10px] font-extrabold flex items-center gap-1 shadow-sm">
-                            <Layers size={10} />
-                            <span>سلسلة مجمعة </span>
-                          </span>
-                        )}
-                        {!isStandalone && !isShorts && (
-                          item.type === 'podcast' ? (
-                            <span className="bg-purple-600/90 backdrop-blur-md px-2.5 py-0.5 rounded-md text-[11px] font-bold text-white flex items-center gap-1 shadow-sm">
-                              <Mic size={11} />
-                              <span>بودكاست</span>
-                            </span>
-                          ) : isTelegram ? (
-                            <span className="bg-sky-500/90 backdrop-blur-md px-2.5 py-0.5 rounded-md text-[11px] font-bold text-white flex items-center gap-1 shadow-sm">
-                              <Send size={11} />
-                              <span>تيليجرام</span>
-                            </span>
-                          ) : isBook ? (
-                            <span className="bg-emerald-600/90 backdrop-blur-md px-2.5 py-0.5 rounded-md text-[11px] font-bold text-white flex items-center gap-1 shadow-sm">
-                              <BookOpen size={11} />
-                              <span>كتاب / PDF</span>
-                            </span>
-                          ) : isAudio ? (
-                            <span className="bg-amber-600/90 backdrop-blur-md px-2.5 py-0.5 rounded-md text-[11px] font-bold text-white flex items-center gap-1 shadow-sm">
+                      {/* Clear Badges [مرئي] and [صوتي] */}
+                      {mainTab === 'explanations' && (
+                        <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5 flex-wrap z-10">
+                          {isAudio ? (
+                            <span className="bg-amber-500/95 text-black px-2.5 py-0.5 rounded-md text-[11px] font-black flex items-center gap-1 shadow-md">
                               <Headphones size={11} />
                               <span>صوتي</span>
                             </span>
                           ) : (
-                            <span className="bg-red-600/90 backdrop-blur-md px-2.5 py-0.5 rounded-md text-[11px] font-bold text-white flex items-center gap-1 shadow-sm">
-                              <Play size={10} fill="currentColor" />
-                              <span>يوتيوب</span>
+                            <span className="bg-sky-500/95 text-white px-2.5 py-0.5 rounded-md text-[11px] font-black flex items-center gap-1 shadow-md">
+                              <Video size={11} />
+                              <span>مرئي</span>
                             </span>
-                          )
-                        )}
-                      </div>
-
-                      {/* Item count or Duration badge (No type tag) */}
-                      {!isStandalone && !isShorts ? (
-                        <div className="absolute bottom-2.5 right-2.5 bg-black/80 backdrop-blur-md px-2.5 py-1 rounded-md text-[11px] font-bold text-white flex items-center gap-1 border border-white/10">
-                          {isBook ? <BookOpen size={13} /> : <ListVideo size={13} />}
-                          <span>{item.videoCount} {isBook ? 'صفحة' : 'مقطع'}</span>
+                          )}
                         </div>
-                      ) : (
-                        item.videos?.[0]?.duration ? (
-                          <div className="absolute bottom-2.5 right-2.5 bg-black/80 backdrop-blur-md px-2.5 py-1 rounded-md text-[11px] font-mono font-bold text-neutral-200 border border-white/10">
-                            {formatDuration(item.videos[0].duration)}
-                          </div>
-                        ) : null
+                      )}
+
+                      {/* Lessons Count Badge */}
+                      {item.videoCount > 0 && !isShorts && (
+                        <div className="absolute bottom-2.5 right-2.5 bg-black/80 backdrop-blur-md px-2.5 py-1 rounded-md text-[11px] font-bold text-white flex items-center gap-1 border border-white/10">
+                          {isBook ? <BookOpen size={12} /> : <ListVideo size={12} />}
+                          <span>{item.videoCount} {isBook ? 'صفحة' : 'درس'}</span>
+                        </div>
                       )}
                     </div>
 
+                    {/* Card Content Info */}
                     <div className="p-5 flex-1 flex flex-col justify-between">
                       <div>
-                        <h3 className="font-bold text-base md:text-lg text-white mb-2 line-clamp-2 group-hover:text-neutral-100 transition-colors">
+                        <h3
+                          className={`font-bold text-base md:text-lg mb-2 line-clamp-2 transition-colors ${
+                            dark ? 'text-white group-hover:text-[#dfbf83]' : 'text-stone-900 group-hover:text-amber-800'
+                          }`}
+                        >
                           {item.title}
                         </h3>
-                        <p className="text-xs md:text-sm text-neutral-400 line-clamp-2 mb-4 leading-relaxed">
+                        <p className={`text-xs md:text-sm line-clamp-2 mb-4 leading-relaxed ${
+                          dark ? 'text-stone-400' : 'text-stone-600'
+                        }`}>
                           {item.description || 'لا يوجد وصف متاح لهذا المحتوى.'}
                         </p>
                       </div>
 
-                      <div className="pt-4 border-t border-neutral-800/80 flex items-center justify-between">
-                        <span className="text-xs text-neutral-400 group-hover:text-white font-medium flex items-center gap-1.5 transition-colors">
+                      <div className={`pt-4 border-t flex items-center justify-between ${
+                        dark ? 'border-white/10 text-stone-400' : 'border-stone-200 text-stone-600'
+                      }`}>
+                        <span className={`text-xs font-medium flex items-center gap-1.5 transition-colors ${
+                          dark ? 'group-hover:text-white' : 'group-hover:text-stone-900'
+                        }`}>
                           {isTelegram ? (
                             <>
-                              <span>الانتقال لقناة التيليجرام</span>
+                              <span>استماع عبر التيليجرام</span>
                               <ExternalLink size={13} />
                             </>
                           ) : isBook ? (
                             <>
-                              <span>قراءة وتحميل الكتاب</span>
+                              <span>قراءة وتحميل (PDF)</span>
                               <ExternalLink size={13} />
                             </>
                           ) : (
                             <>
-                              <span>عرض الفيديوهات والقائمة</span>
+                              <span>عرض الدروس والتشغيل</span>
                               <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
                             </>
                           )}
                         </span>
 
-                        <a
-                          href={item.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={(e) => e.stopPropagation()}
-                          className="p-1.5 rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-800 transition-all"
-                          title="فتح الرابط الخارجي"
-                        >
-                          <ExternalLink size={15} />
-                        </a>
+                        {item.url && (
+                          <a
+                            href={item.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className={`p-1.5 rounded-lg transition-all ${
+                              dark ? 'hover:text-white hover:bg-white/10 text-stone-400' : 'hover:text-stone-900 hover:bg-stone-200 text-stone-600'
+                            }`}
+                            title="فتح الرابط الأصلي"
+                          >
+                            <ExternalLink size={15} />
+                          </a>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -512,16 +641,35 @@ export const ScholarProfilePage = ({ scholarId, onBack }: { scholarId: string, o
               })}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-20 text-center bg-neutral-950/60 rounded-3xl border border-neutral-800 border-dashed max-w-lg mx-auto p-8">
-              <div className="w-16 h-16 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center mb-5">
-                {(() => {
-                  const Icon = tabs.find(t => t.id === activeTab)?.icon;
-                  return Icon ? <Icon size={26} className="text-neutral-400" /> : null;
-                })()}
+            <div
+              className={`flex flex-col items-center justify-center py-20 text-center rounded-3xl border border-dashed max-w-lg mx-auto p-8 ${
+                dark ? 'bg-[#121622]/60 border-white/10' : 'bg-white/80 border-stone-300'
+              }`}
+            >
+              <div
+                className={`w-16 h-16 rounded-full border flex items-center justify-center mb-5 ${
+                  dark ? 'bg-white/5 border-white/10 text-stone-400' : 'bg-stone-100 border-stone-200 text-stone-600'
+                }`}
+              >
+                {mainTab === 'curated' && <Layers size={26} />}
+                {mainTab === 'explanations' && <Video size={26} />}
+                {mainTab === 'standalone' && <Film size={26} />}
+                {mainTab === 'shorts' && <Smartphone size={26} />}
+                {mainTab === 'podcast' && <Mic size={26} />}
+                {mainTab === 'books' && <BookOpen size={26} />}
+                {mainTab === 'courses' && <GraduationCap size={26} />}
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">لا يوجد محتوى مضاف حالياً</h3>
-              <p className="text-neutral-400 text-sm leading-relaxed max-w-sm">
-                لم يتم إضافة أي {tabs.find(t => t.id === activeTab)?.label} لهذا الشيخ حتى الآن. سيتم توفيرها قريباً إن شاء الله.
+              <h3 className={`text-lg font-bold mb-2 ${dark ? 'text-white' : 'text-stone-900'}`}>
+                {mainTab === 'curated' && 'لا توجد قوائم مجمعة مضافة حالياً'}
+                {mainTab === 'explanations' && 'لا توجد شروحات مطابقة حالياً'}
+                {mainTab === 'standalone' && 'لا توجد محاضرات عامة مضافة حالياً'}
+                {mainTab === 'shorts' && 'لا توجد مقاطع قصيرة مضافة حالياً'}
+                {mainTab === 'podcast' && 'لا يوجد بودكاست مضاف حالياً'}
+                {mainTab === 'books' && 'لا توجد كتب مضافة لهذا الشيخ حالياً'}
+                {mainTab === 'courses' && 'لا توجد دورات منهجية مسجلة حالياً'}
+              </h3>
+              <p className={`text-xs max-w-sm leading-relaxed ${dark ? 'text-stone-400' : 'text-stone-600'}`}>
+                سيتم إضافة المحتوى قريباً بإذن الله تعالى.
               </p>
             </div>
           )}

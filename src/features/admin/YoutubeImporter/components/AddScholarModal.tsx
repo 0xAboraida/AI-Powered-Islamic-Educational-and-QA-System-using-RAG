@@ -11,7 +11,7 @@ interface AddScholarModalProps {
 
 export const AddScholarModal: React.FC<AddScholarModalProps> = ({ onSave, onClose }) => {
   const [mode, setMode] = useState<'youtube' | 'manual'>('youtube');
-  
+
   // YouTube fetch state
   const [youtubeChannelUrl, setYoutubeChannelUrl] = useState('');
   const [isFetchingChannel, setIsFetchingChannel] = useState(false);
@@ -60,9 +60,9 @@ export const AddScholarModal: React.FC<AddScholarModalProps> = ({ onSave, onClos
       setName(channel.snippet.title || '');
       setBio(channel.snippet.description || '');
       setAvatar(
-        channel.snippet.thumbnails.high?.url || 
-        channel.snippet.thumbnails.medium?.url || 
-        channel.snippet.thumbnails.default?.url || 
+        channel.snippet.thumbnails.high?.url ||
+        channel.snippet.thumbnails.medium?.url ||
+        channel.snippet.thumbnails.default?.url ||
         ''
       );
       setYoutubeUrl(`https://youtube.com/channel/${channel.id}`);
@@ -104,7 +104,7 @@ export const AddScholarModal: React.FC<AddScholarModalProps> = ({ onSave, onClos
       name: name.trim(),
       bio: bio.trim(),
       specialty: specialty.trim() || 'عالم وداعية إسلامي',
-      avatar: avatar.trim() || 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=400&q=80',
+      avatar: avatar.trim() || '',
       youtubeUrl: youtubeUrl.trim(),
       socialLinks: {
         telegram: telegramUrl.trim(),
@@ -116,11 +116,11 @@ export const AddScholarModal: React.FC<AddScholarModalProps> = ({ onSave, onClos
   };
 
   return (
-    <div 
+    <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
       dir="rtl"
     >
-      <div 
+      <div
         className="relative w-full max-w-2xl bg-neutral-950 border border-neutral-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
@@ -137,7 +137,7 @@ export const AddScholarModal: React.FC<AddScholarModalProps> = ({ onSave, onClos
               </p>
             </div>
           </div>
-          <button 
+          <button
             onClick={onClose}
             className="p-2 rounded-xl text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors"
           >
@@ -150,11 +150,10 @@ export const AddScholarModal: React.FC<AddScholarModalProps> = ({ onSave, onClos
           <button
             type="button"
             onClick={() => setMode('youtube')}
-            className={`flex items-center gap-2 pb-3 font-bold text-xs border-b-2 transition-all ${
-              mode === 'youtube'
+            className={`flex items-center gap-2 pb-3 font-bold text-xs border-b-2 transition-all ${mode === 'youtube'
                 ? 'border-white text-white'
                 : 'border-transparent text-neutral-400 hover:text-neutral-200'
-            }`}
+              }`}
           >
             <Play size={15} className="text-red-500" fill="currentColor" />
             <span>جلب سريع من قناة YouTube أولى</span>
@@ -163,11 +162,10 @@ export const AddScholarModal: React.FC<AddScholarModalProps> = ({ onSave, onClos
           <button
             type="button"
             onClick={() => setMode('manual')}
-            className={`flex items-center gap-2 pb-3 font-bold text-xs border-b-2 transition-all ${
-              mode === 'manual'
+            className={`flex items-center gap-2 pb-3 font-bold text-xs border-b-2 transition-all ${mode === 'manual'
                 ? 'border-white text-white'
                 : 'border-transparent text-neutral-400 hover:text-neutral-200'
-            }`}
+              }`}
           >
             <User size={15} />
             <span>تسجيل يدوي كامل</span>

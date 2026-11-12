@@ -22,7 +22,7 @@ export default function VoiceChatButton({
       disabled={disabled}
       aria-label={isActive ? 'إنهاء المكالمة' : 'المحادثة الصوتية'}
       title={isActive ? 'إنهاء المكالمة' : 'المحادثة الصوتية'}
-      className={`gradient-border flex shrink-0 items-center justify-center rounded-full text-white shadow-xl shadow-primary/30 transition-transform hover:-translate-y-0.5 hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-40 disabled:hover:scale-100 disabled:hover:translate-y-0 group ${className}`}
+      className={`gradient-border flex shrink-0 items-center justify-center rounded-full text-white shadow-[0_10px_28px_rgba(0,0,0,0.22)] transition-transform hover:-translate-y-0.5 hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-40 disabled:hover:scale-100 disabled:hover:translate-y-0 group ${className}`}
     >
       {isActive ? (
         <Square size={24} className="fill-white" />

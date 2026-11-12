@@ -24,6 +24,7 @@ export interface Scholar {
   bio: string;
   specialty?: string;
   youtubeUrl?: string;
+  orderIndex?: number;
   socialLinks?: {
     telegram?: string;
     facebook?: string;

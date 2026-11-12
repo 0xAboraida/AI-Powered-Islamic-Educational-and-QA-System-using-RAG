@@ -1,5 +1,5 @@
 import 'regenerator-runtime/runtime'
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState, useCallback, useRef } from 'react'
 import darkLogo from '@/assets/images/ZadDarkLogo.webp'
 import Navbar from './components/layout/Navbar'
 import Hero from './components/layout/Hero'
@@ -45,6 +45,13 @@ const VIEW_TO_PATH: Record<View, string> = {
   admin_library: '/admin-library',
   youtube_importer: '/youtube-importer',
   system_observability: '/observability',
+}
+
+/** Views that require an active authenticated session (unless entered via explicit guest prompt). */
+function requiresAuthSession(targetView: View, allowGuestChat: boolean): boolean {
+  if (targetView === 'study' || targetView === 'voice') return true
+  if (targetView === 'chat') return !allowGuestChat
+  return false
 }
 
 function getInitialView(): View {
@@ -120,8 +127,9 @@ function AppContent() {
   })
   const [pendingQuestion, setPendingQuestion] = useState<string | undefined>()
   const [pendingBook, setPendingBook] = useState<{ id: number | string; title: string; author: string } | null>(null)
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, isLoading } = useAuth()
   const { isDark } = useTheme()
+  const guestChatAllowedRef = useRef(false)
 
   const navigate = useCallback((newView: View, replace = false) => {
     if (newView === 'knowledge') {
@@ -182,16 +190,30 @@ function AppContent() {
   }, [])
 
   const askAboutBook = (book: { id: number | string; title: string; author: string }) => {
+    if (!isAuthenticated) guestChatAllowedRef.current = true
     setPendingBook(book)
     setPendingQuestion(undefined)
     navigate('chat')
   }
 
   const askQuestion = (question: string) => {
+    if (!isAuthenticated) guestChatAllowedRef.current = true
     setPendingQuestion(question)
     setPendingBook(null)
     navigate('chat')
   }
+
+  // Redirect to login immediately if user logs out while in Study Mode, Chat, or Voice
+  useEffect(() => {
+    if (isAuthenticated || view !== 'chat') {
+      guestChatAllowedRef.current = false
+    }
+    if (!isLoading && !isAuthenticated && requiresAuthSession(view, guestChatAllowedRef.current)) {
+      setPendingQuestion(undefined)
+      setPendingBook(null)
+      navigate('login', true)
+    }
+  }, [isLoading, isAuthenticated, view, navigate])
 
   const openChat = () => {
     setPendingBook(null)
@@ -241,10 +263,14 @@ function AppContent() {
   const openSystemObservability = () => navigate('system_observability')
 
   const renderOtherView = () => {
-    if (view === 'login' || view === 'signup') {
+    if (
+      view === 'login' ||
+      view === 'signup' ||
+      (!isLoading && !isAuthenticated && requiresAuthSession(view, guestChatAllowedRef.current))
+    ) {
       return (
         <AuthPage
-          initialMode={view}
+          initialMode={view === 'signup' ? 'signup' : 'login'}
           onBack={() => navigate('home')}
           onSuccess={() => navigate('home')}
         />
@@ -275,7 +301,25 @@ function AppContent() {
       )
     }
     if (view === 'voice') {
-      return <VoiceScreen onExit={() => navigate('home')} onOpenText={() => navigate('chat')} />
+      return (
+        <VoiceScreen
+          onExit={() => navigate('home')}
+          onOpenText={() => navigate('chat')}
+          onNavigateHome={() => navigate('home')}
+          onOpenKnowledge={openKnowledge}
+          onOpenStudy={openStudy}
+          onOpenLessons={openLessons}
+          onOpenAdmin={openAdmin}
+          onOpenTurathRag={openTurathRag}
+          onOpenEngineControl={openEngineControl}
+          onOpenDataIngestion={openDataIngestion}
+          onOpenV2PipelineAdmin={openV2PipelineAdmin}
+          onOpenAdminLibrary={openAdminLibrary}
+          onOpenYoutubeImporter={openYoutubeImporter}
+          onOpenSystemObservability={openSystemObservability}
+          onLogin={() => navigate('login')}
+        />
+      )
     }
     if (view === 'study') {
       return (
@@ -357,7 +401,6 @@ function AppContent() {
               window.history.pushState({ view: 'scholar_profile', scholar: id }, '', `/scholar?scholar=${encodeURIComponent(id)}`)
               setView('scholar_profile')
             }}
-            onNavigateToImporter={() => navigate('youtube_importer')}
             hideHeader={true}
           />
         </div>
@@ -365,7 +408,7 @@ function AppContent() {
     }
     if (view === 'scholar_profile' && selectedScholar) {
       return (
-        <div className="min-h-screen bg-black">
+        <div className="min-h-screen">
           <ScholarProfilePage
             scholarId={selectedScholar}
             onBack={() => navigate('lessons')}

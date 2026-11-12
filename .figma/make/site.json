@@ -5,9 +5,6 @@
   "robots": {
     "index": true
   },
-  "icons": {
-    "icon": "/favicon.png?v=2"
-  },
   "openGraph": {
     "image": "/logo.png?v=2"
   },

@@ -208,7 +208,7 @@ export const CurateSeriesModal: React.FC<CurateSeriesModalProps> = ({
       const newLesson: VideoItem = {
         id: `telegram_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
         title: directTitle.trim() || fallbackTitle,
-        thumbnail: thumbnail || 'https://images.unsplash.com/photo-1584286595398-a59f21d313f5?w=500&auto=format&fit=crop&q=60',
+        thumbnail: thumbnail || '',
         source: 'telegram',
         url: url,
         directUrl: url,
@@ -221,7 +221,7 @@ export const CurateSeriesModal: React.FC<CurateSeriesModalProps> = ({
       const newLesson: VideoItem = {
         id: `direct_${Date.now()}`,
         title: directTitle.trim() || `درس #${selectedLessons.length + 1}`,
-        thumbnail: thumbnail || 'https://images.unsplash.com/photo-1584286595398-a59f21d313f5?w=500&auto=format&fit=crop&q=60',
+        thumbnail: thumbnail || '',
         source: 'direct',
         url: url,
         directUrl: url,

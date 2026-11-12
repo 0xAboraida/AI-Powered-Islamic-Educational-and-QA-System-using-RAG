@@ -27,6 +27,7 @@ import { getAvatarUrl } from '../../api/client'
 import { studyApi, type StudySessionDto } from '../../api/studyApi'
 import StoreBadges from '../ui/StoreBadges'
 import NotificationBell from './NotificationBell'
+import AddToHomeScreenButton from '../common/AddToHomeScreenButton'
 
 import UserProfileModal from '../../features/profile/UserProfileModal'
 
@@ -1092,6 +1093,34 @@ export default function Navbar({
 
 
 
+  const renderWelcomeAuthCard = (isMobileDrawer = false) => (
+    <div className={`rounded-2xl border ${isMobileDrawer ? 'p-4 shadow-xs' : 'p-3.5 shadow-sm'} text-right ${getDrawerWelcomeCardClass()}`}>
+      <h4 className={`text-sm font-bold ${isDark ? 'text-white' : 'text-stone-900'}`}>مرحباً بك</h4>
+      <p className={`text-xs mt-1 leading-relaxed ${isDark ? 'text-white/70' : 'text-stone-500'}`}>
+        قم بالتسجيل للاستفادة من خدمات الموقع
+      </p>
+      <button
+        type="button"
+        onClick={() => {
+          setShowProfileMenu(false)
+          setOpen(false)
+          if (onLogin) {
+            onLogin()
+          } else {
+            onTryChat()
+          }
+        }}
+        disabled={isLoginLoading}
+        className={`${isMobileDrawer ? 'mt-3.5 py-2.5 px-4 shadow-xs' : 'mt-3 py-2 px-3 shadow-sm'} flex w-full items-center justify-center gap-2 rounded-xl bg-[#53177d] hover:bg-[#431265] text-white text-xs font-bold shadow-[#53177d]/20 active:scale-[0.98] transition-all cursor-pointer`}
+      >
+        {isLoginLoading ? <Loader2 size={isMobileDrawer ? 15 : 14} className="animate-spin" /> : <LogIn size={isMobileDrawer ? 15 : 14} />}
+        <span>تسجيل الدخول / إنشاء حساب</span>
+      </button>
+    </div>
+  )
+
+
+
   return (
 
     <header className={headerClassName || "fixed md:absolute inset-x-0 top-4 sm:top-6 z-50 px-3 sm:px-4"}>
@@ -1558,51 +1587,7 @@ export default function Navbar({
 
                 ) : (
 
-                  <div className={`rounded-2xl border p-3.5 text-right shadow-sm ${isDark ? getDrawerWelcomeCardClass() : 'border-stone-200/80 bg-white/90 shadow-stone-200/50'}`}>
-
-                    <h4 className={`text-sm font-bold ${isDark ? 'text-white' : 'text-stone-900'}`}>مرحباً بك</h4>
-
-                    <p className={`text-xs mt-1 leading-relaxed ${isDark ? 'text-white/70' : 'text-stone-500'}`}>
-
-                      قم بالتسجيل للاستفادة من خدمات الموقع
-
-                    </p>
-
-                    <button
-
-                      type="button"
-
-                      onClick={() => {
-
-                        setShowProfileMenu(false)
-
-                        setOpen(false)
-
-                        if (onLogin) {
-
-                          onLogin()
-
-                        } else {
-
-                          onTryChat()
-
-                        }
-
-                      }}
-
-                      disabled={isLoginLoading}
-
-                      className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-[#53177d] hover:bg-[#431265] text-white py-2 px-3 text-xs font-bold shadow-sm shadow-[#53177d]/20 active:scale-[0.98] transition-all"
-
-                    >
-
-                      {isLoginLoading ? <Loader2 size={14} className="animate-spin" /> : <LogIn size={14} />}
-
-                      <span>تسجيل الدخول / إنشاء حساب</span>
-
-                    </button>
-
-                  </div>
+                  renderWelcomeAuthCard(false)
 
                 )}
 
@@ -2387,6 +2372,12 @@ export default function Navbar({
                 className={`flex-1 overflow-y-auto overscroll-contain px-4 py-4 space-y-4 text-right pb-8 slim-scrollbar ${getDrawerScrollbarThumbClass()}`}
 
               >
+
+                {/* 2. Auth Section - Display welcome & login ONLY when NOT authenticated */}
+
+                {!isAuthenticated && renderWelcomeAuthCard(true)}
+
+
 
                 {/* 3. Main Navigation Items */}
 
@@ -3429,6 +3420,12 @@ export default function Navbar({
                     التطبيق والمشاركة
 
                   </div>
+
+
+
+                  {/* إضافة زاد إلى شاشة الهاتف */}
+
+                  <AddToHomeScreenButton onInstalled={() => setOpen(false)} />
 
 
 

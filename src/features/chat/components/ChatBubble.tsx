@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import { User, BookOpen, Book, ExternalLink, ChevronDown, ChevronLeft, LayoutGrid, FileText, Feather, Copy, Check, Download, Loader2 } from 'lucide-react'
+import { User, BookOpen, Book, ExternalLink, ChevronDown, ChevronLeft, LayoutGrid, FileText, Feather, Copy, Check, Download, Loader2, AlertCircle, RotateCcw } from 'lucide-react'
 import { jsPDF } from 'jspdf'
 import { toCanvas } from 'html-to-image'
 import whiteLogo from '@/assets/images/WhiteLogo.png'
@@ -71,9 +71,8 @@ function AvatarLogo({ dark }: { dark: boolean }) {
         }}
       />
       <div
-        className={`relative flex h-full w-full items-center justify-center rounded-full z-10 transition-all duration-300 ${
-          dark ? 'bg-[#090b10] backdrop-blur-xl border border-white/20' : `bg-white border ${getBorderClass()}`
-        }`}
+        className={`relative flex h-full w-full items-center justify-center rounded-full z-10 transition-all duration-300 ${dark ? 'bg-[#090b10] backdrop-blur-xl border border-white/20' : `bg-white border ${getBorderClass()}`
+          }`}
         style={{ boxShadow: getShadowStyle() }}
       >
         <div
@@ -544,13 +543,15 @@ export function Bubble({
   dark,
   avatarRef,
   lessonTitle,
-  onStreamingChange
+  onStreamingChange,
+  onRetry
 }: {
   message: Message;
   dark: boolean;
   avatarRef?: React.RefObject<HTMLSpanElement | null>;
   lessonTitle?: string;
   onStreamingChange?: (isStreaming: boolean) => void;
+  onRetry?: () => void;
 }) {
   const isUser = message.role === 'user'
   const { accentColor } = useTheme()
@@ -937,18 +938,34 @@ export function Bubble({
               ref={messageContentRef}
               data-selectable="true"
               data-message-id={message.id}
-              className={`relative px-2 sm:px-4 py-2.5 sm:py-4 border rounded-[18px] sm:rounded-[22px] rounded-tl-none flex flex-col gap-2.5 sm:gap-4 ${dark
-                ? 'bg-[#090b10] backdrop-blur-2xl border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.15)]'
-                : 'bg-[#FAF9FC] border-primary/15 shadow-[0_4px_20px_rgba(124,58,237,0.04)]'
+              className={`relative px-2 sm:px-4 py-2.5 sm:py-4 border rounded-[18px] sm:rounded-[22px] rounded-tl-none flex flex-col gap-2.5 sm:gap-4 ${message.isError
+                  ? dark
+                    ? 'bg-amber-500/[0.06] backdrop-blur-2xl border-amber-400/30 shadow-[0_8px_30px_rgba(0,0,0,0.15)]'
+                    : 'bg-amber-50/75 border-amber-300/60 shadow-[0_4px_20px_rgba(180,83,9,0.06)]'
+                  : dark
+                    ? 'bg-[#090b10] backdrop-blur-2xl border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.15)]'
+                    : 'bg-[#FAF9FC] border-primary/15 shadow-[0_4px_20px_rgba(124,58,237,0.04)]'
                 }`}
             >
+              {message.isError && (
+                <div
+                  className={`flex items-center gap-2 text-xs font-bold px-2.5 py-1.5 rounded-xl w-fit ${dark ? 'bg-amber-400/10 text-amber-300' : 'bg-amber-100/80 text-amber-900'
+                    }`}
+                >
+                  <AlertCircle size={15} className="shrink-0" />
+                  <span>تعذّر وصول الرد من المساعد</span>
+                </div>
+              )}
               <ResponseMetadataBadges
                 domain={message.domain}
                 mode={message.responseMode || message.response_mode}
                 dark={dark}
               />
               {(() => {
-                const structuredFrames = parseTextIntoFrames(displayedText);
+                const safeText = displayedText?.trim()
+                  ? displayedText
+                  : (!isStreaming ? 'عذراً، لم يَرِد رد من المساعد الذكي في الوقت الحالي.' : '');
+                const structuredFrames = parseTextIntoFrames(safeText);
                 return structuredFrames.map((mainFrame, idx) => (
                   <div
                     key={idx}
@@ -997,58 +1014,73 @@ export function Bubble({
                 </div>
               )}
 
-              {!isUser && !isStreaming && (
+              {!isUser && !isStreaming && (!message.isError || onRetry) && (
                 <div className="flex items-center justify-end gap-1.5 mt-2 pt-2 border-t max-w-full" dir="rtl" style={{ borderColor: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }}>
-                  <AudioReaderButton
-                    text={displayedText}
-                    dark={dark}
-                    showTextLabel={false}
-                    hidePodcast={true}
-                    colorTheme={accentColor}
-                    menuPlacement="top"
-                    className={`!h-8 !w-8 !p-0 !justify-center !rounded-xl !shadow-none text-[13px] font-bold transition-all duration-200 hover:scale-105 cursor-pointer ${
-                      dark
-                        ? '!text-white/70 hover:!text-white !bg-white/5 hover:!bg-white/10 !border-white/10'
-                        : '!text-slate-600 hover:!text-slate-900 !bg-slate-100/80 hover:!bg-slate-200/80 !border-slate-200'
-                    }`}
-                  />
+                  {message.isError ? (
+                    onRetry && (
+                      <button
+                        type="button"
+                        onClick={onRetry}
+                        className={`h-8 px-3 flex items-center justify-center gap-1.5 rounded-xl text-xs font-bold transition-all duration-200 hover:scale-[1.02] cursor-pointer ${dark
+                            ? 'text-amber-300 bg-amber-400/10 hover:bg-amber-400/20 border border-amber-400/30'
+                            : 'text-amber-900 bg-amber-100/80 hover:bg-amber-200/80 border border-amber-300/70'
+                          }`}
+                      >
+                        <RotateCcw size={13} strokeWidth={2.2} />
+                        <span>إعادة المحاولة</span>
+                      </button>
+                    )
+                  ) : (
+                    <>
+                      <AudioReaderButton
+                        text={displayedText}
+                        dark={dark}
+                        showTextLabel={false}
+                        hidePodcast={true}
+                        colorTheme={accentColor}
+                        menuPlacement="top"
+                        className={`!h-8 !w-8 !p-0 !justify-center !rounded-xl !shadow-none text-[13px] font-bold transition-all duration-200 hover:scale-105 cursor-pointer ${dark
+                            ? '!text-white/70 hover:!text-white !bg-white/5 hover:!bg-white/10 !border-white/10'
+                            : '!text-slate-600 hover:!text-slate-900 !bg-slate-100/80 hover:!bg-slate-200/80 !border-slate-200'
+                          }`}
+                      />
 
-                  <button
-                    onClick={handleCopy}
-                    title={isCopied ? 'تم النسخ' : 'نسخ النص'}
-                    aria-label="نسخ النص"
-                    className={`h-8 w-8 flex items-center justify-center rounded-xl text-[13px] font-bold transition-all duration-200 hover:scale-105 cursor-pointer ${
-                      isCopied
-                        ? 'text-emerald-500 bg-emerald-500/10 border border-emerald-500/30'
-                        : dark
-                          ? 'text-white/70 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10'
-                          : 'text-slate-600 hover:text-slate-900 bg-slate-100/80 hover:bg-slate-200/80 border border-slate-200'
-                    }`}
-                  >
-                    {isCopied ? (
-                      <Check size={14} className="text-emerald-500 drop-shadow-sm" strokeWidth={3} />
-                    ) : (
-                      <Copy size={14} strokeWidth={2.2} />
-                    )}
-                  </button>
+                      <button
+                        onClick={handleCopy}
+                        title={isCopied ? 'تم النسخ' : 'نسخ النص'}
+                        aria-label="نسخ النص"
+                        className={`h-8 w-8 flex items-center justify-center rounded-xl text-[13px] font-bold transition-all duration-200 hover:scale-105 cursor-pointer ${isCopied
+                            ? 'text-emerald-500 bg-emerald-500/10 border border-emerald-500/30'
+                            : dark
+                              ? 'text-white/70 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10'
+                              : 'text-slate-600 hover:text-slate-900 bg-slate-100/80 hover:bg-slate-200/80 border border-slate-200'
+                          }`}
+                      >
+                        {isCopied ? (
+                          <Check size={14} className="text-emerald-500 drop-shadow-sm" strokeWidth={3} />
+                        ) : (
+                          <Copy size={14} strokeWidth={2.2} />
+                        )}
+                      </button>
 
-                  <button
-                    onClick={handleDownloadPDF}
-                    disabled={isExportingPDF}
-                    title="حفظ كـ PDF"
-                    aria-label="حفظ كـ PDF"
-                    className={`h-8 w-8 flex items-center justify-center rounded-xl text-[13px] font-bold transition-all duration-200 hover:scale-105 cursor-pointer ${
-                      dark
-                        ? 'text-white/70 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10'
-                        : 'text-slate-600 hover:text-slate-900 bg-slate-100/80 hover:bg-slate-200/80 border border-slate-200'
-                    } ${isExportingPDF ? 'opacity-50 cursor-wait' : ''}`}
-                  >
-                    {isExportingPDF ? (
-                      <Loader2 size={14} className="animate-spin text-primary" />
-                    ) : (
-                      <Download size={14} strokeWidth={2.2} />
-                    )}
-                  </button>
+                      <button
+                        onClick={handleDownloadPDF}
+                        disabled={isExportingPDF}
+                        title="حفظ كـ PDF"
+                        aria-label="حفظ كـ PDF"
+                        className={`h-8 w-8 flex items-center justify-center rounded-xl text-[13px] font-bold transition-all duration-200 hover:scale-105 cursor-pointer ${dark
+                            ? 'text-white/70 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10'
+                            : 'text-slate-600 hover:text-slate-900 bg-slate-100/80 hover:bg-slate-200/80 border border-slate-200'
+                          } ${isExportingPDF ? 'opacity-50 cursor-wait' : ''}`}
+                      >
+                        {isExportingPDF ? (
+                          <Loader2 size={14} className="animate-spin text-primary" />
+                        ) : (
+                          <Download size={14} strokeWidth={2.2} />
+                        )}
+                      </button>
+                    </>
+                  )}
                 </div>
               )}
             </div>
@@ -1092,11 +1124,10 @@ export function TypingBubble({
           <AvatarLogo dark={dark} />
         </span>
         <div
-          className={`flex items-center gap-1.5 rounded-[20px] rounded-tl-none border px-5 py-4 shadow-sm backdrop-blur-2xl transition-colors duration-300 ${
-            dark
+          className={`flex items-center gap-1.5 rounded-[20px] rounded-tl-none border px-5 py-4 shadow-sm backdrop-blur-2xl transition-colors duration-300 ${dark
               ? 'bg-[#090b10] border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.15)]'
               : 'bg-[#FAF9FC] border-slate-200/80 shadow-[0_4px_20px_rgba(0,0,0,0.04)]'
-          }`}
+            }`}
         >
           {[0, 1, 2].map((i) => (
             <span

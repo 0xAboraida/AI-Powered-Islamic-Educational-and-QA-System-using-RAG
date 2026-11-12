@@ -9,6 +9,7 @@ export type Message = {
   responseMode?: string
   response_mode?: string
   stream?: boolean
+  isError?: boolean
 }
 
 export type Conversation = {

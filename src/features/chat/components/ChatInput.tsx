@@ -16,9 +16,30 @@ import {
   Sparkles,
   X
 } from 'lucide-react'
-import zadDarkLogo from '@/assets/images/ZadDarkLogo.png'
-import { useTheme } from '../../../contexts/ThemeContext'
+import whiteLogo from '@/assets/images/WhiteLogo.png'
+import { useTheme, ACCENT_STYLES } from '../../../contexts/ThemeContext'
 import type { BookMeta } from './BookProfileCard'
+
+function ThemedZadMark({ accentColor, dark, className = 'h-3.5 w-3.5' }: { accentColor: string; dark: boolean; className?: string }) {
+  const styles = ACCENT_STYLES[accentColor] || ACCENT_STYLES.amber
+  return (
+    <span
+      aria-hidden="true"
+      className={`inline-block shrink-0 ${className}`}
+      style={{
+        backgroundColor: dark ? styles.logoDark : styles.logoLight,
+        WebkitMaskImage: `url(${whiteLogo})`,
+        maskImage: `url(${whiteLogo})`,
+        WebkitMaskSize: 'contain',
+        maskSize: 'contain',
+        WebkitMaskRepeat: 'no-repeat',
+        maskRepeat: 'no-repeat',
+        WebkitMaskPosition: 'center',
+        maskPosition: 'center',
+      }}
+    />
+  )
+}
 
 const DOMAINS = [
   { id: 0, name: 'تلقائي', isZadIcon: true },
@@ -239,7 +260,7 @@ export function ChatInput({
               }`}
             >
               <div className={`flex items-center justify-center p-1 rounded-full ${dark ? ac.activeBgDark : ac.toastBadgeLight}`}>
-                <img src={zadDarkLogo} alt="Zad" className="h-4 w-4 object-contain" />
+                <ThemedZadMark accentColor={accentColor} dark={dark} className="h-4 w-4" />
               </div>
               <span className="font-sans font-medium text-[13px]">{notification}</span>
             </motion.div>
@@ -265,7 +286,7 @@ export function ChatInput({
               >
                 <div className="flex items-center justify-center shrink-0">
                   {selectedDomain.isZadIcon ? (
-                    <img src={zadDarkLogo} alt="Zad" className="h-3.5 w-3.5 object-contain opacity-90" />
+                    <ThemedZadMark accentColor={accentColor} dark={dark} className="h-3.5 w-3.5 opacity-95" />
                   ) : (
                     selectedDomain.icon
                   )}
@@ -325,7 +346,7 @@ export function ChatInput({
                               : (dark ? `bg-white/5 ${ac.iconColorDark}` : `bg-black/5 ${ac.iconColorLight}`)
                           }`}>
                             {d.isZadIcon ? (
-                              <img src={zadDarkLogo} alt="Zad" className="h-4 w-4 object-contain drop-shadow-sm" />
+                              <ThemedZadMark accentColor={accentColor} dark={dark} className="h-4 w-4" />
                             ) : (
                               d.icon
                             )}

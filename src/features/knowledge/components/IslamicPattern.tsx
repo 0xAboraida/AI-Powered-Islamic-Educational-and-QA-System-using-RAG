@@ -1,11 +1,17 @@
 import React from 'react';
 
+const MOBILE_PATTERN_MEDIA_QUERY = '(max-width: 639.98px)';
+
 interface IslamicPatternProps {
   className?: string;
   opacity?: number;
+  mobileOpacity?: number;
   strokeColor?: string;
   fillColor?: string;
   scale?: number;
+  mobileScale?: number;
+  strokeWidth?: number;
+  mobileStrokeWidth?: number;
   isFixed?: boolean;
 }
 
@@ -16,29 +22,58 @@ interface IslamicPatternProps {
 export default function IslamicPattern({
   className = '',
   opacity = 0.08,
+  mobileOpacity,
   strokeColor = 'currentColor',
   fillColor = 'none',
   scale = 1,
+  mobileScale,
+  strokeWidth = 1.2,
+  mobileStrokeWidth,
   isFixed = false
 }: IslamicPatternProps) {
   const rawId = React.useId();
   const patternId = `islamic-girih-${rawId.replace(/[^a-zA-Z0-9-_]/g, '')}`;
+  const hasMobileOverrides =
+    mobileOpacity !== undefined || mobileScale !== undefined || mobileStrokeWidth !== undefined;
+
+  const [isMobile, setIsMobile] = React.useState(() =>
+    hasMobileOverrides && typeof window !== 'undefined'
+      ? window.matchMedia(MOBILE_PATTERN_MEDIA_QUERY).matches
+      : false,
+  );
+
+  React.useEffect(() => {
+    if (!hasMobileOverrides || typeof window === 'undefined') return;
+    const mediaQuery = window.matchMedia(MOBILE_PATTERN_MEDIA_QUERY);
+    setIsMobile(mediaQuery.matches);
+    const onChange = (event: MediaQueryListEvent) => setIsMobile(event.matches);
+    mediaQuery.addEventListener('change', onChange);
+    return () => mediaQuery.removeEventListener('change', onChange);
+  }, [hasMobileOverrides]);
+
+  const effectiveOpacity = isMobile && mobileOpacity !== undefined ? mobileOpacity : opacity;
+  const effectiveScale = isMobile && mobileScale !== undefined ? mobileScale : scale;
+  const effectiveStrokeWidth = isMobile && mobileStrokeWidth !== undefined ? mobileStrokeWidth : strokeWidth;
+
+  // Divide by scale so the pattern's rendered visual stroke stays true even when scaled up on mobile.
+  const primaryStroke = Number((effectiveStrokeWidth / effectiveScale).toFixed(3));
+  const secondaryStroke = Number(((effectiveStrokeWidth * (1 / 1.2)) / effectiveScale).toFixed(3));
 
   return (
     <div 
       className={`${isFixed ? 'fixed' : 'absolute'} inset-0 pointer-events-none overflow-hidden transition-opacity duration-300 ${className}`} 
-      style={{ opacity }}
+      style={{ opacity: effectiveOpacity }}
       aria-hidden="true"
     >
       <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <pattern
             id={patternId}
-            width={120 * scale}
-            height={120 * scale}
+            width={120 * effectiveScale}
+            height={120 * effectiveScale}
             patternUnits="userSpaceOnUse"
           >
-            <g transform={`scale(${scale})`}>
+            <g transform={`scale(${effectiveScale})`}>
               {/* Center 8-pointed star: Center (60, 60), Outer R=28, Inner R=14 */}
             <polygon
               points="
@@ -49,7 +84,7 @@ export default function IslamicPattern({
               "
               fill={fillColor}
               stroke={strokeColor}
-              strokeWidth="1.2"
+              strokeWidth={primaryStroke}
               strokeLinejoin="round"
             />
 
@@ -63,7 +98,7 @@ export default function IslamicPattern({
               "
               fill={fillColor}
               stroke={strokeColor}
-              strokeWidth="1.2"
+              strokeWidth={primaryStroke}
               strokeLinejoin="round"
             />
 
@@ -77,7 +112,7 @@ export default function IslamicPattern({
               "
               fill={fillColor}
               stroke={strokeColor}
-              strokeWidth="1.2"
+              strokeWidth={primaryStroke}
               strokeLinejoin="round"
             />
 
@@ -91,7 +126,7 @@ export default function IslamicPattern({
               "
               fill={fillColor}
               stroke={strokeColor}
-              strokeWidth="1.2"
+              strokeWidth={primaryStroke}
               strokeLinejoin="round"
             />
 
@@ -105,22 +140,22 @@ export default function IslamicPattern({
               "
               fill={fillColor}
               stroke={strokeColor}
-              strokeWidth="1.2"
+              strokeWidth={primaryStroke}
               strokeLinejoin="round"
             />
 
             {/* Interlacing Geometric Straps & Connectors */}
             {/* Horizontal & Vertical grid connectors connecting tips */}
-            <line x1="88" y1="60" x2="92" y2="60" stroke={strokeColor} strokeWidth="1.2" />
-            <line x1="32" y1="60" x2="28" y2="60" stroke={strokeColor} strokeWidth="1.2" />
-            <line x1="60" y1="88" x2="60" y2="92" stroke={strokeColor} strokeWidth="1.2" />
-            <line x1="60" y1="32" x2="60" y2="28" stroke={strokeColor} strokeWidth="1.2" />
+            <line x1="88" y1="60" x2="92" y2="60" stroke={strokeColor} strokeWidth={primaryStroke} />
+            <line x1="32" y1="60" x2="28" y2="60" stroke={strokeColor} strokeWidth={primaryStroke} />
+            <line x1="60" y1="88" x2="60" y2="92" stroke={strokeColor} strokeWidth={primaryStroke} />
+            <line x1="60" y1="32" x2="60" y2="28" stroke={strokeColor} strokeWidth={primaryStroke} />
 
             {/* Diagonal interconnects forming Islamic octagonal cartouches */}
-            <line x1="79.8" y1="79.8" x2="100.2" y2="100.2" stroke={strokeColor} strokeWidth="1" />
-            <line x1="40.2" y1="40.2" x2="19.8" y2="19.8" stroke={strokeColor} strokeWidth="1" />
-            <line x1="79.8" y1="40.2" x2="100.2" y2="19.8" stroke={strokeColor} strokeWidth="1" />
-            <line x1="40.2" y1="79.8" x2="19.8" y2="100.2" stroke={strokeColor} strokeWidth="1" />
+            <line x1="79.8" y1="79.8" x2="100.2" y2="100.2" stroke={strokeColor} strokeWidth={secondaryStroke} />
+            <line x1="40.2" y1="40.2" x2="19.8" y2="19.8" stroke={strokeColor} strokeWidth={secondaryStroke} />
+            <line x1="79.8" y1="40.2" x2="100.2" y2="19.8" stroke={strokeColor} strokeWidth={secondaryStroke} />
+            <line x1="40.2" y1="79.8" x2="19.8" y2="100.2" stroke={strokeColor} strokeWidth={secondaryStroke} />
 
             {/* Surrounding diamond straps */}
             <path
@@ -132,7 +167,7 @@ export default function IslamicPattern({
               "
               fill="none"
               stroke={strokeColor}
-              strokeWidth="1"
+              strokeWidth={secondaryStroke}
             />
 
             </g>

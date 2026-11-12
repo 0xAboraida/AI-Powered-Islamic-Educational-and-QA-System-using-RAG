@@ -50,7 +50,7 @@ export const AddManualContentModal: React.FC<AddManualContentModalProps> = ({
       source,
       url: url.trim(),
       videoCount: Number(videoCount) || 1,
-      thumbnail: thumbnail.trim() || 'https://images.unsplash.com/photo-1584286595398-a59f21d313f5?w=500&auto=format&fit=crop&q=60',
+      thumbnail: thumbnail.trim() || '',
     };
 
     onSave(newSeries);

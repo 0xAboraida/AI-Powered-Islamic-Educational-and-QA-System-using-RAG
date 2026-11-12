@@ -10,6 +10,7 @@
     "format": "oxfmt"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.119.0",
     "@xyflow/react": "^12.11.3",
     "dagre": "^0.8.5",
     "framer-motion": "^13.1.0",

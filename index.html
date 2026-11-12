@@ -43,10 +43,23 @@
   }
   </script>
 
-  <link rel="icon" type="image/png" href="/favicon.png?v=2" />
-  <link rel="shortcut icon" href="/favicon.ico?v=2" />
-  <link rel="apple-touch-icon" href="/logo.png?v=2" />
+  <link id="dynamic-favicon" rel="icon" type="image/png" href="/favicon-amber.png?v=4" />
+  <link id="dynamic-apple-icon" rel="apple-touch-icon" href="/favicon-amber.png?v=4" />
   <link rel="manifest" href="/manifest.json" />
+  <script>
+    (function() {
+      try {
+        var accent = localStorage.getItem('zad_accent_color') || 'amber';
+        var validAccents = { amber: 1, emerald: 1, blue: 1, purple: 1 };
+        var safeAccent = validAccents[accent] ? accent : 'amber';
+        var iconUrl = '/favicon-' + safeAccent + '.png?v=4';
+        ['dynamic-favicon', 'dynamic-apple-icon'].forEach(function(id) {
+          var el = document.getElementById(id);
+          if (el) el.setAttribute('href', iconUrl);
+        });
+      } catch (e) {}
+    })();
+  </script>
   <!-- figma:head-end -->
 </head>
 

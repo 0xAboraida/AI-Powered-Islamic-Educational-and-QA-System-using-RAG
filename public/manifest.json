@@ -1,21 +1,27 @@
 {
+  "id": "/",
   "name": "زاد | Zad Islamic AI",
   "short_name": "زاد",
   "description": "منصة متكاملة لطالب العلم الشرعي باستخدام الذكاء الاصطناعي",
+  "lang": "ar",
+  "dir": "rtl",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#12041f",
   "theme_color": "#12041f",
   "icons": [
     {
-      "src": "/logo.png",
+      "src": "/logo-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "/logo.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     }
   ]
 }
