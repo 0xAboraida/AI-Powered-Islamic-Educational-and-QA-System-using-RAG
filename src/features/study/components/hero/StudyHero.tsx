@@ -96,7 +96,15 @@ export function StudyHero({
 
         const res = await studyApi.getSessions().catch(() => null)
         if (res && Array.isArray(res) && res.length > 0 && isMounted) {
-          setRecentSessions(res.slice(0, 3))
+          const enriched = res.slice(0, 3).map((remote: any) => {
+            const localMatch = local?.find(
+              (loc: any) =>
+                loc.id === remote.id ||
+                (remote.chunkId && loc.chunkId === remote.chunkId),
+            )
+            return localMatch ? { ...localMatch, ...remote } : remote
+          })
+          setRecentSessions(enriched)
         }
       } catch (err) {
         console.warn("Could not load recent study sessions:", err)

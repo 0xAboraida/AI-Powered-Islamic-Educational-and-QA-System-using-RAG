@@ -170,7 +170,7 @@ export function useStudyLibrarySource({
                         cachedBook?.children &&
                         cachedBook.children.length > 0 &&
                         (!cachedBook.children[0].toc_id ||
-                          !cachedBook.children[0].chunk_id?.includes('_v2'))
+                          !cachedBook.children[0].chunk_id?.includes('_v5'))
                       )
 
                       if (isFallback || isOldFormat) {

@@ -13,6 +13,8 @@ import {
   Hash,
   Link,
   Bookmark,
+  AlertCircle,
+  RotateCcw,
 } from "lucide-react"
 
 import type { ChunkMetadata } from "../../../../contexts/StudyContext"
@@ -52,6 +54,10 @@ export function StudyDocument({
   isDark = true,
 
   onPageChange,
+
+  chunkLoadError,
+
+  onRetryLoad,
 }: {
   isDocumentOpen: boolean
 
@@ -80,6 +86,10 @@ export function StudyDocument({
   isDark?: boolean
 
   onPageChange?: (direction: "next" | "prev") => void
+
+  chunkLoadError?: string | null
+
+  onRetryLoad?: () => void
 }) {
   const { accentColor } = useTheme()
 
@@ -934,79 +944,129 @@ export function StudyDocument({
                   ></div>
                 </div>
 
-                <div className="relative">
-                  <div
-                    key={`${viewMode}-${safePageIndex}`}
-                    data-selectable="true"
-                    data-library-content="true"
-                    className={
-                      isTurathBook
-                        ? `text-[17px] sm:text-[18px] leading-[1.8] font-amiri tracking-wide relative transition-all selection:text-slate-900 dark:selection:text-white animate-[fadeInUp_0.8s_ease-out_forwards] ${
-                            isDark ? "text-white/90" : "text-slate-900"
-                          }`
-                        : `rounded-xl border p-3.5 sm:p-6 md:p-8 text-[17px] sm:text-[18px] leading-[1.8] sm:leading-[1.9] font-amiri tracking-wide relative overflow-hidden backdrop-blur-md transition-all selection:text-slate-900 dark:selection:text-white animate-[fadeInUp_0.8s_ease-out_forwards] ${
+                {(() => {
+                  const resolvedErrorText =
+                    chunkLoadError ||
+                    (chunkText ===
+                      "تعذر تحميل الفصل، يرجى التحقق من الاتصال بالإنترنت." ||
+                    chunkText ===
+                      "تعذر جلب نص الفصل من مصدر الكتاب حالياً رغم توفر الاتصال، يرجى المحاولة مرة أخرى." ||
+                    chunkText?.startsWith("تعذر تحديد بيانات هذا الدرس") ||
+                    chunkText?.startsWith("حدث خطأ أثناء تحميل فصل الكتاب")
+                      ? chunkText
+                      : null)
+
+                  if (!loading && resolvedErrorText) {
+                    return (
+                      <div
+                        className={`rounded-2xl border p-6 sm:p-8 text-center flex flex-col items-center gap-3.5 shadow-sm max-w-xl mx-auto my-4 ${
+                          isDark
+                            ? "border-amber-500/25 bg-amber-950/20 text-white"
+                            : "border-amber-200/80 bg-amber-50/70 text-stone-900"
+                        }`}
+                      >
+                        <div
+                          className={`flex h-12 w-12 items-center justify-center rounded-full border ${
                             isDark
-                              ? "border-white/10 bg-[#090b10] text-white/90 shadow-xl"
-                              : "border-slate-200 bg-white text-slate-900 shadow-xl"
-                          }`
-                    }
-                    dangerouslySetInnerHTML={
-                      isTurathBook
-                        ? viewMode === "paged" && currentPageItem
-                          ? {
-                              __html:
-                                currentPageItem.html +
-                                (isLastPage
-                                  ? turathResult?.continuationNotice || ""
-                                  : ""),
-                            }
-                          : { __html: turathResult?.__html || "" }
-                        : formatMarkdown(chunkText, true, isDark)
-                    }
-                  />
-
-                  {/* Turath Book Authentic Page Navigator (Floating on bottom edges) */}
-                  {isTurathBook &&
-                    viewMode === "paged" &&
-                    onPageChange &&
-                    !chunkText?.includes("turath-empty-parent-notice") && (
-                      <div className="absolute -bottom-[15px] left-0 right-0 flex items-center justify-between px-2 sm:px-5 md:px-8 pointer-events-none z-20">
-                        <button
-                          type="button"
-                          onClick={handlePrevPage}
-                          disabled={isFirstPage}
-                          className={`pointer-events-auto flex items-center justify-center gap-1 rounded-full px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-[11px] sm:text-xs font-bold transition-all border ${
-                            isFirstPage
-                              ? isDark
-                                ? "opacity-35 cursor-not-allowed text-white/30 border-white/10 bg-black/40"
-                                : "opacity-40 cursor-not-allowed text-slate-400 border-slate-200 bg-slate-50"
-                              : docTheme.pageBtn
+                              ? "bg-amber-500/15 border-amber-500/30 text-amber-300"
+                              : "bg-amber-100 border-amber-300 text-amber-800"
                           }`}
-                          title="الصفحة السابقة"
                         >
-                          <ChevronRight size={13} />
-                          <span>السابقة</span>
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={handleNextPage}
-                          disabled={isLastPage}
-                          className={`pointer-events-auto flex items-center justify-center gap-1 rounded-full px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-[11px] sm:text-xs font-bold transition-all border ${
-                            isLastPage
-                              ? isDark
-                                ? "opacity-35 cursor-not-allowed text-white/30 border-white/10 bg-black/40"
-                                : "opacity-40 cursor-not-allowed text-slate-400 border-slate-200 bg-slate-50"
-                              : docTheme.pageBtn
-                          }`}
-                          title="الصفحة التالية"
-                        >
-                          <span>التالية</span>
-                          <ChevronLeft size={13} />
-                        </button>
+                          <AlertCircle size={22} />
+                        </div>
+                        <p className="font-amiri text-base sm:text-lg leading-relaxed font-semibold">
+                          {resolvedErrorText}
+                        </p>
+                        {onRetryLoad && (
+                          <button
+                            type="button"
+                            onClick={onRetryLoad}
+                            className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs sm:text-sm font-bold transition-all active:scale-95 cursor-pointer ${docTheme.pageBtn}`}
+                          >
+                            <RotateCcw size={14} />
+                            <span>إعادة المحاولة</span>
+                          </button>
+                        )}
                       </div>
-                    )}
-                </div>
+                    )
+                  }
+
+                  return (
+                    <div className="relative">
+                      <div
+                        key={`${viewMode}-${safePageIndex}`}
+                        data-selectable="true"
+                        data-library-content="true"
+                        className={
+                          isTurathBook
+                            ? `text-[17px] sm:text-[18px] leading-[1.8] font-amiri tracking-wide relative transition-all selection:text-slate-900 dark:selection:text-white animate-[fadeInUp_0.8s_ease-out_forwards] ${
+                                isDark ? "text-white/90" : "text-slate-900"
+                              }`
+                            : `rounded-xl border p-3.5 sm:p-6 md:p-8 text-[17px] sm:text-[18px] leading-[1.8] sm:leading-[1.9] font-amiri tracking-wide relative overflow-hidden backdrop-blur-md transition-all selection:text-slate-900 dark:selection:text-white animate-[fadeInUp_0.8s_ease-out_forwards] ${
+                                isDark
+                                  ? "border-white/10 bg-[#090b10] text-white/90 shadow-xl"
+                                  : "border-slate-200 bg-white text-slate-900 shadow-xl"
+                              }`
+                        }
+                        dangerouslySetInnerHTML={
+                          isTurathBook
+                            ? viewMode === "paged" && currentPageItem
+                              ? {
+                                  __html:
+                                    currentPageItem.html +
+                                    (isLastPage
+                                      ? turathResult?.continuationNotice || ""
+                                      : ""),
+                                }
+                              : { __html: turathResult?.__html || "" }
+                            : formatMarkdown(chunkText, true, isDark)
+                        }
+                      />
+
+                      {/* Turath Book Authentic Page Navigator (Floating on bottom edges) */}
+                      {isTurathBook &&
+                        viewMode === "paged" &&
+                        onPageChange &&
+                        !chunkText?.includes("turath-empty-parent-notice") && (
+                          <div className="absolute -bottom-[15px] left-0 right-0 flex items-center justify-between px-2 sm:px-5 md:px-8 pointer-events-none z-20">
+                            <button
+                              type="button"
+                              onClick={handlePrevPage}
+                              disabled={isFirstPage}
+                              className={`pointer-events-auto flex items-center justify-center gap-1 rounded-full px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-[11px] sm:text-xs font-bold transition-all border ${
+                                isFirstPage
+                                  ? isDark
+                                    ? "opacity-35 cursor-not-allowed text-white/30 border-white/10 bg-black/40"
+                                    : "opacity-40 cursor-not-allowed text-slate-400 border-slate-200 bg-slate-50"
+                                  : docTheme.pageBtn
+                              }`}
+                              title="الصفحة السابقة"
+                            >
+                              <ChevronRight size={13} />
+                              <span>السابقة</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={handleNextPage}
+                              disabled={isLastPage}
+                              className={`pointer-events-auto flex items-center justify-center gap-1 rounded-full px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-[11px] sm:text-xs font-bold transition-all border ${
+                                isLastPage
+                                  ? isDark
+                                    ? "opacity-35 cursor-not-allowed text-white/30 border-white/10 bg-black/40"
+                                    : "opacity-40 cursor-not-allowed text-slate-400 border-slate-200 bg-slate-50"
+                                  : docTheme.pageBtn
+                              }`}
+                              title="الصفحة التالية"
+                            >
+                              <span>التالية</span>
+                              <ChevronLeft size={13} />
+                            </button>
+                          </div>
+                        )}
+                    </div>
+                  )
+                })()}
               </>
             )}
           </div>

@@ -35,9 +35,20 @@ export function saveStudySessionToLocalCache(session: any): void {
     const key = getStudySessionsStorageKey()
     const raw = localStorage.getItem(key)
     const list = raw ? JSON.parse(raw) : []
+    const existing = list.find(
+      (s: any) => s.id === session.id || s.chunkId === session.chunkId
+    )
+    const mergedSession = {
+      ...(existing || {}),
+      ...session,
+      chunkId: session.chunkId || existing?.chunkId,
+      bookTitle: session.bookTitle || existing?.bookTitle,
+      domain: session.domain || existing?.domain,
+      sectionTitle: session.sectionTitle || existing?.sectionTitle,
+    }
     const updated = [
-      session,
-      ...list.filter((s: any) => s.id !== session.id && s.chunkId !== session.chunkId)
+      mergedSession,
+      ...list.filter((s: any) => s.id !== mergedSession.id && s.chunkId !== mergedSession.chunkId)
     ]
     localStorage.setItem(key, JSON.stringify(updated.slice(0, 100)))
     localStorage.setItem('zad_study_sessions_cache', JSON.stringify(updated.slice(0, 100)))

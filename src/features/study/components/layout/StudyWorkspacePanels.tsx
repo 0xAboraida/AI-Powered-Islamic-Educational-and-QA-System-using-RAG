@@ -43,6 +43,8 @@ export interface StudyWorkspacePanelsProps {
   chunkMeta: any
   chunkText: string
   isChunkLoading: boolean
+  chunkLoadError?: string | null
+  onRetryChunkLoad?: () => void
   handleChunkSelect: (chunkId: string, title: string, fullPath: string, node?: TreeNode) => void
 
   // Document
@@ -119,6 +121,8 @@ export function StudyWorkspacePanels({
   chunkMeta,
   chunkText,
   isChunkLoading,
+  chunkLoadError,
+  onRetryChunkLoad,
   handleChunkSelect,
 
   isDocumentOpen,
@@ -308,6 +312,8 @@ export function StudyWorkspacePanels({
                   onPageChange={(direction) =>
                     handleTurathPageChange(direction, headerSubtitle)
                   }
+                  chunkLoadError={chunkLoadError}
+                  onRetryLoad={onRetryChunkLoad}
                 />
               </motion.div>
 

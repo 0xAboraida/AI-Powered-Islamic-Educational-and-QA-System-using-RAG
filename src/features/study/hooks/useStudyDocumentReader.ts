@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react"
+import { useState, useCallback, useRef } from "react"
 import { studyApi, type StudySessionDto } from "../../../api/studyApi"
 import { API_BASE } from "../utils/studyConfig"
 import { studyPlanManager } from "../utils/studyPlanManager"
@@ -10,6 +10,7 @@ import {
 import {
   fetchTurathBookIndexes,
   fetchTurathChapterText,
+  convertTurathHeadingsToTree,
   type ChapterSliceOptions,
 } from "../../../api/turathApi"
 import {
@@ -27,6 +28,8 @@ import type { ChatMessage, HistoryMessage } from "./useStudyChatTutor"
 export interface UseStudyDocumentReaderOptions {
   treeData: TreeNode[]
   currentChunkId: string | null
+  chunkTitle?: string
+  headerSubtitle?: string
   setCurrentChunkId: (id: string | null) => void
   setChunkTitle: (title: string) => void
   setHeaderSubtitle: (subtitle: string) => void
@@ -62,6 +65,8 @@ export interface UseStudyDocumentReaderOptions {
 export function useStudyDocumentReader({
   treeData,
   currentChunkId,
+  chunkTitle = "",
+  headerSubtitle = "",
   setCurrentChunkId,
   setChunkTitle,
   setHeaderSubtitle,
@@ -93,6 +98,7 @@ export function useStudyDocumentReader({
   onExit,
 }: UseStudyDocumentReaderOptions) {
   const [isChunkLoading, setIsChunkLoading] = useState(false)
+  const [chunkLoadError, setChunkLoadError] = useState<string | null>(null)
   const [confirmClose, setConfirmClose] = useState(false)
   const [pendingChunkSwitch, setPendingChunkSwitch] = useState<{
     chunkId: string
@@ -100,6 +106,21 @@ export function useStudyDocumentReader({
     fullPath: string
     node?: TreeNode
   } | null>(null)
+  const lastAttemptRef = useRef<
+    | {
+        kind: "chunk"
+        chunkId: string
+        title: string
+        fullPath: string
+        selectedNode?: TreeNode
+        initialMindmapData?: MindmapNode[] | null
+      }
+    | {
+        kind: "savedSession"
+        sess: StudySessionDto
+      }
+    | null
+  >(null)
 
   const executeChunkSelect = useCallback(
     async (
@@ -109,6 +130,15 @@ export function useStudyDocumentReader({
       selectedNode?: TreeNode,
       initialMindmapData?: MindmapNode[] | null,
     ) => {
+      lastAttemptRef.current = {
+        kind: "chunk",
+        chunkId,
+        title,
+        fullPath,
+        selectedNode,
+        initialMindmapData,
+      }
+      setChunkLoadError(null)
       setStudyView("workspace")
       setIsChunkLoading(true)
       setCurrentChunkId(chunkId)
@@ -167,10 +197,18 @@ export function useStudyDocumentReader({
         try {
           const parts = chunkId.split("_")
           const turathId = parseInt(parts[1], 10)
+          if (!Number.isFinite(turathId) || turathId <= 0) {
+            const invalidMsg =
+              "تعذر تحديد بيانات هذا الدرس المحفوظ، يرجى اختياره من الفهرس مجدداً."
+            setChunkLoadError(invalidMsg)
+            setChunkText(invalidMsg)
+            return
+          }
+
           const startPage = parseInt(parts[3], 10) || 1
           let endPage = parts[5] ? parseInt(parts[5], 10) : startPage
-          let startTocIndex = parts[7] ? parseInt(parts[7], 10) : undefined
-          let endTocIndex = parts[9] ? parseInt(parts[9], 10) : undefined
+          const startTocIndex = parts[7] ? parseInt(parts[7], 10) : undefined
+          const endTocIndex = parts[9] ? parseInt(parts[9], 10) : undefined
 
           let resolvedStartTocId =
             selectedNode?.toc_id ||
@@ -180,27 +218,39 @@ export function useStudyDocumentReader({
             (endTocIndex && endTocIndex > 0 ? `toc-${endTocIndex}` : undefined)
           let nextChapterTitle = selectedNode?.next_title
 
-          if (selectedNode?.children && selectedNode.children.length > 0) {
-            const firstChild = selectedNode.children[0]
-            if (firstChild) {
-              endPage = Math.max(startPage, firstChild.page || startPage)
-              if (firstChild.toc_id) resolvedEndTocId = firstChild.toc_id
-              if (firstChild.title) nextChapterTitle = firstChild.title
-            }
-          }
-
-          if (!resolvedStartTocId || !resolvedEndTocId) {
+          if (!resolvedStartTocId || !resolvedEndTocId || !selectedNode) {
             const { bookNode } = findTurathBookInTree(treeData, turathId)
             let bookChapters = bookNode?.children
 
             if (!bookChapters || bookChapters.length === 0) {
               try {
                 const cachedBookData = await idbGetTurathBookTree(turathId)
-                if (
-                  cachedBookData?.children &&
-                  cachedBookData.children.length > 0
-                ) {
+                const isCachedBookStale =
+                  !cachedBookData?.children ||
+                  cachedBookData.children.length === 0 ||
+                  (cachedBookData.children.length === 1 &&
+                    cachedBookData.children[0].title ===
+                      "قراءة الكتاب (من البداية)") ||
+                  !cachedBookData.children[0].toc_id ||
+                  !cachedBookData.children[0].chunk_id?.includes("_v5")
+
+                if (!isCachedBookStale) {
                   bookChapters = cachedBookData.children
+                } else {
+                  const liveIndexes = await fetchTurathBookIndexes(turathId)
+                  const headings = liveIndexes?.indexes?.headings || []
+                  if (headings.length > 0) {
+                    bookChapters = convertTurathHeadingsToTree(
+                      headings,
+                      turathId,
+                      bookNode?.title || fullPath,
+                    )
+                    await idbSetTurathBookTree(turathId, {
+                      children: bookChapters,
+                      meta: liveIndexes?.meta,
+                      indexes: liveIndexes?.indexes,
+                    })
+                  }
                 }
               } catch {}
             }
@@ -218,11 +268,10 @@ export function useStudyDocumentReader({
               }
 
               const flat = flattenNodes(bookChapters)
-              const matched = flat.find(
-                (n) =>
-                  n.chunk_id === chunkId ||
-                  (n.title === title && n.page === startPage),
-              )
+              const matched =
+                flat.find((n) => n.chunk_id === chunkId) ||
+                flat.find((n) => n.title === title && n.page === startPage) ||
+                (title ? flat.find((n) => n.title === title) : undefined)
 
               if (matched) {
                 if (!selectedNode) selectedNode = matched
@@ -230,6 +279,15 @@ export function useStudyDocumentReader({
                 if (!resolvedEndTocId) resolvedEndTocId = matched.next_toc_id
                 if (!nextChapterTitle) nextChapterTitle = matched.next_title
               }
+            }
+          }
+
+          if (selectedNode?.children && selectedNode.children.length > 0) {
+            const firstChild = selectedNode.children[0]
+            if (firstChild) {
+              endPage = Math.max(startPage, firstChild.page || startPage)
+              if (firstChild.toc_id) resolvedEndTocId = firstChild.toc_id
+              if (firstChild.title) nextChapterTitle = firstChild.title
             }
           }
 
@@ -385,8 +443,18 @@ export function useStudyDocumentReader({
             const currentVol = (turathData.meta as any)?.vol || "1"
             const totalParts = parsedInfo.totalParts || 1
 
+            const resolvedFullPath = fullPath.includes("←")
+              ? fullPath
+              : [resolvedDomain || categoryTitle, resolvedBookTitle, title]
+                  .filter(Boolean)
+                  .join(" ← ")
+
+            if (resolvedFullPath && resolvedFullPath !== fullPath) {
+              setHeaderSubtitle(resolvedFullPath)
+            }
+
             const resolvedHierarchy = buildTurathHierarchy(
-              fullPath,
+              resolvedFullPath,
               resolvedBookTitle,
               title,
             )
@@ -408,14 +476,22 @@ export function useStudyDocumentReader({
               source_url: sourceUrl,
             })
 
-            // Always save active session locally so history modal & sidebar have immediate access
+            // Always save active session metadata locally so history modal & resume work cleanly
             const fallbackSessionId = Date.now()
             const localSessionObj = {
               id: fallbackSessionId,
               chunkId,
               bookTitle: resolvedBookTitle,
-              domain: resolvedDomain || fullPath,
+              author:
+                resolvedAuthor && resolvedAuthor !== "غير محدد"
+                  ? resolvedAuthor
+                  : undefined,
+              domain: resolvedDomain || categoryTitle || resolvedFullPath,
               sectionTitle: title,
+              fullPath: resolvedFullPath,
+              turathId,
+              startPage,
+              endPage,
               createdAt: new Date().toISOString(),
               lastAccessedAt: new Date().toISOString(),
               isActive: true,
@@ -426,13 +502,20 @@ export function useStudyDocumentReader({
               const session = await studyApi.startSession(
                 chunkId,
                 resolvedBookTitle,
-                resolvedDomain || fullPath,
+                resolvedDomain || resolvedFullPath,
                 title,
               )
 
               if (session && session.id) {
                 setActiveSessionId(session.id)
-                saveStudySessionToLocalCache(session)
+                saveStudySessionToLocalCache({
+                  ...localSessionObj,
+                  ...session,
+                  chunkId: session.chunkId || chunkId,
+                  bookTitle: session.bookTitle || resolvedBookTitle,
+                  domain: session.domain || localSessionObj.domain,
+                  sectionTitle: session.sectionTitle || title,
+                })
                 const savedMessages = await studyApi
                   .getSessionMessages(session.id)
                   .catch(() => [])
@@ -494,11 +577,20 @@ export function useStudyDocumentReader({
               console.warn("Backend study session start for Turath failed:", err)
             }
           } else {
-            setChunkText("تعذر تحميل الفصل، يرجى التحقق من الاتصال بالإنترنت.")
+            const isOffline =
+              typeof navigator !== "undefined" && navigator.onLine === false
+            const errorMsg = isOffline
+              ? "يبدو أنك غير متصل بالإنترنت. تعذر تحميل الفصل، يرجى التحقق من الشبكة والمحاولة مرة أخرى."
+              : "تعذر جلب نص الفصل من مصدر الكتاب حالياً رغم توفر الاتصال، يرجى المحاولة مرة أخرى."
+            setChunkLoadError(errorMsg)
+            setChunkText(errorMsg)
           }
         } catch (err) {
           console.error("Error fetching Turath chapter:", err)
-          setChunkText("حدث خطأ أثناء تحميل فصل الكتاب من تراث.")
+          const errorMsg =
+            "حدث خطأ أثناء تحميل فصل الكتاب من تراث، يرجى المحاولة مرة أخرى."
+          setChunkLoadError(errorMsg)
+          setChunkText(errorMsg)
         } finally {
           setIsChunkLoading(false)
           setLoading(false)
@@ -555,9 +647,17 @@ export function useStudyDocumentReader({
               "تم تحميل الدرس بنجاح، لكن لا يوجد نص متوفر.",
           )
           if (data.metadata) setChunkMeta(data.metadata)
+        } else {
+          const errorMsg =
+            "تعذر تحميل نص الدرس حالياً، يرجى المحاولة مرة أخرى."
+          setChunkLoadError(errorMsg)
+          setChunkText(errorMsg)
         }
       } catch (e) {
         console.error(e)
+        const errorMsg = "تعذر تحميل نص الدرس حالياً، يرجى المحاولة مرة أخرى."
+        setChunkLoadError(errorMsg)
+        setChunkText(errorMsg)
       } finally {
         setIsChunkLoading(false)
         setLoading(false)
@@ -595,16 +695,19 @@ export function useStudyDocumentReader({
 
   const handleSelectSavedSession = useCallback(
     async (sess: StudySessionDto) => {
+      setChunkLoadError(null)
       setStudyView("workspace")
 
       if (sess.chunkId && sess.chunkId.startsWith("turath_")) {
         await executeChunkSelect(
           sess.chunkId,
           sess.sectionTitle || sess.bookTitle,
-          sess.domain || sess.bookTitle,
+          (sess as any).fullPath || sess.domain || sess.bookTitle,
         )
         return
       }
+
+      lastAttemptRef.current = { kind: "savedSession", sess }
 
       setCurrentChunkId(sess.chunkId)
       setChunkTitle(sess.bookTitle || "جلسة دراسية")
@@ -640,6 +743,11 @@ export function useStudyDocumentReader({
         if (data) {
           setChunkText(data.text || data.content || "تم تحميل الدرس بنجاح.")
           if (data.metadata) setChunkMeta(data.metadata)
+        } else {
+          const errorMsg =
+            "تعذر تحميل نص الدرس المحفوظ حالياً، يرجى المحاولة مرة أخرى."
+          setChunkLoadError(errorMsg)
+          setChunkText(errorMsg)
         }
 
         const savedMessages = await studyApi
@@ -699,6 +807,10 @@ export function useStudyDocumentReader({
         }
       } catch (err) {
         console.error("فشل في استرجاع الجلسة المحفوظة:", err)
+        const errorMsg =
+          "تعذر تحميل بيانات الدرس المحفوظ، يرجى المحاولة مرة أخرى."
+        setChunkLoadError(errorMsg)
+        setChunkText(errorMsg)
       } finally {
         setLoading(false)
       }
@@ -763,6 +875,7 @@ export function useStudyDocumentReader({
   }, [pendingChunkSwitch, executeChunkSelect])
 
   const handleConfirmExit = useCallback(() => {
+    setChunkLoadError(null)
     clearStudySession()
     setIsSidebarOpen(true)
     setIsDocumentOpen(true)
@@ -782,6 +895,7 @@ export function useStudyDocumentReader({
   ])
 
   const handleStartNewSession = useCallback(() => {
+    setChunkLoadError(null)
     clearStudySession()
     setIsWorkspaceSidebarExpanded(true)
     setIsSidebarOpen(true)
@@ -814,9 +928,41 @@ export function useStudyDocumentReader({
     focusPanel,
   ])
 
+  const retryChunkLoad = useCallback(() => {
+    const last = lastAttemptRef.current
+    if (last?.kind === "savedSession") {
+      handleSelectSavedSession(last.sess)
+      return
+    }
+    if (last?.kind === "chunk") {
+      executeChunkSelect(
+        last.chunkId,
+        last.title,
+        last.fullPath,
+        last.selectedNode,
+        last.initialMindmapData,
+      )
+      return
+    }
+    if (currentChunkId) {
+      executeChunkSelect(
+        currentChunkId,
+        chunkTitle || "الدرس المختار",
+        headerSubtitle || "",
+      )
+    }
+  }, [
+    currentChunkId,
+    chunkTitle,
+    headerSubtitle,
+    executeChunkSelect,
+    handleSelectSavedSession,
+  ])
+
   return {
     isChunkLoading,
     setIsChunkLoading,
+    chunkLoadError,
     confirmClose,
     setConfirmClose,
     pendingChunkSwitch,
@@ -828,6 +974,7 @@ export function useStudyDocumentReader({
     handleConfirmChunkSwitch,
     handleConfirmExit,
     handleStartNewSession,
+    retryChunkLoad,
   }
 }
 

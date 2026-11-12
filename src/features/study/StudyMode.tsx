@@ -211,6 +211,7 @@ export default function StudyMode({
   // Hook 3: Document Reader & Navigation
   const {
     isChunkLoading,
+    chunkLoadError,
     confirmClose,
     setConfirmClose,
     pendingChunkSwitch,
@@ -222,9 +223,12 @@ export default function StudyMode({
     handleConfirmChunkSwitch,
     handleConfirmExit,
     handleStartNewSession,
+    retryChunkLoad,
   } = useStudyDocumentReader({
     treeData,
     currentChunkId,
+    chunkTitle,
+    headerSubtitle,
     setCurrentChunkId,
     setChunkTitle,
     setHeaderSubtitle,
@@ -634,6 +638,8 @@ export default function StudyMode({
           chunkMeta={chunkMeta}
           chunkText={chunkText}
           isChunkLoading={isChunkLoading}
+          chunkLoadError={chunkLoadError}
+          onRetryChunkLoad={retryChunkLoad}
           handleChunkSelect={handleChunkSelect}
           isDocumentOpen={isDocumentOpen}
           setIsDocumentOpen={setIsDocumentOpen}

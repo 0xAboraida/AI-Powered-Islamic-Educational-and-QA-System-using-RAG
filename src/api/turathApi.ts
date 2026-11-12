@@ -1,4 +1,5 @@
 import type { TreeNode } from '../contexts/StudyContext'
+import { idbGetOfflineBook } from '../utils/indexedDbStorage'
 
 export interface TurathHeading {
   title: string
@@ -70,67 +71,55 @@ const TURATH_EDGE_URL = '/api/turath-proxy'
 const TURATH_DIRECT_URL = 'https://api.turath.io'
 
 /**
+ * Fetches JSON from a Turath candidate URL with a bounded timeout and SPA-HTML rejection.
+ */
+async function fetchTurathCandidate(url: string, timeoutMs = 12000): Promise<any | null> {
+  const controller = typeof AbortController !== 'undefined' ? new AbortController() : null
+  const timer = controller ? setTimeout(() => controller.abort(), timeoutMs) : null
+  try {
+    const res = await fetch(url, controller ? { signal: controller.signal } : undefined)
+    if (!res.ok) return null
+    const text = await res.text()
+    if (!text) return null
+    const trimmed = text.trim()
+    if (!trimmed.startsWith('{') && !trimmed.startsWith('[')) return null
+    return JSON.parse(trimmed)
+  } catch {
+    return null
+  } finally {
+    if (timer) clearTimeout(timer)
+  }
+}
+
+/**
  * Robust fetcher handling local Vite dev proxy, Vercel Edge Serverless proxy, and CORS fallbacks
  */
 async function fetchTurathJson(endpointWithQuery: string): Promise<any> {
+  const candidates: string[] = []
+
   if (typeof window !== 'undefined') {
     // Strategy 1: Local Vite proxy / Vercel vercel.json rewrite
-    try {
-      const res = await fetch(`${TURATH_PROXY_URL}${endpointWithQuery}`)
-      if (res.ok) {
-        try {
-          return await res.json()
-        } catch {
-          const text = await res.text()
-          try { return JSON.parse(text) } catch { }
-        }
-      }
-    } catch {
-      // Ignore and proceed to next strategy
-    }
+    candidates.push(`${TURATH_PROXY_URL}${endpointWithQuery}`)
 
-    // Strategy 1.5: Vercel Edge Serverless Function Proxy (/api/turath-proxy)
-    try {
-      const res = await fetch(`${TURATH_EDGE_URL}${endpointWithQuery}`)
-      if (res.ok) {
-        try {
-          return await res.json()
-        } catch {
-          const text = await res.text()
-          try { return JSON.parse(text) } catch { }
-        }
-      }
-    } catch {
-      // Ignore and proceed to next strategy
-    }
+    // Strategy 1.5: Vercel Edge Serverless Function Proxy (/api/turath-proxy?__path=...)
+    const [pathPart, queryPart] = endpointWithQuery.split('?')
+    const edgeParams = `__path=${encodeURIComponent(pathPart)}${queryPart ? `&${queryPart}` : ''}`
+    candidates.push(`${TURATH_EDGE_URL}?${edgeParams}`)
   }
 
-  // Strategy 2: Direct public API call (works if CORS is supported)
-  try {
-    const res = await fetch(`${TURATH_DIRECT_URL}${endpointWithQuery}`)
-    if (res.ok) {
-      try {
-        return await res.json()
-      } catch {
-        const text = await res.text()
-        try { return JSON.parse(text) } catch { }
-      }
-    }
-  } catch {
-    // Ignore and proceed to next strategy
+  // Strategy 2: Direct public API call (works in non-CORS contexts or if CORS headers are enabled)
+  const directUrl = `${TURATH_DIRECT_URL}${endpointWithQuery}`
+  candidates.push(directUrl)
+
+  // Strategy 3: Public CORS bridge fallback (allorigins)
+  candidates.push(`https://api.allorigins.win/raw?url=${encodeURIComponent(directUrl)}`)
+
+  for (const candidateUrl of candidates) {
+    const data = await fetchTurathCandidate(candidateUrl)
+    if (data !== null) return data
   }
 
-  // Strategy 3: Public CORS bridge fallback (e.g. allorigins)
-  try {
-    const targetUrl = encodeURIComponent(`${TURATH_DIRECT_URL}${endpointWithQuery}`)
-    const res = await fetch(`https://api.allorigins.win/raw?url=${targetUrl}`)
-    if (res.ok) {
-      return await res.json()
-    }
-  } catch (err) {
-    console.error('All Turath fetch strategies failed:', err)
-  }
-
+  console.error('All Turath fetch strategies failed for:', endpointWithQuery)
   return null
 }
 
@@ -225,6 +214,28 @@ export async function fetchTurathBookPdfUrl(turathId: number, targetVolume?: num
  * Fetch a single page content from Turath
  */
 export async function fetchTurathPage(turathId: number, page: number): Promise<TurathPageResponse | null> {
+  if (!Number.isFinite(turathId) || turathId <= 0 || !Number.isFinite(page) || page <= 0) {
+    return null
+  }
+
+  try {
+    const offlinePkg = await idbGetOfflineBook(turathId)
+    const cachedPage = offlinePkg?.cachedPages?.[page] ?? offlinePkg?.cachedPages?.[String(page)]
+    if (cachedPage && cachedPage.text !== undefined) {
+      return {
+        text: cachedPage.text,
+        meta: {
+          page,
+          page_id: page,
+          book_name: offlinePkg?.title,
+          author_name: offlinePkg?.author,
+        },
+      }
+    }
+  } catch {
+    // Fall back cleanly to network fetch
+  }
+
   const data = await fetchTurathJson(`/page?book_id=${turathId}&pg=${page}&ver=3`)
   if (data && data.text !== undefined) {
     return data

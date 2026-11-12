@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/api/turath-proxy/:path*",
+      "destination": "/api/turath-proxy?__path=/:path*"
+    },
+    {
       "source": "/turath-proxy/:path*",
       "destination": "https://api.turath.io/:path*"
     },
