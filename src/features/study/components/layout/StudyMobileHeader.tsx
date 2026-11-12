@@ -13,7 +13,7 @@ export interface StudyMobileHeaderProps {
   isTimerNavbarExpanded: boolean
   setIsTimerNavbarExpanded: React.Dispatch<React.SetStateAction<boolean>>
   setIsPlatformSidebarOpen: (open: boolean) => void
-  setStudyView: (view: "hero" | "workspace") => void
+  setStudyView: (view: "hero" | "workspace" | "tracks" | "track-admin") => void
   getNavCircleBtnStyle: () => string
   getZadWordClass: () => string
 }

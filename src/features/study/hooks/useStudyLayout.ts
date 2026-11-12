@@ -5,7 +5,7 @@ export type StudyPanelKey = 'sidebar' | 'document' | 'chat' | 'mindmap' | 'quiz'
 export interface UseStudyLayoutOptions {
   isDark?: boolean
   accentColor?: string
-  onSwitchView?: (view: 'hero' | 'workspace') => void
+  onSwitchView?: (view: 'hero' | 'workspace' | 'tracks' | 'track-admin') => void
 }
 
 export function useStudyLayout({
@@ -62,8 +62,23 @@ export function useStudyLayout({
 
   // 4. Global study panel open event listener
   useEffect(() => {
+    try {
+      const pendingPanel = sessionStorage.getItem('zad_pending_study_panel')
+      if (pendingPanel === 'tracks' || pendingPanel === 'track-admin') {
+        sessionStorage.removeItem('zad_pending_study_panel')
+        onSwitchView?.(pendingPanel)
+      }
+    } catch {}
+
     const handleOpenStudyPanel = (e: any) => {
       const panel = e.detail?.panel
+
+      if (panel === 'tracks' || panel === 'track-admin') {
+        try { sessionStorage.removeItem('zad_pending_study_panel') } catch {}
+        onSwitchView?.(panel)
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+        return
+      }
 
       if (panel === 'hero') {
         onSwitchView?.('hero')

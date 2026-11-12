@@ -11,6 +11,11 @@ import { PanelErrorBoundary } from "@/components/common/PanelErrorBoundary"
 import type { TreeNode, MindmapNode, Question } from "../../../../contexts/StudyContext"
 import type { QuizFlowState } from "../../quiz/types"
 import type { ChatMessage } from "../../hooks/useStudyChatTutor"
+import type {
+  BookTrackDefinition,
+  TrackRecordingItem,
+  TrackSidebarDisplayMode,
+} from "../../tracks"
 
 export interface StudyWorkspacePanelsProps {
   workspaceRef: React.RefObject<HTMLDivElement | null>
@@ -35,6 +40,12 @@ export interface StudyWorkspacePanelsProps {
   filteredTreeData: TreeNode[]
   handleLoadBookTree: (node: TreeNode) => Promise<any>
   librarySource: "turath" | "mongo"
+  activeTrack?: BookTrackDefinition | null
+  trackDisplayMode?: TrackSidebarDisplayMode
+  onChangeTrackDisplayMode?: (mode: TrackSidebarDisplayMode) => void
+  trackCompletedRecordingIds?: string[]
+  onOpenTrackRecording?: (rec: TrackRecordingItem) => void
+  onExitTrack?: () => void
 
   // Common Chunk
   currentChunkId: string | null
@@ -114,6 +125,12 @@ export function StudyWorkspacePanels({
   filteredTreeData,
   handleLoadBookTree,
   librarySource,
+  activeTrack = null,
+  trackDisplayMode = "index",
+  onChangeTrackDisplayMode,
+  trackCompletedRecordingIds = [],
+  onOpenTrackRecording,
+  onExitTrack,
 
   currentChunkId,
   chunkTitle,
@@ -252,6 +269,12 @@ export function StudyWorkspacePanels({
                   isDark={isDark}
                   onLoadBookTree={handleLoadBookTree}
                   librarySource={librarySource}
+                  activeTrack={activeTrack}
+                  trackDisplayMode={trackDisplayMode}
+                  onChangeTrackDisplayMode={onChangeTrackDisplayMode}
+                  trackCompletedRecordingIds={trackCompletedRecordingIds}
+                  onOpenTrackRecording={onOpenTrackRecording}
+                  onExitTrack={onExitTrack}
                 />
               </motion.div>
 

@@ -1879,6 +1879,38 @@ export default function Navbar({
 
                           )}
 
+                          <button
+
+                            type="button"
+
+                            onClick={() => {
+
+                              setShowProfileMenu(false)
+
+                              try { sessionStorage.setItem('zad_pending_study_panel', 'track-admin') } catch {}
+
+                              onOpenStudy()
+
+                              window.dispatchEvent(new CustomEvent('open_study_panel', { detail: { panel: 'track-admin' } }))
+
+                            }}
+
+                            className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-right text-xs font-semibold transition-colors ${isDark ? 'text-amber-300 hover:bg-white/10' : 'text-amber-800 hover:bg-amber-50'}`}
+
+                          >
+
+                            <div className="flex items-center gap-2">
+
+                              <Layers size={13} />
+
+                              <span>إدارة مسارات الكتب</span>
+
+                            </div>
+
+                            <ChevronLeft size={12} className={isDark ? 'text-amber-300/50' : 'text-amber-800/50'} />
+
+                          </button>
+
 
 
                           {onOpenYoutubeImporter && (
@@ -2879,6 +2911,8 @@ export default function Navbar({
 
                               { id: 'workspace', label: 'مساحة المدارسة', icon: <BookOpenCheck size={14} /> },
 
+                              { id: 'tracks', label: 'مسارات الكتب', icon: <Layers size={14} />, badge: 'جديد' },
+
                               { id: 'community', label: 'مجتمع زاد التفاعلي', icon: <Users size={14} /> },
 
                             ] as Array<{ id: string; label: string; icon: React.ReactNode; badge?: number | string }>).map((subItem) => {
@@ -2898,6 +2932,10 @@ export default function Navbar({
                                     setOpen(false)
 
                                     setActiveStudyPanel(subItem.id)
+
+                                    if (subItem.id === 'tracks') {
+                                      try { sessionStorage.setItem('zad_pending_study_panel', 'tracks') } catch {}
+                                    }
 
                                     onOpenStudy()
 
@@ -3804,6 +3842,38 @@ export default function Navbar({
                             </button>
 
                           )}
+
+                          <button
+
+                            type="button"
+
+                            onClick={() => {
+
+                              setOpen(false)
+
+                              try { sessionStorage.setItem('zad_pending_study_panel', 'track-admin') } catch {}
+
+                              onOpenStudy()
+
+                              window.dispatchEvent(new CustomEvent('open_study_panel', { detail: { panel: 'track-admin' } }))
+
+                            }}
+
+                            className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-right text-xs font-semibold transition-colors ${isDark ? 'text-amber-300 hover:bg-white/10' : 'text-amber-800 hover:bg-amber-50'}`}
+
+                          >
+
+                            <div className="flex items-center gap-2">
+
+                              <Layers size={13} />
+
+                              <span>إدارة مسارات الكتب</span>
+
+                            </div>
+
+                            <ChevronLeft size={12} className={isDark ? 'text-amber-300/50' : 'text-amber-800/50'} />
+
+                          </button>
 
 
 

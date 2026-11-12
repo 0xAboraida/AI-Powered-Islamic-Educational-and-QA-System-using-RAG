@@ -44,6 +44,12 @@ import {
   useStudyAiActions,
   useStudyDocumentReader,
 } from "./hooks"
+import {
+  useBookTrack,
+  BookTracksView,
+  BookTrackAdminView,
+  TrackRecordingModal,
+} from "./tracks"
 
 export interface StudyModeProps {
   onExit: () => void
@@ -81,7 +87,7 @@ export default function StudyMode({
   onOpenSystemObservability,
 }: StudyModeProps) {
   const { isDark, accentColor } = useTheme()
-  const [studyView, setStudyView] = useState<"hero" | "workspace">("hero")
+  const [studyView, setStudyView] = useState<"hero" | "workspace" | "tracks" | "track-admin">("hero")
 
   const getWorkspaceDarkBg = () => getWorkspaceDarkBgHelper(accentColor)
   const getWorkspacePatternColor = () =>
@@ -303,6 +309,43 @@ export default function StudyMode({
     },
   })
 
+  // Hook 6: Isolated Book Study Tracks (Phase 1)
+  const {
+    tracksList,
+    activeTrack,
+    trackTreeNodes,
+    trackTreeLoading,
+    sidebarDisplayMode: trackDisplayMode,
+    setSidebarDisplayMode: setTrackDisplayMode,
+    activeRecording,
+    setActiveRecording,
+    trackProgressMap,
+    enterTrack,
+    exitTrack,
+    recordTrackLessonOpen,
+    openRecording,
+    toggleRecordingCompleted,
+    jumpToRecordingChapter,
+    activeRecordingIndex,
+    activeTrackAllRecordings,
+    openPrevRecording,
+    openNextRecording,
+  } = useBookTrack({
+    onOpenLesson: (cId, title, fullPath, node) =>
+      executeChunkSelect(cId, title, fullPath, node),
+    onEnterWorkspace: () => setStudyView("workspace"),
+  })
+
+  const handleWorkspaceChunkSelect = useCallback(
+    (cId: string, title: string, fullPath: string, node?: any) => {
+      if (activeTrack) {
+        recordTrackLessonOpen(cId, title)
+      }
+      handleChunkSelect(cId, title, fullPath, node)
+    },
+    [activeTrack, recordTrackLessonOpen, handleChunkSelect],
+  )
+
   // Auto-scroll chat to bottom
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -396,6 +439,62 @@ export default function StudyMode({
     !isChatOpen &&
     !isMindmapOpen &&
     !isQuizOpen
+
+  // TRACK ADMIN VIEW (لوحة إدارة مسارات الكتب)
+  if (studyView === "track-admin") {
+    return (
+      <BookTrackAdminView
+        accentColor={accentColor}
+        isDark={isDark}
+        onOpenTracksGallery={() => setStudyView("tracks")}
+        onExit={onExit}
+        onNavigateHome={onNavigateHome}
+        onTryChat={onTryChat}
+        onLogin={onLogin}
+        onOpenKnowledge={onOpenKnowledge}
+        onOpenVoiceChat={onOpenVoiceChat}
+        onOpenLessons={onOpenLessons}
+        onOpenAdmin={onOpenAdmin}
+        onOpenTurathRag={onOpenTurathRag}
+        onOpenEngineControl={onOpenEngineControl}
+        onOpenDataIngestion={onOpenDataIngestion}
+        onOpenV2PipelineAdmin={onOpenV2PipelineAdmin}
+        onOpenAdminLibrary={onOpenAdminLibrary}
+        onOpenYoutubeImporter={onOpenYoutubeImporter}
+        onOpenSystemObservability={onOpenSystemObservability}
+      />
+    )
+  }
+
+  // TRACKS VIEW (مسارات الكتب)
+  if (studyView === "tracks") {
+    return (
+      <BookTracksView
+        accentColor={accentColor}
+        isDark={isDark}
+        tracks={tracksList}
+        trackProgressMap={trackProgressMap}
+        onSelectTrack={(trackId) => enterTrack(trackId)}
+        onOpenTrackAdmin={() => setStudyView("track-admin")}
+        onBackToHero={() => setStudyView("hero")}
+        onExit={onExit}
+        onNavigateHome={onNavigateHome}
+        onTryChat={onTryChat}
+        onLogin={onLogin}
+        onOpenKnowledge={onOpenKnowledge}
+        onOpenVoiceChat={onOpenVoiceChat}
+        onOpenLessons={onOpenLessons}
+        onOpenAdmin={onOpenAdmin}
+        onOpenTurathRag={onOpenTurathRag}
+        onOpenEngineControl={onOpenEngineControl}
+        onOpenDataIngestion={onOpenDataIngestion}
+        onOpenV2PipelineAdmin={onOpenV2PipelineAdmin}
+        onOpenAdminLibrary={onOpenAdminLibrary}
+        onOpenYoutubeImporter={onOpenYoutubeImporter}
+        onOpenSystemObservability={onOpenSystemObservability}
+      />
+    )
+  }
 
   // HERO VIEW
   if (studyView === "hero") {
@@ -628,10 +727,20 @@ export default function StudyMode({
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           deferredSearchQuery={deferredSearchQuery}
-          treeLoading={treeLoading}
-          filteredTreeData={filteredTreeData}
+          treeLoading={activeTrack ? trackTreeLoading : treeLoading}
+          filteredTreeData={activeTrack ? trackTreeNodes : filteredTreeData}
           handleLoadBookTree={handleLoadBookTree}
           librarySource={librarySource}
+          activeTrack={activeTrack}
+          trackDisplayMode={trackDisplayMode}
+          onChangeTrackDisplayMode={setTrackDisplayMode}
+          trackCompletedRecordingIds={
+            activeTrack
+              ? trackProgressMap[activeTrack.id]?.completedRecordingIds ?? []
+              : []
+          }
+          onOpenTrackRecording={openRecording}
+          onExitTrack={exitTrack}
           currentChunkId={currentChunkId}
           chunkTitle={chunkTitle}
           headerSubtitle={headerSubtitle}
@@ -640,7 +749,7 @@ export default function StudyMode({
           isChunkLoading={isChunkLoading}
           chunkLoadError={chunkLoadError}
           onRetryChunkLoad={retryChunkLoad}
-          handleChunkSelect={handleChunkSelect}
+          handleChunkSelect={handleWorkspaceChunkSelect}
           isDocumentOpen={isDocumentOpen}
           setIsDocumentOpen={setIsDocumentOpen}
           documentWidth={documentWidth}
@@ -776,6 +885,31 @@ export default function StudyMode({
         onClose={() => setIsHistoryModalOpen(false)}
         onSelectSession={handleSelectSavedSession}
         isDark={isDark}
+      />
+
+      {/* Modal: In-Site Track Audio/Video Player */}
+      <TrackRecordingModal
+        recording={activeRecording}
+        trackTitle={activeTrack?.title}
+        isDark={isDark}
+        accentColor={accentColor}
+        isCompleted={Boolean(
+          activeTrack &&
+            activeRecording &&
+            trackProgressMap[activeTrack.id]?.completedRecordingIds?.includes(
+              activeRecording.id,
+            ),
+        )}
+        hasPrev={activeRecordingIndex > 0}
+        hasNext={
+          activeRecordingIndex >= 0 &&
+          activeRecordingIndex < activeTrackAllRecordings.length - 1
+        }
+        onPrev={openPrevRecording}
+        onNext={openNextRecording}
+        onToggleComplete={toggleRecordingCompleted}
+        onJumpToChapter={jumpToRecordingChapter}
+        onClose={() => setActiveRecording(null)}
       />
 
       {/* Modal: User Profile */}

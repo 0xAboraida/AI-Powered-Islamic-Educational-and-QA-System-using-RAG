@@ -13,7 +13,7 @@ export interface StudyHeroViewProps {
   currentChunkId: string | null
   isHistoryModalOpen: boolean
   setIsHistoryModalOpen: (open: boolean) => void
-  setStudyView: (view: "hero" | "workspace") => void
+  setStudyView: (view: "hero" | "workspace" | "tracks" | "track-admin") => void
   handleStartNewSession: () => void
   handleSelectSavedSession: (sess: StudySessionDto) => void
   executeChunkSelect: (

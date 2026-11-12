@@ -495,6 +495,12 @@ export default function LibrarySidebar({
       icon: <BookOpenCheck className="w-4 h-4" />
     },
     {
+      id: 'tracks',
+      label: 'مسارات الكتب',
+      icon: <Layers className="w-4 h-4" />,
+      badge: 'جديد'
+    },
+    {
       id: 'community',
       label: 'مجتمع زاد التفاعلي',
       icon: <Users className="w-4 h-4" />
@@ -815,6 +821,9 @@ export default function LibrarySidebar({
                             type="button"
                             onClick={() => {
                               onClose();
+                              if (item.id === 'tracks') {
+                                try { sessionStorage.setItem('zad_pending_study_panel', 'tracks'); } catch {}
+                              }
                               if (onNavigateGlobal) onNavigateGlobal('study');
                               window.dispatchEvent(new CustomEvent('open_study_panel', { detail: { panel: item.id } }));
                             }}
@@ -1180,6 +1189,7 @@ export default function LibrarySidebar({
                       { id: 'data_ingestion', label: 'إدارة البيانات', icon: <Database size={13} />, color: isDarkEffective ? 'text-emerald-400' : 'text-emerald-700' },
                       { id: 'v2_pipeline_admin', label: 'إدخال بيانات AI', icon: <Sparkles size={13} />, color: isDarkEffective ? 'text-blue-400' : 'text-blue-700' },
                       { id: 'admin_library', label: 'إدارة مكتبة القراءة', icon: <BookOpen size={13} />, color: isDarkEffective ? 'text-amber-400' : 'text-amber-700' },
+                      { id: 'track_admin', label: 'إدارة مسارات الكتب', icon: <Layers size={13} />, color: isDarkEffective ? 'text-amber-300' : 'text-amber-800' },
                       { id: 'youtube_importer', label: 'استيراد شروحات يوتيوب', icon: <Video size={13} />, color: isDarkEffective ? 'text-red-400' : 'text-red-700' },
                       { id: 'system_observability', label: 'مراقبة النظام والـ AI', icon: <Activity size={13} />, color: isDarkEffective ? 'text-amber-300' : 'text-amber-700' },
                     ].map((tool) => (
@@ -1188,6 +1198,12 @@ export default function LibrarySidebar({
                         type="button"
                         onClick={() => {
                           onClose();
+                          if (tool.id === 'track_admin') {
+                            try { sessionStorage.setItem('zad_pending_study_panel', 'track-admin'); } catch {}
+                            if (onNavigateGlobal) onNavigateGlobal('study');
+                            window.dispatchEvent(new CustomEvent('open_study_panel', { detail: { panel: 'track-admin' } }));
+                            return;
+                          }
                           if (onNavigateGlobal) onNavigateGlobal(tool.id);
                         }}
                         className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-right text-xs font-semibold transition-colors cursor-pointer ${tool.color} ${isDarkEffective ? 'hover:bg-white/10' : 'hover:bg-black/5'

@@ -2,12 +2,20 @@ import { useState, useEffect, useRef, memo, useMemo } from 'react'
 import {
   Folder, FolderOpen, FileText, ChevronDown, ChevronLeft, Search, Hourglass,
   X, BookOpen, Loader2, Menu, Book, SlidersHorizontal, Filter, RotateCcw,
-  Check, Sparkles, User, Layers, Target, LocateIcon
+  Check, Sparkles, User, Layers, Target, LocateIcon, Headphones, LogOut
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useStudyContext, type TreeNode } from '../../../../contexts/StudyContext'
 import { useTheme, type AccentColor } from '../../../../contexts/ThemeContext'
 import { findTurathBookInTree } from '../../utils/turathMetaHelper'
+import {
+  TrackRecordingsPanel,
+  getAllTrackRecordings,
+  normalizeTrackArabic,
+  type BookTrackDefinition,
+  type TrackRecordingItem,
+  type TrackSidebarDisplayMode,
+} from '../../tracks'
 import whiteLogo from '../../../../assets/images/WhiteLogo.png'
 import darkLogo from '../../../../assets/images/ZadDarkLogo.png'
 
@@ -959,6 +967,29 @@ function findChunkPathInChapters(
   return null
 }
 
+function filterTrackChapterNodes(nodes: TreeNode[], query: string): TreeNode[] {
+  const normQ = normalizeTrackArabic(query)
+  if (!normQ) return nodes
+
+  return nodes
+    .map((node) => {
+      const titleMatched = normalizeTrackArabic(node.title).includes(normQ)
+      const filteredChildren = node.children
+        ? filterTrackChapterNodes(node.children, query)
+        : []
+
+      if (titleMatched || filteredChildren.length > 0) {
+        return {
+          ...node,
+          children: filteredChildren.length > 0 ? filteredChildren : node.children,
+          _hasMatchedChild: filteredChildren.length > 0,
+        } as TreeNode
+      }
+      return null
+    })
+    .filter((n): n is TreeNode => n !== null)
+}
+
 export function StudySidebar({
   isSidebarOpen,
   sidebarWidth,
@@ -973,7 +1004,13 @@ export function StudySidebar({
   startResizingSidebar,
   isDark = true,
   onLoadBookTree,
-  librarySource = 'turath'
+  librarySource = 'turath',
+  activeTrack = null,
+  trackDisplayMode = 'index',
+  onChangeTrackDisplayMode,
+  trackCompletedRecordingIds = [],
+  onOpenTrackRecording,
+  onExitTrack,
 }: {
   isSidebarOpen: boolean
   sidebarWidth?: number
@@ -989,6 +1026,12 @@ export function StudySidebar({
   isDark?: boolean
   onLoadBookTree?: (node: TreeNode) => Promise<any>
   librarySource?: 'mongo' | 'turath'
+  activeTrack?: BookTrackDefinition | null
+  trackDisplayMode?: TrackSidebarDisplayMode
+  onChangeTrackDisplayMode?: (mode: TrackSidebarDisplayMode) => void
+  trackCompletedRecordingIds?: string[]
+  onOpenTrackRecording?: (rec: TrackRecordingItem) => void
+  onExitTrack?: () => void
 }) {
   const { treeData: baseTreeData, chunkMeta, chunkTitle } = useStudyContext()
   const { accentColor: globalAccentColor } = useTheme()
@@ -1015,7 +1058,23 @@ export function StudySidebar({
     }
 
     try {
-      const tree = (baseTreeData && baseTreeData.length > 0) ? baseTreeData : filteredTreeData
+      if (activeTrack) {
+        const chunkPath = findChunkPathInChapters(filteredTreeData, currentChunkId, chunkTitle)
+        const intermediateChapters = chunkPath && chunkPath.length > 1 ? chunkPath.slice(0, -1) : []
+        const keysToExpand = new Set<string>()
+        const pathSegments: string[] = []
+        for (const node of intermediateChapters) {
+          pathSegments.push(node.title)
+          keysToExpand.add(pathSegments.join('///'))
+          keysToExpand.add(node.title)
+        }
+        setForceExpandedKeys(prev => {
+          const next = new Set(prev)
+          keysToExpand.forEach(k => next.add(k))
+          return next
+        })
+      } else {
+        const tree = (baseTreeData && baseTreeData.length > 0) ? baseTreeData : filteredTreeData
       const isTurath = currentChunkId.startsWith('turath_')
 
       let bookMatchResult: { book: TreeNode; path: TreeNode[] } | null = null
@@ -1085,11 +1144,12 @@ export function StudySidebar({
         keysToExpand.add(node.title)
       }
 
-      setForceExpandedKeys(prev => {
-        const next = new Set(prev)
-        keysToExpand.forEach(k => next.add(k))
-        return next
-      })
+        setForceExpandedKeys(prev => {
+          const next = new Set(prev)
+          keysToExpand.forEach(k => next.add(k))
+          return next
+        })
+      }
 
       // Wait for DOM element to render and animate, then smooth scroll and pulse
       let attempts = 0
@@ -1222,12 +1282,18 @@ export function StudySidebar({
 
   // Compute final filtered data
   const effectiveTreeData = useMemo(() => {
+    if (activeTrack) {
+      if (!searchQuery.trim()) {
+        return filteredTreeData
+      }
+      return filterTrackChapterNodes(filteredTreeData, deferredSearchQuery)
+    }
     if (!hasActiveFilters && !searchQuery.trim()) {
       return filteredTreeData
     }
     const source = (baseTreeData && baseTreeData.length > 0) ? baseTreeData : filteredTreeData
     return filterTree(source, deferredSearchQuery, searchScope, selectedCategory, selectedAuthor)
-  }, [baseTreeData, filteredTreeData, deferredSearchQuery, searchQuery, searchScope, selectedCategory, selectedAuthor, hasActiveFilters])
+  }, [activeTrack, baseTreeData, filteredTreeData, deferredSearchQuery, searchQuery, searchScope, selectedCategory, selectedAuthor, hasActiveFilters])
 
   return (
     <div
@@ -1240,9 +1306,9 @@ export function StudySidebar({
       {/* Header Bar matching Chat/Mindmap/Quiz panels */}
       <div className={`hidden md:flex items-center justify-between px-4 py-3 h-[53px] box-border border-b backdrop-blur-md ${isDark ? 'border-white/10 bg-[#090b10] text-white' : 'border-slate-200 bg-slate-50/90 text-slate-800'
         }`}>
-        <div className="flex items-center gap-2 text-sm font-bold">
+        <div className="flex items-center gap-2 text-sm font-bold min-w-0">
           <Folder size={18} className={`shrink-0 stroke-[2.2] ${sidebarThemeTokens.mainIcon}`} />
-          <span>فهرس المحتوى</span>
+          <span className="truncate">{activeTrack ? activeTrack.bookTitle : 'فهرس المحتوى'}</span>
         </div>
 
         <div className="flex items-center gap-1.5">
@@ -1275,6 +1341,90 @@ export function StudySidebar({
         </div>
       </div>
 
+          {/* Track Mode Banner & View Switcher (فهرس عادي / فهرس مع التسجيلات) */}
+      {activeTrack && (
+        <div
+          className={`px-3.5 py-2.5 border-b space-y-2 ${
+            isDark ? 'border-white/10 bg-white/[0.03]' : 'border-slate-200/80 bg-slate-50/70'
+          }`}
+        >
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0">
+              <div className="text-[11px] font-bold truncate">{activeTrack.title}</div>
+              <div
+                className={`text-[10px] truncate ${
+                  isDark ? 'text-white/55' : 'text-slate-500'
+                }`}
+              >
+                {activeTrack.commentator}
+              </div>
+            </div>
+            {onExitTrack && (
+              <button
+                type="button"
+                onClick={onExitTrack}
+                className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10.5px] font-bold border transition-colors shrink-0 ${
+                  isDark
+                    ? 'border-white/15 bg-white/5 text-white/75 hover:bg-white/10 hover:text-white'
+                    : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                }`}
+                title="الخروج من المسار والعودة للفهرس الكامل"
+              >
+                <LogOut size={12} />
+                <span>خروج</span>
+              </button>
+            )}
+          </div>
+
+          <div
+            className={`grid grid-cols-2 gap-1 p-1 rounded-xl border ${
+              isDark ? 'bg-black/30 border-white/10' : 'bg-slate-200/60 border-slate-200'
+            }`}
+          >
+            <button
+              type="button"
+              onClick={() => onChangeTrackDisplayMode?.('index')}
+              className={`flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg text-[11px] font-bold transition-all ${
+                trackDisplayMode === 'index'
+                  ? isDark
+                    ? 'bg-white/15 text-white shadow-xs'
+                    : 'bg-white text-slate-900 shadow-xs'
+                  : isDark
+                    ? 'text-white/55 hover:text-white'
+                    : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <BookOpen size={12} />
+              <span>الفهرس العادي</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onChangeTrackDisplayMode?.('recordings')}
+              className={`flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg text-[11px] font-bold transition-all ${
+                trackDisplayMode === 'recordings'
+                  ? isDark
+                    ? 'bg-white/15 text-white shadow-xs'
+                    : 'bg-white text-slate-900 shadow-xs'
+                  : isDark
+                    ? 'text-white/55 hover:text-white'
+                    : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Headphones size={12} />
+              <span>مع التسجيلات</span>
+              <span
+                className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+                  isDark ? 'bg-white/15 text-white/90' : 'bg-slate-100 text-slate-700'
+                }`}
+              >
+                {getAllTrackRecordings(activeTrack).length}
+              </span>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Search Box Container with Integrated Filter */}
       <div className={`p-4 border-b relative ${isDark ? 'border-white/5 bg-transparent' : 'border-slate-200/80 bg-slate-50/50'}`}>
         <div className={`group relative flex items-center gap-2 rounded-2xl border px-3 py-2 transition-all duration-300 shadow-xs ${isDark
@@ -1286,17 +1436,19 @@ export function StudySidebar({
             ref={mainSearchInputRef}
             type="text"
             placeholder={
-              selectedAuthor !== 'all'
-                ? `ابحث في مؤلفات "${selectedAuthor}"...`
-                : selectedCategory !== 'all'
-                  ? `ابحث داخل قسم "${selectedCategory}"...`
-                  : searchScope === 'books'
-                    ? "ابحث باسم الكتاب فقط..."
-                    : searchScope === 'authors'
-                      ? "ابحث باسم المؤلف فقط..."
-                      : librarySource === 'turath'
-                        ? "ابحث في 8,589 كتاب أو مؤلف..."
-                        : "ابحث باسم الكتاب أو المؤلف..."
+              activeTrack
+                ? 'ابحث في أبواب الكتاب أو التسجيلات...'
+                : selectedAuthor !== 'all'
+                  ? `ابحث في مؤلفات "${selectedAuthor}"...`
+                  : selectedCategory !== 'all'
+                    ? `ابحث داخل قسم "${selectedCategory}"...`
+                    : searchScope === 'books'
+                      ? "ابحث باسم الكتاب فقط..."
+                      : searchScope === 'authors'
+                        ? "ابحث باسم المؤلف فقط..."
+                        : librarySource === 'turath'
+                          ? "ابحث في 8,589 كتاب أو مؤلف..."
+                          : "ابحث باسم الكتاب أو المؤلف..."
             }
             className={`w-full bg-transparent text-[13px] font-medium outline-none transition-colors ${isDark ? 'text-white placeholder:text-white/30' : 'text-slate-900 placeholder:text-slate-400'
               }`}
@@ -1322,6 +1474,7 @@ export function StudySidebar({
           </AnimatePresence>
 
           {/* Integrated Filter Button */}
+          {!activeTrack && (
           <div className="relative shrink-0 flex items-center pr-1 border-r border-slate-200 dark:border-white/10 mr-0.5">
             <button
               onClick={() => setIsFilterOpen(prev => !prev)}
@@ -1341,6 +1494,7 @@ export function StudySidebar({
               )}
             </button>
           </div>
+          )}
         </div>
 
         {/* Filter Dropdown Popover */}
@@ -1537,6 +1691,26 @@ export function StudySidebar({
                   100% { transform: translateX(100%); }
                 }
               `}</style>
+            </motion.div>
+          ) : activeTrack && trackDisplayMode === 'recordings' ? (
+            <motion.div
+              key={`track-recordings-${activeTrack.id}`}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2, ease: 'easeOut' }}
+            >
+              <TrackRecordingsPanel
+                track={activeTrack}
+                bookChapters={filteredTreeData}
+                searchQuery={deferredSearchQuery}
+                currentChunkId={currentChunkId}
+                completedRecordingIds={trackCompletedRecordingIds}
+                isDark={isDark}
+                accentColor={globalAccentColor}
+                onSelectChunk={handleChunkSelect}
+                onOpenRecording={(rec) => onOpenTrackRecording?.(rec)}
+              />
             </motion.div>
           ) : effectiveTreeData.length > 0 ? (
             <motion.div
