@@ -1143,7 +1143,7 @@ export default function Navbar({
 
             ? 'border-white/20 bg-white/[0.08] hover:bg-white/[0.16] text-white shadow-[0_4px_20px_rgba(0,0,0,0.25)]'
 
-            : 'border-white/50 bg-white/[0.20] hover:bg-white/[0.30] text-purple-950 shadow-[0_4px_20px_rgba(0,0,0,0.06)]'
+            : 'border-white/50 bg-white/[0.20] hover:bg-white/[0.30] text-stone-900 shadow-[0_4px_20px_rgba(0,0,0,0.06)]'
 
             }`}
 
