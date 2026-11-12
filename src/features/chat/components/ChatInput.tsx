@@ -268,34 +268,36 @@ export function ChatInput({
         </AnimatePresence>
 
         {/* 1. Floating Row Above Input Form (Filters and Selected Book) */}
-        <div className="flex items-center justify-between gap-2 px-1 w-full relative">
-          <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex flex-wrap items-center justify-between gap-2 w-full relative">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             {/* Domain Selector Pill */}
-            <div className="relative" ref={domainRef}>
+            <div className="relative flex-1 min-w-0 sm:flex-initial" ref={domainRef}>
               <button
                 type="button"
                 onClick={() => {
                   setIsDomainOpen(!isDomainOpen)
                   setIsResponseModeOpen(false)
                 }}
-                className={`group flex items-center gap-1.5 px-3 h-[34px] rounded-xl border transition-all duration-200 text-xs font-bold font-sans cursor-pointer shadow-xs ${
+                className={`group flex items-center justify-between sm:justify-start gap-1.5 px-3 h-[34px] w-full sm:w-auto rounded-xl border transition-all duration-200 text-xs font-bold font-sans cursor-pointer shadow-xs ${
                   dark
                     ? `bg-[#121622]/90 border-white/15 text-stone-200 hover:bg-[#181d2c] ${ac.pillHoverDark}`
                     : `bg-white/95 ${ac.pillBorderLight} text-stone-800 ${ac.pillBgHoverLight} ${ac.pillBorderHoverLight}`
                 }`}
               >
-                <div className="flex items-center justify-center shrink-0">
-                  {selectedDomain.isZadIcon ? (
-                    <ThemedZadMark accentColor={accentColor} dark={dark} className="h-3.5 w-3.5 opacity-95" />
-                  ) : (
-                    selectedDomain.icon
-                  )}
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <div className="flex items-center justify-center shrink-0">
+                    {selectedDomain.isZadIcon ? (
+                      <ThemedZadMark accentColor={accentColor} dark={dark} className="h-3.5 w-3.5 opacity-95" />
+                    ) : (
+                      selectedDomain.icon
+                    )}
+                  </div>
+                  <span className="text-[11px] opacity-70 shrink-0">المجال:</span>
+                  <span className="truncate max-w-[95px] sm:max-w-[120px]">
+                    {selectedDomain.id === 0 ? 'تلقائي' : selectedDomain.name}
+                  </span>
                 </div>
-                <span className="text-[11px] opacity-70">المجال:</span>
-                <span className="truncate max-w-[85px] sm:max-w-[120px]">
-                  {selectedDomain.id === 0 ? 'تلقائي' : selectedDomain.name}
-                </span>
-                <ChevronUp className={`w-3.5 h-3.5 transition-transform duration-300 ${isDomainOpen ? 'rotate-180' : 'rotate-0 opacity-70'}`} />
+                <ChevronUp className={`w-3.5 h-3.5 shrink-0 transition-transform duration-300 ${isDomainOpen ? 'rotate-180' : 'rotate-0 opacity-70'}`} />
               </button>
 
               {/* Domain Dropdown Menu (Opens Above) */}
@@ -363,27 +365,29 @@ export function ChatInput({
             </div>
 
             {/* Response Mode Selector Pill */}
-            <div className="sm:relative" ref={responseModeRef}>
+            <div className="sm:relative flex-1 min-w-0 sm:flex-initial" ref={responseModeRef}>
               <button
                 type="button"
                 onClick={() => {
                   setIsResponseModeOpen(!isResponseModeOpen)
                   setIsDomainOpen(false)
                 }}
-                className={`group flex items-center gap-1.5 px-3 h-[34px] rounded-xl border transition-all duration-200 text-xs font-bold font-sans cursor-pointer shadow-xs ${
+                className={`group flex items-center justify-between sm:justify-start gap-1.5 px-3 h-[34px] w-full sm:w-auto rounded-xl border transition-all duration-200 text-xs font-bold font-sans cursor-pointer shadow-xs ${
                   dark
                     ? `bg-[#121622]/90 border-white/15 text-stone-200 hover:bg-[#181d2c] ${ac.pillHoverDark}`
                     : `bg-white/95 ${ac.pillBorderLight} text-stone-800 ${ac.pillBgHoverLight} ${ac.pillBorderHoverLight}`
                 }`}
               >
-                <div className={`flex items-center justify-center shrink-0 ${dark ? ac.iconColorDark : ac.iconColorLight}`}>
-                  {selectedResponseMode.icon}
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <div className={`flex items-center justify-center shrink-0 ${dark ? ac.iconColorDark : ac.iconColorLight}`}>
+                    {selectedResponseMode.icon}
+                  </div>
+                  <span className="text-[11px] opacity-70 shrink-0">النمط:</span>
+                  <span className="truncate max-w-[95px] sm:max-w-[120px]">
+                    {selectedResponseMode.shortName}
+                  </span>
                 </div>
-                <span className="text-[11px] opacity-70">النمط:</span>
-                <span className="truncate max-w-[85px] sm:max-w-[120px]">
-                  {selectedResponseMode.shortName}
-                </span>
-                <ChevronUp className={`w-3.5 h-3.5 transition-transform duration-300 ${isResponseModeOpen ? 'rotate-180' : 'rotate-0 opacity-70'}`} />
+                <ChevronUp className={`w-3.5 h-3.5 shrink-0 transition-transform duration-300 ${isResponseModeOpen ? 'rotate-180' : 'rotate-0 opacity-70'}`} />
               </button>
 
               {/* Response Mode Dropdown Menu (Opens Above) */}
@@ -444,29 +448,29 @@ export function ChatInput({
                 </div>
               </div>
             </div>
-
-            {/* Selected Book Tag (if any) */}
-            {selectedBook && (
-              <div
-                className={`flex items-center gap-1.5 px-3 h-[34px] rounded-xl text-xs font-sans font-semibold border backdrop-blur-md transition-all ${
-                  dark ? `bg-[#121622]/90 ${ac.dropdownBorderDark} ${ac.activeTextDark}` : `${ac.activeBgLight} ${ac.activeBorderLight} ${ac.activeTextLight}`
-                }`}
-              >
-                <BookOpen className="w-3.5 h-3.5 shrink-0" />
-                <span className="truncate max-w-[130px] sm:max-w-[200px]">{selectedBook.title}</span>
-                {onClearBook && (
-                  <button
-                    type="button"
-                    onClick={onClearBook}
-                    className="hover:opacity-75 transition-opacity mr-1 cursor-pointer"
-                    title="إلغاء حصر البحث بهذا الكتاب"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                )}
-              </div>
-            )}
           </div>
+
+          {/* Selected Book Tag (if any) */}
+          {selectedBook && (
+            <div
+              className={`flex items-center gap-1.5 px-3 h-[34px] rounded-xl text-xs font-sans font-semibold border backdrop-blur-md transition-all ${
+                dark ? `bg-[#121622]/90 ${ac.dropdownBorderDark} ${ac.activeTextDark}` : `${ac.activeBgLight} ${ac.activeBorderLight} ${ac.activeTextLight}`
+              }`}
+            >
+              <BookOpen className="w-3.5 h-3.5 shrink-0" />
+              <span className="truncate max-w-[130px] sm:max-w-[200px]">{selectedBook.title}</span>
+              {onClearBook && (
+                <button
+                  type="button"
+                  onClick={onClearBook}
+                  className="hover:opacity-75 transition-opacity mr-1 cursor-pointer"
+                  title="إلغاء حصر البحث بهذا الكتاب"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         {/* 2. Main Input Box (Voice Record + Text Input + Send Button) */}
